@@ -1,0 +1,52 @@
+v4
+<--> commands, response is "cmd [#]"
+phase #         := 1 wispr, 2 ascend, 3 surface, 4 descend
+target #.#      := set target depth for ascend
+velocity #      := return avg next # depth / time readings
+depth           := return next depth value
+temp            := return next temp value
+file name size  := load file to antmod
+
+status          := "status P#, sent #/# #, errors string"
+set string      := set setting, same format as irid download
+pico x x        := response from dos, then "pico"
+
+<-- async alerts, not in direct response to query
+ice #.#         := detected low temp, suggesting winch stop
+target #.#      := depth < target set by buoy request
+surfaced #.#    := depth < ant.surface setting
+gps #:#:#.#     := acquired GPS time
+signal #        := csq 5
+connected       := sending data
+sent #/# #      := sent # of # files, # bytes (ready to descend)
+failed          := tried to connect, giving up (ready to descend)
+done            := done with surface
+set string      := settings down from irid
+
+
+v3
+^A - ^F as v2, ^G as v4 (partial)
+
+v2
+Serial interface program to control and 
+ communicate with SBE and Iridium/GPS.
+Buoy is connected to com4 at 9600 BAUD
+ ^A Antenna G|I 
+ ^B Binary byte 
+ ^C Connect I|S 
+ ^D powerDown I|S
+ ^E binary lEngth
+ ^F binary 2bytes (TBD)
+ ^G unused 
+On console (com1): s=status x=exit *=this message
+status: 
+"connected:SBE antenna:G iridgps:off sbe:on command:1"
+
+
+v1.0
+ * SwitchAntenna
+ * Switch antenna module between SBE39 TD, Iridium and GPS.
+ * send ^b to connect SB39.Type 'ts' to get the T-D from SB39plus.
+ * send ^f to connect GPS. Antenna SW is GPS side.
+ * send ^d to connect Iridium/GPS. Antenna to IRID side.
+ * send ^e to exit.
