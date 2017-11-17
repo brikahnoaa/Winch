@@ -1,7 +1,7 @@
 // MPC.c - pre-run and hardware
 #include <common.h>
-#include <MPC.h>
-#include <Winch.h>
+#include <mpc.h>
+#include <winch.h>
 
 // Define WISPR VEEPROM Parameters for use
 extern WISPRParameters WISP;
@@ -27,9 +27,9 @@ volatile clock_t start_clock;
 volatile clock_t stop_clock;
 #endif
 
-/******************************************************************************\
-**	PreRun		Exit opportunity before we start the program
-\******************************************************************************/
+/*
+ * PreRun		Exit opportunity before we start the program
+ */
 void PreRun(void) {
   short ndelay = 10;
   short i;
@@ -92,13 +92,13 @@ void PreRun(void) {
   return; // to start acquisition
 
 } //____ PreRun() ____//
-/*********************************************************************************\
-** SetupHardware
-** Set IO pins, set SYSCLK, if surface tries to open GPS receiver and set RTC
+/*
+ * SetupHardware
+ * Set IO pins, set SYSCLK, if surface tries to open GPS receiver and set RTC
 time.
-** Set gain.  Return the current phase.
-** 10/25/2004 H. Matsumoto
-\*********************************************************************************/
+ * Set gain.  Return the current phase.
+ * 10/25/2004 H. Matsumoto
+ */
 void SetupHardware(void) {
   short err = 0;
   short result = 0;
@@ -157,7 +157,7 @@ void SetupHardware(void) {
   ** MakeDirectory()
   ** Setup directories for files not needing to be access anymore.
   ** AT 7/13/2015
-  *****************************************************************************/
+ */
 void Make_Directory(char *path) {
   char DOSCommand[64];
   memset(DOSCommand, 0, 64);
@@ -170,11 +170,11 @@ void Make_Directory(char *path) {
   execstr(DOSCommand);
   Delayms(1000);
 }
-/****************************************************************************
-** MakeDirectory()
-** Setup directories for files not needing to be access anymore.
-** AT 7/13/2015
-*****************************************************************************/
+/*
+ * MakeDirectory()
+ * Setup directories for files not needing to be access anymore.
+ * AT 7/13/2015
+ */
 void DOS_Com(char *command, long filenum, char *ext, char *extt) {
   char Com[64];
   static char fname[] = "c:00000000.";
@@ -225,10 +225,10 @@ void DOS_Com(char *command, long filenum, char *ext, char *extt) {
   Delayms(250);
 }
 
-/******************************************************************************\
-**	Time String
-** push the RTC seconds into (*seconds) and return HH:MM:SS global *time_chr
-\******************************************************************************/
+/*
+ * Time String
+ * push the RTC seconds into (*seconds) and return HH:MM:SS global *time_chr
+ */
 char *Time(ulong *seconds) {
   // global time_chr
   RTCtm *rtc_time;
@@ -244,10 +244,10 @@ char *Time(ulong *seconds) {
   return time_chr;
 
 } //____ Time() ____//
-/******************************************************************************\
-**	Time & Date String
-** Get the RTC time seconds since 1970 and convert it 
-\******************************************************************************/
+/*
+ * Time & Date String
+ * Get the RTC time seconds since 1970 and convert it 
+ */
 char *TimeDate(ulong *seconds) {
 
   RTCtm *rtc_time;
@@ -264,14 +264,14 @@ char *TimeDate(ulong *seconds) {
   return time_chr;
 
 } //____ TimeDate() ____//
-/************************************************************************************************************************\
-** void System_Timer();
-**
-**    Return value:
-**       1: Detection Interval Timer
-**       2: Data Interval Timer
-**
-\************************************************************************************************************************/
+/*
+ * void System_Timer();
+ * 
+ * Return value:
+ * 1: Detection Interval Timer
+ * 2: Data Interval Timer
+ * 
+ */
 int System_Timer() {
   int remainder;
   int adcount = 0;
@@ -392,12 +392,12 @@ int System_Timer() {
   return 1;
 
 } //____ System_Timer() _____//
-/**********************************************************************************************************************\
-** void CheckTimerIntervals()
-** Check the input values from cmdfile() and makes sure  they are divisible by
+/*
+ * void CheckTimerIntervals()
+ * Check the input values from cmdfile() and makes sure  they are divisible by
 SysTimeInt. If not, rounds them up.
-** PLI: Power Log Interval
-/**********************************************************************************************************************/
+ * PLI: Power Log Interval
+/*
 float Check_Timers(ushort PLI) {
 
   float callrate;
@@ -469,22 +469,22 @@ float Check_Timers(ushort PLI) {
   return callrate;
 
 } //____ Check_Timers() ____//
-/***********************************************************************************************\
-** Check_Vitals
-**    //Voltage: checking the average
-**    1- Check Absolute MIN volts
-**    2- Check User min volts
-**    3- Check Startups
-**    4- Check WISPR freespace (RAOSBottom)
-**    5- Check CF2 CF freespace
-** return -1 on need to shutdown
-** return 0 if System is fine
-** return 1 if below absolute Min Bat Voltage
-** return 2 if below MinVolt
-** return 3 if Min Bat Capacity
-** return 4 if MIN WISPR FREE Space
-** return 5 if No CF2 Free Space
-\***********************************************************************************************/
+/*
+ * Check_Vitals
+ * //Voltage: checking the average
+ * 1- Check Absolute MIN volts
+ * 2- Check User min volts
+ * 3- Check Startups
+ * 4- Check WISPR freespace (RAOSBottom)
+ * 5- Check CF2 CF freespace
+ * return -1 on need to shutdown
+ * return 0 if System is fine
+ * return 1 if below absolute Min Bat Voltage
+ * return 2 if below MinVolt
+ * return 3 if Min Bat Capacity
+ * return 4 if MIN WISPR FREE Space
+ * return 5 if No CF2 Free Space
+ */
 short Check_Vitals() {
 
   short returnvalue = 0;
@@ -533,9 +533,9 @@ short Check_Vitals() {
   return returnvalue;
 
 } //____ Check_Vitals() ____//
-/***************************************************************************************\
-** void AppendFile
-\***************************************************************************************/
+/*
+ * void AppendFile
+ */
 bool Append_Files(int Dest, const char *SourceFileName, bool erase,
                   long maxBytes) {
 
@@ -610,10 +610,10 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
 
 } //____ AppendFiles() ____//
 
-/*************************************************************************
-** Delay_AD_Log()
-** AD function with time delay.  Do AD_Log at 5 sec incrment.
-  **************************************************************************/
+/*
+ * Delay_AD_Log()
+ * AD function with time delay.  Do AD_Log at 5 sec incrment.
+ */
 void Delay_AD_Log(short Sec) {
   short i;
   long last, rem;
@@ -636,7 +636,7 @@ void Delay_AD_Log(short Sec) {
   /****************************************************************
   ** Free_Disk_Space
   **   Returns the free space in kBytes
-  ****************************************************************/
+ */
 long Free_Disk_Space() {
 
   long freeSpacekB;
@@ -650,18 +650,18 @@ long Free_Disk_Space() {
 
   return freeSpacekB;
 } //----Free_Disk_Space-----//
-/******************************************************************************\
-**	GetFileName
-**
-**	Search the C drive for specific "FileType" i.e. "DAT" or "SNT" or "LOG"
-** This function can return the "Lowest" filename of specified FileType for
-** Data transferring of the oldest file on the system. or "!Lowest" to see which
-** file name is most recent.
-**	"incIndex" will increment the filename by one if "!Lowest" is also true.
-** A long pointer "fcounter" will be pointed to the filename (8 digit number)
-** of which ever file the function is searching for.
-**
-\******************************************************************************/
+/*
+ * GetFileName
+ * 
+ * Search the C drive for specific "FileType" i.e. "DAT" or "SNT" or "LOG"
+ * This function can return the "Lowest" filename of specified FileType for
+ * Data transferring of the oldest file on the system. or "!Lowest" to see which
+ * file name is most recent.
+ * "incIndex" will increment the filename by one if "!Lowest" is also true.
+ * A long pointer "fcounter" will be pointed to the filename (8 digit number)
+ * of which ever file the function is searching for.
+ * 
+ */
 char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
                   const char *FileType) {
 
@@ -742,9 +742,9 @@ char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
   return dfname;
 
 } //____ GetNextDATFileName() ____//
-/******************************************************************************\
-** SaveParams
-\******************************************************************************/
+/*
+ * SaveParams
+ */
 bool SaveParams(const char *Command) {
   int paramfilehandle;
   int byteswritten;
@@ -775,11 +775,11 @@ bool SaveParams(const char *Command) {
 
   return true;
 }
-/***********************************************************************************************\
-** void parseparam(bool);
-** 	-Param1: if true load default.cfg settings file. if false, load
+/*
+ * void parseparam(bool);
+ * -Param1: if true load default.cfg settings file. if false, load
 system.cfg
-\***********************************************************************************************/
+ */
 void ParseStartupParams(bool DefaultSettings) {
 
   char string[5];
@@ -911,7 +911,7 @@ void ParseStartupParams(bool DefaultSettings) {
                VEEStoreShort(DETECTIONNUM_NAME, value);
                }
             break;
-      */
+ */
     case 'C':
     case 'c':
       if (value <= MIN_DUTYCYCLE)
@@ -1132,7 +1132,7 @@ void ParseStartupParams(bool DefaultSettings) {
     case 's':
       /*if(value<MPC.STARTUPS){
               value=MPC.STARTUPS+1;
-              }*/
+ */
       if (value > MAX_STARTUPS)
         value = MAX_STARTUPS;
       if (value != MPC.STARTMAX) {
@@ -1173,9 +1173,9 @@ void ParseStartupParams(bool DefaultSettings) {
   }
 
 } //____ parseparam() ____//
-/**************************************************************************************\
-** VEEStoreShort(char*)
-\**************************************************************************************/
+/*
+ * VEEStoreShort(char*)
+ */
 void VEEStoreShort(char *veename, short value) {
 
   char string[sizeof "00000"];
@@ -1185,10 +1185,10 @@ void VEEStoreShort(char *veename, short value) {
   VEEStoreStr(veename, string);
 
 } //____ VEEStoreShort() ____//
-/*********************************************************************************\
-** VEEPROM GetSettings     Read settings from VEE or use defaults if not
+/*
+ * VEEPROM GetSettings     Read settings from VEE or use defaults if not
 available
-\*********************************************************************************/
+ */
 void GetSettings(void) {
   char *p;
 
@@ -1216,7 +1216,7 @@ void GetSettings(void) {
           strncpy(MPC.LOCATION, p ? p : LOCATION_DEFAULT, sizeof(MPC.LOCATION));
           DBG1( flogf("LOCATION=%s (%s)\n", MPC.LOCATION, p ? "vee" : "def");
      cdrain();)
-          */
+ */
   p = VEEFetchData(STARTUPS_NAME).str;
   MPC.STARTUPS = atoi(p ? p : STARTUPS_DEFAULT);
   DBG1(flogf("STARTUPS=%d (%s)\n", MPC.STARTUPS, p ? "vee" : "def");)
@@ -1233,7 +1233,7 @@ void GetSettings(void) {
   /*
 if(MPC.STARTUPS>MPC.STARTMAX){
   //Hibernation Mode!
-  }*/
+ */
 
   //"I" 0-360 minutes
   p = VEEFetchData(DETECTIONINT_NAME).str;
@@ -1262,7 +1262,7 @@ if(MPC.STARTUPS>MPC.STARTMAX){
 p = VEEFetchData(HIBERNATE_NAME).str;
 MPC.HIBERNATE = atoi( p ? p : HIBERNATE_DEFAULT);
 DBG1(flogf("HIBERNATE=%u (%s)\n", MPC.HIBERNATE, p ? "vee" : "def");)
-*/
+ */
 
 #ifdef POWERLOGGING
   GetPowerSettings();

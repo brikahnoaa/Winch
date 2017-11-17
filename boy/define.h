@@ -84,7 +84,7 @@
    #define CTD(X)    X
 #else
    #define CTD(X)
-#endif*/
+ */
 
 // TIMING
 #ifdef TIMING
@@ -110,7 +110,7 @@
 #define BITSHIFT                                                               \
   11 // Crucial to ADS Timing of Program. explained in ads power consumption
      // calcation excel file
-/***************************************************
+/*
    10: 25.6seconds/file write 843.75 bytes/hour
    11: 51.2secs/file write    421.875bytes/hr
    12: 102.4secs/file         201.937bytes/hr
@@ -118,7 +118,7 @@
    14: 409.6                  52.734
    15: 819.2                  26.367
    16: 1638.4                 13.183
-*************************************************/
+ */
 #else
 #define PWR(X)
 #endif

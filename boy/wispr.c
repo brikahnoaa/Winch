@@ -1,5 +1,5 @@
 #include <common.h>
-#include <WISPR.h>
+#include <wispr.h>
 
 bool SendWISPRGPS = false;
 static int WISPRGPSSends;
@@ -30,11 +30,11 @@ static char wisprfile[] = "c:WISPRFRS.DAT";
 static char WisprString[64];
 
 bool WISPR_Status() { return WISPR_On; }
-/*************************************************************************\
-** void WISPRInit(short)
+/*
+ * void WISPRInit(short)
 Power is applied to the wispr board and after the program starts it waits
 for GPS time and location. That's when we send it.
-\*************************************************************************/
+ */
 void WISPRPower(bool power) {
   // must call OpenTUPort_WISPR first
   if (power) {
@@ -56,21 +56,21 @@ void WISPRPower(bool power) {
   }
 
 } //_____ WISPRInit() _____//
-/***************************************************************************\
-** void WISPR_Data()
-** Incoming WISPR ASCII Communication. Looks for certain commands starting with
-** '$' and ending with '*'
-** Return values:
-**    1: GPS
-**    2: DFP
-**    3: DXN
-**    4: DTX
-**    5: NGN
-**    6: FIN
-**    0: NULL
-**   -1: No Match
-**   -2: <MIN FREE SPACE
-\***************************************************************************/
+/*
+ * void WISPR_Data()
+ * Incoming WISPR ASCII Communication. Looks for certain commands starting with
+ * '$' and ending with '*'
+ * Return values:
+ * 1: GPS
+ * 2: DFP
+ * 3: DXN
+ * 4: DTX
+ * 5: NGN
+ * 6: FIN
+ * 0: NULL
+ * -1: No Match
+ * -2: <MIN FREE SPACE
+ */
 short WISPR_Data() {
   float returndouble;
   int i;
@@ -98,7 +98,7 @@ short WISPR_Data() {
            }
         //Calculate what minimum free space should be for given detint.
         }
-    */
+ */
   else if (strncmp(WisprString, "$DFP", 4) == 0) {
 
     flogf("\n\t|WISPR%d: %.2f%% Free Space", WISP.NUM, returndouble);
@@ -246,14 +246,14 @@ short WISPR_Data() {
   return 0;
 
 } //_____ WISPR_Data() _____//
-/*************************************************************************\
-** int WISPRDet()
+/*
+ * int WISPRDet()
 This is where we inquire about the total number of detections every so often.
 This function will call to the wispr board with max_detections. It first
 repsonds with a $DXN...* com line then lists each actual detection
 afterward with a $DTX...* com line. Each are up to ~60 bytes per line
 
-\*************************************************************************/
+ */
 void WISPRDet(int dtx) {
 
   if (dtx < 0)
@@ -272,10 +272,10 @@ void WISPRDet(int dtx) {
   Delayms(500);
 
 } //_____ WISPRDet() _____//
-/*************************************************************************\
-** int WISPRGPS()
+/*
+ * int WISPRGPS()
 This is where we send the GPS Time and Location to WISPR Board at startup
-\*************************************************************************/
+ */
 void WISPRGPS() {
 
   float minutes;
@@ -306,13 +306,13 @@ void WISPRGPS() {
   SendWISPRGPS = true;
 
 } //_____ WISPRGPS() _____//
-/*************************************************************************\
-** int WISPRGain()
+/*
+ * int WISPRGain()
 We can update the gain parameters for the WISPR Board.
 Might want to do this at the start up of WISPR Program when WISPR Requests
 for gain values.
 
-\*************************************************************************/
+ */
 void WISPRGain(short c) {
 
   if (c < 0 || c > 3)
@@ -325,9 +325,9 @@ void WISPRGain(short c) {
   Delayms(2);
 
 } //_____ WISPRGain() _____//
-/*************************************************************************\
-** int WISPRDFP()
-\*************************************************************************/
+/*
+ * int WISPRDFP()
+ */
 void WISPRDFP() {
 
   DBG0(flogf("\n\t|WISPRDFP(%d)", WISP.NUM);)
@@ -338,9 +338,9 @@ void WISPRDFP() {
   Delayms(250);
 
 } //_____ WISPRDFP() _____//
-/*************************************************************************\
-** int WISPRTFP()
-\*************************************************************************/
+/*
+ * int WISPRTFP()
+ */
 void WISPRTFP() {
 
   DBG0(flogf("\n\t|WISPRTFP(%d)", WISP.NUM);)
@@ -351,9 +351,9 @@ void WISPRTFP() {
   Delayms(250);
 
 } //_____ WISPRDFP() _____//
-/*************************************************************************\
-** int WISPRExit()
-\*************************************************************************/
+/*
+ * int WISPRExit()
+ */
 bool WISPRExit() {
 
   flogf("\n\t|WISPRExit()");
@@ -373,8 +373,8 @@ bool WISPRExit() {
     return false;
 
 } //_____ WISPRExit() _____//
-/*******************************************************************************\
-** char* GetWISPRInput()
+/*
+ * char* GetWISPRInput()
 1. Gets incoming serial data from ActivePAM on MPC
 2. If it is -1 it breaks and exits, once it sees a '*' it stops taking serial
 3. Look for the appropriate WISPR Command (DFP, EXI, DXN, DTX)
@@ -383,7 +383,7 @@ bool WISPRExit() {
 loop to get each detection in this same function
 6. Should return char* of DTX if we need to get each detection.
 
-\*******************************************************************************/
+ */
 char *GetWISPRInput(float *numchars) {
   // global WisprString;
   const char *asterisk;
@@ -456,14 +456,14 @@ char *GetWISPRInput(float *numchars) {
      *numchars = atof(strtok(WisprString+5, "*"));
 
      }
-     */
+ */
 
   return WisprString;
 
 } //_____ GetIRIDInput() _____//
   /***************************************************************************************
   ** void ChangeWISPR()
-  ****************************************************************************************/
+ */
 void ChangeWISPR(short wnum) {
 
   // Shut off WISPR
@@ -480,12 +480,12 @@ void ChangeWISPR(short wnum) {
   OpenTUPort_WISPR(true);
   WISPRPower(true);
 }
-/**********************************************************************************************
-** void GetWISPRSettings()
-**********************************************************************************************/
+/*
+ * void GetWISPRSettings()
+ */
 void GetWISPRSettings() {
   char *p;
-  /*****************WISPR PARAMETERS**************************************/
+ */
   p = VEEFetchData(DETECTIONMAX_NAME).str;
   WISP.DETMAX = atoi(p ? p : DETECTIONMAX_DEFAULT);
   DBG1(flogf("DETMAX=%u (%s)\n", WISP.DETMAX, p ? "vee" : "def");)
@@ -537,9 +537,9 @@ void GetWISPRSettings() {
   }
 
 } //____ GetWISPRSettings() ___//
-/***********************************************************************************************\
-** void WISPRSafeShutdown()
-\***********************************************************************************************/
+/*
+ * void WISPRSafeShutdown()
+ */
 void WISPRSafeShutdown() {
 
   int i;
@@ -564,9 +564,9 @@ void WISPRSafeShutdown() {
     return;
 
 } //___ WISPRSafeShutdown() ___//
-/***********************************************************************************************\
-** Void WISPRWriteFile()
-\***********************************************************************************************/
+/*
+ * Void WISPRWriteFile()
+ */
 void WISPRWriteFile(int uploadfilehandle) {
   char detfname[] = "c:00000000.dtx";
   int byteswritten;
@@ -590,7 +590,7 @@ void WISPRWriteFile(int uploadfilehandle) {
                strncat(buf, stringadd, 27*sizeof(char));
                }
             #endif
-            */
+ */
 
   } else {
     sprintf(WriteBuffer, "\nWISPR-OFF\n\0");
@@ -621,24 +621,24 @@ void WISPRWriteFile(int uploadfilehandle) {
   TotalDetections = 0;
 
 } //____ WISPRWriteFile() ____//
-/***********************************************************************************************\
-** float GetWISPRFreeSpace
-** Read "wisprfs.bat" file. return free space of current WISPR? ||  return free
+/*
+ * float GetWISPRFreeSpace
+ * Read "wisprfs.bat" file. return free space of current WISPR? ||  return free
 space of last wispr
-\***********************************************************************************************/
+ */
 float GetWISPRFreeSpace() {
 
   return WISPRFreeSpace;
 
 } //____ GetWISPRFreeSpace() ____//
-/*************AppendDetections ********************/
+/*
 void AppendDetections(char *DTXString, int FileDescriptor) {
   int i;
 
   DBG0(flogf("\nAppendDetections() dtxstring length: %lu", strlen(DTXString));)
   i = write(FileDescriptor, DTXString, strlen(DTXString));
 }
-/*************create dtx file*********************/
+/*
 void create_dtx_file(long fnum) {
   int filehandle;
   char SourceFileName[] = "c:00000000.dtx";
@@ -658,10 +658,10 @@ void create_dtx_file(long fnum) {
 
   Delayms(10);
 }
-/***********************************************************************************************\
-** GatherWISPRFreeSpace()
-** Only should come here upon MPC.STARTUPS==0 && WISPRNUMBER>1
-\***********************************************************************************************/
+/*
+ * GatherWISPRFreeSpace()
+ * Only should come here upon MPC.STARTUPS==0 && WISPRNUMBER>1
+ */
 void GatherWISPRFreeSpace() {
   short wret = 0, i, count = 0, wnum = 1;
   int byteswritten = 0;
@@ -756,11 +756,11 @@ void GatherWISPRFreeSpace() {
   VEEStoreShort(WISPRNUM_NAME, WISP.NUM);
 
 } //____GatherWISPRFreeSpace() ____//
-/***********************************************************************************************\
-** void UpdateWISPRFRS()
-**
-**    Write to file: WISPRFRS.DAT with the current wispr's free space
-\***********************************************************************************************/
+/*
+ * void UpdateWISPRFRS()
+ * 
+ * Write to file: WISPRFRS.DAT with the current wispr's free space
+ */
 void UpdateWISPRFRS() {
   // global *WisprString;
   int wisprfilehandle;
@@ -822,9 +822,9 @@ void UpdateWISPRFRS() {
   close(wisprfilehandle);
 
 } //____ UpdateWISPRFRS() ____//
-/****************************************************************************************************************\
-** void OpenTUPort_WISPR()
-\****************************************************************************************************************/
+/*
+ * void OpenTUPort_WISPR()
+ */
 void OpenTUPort_WISPR(bool on) {
   // global WisprStr
   int WisprNum;
@@ -898,8 +898,8 @@ void OpenTUPort_WISPR(bool on) {
   Delayms(100);
 }
 /*
-** bool WISPRExpectedReturn(short)
-*/
+ * bool WISPRExpectedReturn(short)
+ */
 bool WISPRExpectedReturn(short expected, bool reboot) {
 
   if (WISPR_Data() != expected) {

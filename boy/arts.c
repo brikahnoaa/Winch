@@ -60,7 +60,7 @@
  */
 
 #include <common.h>
-#include <lara.h> 
+#include <arts.h> 
 
 #define CUSTOM_SYPCR CustomSYPCR // Enable watch dog  HM 3/6/2014
 // WDT Watch Dog Timer definition

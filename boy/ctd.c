@@ -3,8 +3,8 @@
  * Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
  */
 #include <common.h>
-#include <CTD.h>
-#include <AntMod.h>
+#include <ctd.h>
+#include <antmod.h>
 
 extern SystemParameters MPC;
 extern SystemStatus LARA;

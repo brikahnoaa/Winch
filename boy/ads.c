@@ -40,8 +40,8 @@ averaged.
 transfer into the real power write time.
  */
 #include <common.h>
-#include <ADS.h>
-#include <Settings.h>
+#include <ads.h>
+#include <settings.h>
 
 IEV_C_PROTO(ADTimingRuptHandler);
 IEV_C_PROTO(ADSamplingRuptHandler);
@@ -100,12 +100,12 @@ void Reset_ADCounter() { ADCounter = 0; }
 void ADSFileName(long counter) {
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
 }
-/**********************************************************\
-** Void SetUpADS()
-** Set up AD to sample voltage and current usage.
-** Name the file name with 8-digit numeral as a counter
-** No need to calculate current upon Power off
-\**********************************************************/
+/*
+ * Void SetUpADS()
+ * Set up AD to sample voltage and current usage.
+ * Name the file name with 8-digit numeral as a counter
+ * No need to calculate current upon Power off
+ */
 ushort Setup_ADS(bool ads_on, long filecounter, ushort val) {
 
   ADSOn = ads_on;
@@ -126,7 +126,7 @@ ushort Setup_ADS(bool ads_on, long filecounter, ushort val) {
 } //_____ void SetUpADS() _____//
   /*********************************************************\
   ** Void OpenAvgFile()
-  **********************************************************/
+ */
 void Open_Avg_File(long counter) {
 
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
@@ -142,9 +142,9 @@ void Open_Avg_File(long counter) {
   Delayms(10);
 
 } //_____ void OpenAvgFile() _____//
-/************************************************\
-** Setup Acquisition
-\************************************************/
+/*
+ * Setup Acquisition
+ */
 void Setup_Acquisition(ushort BitShift) {
   // global ADSample
   double vref = VREF;
@@ -194,15 +194,15 @@ void Setup_Acquisition(ushort BitShift) {
   data = false;
 
 } //_____ SetupAcquistion() _____//
-/******************************************************************************\
-**	AD_Log
-** 1)Comes here from Main() if either data or data2 is true
-** 2)Checks both booleans and writes correct side of AD Buffer to file (doesn't
+/*
+ * AD_Log
+ * 1)Comes here from Main() if either data or data2 is true
+ * 2)Checks both booleans and writes correct side of AD Buffer to file (doesn't
 acutally
-** save file, rather averages each side of buffer and stores one averaged value
+ * save file, rather averages each side of buffer and stores one averaged value
 for set buffer period)
-** 3)Once both data booleans are false set PutInSleepMode=true
-\******************************************************************************/
+ * 3)Once both data booleans are false set PutInSleepMode=true
+ */
 void AD_Log(void) {
 
   ushort AveragedEnergy[3] = {0, 0, 0};
@@ -230,13 +230,13 @@ void AD_Log(void) {
 
   AD_Write(AveragedEnergy);
 } //_____ ADLog() _____//
-/**********************************************************\
-** Get_Voltage()
-\**********************************************************/
+/*
+ * Get_Voltage()
+ */
 float Get_Voltage() { return Voltage; } //____ Get_Voltage ____//
-/*******************************************************************************\
-** Voltage Now()
-\*******************************************************************************/
+/*
+ * Voltage Now()
+ */
 float Voltage_Now() {
   float volts = 0.0;
 
@@ -248,13 +248,13 @@ float Voltage_Now() {
   return volts;
 
 } //____ Voltage_Now() ____//
-/**********************************************************\
-** AD Write
-** Open file of Current averages, go to end of file and grab last averaged
+/*
+ * AD Write
+ * Open file of Current averages, go to end of file and grab last averaged
 reading.
-** This function will increment the variable ADCounter==FWT ~5minutes
-**
-\**********************************************************/
+ * This function will increment the variable ADCounter==FWT ~5minutes
+ * 
+ */
 void AD_Write(ushort *AveragedEnergy) {
 
   CLK(start_clock = clock();)
@@ -284,12 +284,12 @@ void AD_Write(ushort *AveragedEnergy) {
   Delayms(10);
 
 } //_____ AD_Write() _____//
-/******************************************************************************\
-** PowerMonitor
-** This function is called when the WriteInterval (WRTINT) is met.
-** With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
+/*
+ * PowerMonitor
+ * This function is called when the WriteInterval (WRTINT) is met.
+ * With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
 minutes)
-\******************************************************************************/
+ */
 float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   struct stat fileinfo;
   ulong DataCount = 0;
@@ -409,14 +409,14 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   return floater;
 
 } //_____ PowerMonitor() _____//
-/******************************************************************************\
-**	ADTimingRuptHandler Chore		Initiate conversion
-** 1) Makes sure QSM is running and repeats previous synchronization
-** 2) While ADRawHead is Less than the total buffer size, take sample and store
+/*
+ * ADTimingRuptHandler Chore		Initiate conversion
+ * 1) Makes sure QSM is running and repeats previous synchronization
+ * 2) While ADRawHead is Less than the total buffer size, take sample and store
 in buffer
-** 3) If equal to half, make sure on next system wake, to catch and write data
-** 4)
-\******************************************************************************/
+ * 3) If equal to half, make sure on next system wake, to catch and write data
+ * 4)
+ */
 IEV_C_FUNCT(ADTimingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
 {
 
@@ -448,9 +448,9 @@ IEV_C_FUNCT(ADTimingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
   }
 
 } //____ ADTimingRuptHandler() ____//
-/******************************************************************************\
-**	ADSamplingRuptHandler		Move raw QPSI data to main buffer
-\******************************************************************************/
+/*
+ * ADSamplingRuptHandler		Move raw QPSI data to main buffer
+ */
 IEV_C_FUNCT(
     ADSamplingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
 {
@@ -462,8 +462,8 @@ IEV_C_FUNCT(
 } //____ ADSamplingRuptHandler() ____//
 
 /*
-**
-*/
+ * 
+ */
 void GetPowerSettings() {
 
   char *p;

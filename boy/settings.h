@@ -1,8 +1,8 @@
-/******************************************************************************\
-** VEEPROM Settings Definitions
-**
-**
-\******************************************************************************/
+/*
+ * VEEPROM Settings Definitions
+ * 
+ * 
+ */
 void settings(void); // renamed main from pre-FAT32 code
 
 typedef struct // Used to access runtime settings

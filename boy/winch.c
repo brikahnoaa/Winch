@@ -1,5 +1,5 @@
 #include <common.h>
-#include <Winch.h>
+#include <winch.h>
 
 WINCHParameters NIGK;
 TUPort *NIGKPort;
@@ -12,8 +12,8 @@ extern SystemStatus LARA;
 
 WinchCalls WINCH;
 
-/*************************************************************************\
-\*************************************************************************/
+/*
+ */
 void WinchConsole() {
   char in;
   cprintf("\n\t|WinchConsole():");
@@ -36,8 +36,8 @@ void WinchConsole() {
 
 } //_____ Console_Data() _____//
 
-/*************************************************************\
-\*************************************************************/
+/*
+ */
 void AModem_Data(void) {
   char *inString; // Array for input command/response
   short inchar;
@@ -136,8 +136,8 @@ void AModem_Data(void) {
   return;
 
 } //____ AModem_Data() ____//
-/*************************************************************\
-\*************************************************************/
+/*
+ */
 ulong Winch_Ascend(void) {
   DBG0(flogf("\n%s|Winch_Ascend():", Time(NULL));)
 
@@ -147,8 +147,8 @@ ulong Winch_Ascend(void) {
   WINCH.ASCENTCALLS++;
   return (time(NULL) + (ulong)NIGK.DELAY);
 } //____ Ascend() ____//
-/*************************************************************\
-\*************************************************************/
+/*
+ */
 ulong Winch_Descend(void) {
   DBG0(flogf("\n%s|Winch_Descend():", Time(NULL));)
 
@@ -158,8 +158,8 @@ ulong Winch_Descend(void) {
   WINCH.DESCENTCALLS++;
   return (time(NULL) + (ulong)NIGK.DELAY); // why return time?
 } //____ Descend() ____//
-/*************************************************************\
-\*************************************************************/
+/*
+ */
 ulong Winch_Stop(void) {
   DBG0(flogf("\n%s|Winch_Stop():", Time(NULL));)
 
@@ -169,12 +169,12 @@ ulong Winch_Stop(void) {
   WINCH.STOPCALLS++;
   return (time(NULL) + (ulong)NIGK.DELAY);
 }
-/*************************************************************\
-** void Buoy(void)
-** A function call to the Buoy to get the status of equipment.
-** The return call through NIGKPort sends 2 bytes of data as the
-** response to the Buoy CommandWinch from the Deck Unit
-\*************************************************************/
+/*
+ * void Buoy(void)
+ * A function call to the Buoy to get the status of equipment.
+ * The return call through NIGKPort sends 2 bytes of data as the
+ * response to the Buoy CommandWinch from the Deck Unit
+ */
 void Buoy_Status(void) {
   char B_Status[3] = "00"; // Base return call
   DBG0(flogf("\n%s|Buoy Status:", Time(NULL));)
@@ -193,9 +193,9 @@ void Buoy_Status(void) {
   WINCH.BUOYRCV++;
 
 } //____ Buoy() ____//
-/****************************************************************************\
-** void OpenTUPort_NIGK(bool)
-\****************************************************************************/
+/*
+ * void OpenTUPort_NIGK(bool)
+ */
 void OpenTUPort_NIGK(bool on) {
   static bool once = true;
   short AModem_RX, AModem_TX;
@@ -230,9 +230,9 @@ void OpenTUPort_NIGK(bool on) {
   return;
 
 } //____ OpenTUPort_NIGK() ____//
-/****************************************************************************\
-** void GetWinchSettings()
-\****************************************************************************/
+/*
+ * void GetWinchSettings()
+ */
 void GetWinchSettings() {
   char *p;
 
@@ -268,9 +268,9 @@ void GetWinchSettings() {
   DBG1(uprintf("NIGK.RECOVERY=%u (%s)\n", NIGK.RECOVERY, p ? "vee" : "def");
       cdrain();)
 }
-/****************************************************************************\
-** void Winch_Monitor(int filehandle)
-\****************************************************************************/
+/*
+ * void Winch_Monitor(int filehandle)
+ */
 void Winch_Monitor(int filehandle) {
   // global WriteBuffer
   int byteswritten = 0;
