@@ -15,7 +15,7 @@ extern SeagliderParameters SEAG;
 
 extern SystemParameters MPC;
 
-WISPRParameters WISP;
+extern WISPRParameters WISP;
 
 // char* WISPRString;
 // short WISPRStringLength=64;

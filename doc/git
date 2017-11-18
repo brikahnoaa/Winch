@@ -22,9 +22,9 @@ Fri, Jan 13, 2017  9:06:27 AM
 .4 ssh. copy .ssh/id_rsa or
   ssh-keygen -t rsa -b 4096 -C "brian.kahn@noaa.gov"
   eval $(ssh-agent -s)
-  ssh-add ~/.ssh/id_rsa
-  clip < ~/.ssh/id_rsa.pub
+  ssh-add ~/.ssh/github_id_rsa
 # add to account on github
+  clip < ~/.ssh/github_id_rsa
   git --version
   ssh -T git@github.com
   git remote -v
@@ -33,7 +33,7 @@ vi ~/.ssh/config
 
 host github.com
  HostName github.com
- IdentityFile ~/.ssh/id_rsa_github
+ IdentityFile ~/.ssh/github_id_rsa
  User git
 
 .5 clone repo
@@ -90,7 +90,7 @@ vi ~/.ssh/config
 
 host github.com
  HostName github.com
- IdentityFile ~/.ssh/id_rsa_github
+ IdentityFile ~/.ssh/github_id_rsa
  User git
 
 .2 where cloned from?
@@ -194,6 +194,7 @@ git diff origin/master temp
 
 If your new temp branch looks good, you may want to update (e.g.) master to point to it:
 
+ ssh-add ~/.ssh/github_id_rsa
 . gitting around 
  $ git branch --unset-upstream # Remove a current tracking relationship 
  $ git branch --set-upstream-to origin/branchname
@@ -201,5 +202,6 @@ If your new temp branch looks good, you may want to update (e.g.) master to poin
  $ git push --all # push all tracking branches
  $ git pull –rebase
  $ git fetch origin; git rebase −p origin/develop  # better than pull
- $ git update-index --assume-unchanged file # for .mcp files
- $ git update-index --skip-worktree file
+ $ git update-index --assume-unchanged codewar/lara/lara.mcp
+ $ git update-index --skip-worktree codewar/lara/
+

@@ -1,12 +1,8 @@
+/* 
+ * arts.c
+ * Acoustic Real-Time Sensor ARTS
+ */
 /*
- * Long-term Acoustic Real-Time Sensor for Polar Areas (LARA)
- * 
- * LARA.c for control of the NiGK underwater winch and necessary acoustic and
- * physical sensors.
- * 
- * September 2016  Alex Turpin
- * ***************************************************************************
- * PLATFORM.h:  
  * short PHASE; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent
  * short BUOYMODE;  // 0=stopped 1=ascend 2=descend 3=careful ascent
  *        At depth and no velocity. Phase 1 && BuoyMode 0
@@ -14,28 +10,6 @@
  *        On surface Phase 3 && BuoyMode 0
  *        Descending Phase 4 && BuoyMode 2
  * 
- * Console(char)
- *  LARA.PHASE case 1:
- *    case 'i': WISPRPower(true);
- *    case 'e': WISPRSafeShutdown();
- *    case 'd': WISPRDet(c);
- *    case 'f': WISPRDFP();
- *    case 'w': ChangeWISPR(c);
- *    case 'p': LARA.PHASE = c;
- *    case 'x': LARA.ON = false;
- *    case '2': LARA.DATA = LARA.DATA ? false : true;
- *  LARA.PHASE case 2: case 4:
- *    case 'w': WinchConsole();
- *    case 'p': LARA.PHASE = c;
- *    case 't': CTD_Sample();
- *    case 'x': LARA.ON = false; LARA.DATA = LARA.DATA ? false : true;
- *    case 'a': PrintSystemStatus();
- *    case 's': LARA.SURFACED = true;
- *  LARA.PHASE case 3:
- *    case 'x': LARA.ON = false; // exit from GPSIRID
- *    case 'p': LARA.PHASE = c;
- * *
- *
  *WISPR BOARD
  * * TPU 6    27 PAM1 WISPR TX
  * * TPU 7    28 PAM1 WISPR RX
@@ -61,68 +35,33 @@
 
 #include <common.h>
 #include <arts.h> 
+#include <wispr.h>
 
-#define CUSTOM_SYPCR CustomSYPCR // Enable watch dog  HM 3/6/2014
+extern SystemParameters MPC;
+
+// Enable watch dog  HM 3/6/2014
 // WDT Watch Dog Timer definition
 // Not sure if this watchdog is even working You have to define
+#define CUSTOM_SYPCR CustomSYPCR
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 
-//#define LPMODE    FullStop          //NOT USING SLEEP MODE CURRENTLY// Low
-//power mode
-
-// VEEPROM Parameter Structures
-extern SystemParameters MPC;
-#ifdef WISPR
-extern WISPRParameters WISP;
-extern bool WISPR_On;
-#endif
-#ifdef IRIDIUM
-extern IridiumParameters IRID;
-#endif
-#ifdef POWERLOGGING
-extern PowerParameters ADS;
-#endif
-#ifdef NIGKWINCH
-extern WINCHParameters NIGK;
-extern WinchCalls WINCH;
-#endif
-#ifdef CTDSENSOR
 extern CTDParameters CTD;
-#endif
+extern IridiumParameters IRID;
+extern PowerParameters ADS;
+extern SystemStatus LARA;
+extern WINCHParameters NIGK;
+extern WISPRParameters WISP;
+extern WinchCalls WINCH;
 
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
-extern SystemStatus LARA;
 ulong PwrOff, PwrOn;
 
 // Define unused pins here
 uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
 
-void shutdown();
-void InitializeLARA(ulong *);
-
-void PhaseOne();
-void PhaseTwo();
-void PhaseThree();
-void PhaseFour();
-void PhaseFive();
-void Console(char);
-bool CheckTime(ulong, short, short);
-ulong WriteFile(ulong);
-static void IRQ2_ISR(void);
-static void IRQ3_ISR(void);
-static void IRQ4_ISR(void);
-static void IRQ5_ISR(void);
-void WaitForWinch(short);
-void SleepUntilWoken();
-bool CurrentWarning();
-
 bool PutInSleepMode = false;
-static char uploadfile[] =
-    "c:00000000.dat"; // 12.9.2015 Can this be a static char?
-static char returnstr[BUFSZ];
-// extern WriteBuffer[]; in MPC_Global.h
-char WriteBuffer[BUFSZ];
+static char uploadfile[] = "c:00000000.dat"; 
 
 /*
  * Main
@@ -130,19 +69,12 @@ char WriteBuffer[BUFSZ];
 void main() {
 
   // Platform Specific Initialization Function. 
-  // PwrOn is the start time of PowerLogging
-  InitializeLARA(&PwrOn);
+  InitializeLARA();
 
-  // Running WISPR Always! //Rebooting TUPort post-Iridium
-  // ?? why is this not InitializeLARA() or PhaseOne?
-  if (WISP.DUTYCYCL > 0)
-    OpenTUPort_WISPR(true);
-  if (WISP.DUTYCYCL == 100)
-    WISPRPower(true);
-
-  // PHASE 5:  Deployment
-  if (LARA.PHASE==5) {
-    PhaseFive();
+  // look at files and movement to figure out current phase
+  // PHASE 0:  Deployment
+  if (LARA.PHASE==0) {
+    PhaseZero();
   }
 
   // Main Loop. Always running unless interrupted by User input of 'x' 
@@ -1328,7 +1260,7 @@ ulong WriteFile(ulong TotalSeconds) {
 
 //*** CTD File Upload ***
 #ifdef CTDSENSOR
-  if (CTD.UPLOAD || TotalSeconds == 0) {
+  if (ctd.UPLOAD || TotalSeconds == 0) {
     sprintf(&detfname[2], "%08ld.ctd", MPC.FILENUM);
     Delayms(50);
     DBG1(flogf("\n\t|WriteFile:%ld ctd file: %s", MPC.FILENUM, detfname);)
@@ -1373,18 +1305,18 @@ ulong WriteFile(ulong TotalSeconds) {
  * PrintSystemStatus()
  */
 char *PrintSystemStatus() {
-  // global returnstr
-  sprintf(returnstr, "LARA: "
+  // global stringout
+  sprintf(stringout, "LARA: "
                         "%d%d%d%d\nMOORDEPTH:%5.2f\nCURRENTDEPTH:%5."
                         "2f\nTOPDEPTH:%5.2f\nTARGETDPETH:%d\nAVG.VEL:%5."
                         "2f\nCTDSAMPLES:%d\n\0",
           LARA.DATA ? 1 : 0, LARA.SURFACED ? 1 : 0, LARA.PHASE, LARA.BUOYMODE,
           LARA.MOORDEPTH, LARA.DEPTH, LARA.TOPDEPTH, LARA.TDEPTH, LARA.AVGVEL,
           LARA.CTDSAMPLES);
-  flogf("\n%s", returnstr);
+  flogf("\n%s", stringout);
   Delayms(100);
 
-  return returnstr;
+  return stringout;
 }
 /*
  * WaitForWinch
@@ -1521,3 +1453,4 @@ bool CurrentWarning() {
   flogf("\n\t|CurrentWarning(): a=%5.2f, b=%5.2f", a, b);
   return false;
 }
+

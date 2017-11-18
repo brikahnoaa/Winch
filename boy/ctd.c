@@ -4,16 +4,10 @@
  */
 #include <common.h>
 #include <ctd.h>
-#include <antmod.h>
 
 extern SystemParameters MPC;
 extern SystemStatus LARA;
-struct CTDParameters{
-  bool syncMode;
-  short delay;          //Delay in seconds between polled samples
-  TUPort port;
-} ctd;
-
+extern CTDParameters ctd;
 
 /* 
  */

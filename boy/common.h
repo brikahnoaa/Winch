@@ -1,13 +1,12 @@
 #include <cfxpico.h> // Persistor PicoDOS Definitions
+
 #include <assert.h>
 #include <cfxad.h>
 #include <ctype.h>
 #include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
 #include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
-#include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
 #include <errno.h>
 #include <fcntl.h> // PicoDOS POSIX-like File Access Definitions
-#include <float.h>
 #include <float.h>
 #include <limits.h>
 #include <locale.h>
@@ -26,6 +25,6 @@
 
 #include <define.h> // common defines
 #include <global.h> // common externals
+#include <utils.h> // shared procs, SW
 #include <MPC_Global.h> // pins and HW
 #include <MPC.h> // shared procs, HW
-#include <utils.h> // shared procs, SW

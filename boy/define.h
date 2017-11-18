@@ -37,6 +37,7 @@
 #else
 #define WISPRNUMBER 4
 #endif
+
 #define MAX_DETECTIONS 20
 #define MIN_DUTYCYCLE 0
 #define MAX_DUTYCYCLE 100
@@ -101,15 +102,16 @@
 #define BATTERYLOG
 
 #define POWERERROR 1.02
-#define MIN_BATTERY_VOLTAGE                                                    \
-  11.0 // volts or 11.0 for 15V Battery System of Seaglider
-#define INITIAL_BATTERY_CAPACITY 5000 // kiloJoules
+// volts or 11.0 for 15V Battery System of Seaglider
+#define MIN_BATTERY_VOLTAGE 11.0 
+// kiloJoules
+#define INITIAL_BATTERY_CAPACITY 5000 
 #define MINIMUM_BATTERY_CAPACITY INITIAL_BATTERY_CAPACITY * 0.1
 
 #define PWR(X) X
-#define BITSHIFT                                                               \
-  11 // Crucial to ADS Timing of Program. explained in ads power consumption
-     // calcation excel file
+#define BITSHIFT 11
+// Crucial to ADS Timing of Program. explained in ads power consumption
+// calculation excel file
 /*
    10: 25.6seconds/file write 843.75 bytes/hour
    11: 51.2secs/file write    421.875bytes/hr
@@ -121,7 +123,7 @@
  */
 #else
 #define PWR(X)
-#endif
+#endif // #ifdef POWERLOGGING
 
 #define Delayms(X) RTCDelayMicroSeconds((long) 1000 * (long) X)
 
