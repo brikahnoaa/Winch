@@ -1,7 +1,3 @@
-// global externals
-extern char scratch[], stringin[], stringout[];
-extern char WriteBuffer[];
-
 // static global - seen only in file where declared
 // static local - retains value between func calls
 
@@ -10,17 +6,30 @@ extern char WriteBuffer[];
  * SYSTEM PARAMETER STRUCTURES, globals
  */
 
+
+/* test */
+#include <stdio.h>
+#include <stdlib.h>
+typedef char bool;              // pico thing
+typedef int TUPort;
+#define false 0
+#define true  1
+/* test */
+
+
+#include<define.h>
+
 // ant
-typedef struct {
-  bool surfaced; // Set to true when Antenna is estimated to be above water
-  short ctdPos; // depth of CTD when floating
-  char gpsLong[17];     // 123:45.6789 W
-  char gpsLat[17];      // 45:67.8900 N
-  TUPort port;
+typedef struct AntennaData {
+  bool surfaced;        // Set to true when Antenna is floating
+  float ctdPos;         // depth of CTD when floating
+  char gpsLong[20];     // 123:45.6789 W
+  char gpsLat[20];      // 45:67.8900 N
+  TUPort *port;
 } AntennaData;
 
 // System Parameters//Always defined // used as MPC.name
-typedef struct {
+typedef struct BuoyData {
   char progname[20]; // added HM
   char projID[6];    // rudicsland
   char pltfrmID[6];  // rudicsland
@@ -35,19 +44,19 @@ typedef struct {
   float depth;     // Most recent depth measurement from sbe16
   float moorDepth; // Depth at beginning of LARA.PHASE==1. Averaged Samples
   float avgVel;
-  TUPort port; // port for antenna module and ctd
-} BoyData;
+  TUPort *port; // port for antenna module and ctd
+} BuoyData;
 
 // ctd
-typedef struct {
+typedef struct CtdData {
   bool syncMode;  // off = polled
   bool pending;   // polled request pending
   short delay;    // Delay in seconds between polled samples
-  TUPort port;    // same as ant.port
+  TUPort *port;    // same as ant.port
 } CtdData;
 
 // IRIDIUM Structure Parameters
-typedef struct {
+typedef struct IridiumData {
   char phone[14]; // Rudics phone number 13 char long
   short minSigQ;  // Min Irid signal quality to proceed
   short maxCalls; // Maximum Iridium calls per session
@@ -59,27 +68,36 @@ typedef struct {
   short callMode; // 0==call on Dataxinterval, 1== call at set hour everyday.
 } IridiumData;
 
-typedef struct {
+typedef struct PowerData {
   char batCap[9];
   short batLog;    // t logging change in battery capacity
   char minVolt[6]; //-v %.2f  minimum system voltage
 } PowerData;
 
-typedef struct {
-  short gain; //-g 0-3
-  // short    MODE;   //-M 1-5 in WISPR Start Script
-  short num;    // Depends on the number of WISPR Boards installed
-  short detMax; // Maximum Number of Detections to return
-  short detNum; // Number of detections per one call to initiate #REALTIME call
-                // to land.
-  short dutycycl; // Duty cycle of recorder during one detection interval
-  TUPort port;
-} WisprData;
-
-typedef struct {
-  short delay; // seconds after TUTxAcousticModem before action
-  short rrate;  // Velocity in meters/minute of the rise (ascent) rate
-  short frate;  // Velocity in Meters/minute of the fall (descent) rate
-  TUPort port;
+typedef struct WinchData {
+  float delay; // seconds after TUTxAcousticModem before action
+  float rrate;  // Velocity in meters/minute of the rise (ascent) rate
+  float frate;  // Velocity in Meters/minute of the fall (descent) rate
+  TUPort *port;
 } WinchData;
 
+typedef struct WisprData {
+  short gain; //-g 0-3
+  short num;    // number of WISPR Boards installed
+  short detMax; // Maximum Number of Detections to return
+  short detNum; // Number of detections per one call to initiate #REALTIME call
+  short dutycycl; // Duty cycle of recorder during one detection interval
+  TUPort *port;
+} WisprData;
+
+// global externals
+extern char scratch[], stringin[], stringout[];
+extern char WriteBuffer[];
+
+extern AntennaData ant;
+extern CtdData ctd;
+extern IridiumData irid;
+extern PowerData ads;
+extern BuoyData boy;
+extern WinchData winch;
+extern WisprData wisp;
