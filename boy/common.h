@@ -26,5 +26,4 @@
 #include <define.h> // common defines
 #include <global.h> // common externals
 #include <utils.h> // shared procs, SW
-#include <MPC_Global.h> // pins and HW
-#include <MPC.h> // shared procs, HW
+#include <mpc.h> // shared procs, HW

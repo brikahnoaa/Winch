@@ -7,6 +7,7 @@
 #define PITRATE 1 // 1=51ms cycle, 2=102ms,etc..... @ 100us. 250=25ms.
 #define PITPERIOD .051 // represents 51ms
 
+void Delay_AD_Log(short);
 void Setup_Acquisition(ushort);
 void AD_Write(ushort *);
 void AD_Log(void);

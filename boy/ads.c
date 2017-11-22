@@ -487,3 +487,31 @@ void GetPowerSettings() {
   ADS.BATLOG = atoi(p ? p : BATTERYLOGGER_DEFAULT);
   DBG1(flogf("BATLOG=%u (%s)\n", ADS.BATLOG, p ? "vee" : "def"); )
 }
+
+/*
+ * Delay_AD_Log()
+ * AD function with time delay.  Do AD_Log at 5 sec incrment.
+ * number of seconds for delay while watching Power
+ * Logging & Tickling Watch Dog Timer
+ */
+void Delay_AD_Log(short Sec) {
+  short i;
+  long last, rem;
+  DBG1(flogf( " {%d} ", Sec );)
+  cdrain();
+  last = Sec / 5;
+  rem = Sec - last * 5;
+
+  TickleSWSR(); // another reprieve
+  for (i = 0; i < last; i++) {
+
+    AD_Check();
+    Delayms(5000);
+  }
+  AD_Check();
+  Delayms(rem * 1000);
+  TickleSWSR();                         // another reprieve
+
+} //Delay_AD_Log()
+
+

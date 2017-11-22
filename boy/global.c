@@ -3,11 +3,10 @@
 char scratch[BUFSZ], stringin[BUFSZ], stringout[BUFSZ];
 char WriteBuffer[BUFSZ];
 
-CTDParameters ctd;
-IridiumParameters IRID;
-PowerParameters ADS;
-SystemParameters MPC;
-SystemStatus LARA;
-WinchCalls WINCH;
-WINCHParameters NIGK;
-WISPRParameters WISP;
+AntData ant;
+CtdData ctd;
+IridiumData irid;
+PowerData ads;
+BoyData boy;
+WinchData winch;
+WisprData wisp;

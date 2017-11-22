@@ -1,0 +1,19 @@
+Mon, Nov 20, 2017  9:13:27 AM
+. boot
+initHW, orient, settings, deploy if new, write status
+.. orient
+normal is on deck
+reboot? deduce phase (0-4)
+.. settings
+default.ini, mission.ini, control.ini, VAR=
+  compile      deploy       runtime
+.. deploy
+below 5m, steady, 2min. 
+set baseline moor depth for ant & boy, temp.
+rise
+set gps, time, temp
+helo
+down
+status
+.. status
+date time power antStatus

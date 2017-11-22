@@ -71,3 +71,21 @@ int GetResponse(TUPort *port, char *out, int wait, char *in) {
   }
   len = GetStringWait( port, wait, in );
   return len;
+
+/* printsafe() * print a mix of ascii, non-ascii
+ */
+void printsafe (long l, uchar *b) {
+  long i;
+  uchar c;
+  cprintf("\n%s+%ld''", Time(NULL), l);
+  for (i=0L; i<l; i++) {
+    c=b[i];
+    if ((c<32)||(c>126)) cprintf(" x%02X ", c);
+    else cprintf("%c", c);
+    if (c=='\n') cprintf("\n");
+  }
+  cprintf("''\n");
+  cdrain();
+} // printsafe
+
+

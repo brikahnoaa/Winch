@@ -3,15 +3,6 @@
  * 
  * 
  */
-void settings(void); // renamed main from pre-FAT32 code
-
-typedef struct // Used to access runtime settings
-{
-  char *optName;    // VEE name for lookup
-  char *optDefault; // default value
-  char *optDesc;    // detailed description text
-  char *optCurrent; // current value
-} Settings;
 
 #define PROG_NAME "MPC.PROGNAME"
 #define PROG_DEFAULT "LARA"

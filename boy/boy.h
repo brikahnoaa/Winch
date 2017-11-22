@@ -1,8 +1,9 @@
-void PhaseOne();
-void PhaseTwo();
-void PhaseThree();
-void PhaseFour();
-void PhaseFive();
+void phaseZero();
+void phaseOne();
+void phaseTwo();
+void phaseThree();
+void phaseFour();
+void phaseFive();
 void Console(char);
 bool CheckTime(ulong, short, short);
 ulong WriteFile(ulong);
@@ -15,9 +16,7 @@ void SleepUntilWoken();
 bool CurrentWarning();
 
 void shutdown();
-void InitializeLARA(ulong *);
+void inithw(ulong *);
 
 char *PrintSystemStatus(void);
 int Incoming_Data();
-void LARA_Recovery();
-
