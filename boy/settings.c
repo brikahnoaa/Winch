@@ -1,144 +1,80 @@
-// settings and initial values
-// 
-// global setiNode *settings = linked list of name, ptr, type, value
-// scan it for name when updating a setting
-
-/* test */
-#include <stdio.h>
-#include <stdlib.h>
-typedef char bool;              // pico thing
-#include <string.h>
-void testSettings();
-void main(){ testSettings(); }
-/* test */
-
-/* test
-#include <common.h>
-#include <settings.h>
+// settings 
+/* 
+ * static setVar settings[] = array of {shortname, longname, ptr, type}
+ * scan it for name when updating a setting
+ * { "dh", "boy.depth", &boy.depth, 'f'},
  */
+
+#include <common.h>
 #include <global.h>
-
-typedef struct setiNode {
-  struct setiNode *next;
-  char *shortName;
-  char *longName;
-  void *varPtr;
-  char typeCode;                // i, s, l, f, c
-} setiNode;
-
-setiNode *settings = NULL;
-
-setiNode *settingPush(
-    setiNode *head,
-    char *shortName,
-    char *longName,
-    void *varPtr,
-    char typeCode);
-void settingUpdate( setiNode *s, char *valueStr);
+#include <settings.h>
 
 /*
- * create a new setiNode at head of (global) settings linklist
- * settings=settingPush(settings, "ti", "testi", &test.i, 'i', "11");
- * :: return new head
+ * try to use first,last char for shortname
+ * use variable name for longname
+ * &ptr can be any extern var or struct component
+ * type := bool char* int float long short
  */
-setiNode *settingPush(  
-    setiNode *head,
-    char *shortName,
-    char *longName,
-    void *varPtr,
-    char typeCode) {
-  setiNode *s;
-  s=malloc(sizeof(setiNode));   // never freed
-  s->shortName=shortName;
-  s->longName=longName;
-  s->varPtr=varPtr;
-  s->typeCode=typeCode;
-  s->next=head;
-  return s;
-} // settingPush
+static setVar settings[] = {
+  { "pD", "boy.platformID", &boy.platformID, 'c'},
+  { "fm", "boy.filenum", &boy.filenum, 'f'},
+  { "ms", "boy.maxStarts", &boy.maxStarts, 's'},
+  { "on", "boy.on", &boy.on, 'b'},
+  { "pD", "boy.projID", &boy.projID, 'c'},
+  { "", "", NULL, 0},
+};
+
+static void settingUpdate( setVar *s, char *value );
 
 /*
  * input line is short or long name, =, value
- * find setiNode with name and set value
+ * find setVar with name and set value
  * :: changes str
  */
-int settingRead(setiNode *s, char *str){
+bool settingString(char *str){
+  // global settings
+  setVar *s = settings;
   char *name, *val;
   //
   name=strtok(str, "=");
   val=strtok(NULL, "=");     // rest of string
-  while (s) {               // scan settings list
-    if (strstr(name, s->shortName) || strstr(name, s->longName)) {
+  // find matching name
+  while (s->varPtr != NULL) {
+    if (strcmp(name, s->shortName)==0 || strcmp(name, s->longName)==0) {
       settingUpdate(s, val);
-      return(0);
+      return true;
     }
-    s=s->next;
+    s++;
   }
-  return 1;                 // name not found
+  return false;                 // name not found
 }
 
 /*
- * convert valueStr to typeCode and poke into varPtr
+ * convert value to typeCode and poke into varPtr
  * used by settingPush and settingRead
  */
-void settingUpdate( setiNode *s, char *valueStr) {
+void settingUpdate(setVar *s, char *value ) {
   void *varPtr=s->varPtr;
+  //
   switch (s->typeCode) {
   case 'b':     // bool is a char
-    *(bool*)varPtr=(bool)atoi(valueStr);
+    *(bool*)varPtr=(bool)atoi(value);
     break;
   case 'c':
-    strcpy((char*)varPtr, valueStr);
+    strcpy((char*)varPtr, value);
     break;
   case 'f':
-    *(float*)varPtr=atof(valueStr);
+    *(float*)varPtr=atof(value);
     break;
   case 'i':
-    *(int*)varPtr=atoi(valueStr);
+    *(int*)varPtr=atoi(value);
     break;
   case 'l':
-    *(long*)varPtr=(long)atoi(valueStr);
+    *(long*)varPtr=(long)atoi(value);
     break;
   case 's':
-    *(short*)varPtr=(short)atoi(valueStr);
+    *(short*)varPtr=(short)atoi(value);
     break;
   }
 } // settingUpdate
 
-/*
- * used during devo test
- */
-void testSettings(){
-  struct {bool b; int i; short int s; float f; char c[8];
-    } test = {0, 1, 2, 3.0, "4"};
-  char str[32];
-  printf ( "%d, %hd, %.1f, %s\n", test.i, test.s, test.f, test.c );
-  settings=settingPush(settings, 
-    "tf", "test.f", &test.f, 'f');
-  settings=settingPush(settings, 
-    "tc", "test.c", &test.c, 'c');
-  settings=settingPush(settings, 
-    "ti", "test.i", &test.i, 'i');
-  settings=settingPush(settings, 
-    "ts", "test.s", &test.s, 's');
-  settings=settingPush(settings, 
-    "tb", "test.b", &test.b, 'b');
-  // update
-  settingRead(settings, strcpy( str, "test.s=22"));
-  settingRead(settings, strcpy( str, "tc=abc def"));
-  printf ( "%d, %hd, %.1f, %s\n", test.i, test.s, test.f, test.c );
-}
-
-/*
- * set up all the possible settings here
- * reading from files or download is only for updates
- * s=settingPush(s,    // description
- *   "ti", "test.i", &test.i, 'i', "11");
- * :: return setting linklist
- */
-setiNode *initSettings() {
-  setiNode *s=NULL;
-  s=settingPush(s,    // init value is a sanity check?
-    "gg", "gpsLong", &ant.gpsLong, 'c');
-  return s;
-} // initSettings

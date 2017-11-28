@@ -95,9 +95,9 @@ extern char scratch[], stringin[], stringout[];
 extern char WriteBuffer[];
 
 extern AntennaData ant;
+extern BuoyData boy;
 extern CtdData ctd;
 extern IridiumData irid;
-extern PowerData ads;
-extern BuoyData boy;
+extern PowerData power;     // was ads
 extern WinchData winch;
 extern WisprData wisp;
