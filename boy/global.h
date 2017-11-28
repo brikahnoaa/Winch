@@ -6,18 +6,7 @@
  * SYSTEM PARAMETER STRUCTURES, globals
  */
 
-
-/* test */
-#include <stdio.h>
-#include <stdlib.h>
-typedef char bool;              // pico thing
-typedef int TUPort;
-#define false 0
-#define true  1
-/* test */
-
-
-#include<define.h>
+#define BUFSZ 1024
 
 // ant
 typedef struct AntennaData {
@@ -30,16 +19,15 @@ typedef struct AntennaData {
 
 // System Parameters//Always defined // used as MPC.name
 typedef struct BuoyData {
-  char progname[20]; // added HM
-  char projID[6];    // rudicsland
-  char pltfrmID[6];  // rudicsland
-  long filenum; // current number for filename ####.dat ####.log
+  char programName[20]; // added HM
+  char projectID[6];    // rudicsland
+  char platformID[6];  // rudicsland
+  long filenumber; // current number for filename ####.dat ####.log
   short starts;
   short maxStarts; //
-  short detInt;   //-D      //Minutes   //WISPR DET INTERVAL
   short dataInt; // VEE:DATAXINTERVAL_NAME
   short phase; // 1=WISPR, 2=Ascent, 3=Surface, 4=Descent, 5=deployment
-  short phaseStart; // time this phase started
+  short phaseStartTime; // time this phase started
   bool on;       // While "ON", continue running program
   float depth;     // Most recent depth measurement from sbe16
   float moorDepth; // Depth at beginning of LARA.PHASE==1. Averaged Samples
@@ -84,6 +72,7 @@ typedef struct WinchData {
 typedef struct WisprData {
   short gain; //-g 0-3
   short num;    // number of WISPR Boards installed
+  short detInt;   //-D      //Minutes   //WISPR DET INTERVAL
   short detMax; // Maximum Number of Detections to return
   short detNum; // Number of detections per one call to initiate #REALTIME call
   short dutycycl; // Duty cycle of recorder during one detection interval

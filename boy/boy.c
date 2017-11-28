@@ -1,9 +1,9 @@
 /* 
- * arts.c
- * Acoustic Real-Time Sensor ARTS
+ * boy.c
+ * Acoustic Real-Time Sensor ARTS, aka LARA
  */
 /*
- * short PHASE; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent
+ * short phase; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent
  * short BUOYMODE;  // 0=stopped 1=ascend 2=descend 3=careful ascent
  *        At depth and no velocity. phase 1 && BuoyMode 0
  *        Ascending phase 2 && BuoyMode 1
@@ -34,7 +34,7 @@
  */
 
 #include <common.h>
-#include <arts.h> 
+#include <boy.h> 
 #include <wispr.h>
 
 extern SystemParameters MPC;
@@ -69,28 +69,28 @@ void main() {
 
   initHW(&ant.port, &ctd.port, &winch.port, &wispr.port);
   setup(&boy);
-  // PHASE 0:  Deployment
-  if (boy.PHASE==0) {
-    phaseZero();
+  // phase 0:  Deployment
+  if (boy.phase==0) {
+    phase0();
   }
 
   while (boy.on) {
     switch (boy.phase) {
-    // PHASE 1: Recording WISPR
+    // phase 1: Recording WISPR
     case 1:
-      phaseOne();
+      phase1();
       break;
-    // PHASE 2: Ascend buoy
+    // phase 2: Ascend buoy
     case 2:
-      phaseTwo();
+      phase2();
       break;
-    // PHASE 3: Call into Satellite
+    // phase 3: Call into Satellite
     case 3:
-      phaseThree();
+      phase3();
       break;
-    // PHASE 4:  Descend buoy
+    // phase 4:  Descend buoy
     case 4:
-      phaseFour();
+      phase4();
       break;
     }
   } // while boy.on
@@ -148,13 +148,13 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
   WINCH.BUOYRCV = 0;
   WINCH.WINCHCALLS = 0;
   // boy Struct Init
-  boy.PHASE = 0; // Decided Below
+  boy.phase = 0; // Decided Below
   boy.DATA = false;
   boy.ON = true;
   boy.BUOYMODE = 0;     // Also Decided Below
   boy.SURFACED = false; // Decided Below
-  boy.DEPTH = 0;        // Received from first CTD
-  boy.MOORDEPTH = 0;    // Eventually init
+  boy.depth = 0;        // Received from first CTD
+  boy.moorDepth = 0;    // Eventually init
   boy.TOPDEPTH = 0; // depth at start of descent // Eventually Init
   boy.TDEPTH = 0;       // Decided from Param file
   boy.AVGVEL = 0;
@@ -221,7 +221,7 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
     boy.RESTART = false;
     ParseStartupParams(false);
     boy.BUOYMODE = 0;
-    boy.PHASE = 5; // deploy phase
+    boy.phase = 5; // deploy phase
     boy.SURFACED = false;
     Make_Directory("SNT");
     Make_Directory("CTD");
@@ -238,7 +238,7 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
   // Startups>0 Go to default callmode @ callhour.
   else {
     boy.RESTART = true;
-    boy.PHASE = 0; // phase 0 when finding the winch status and ctd position as
+    boy.phase = 0; // phase 0 when finding the winch status and ctd position as
                     // to place the Buoy in the proper phase
     // Get previous call mode
     prevMode = IRID.CALLMODE;
@@ -264,18 +264,18 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
         flogf(
             "\n\t|Ascending Velocity Calculated. phase 2 && BuoyMode 1"); // Ascending
         boy.BUOYMODE = 1;
-        boy.PHASE = 2;
+        boy.phase = 2;
       } else if (velocity > 0.5) { // Descending
         flogf("\n\t|Descending Velocity Calculated. phase 4 && BuoyMode 2");
-        boy.PHASE = 4;
+        boy.phase = 4;
         boy.BUOYMODE = 2;
       } else {
         flogf(
             "\n\t|At depth and no velocity. phase 1 && BuoyMode 0"); // Stationary
                                                                      // at depth
-        boy.PHASE = 1;
+        boy.phase = 1;
         boy.BUOYMODE = 0;
-        boy.MOORDEPTH = boy.DEPTH;
+        boy.moorDepth = boy.depth;
         CheckTime(prevTime, prevMode, hour);
       }
     } // depth> TD
@@ -288,17 +288,17 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
       //   This skips the ascent call in phase two
       if (prevTime != 0) {
         if (CheckTime(prevTime, prevMode, hour))
-          boy.PHASE = 3;
+          boy.phase = 3;
         else
-          boy.PHASE = 4;
+          boy.phase = 4;
       } else
-        boy.PHASE = 4;
+        boy.phase = 4;
     }
 
     PrintSystemStatus();
 
-    if (boy.PHASE == 0)
-      boy.PHASE = 1;
+    if (boy.phase == 0)
+      boy.phase = 1;
   }
 
   boy.TDEPTH = NIGK.TDEPTH;
@@ -357,18 +357,18 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
 
 } // InitializeAUH() //
 /*
- * phaseOne
+ * phase1
  * The initial recording and detecting phase while ICE housing is at/near winch.
  */
-void phaseOne() {
-  flogf("\n\t|PHASE ONE");
+void phase1() {
+  flogf("\n\t|phase ONE");
 
   // Initialize System Timers
   Check_Timers(Return_ADSTIME());
 
   // Stay here until system_timer says it's time to send data, user input for
   // different phase, NIGK R
-  while (!boy.DATA && boy.PHASE == 1) {
+  while (!boy.DATA && boy.phase == 1) {
 
     Sleep();
     Incoming_Data();
@@ -383,44 +383,44 @@ void phaseOne() {
   }
 
   // This would mean the profiling buoy is at//near surface.
-  // if (NIGK.RECOVERY && boy.DEPTH < NIGK.TDEPTH)
-  if (NIGK.RECOVERY && boy.DEPTH < boy.TDEPTH)
-    boy.PHASE = 3;
+  // if (NIGK.RECOVERY && boy.depth < NIGK.TDEPTH)
+  if (NIGK.RECOVERY && boy.depth < boy.TDEPTH)
+    boy.phase = 3;
   if (boy.DATA)
-    boy.PHASE = 2;
+    boy.phase = 2;
 
-} // phaseOne //
+} // phase1 //
 /*
- * phaseTwo
+ * phase2
  * Ascending phase of Winch.
  */
-void phaseTwo() {
+void phase2() {
   ulong AscentStart, AscentStop, timeChange;
   float depthChange;
   float velocity = 0.0;
   int halfway;
 
-  flogf("\n\t|PHASE TWO: Target Depth:%d", NIGK.TDEPTH);
+  flogf("\n\t|phase TWO: Target Depth:%d", NIGK.TDEPTH);
   OpenTUPort_NIGK(true);
   PrintSystemStatus();
 
   CTD_Select(DEVA);
-  boy.DEPTH = CTD_AverageDepth(9, &velocity);
+  boy.depth = CTD_AverageDepth(9, &velocity);
 
   // Coming here from phase one. Induced by system_timer==2
   if (boy.DATA) {
-    boy.MOORDEPTH = boy.DEPTH;
+    boy.moorDepth = boy.depth;
     boy.DATA = false;
   }
 
   // Else, sensor package deeper than target depth. Ascend.
   if (CurrentWarning()) {
   }
-  if (boy.DEPTH < NIGK.TDEPTH) {
+  if (boy.depth < NIGK.TDEPTH) {
     flogf("\n\t|Profiling Float Already at target depth");
-    boy.TOPDEPTH = boy.DEPTH;
+    boy.TOPDEPTH = boy.depth;
     boy.SURFACED = true;
-    boy.PHASE = 3;
+    boy.phase = 3;
     OpenTUPort_NIGK(false);
     return;
   }
@@ -435,12 +435,12 @@ void phaseTwo() {
   VEEStoreShort(NIGKPROFILES_NAME, NIGK.PROFILES);
 
   // halfway to tdepth, +2 to allow for coasting
-  halfway = ((boy.DEPTH - NIGK.TDEPTH) / 2) + NIGK.TDEPTH + 2;
+  halfway = ((boy.depth - NIGK.TDEPTH) / 2) + NIGK.TDEPTH + 2;
   // What's the best way out of this loop? Do we set a time limit for ascent?
-  while ((!boy.SURFACED || boy.BUOYMODE == 1) && boy.PHASE == 2) {
+  while ((!boy.SURFACED || boy.BUOYMODE == 1) && boy.phase == 2) {
     Incoming_Data();
 
-    if (boy.DEPTH <= halfway) {
+    if (boy.depth <= halfway) {
       AscentStop = Winch_Stop();
       WaitForWinch(0);
       if (CurrentWarning()) {
@@ -453,11 +453,11 @@ void phaseTwo() {
     }
 
     // What if winch tells us its stopping? What AscentStop time do we get?
-    if (boy.DEPTH <= NIGK.TDEPTH) {
+    if (boy.depth <= NIGK.TDEPTH) {
       cprintf("\n\t|REACHED TARGETDPETH!");
       AscentStop = Winch_Stop();
       WaitForWinch(0);
-      boy.TOPDEPTH = boy.DEPTH;
+      boy.TOPDEPTH = boy.depth;
       // If we stop at the target Depth
       if (boy.TOPDEPTH <= NIGK.TDEPTH)
         boy.SURFACED = true;
@@ -471,7 +471,7 @@ void phaseTwo() {
   }
 
   if (CurrentWarning()) {}
-  depthChange = boy.TOPDEPTH - boy.MOORDEPTH;
+  depthChange = boy.TOPDEPTH - boy.moorDepth;
   timeChange = AscentStop - AscentStart;
   boy.PAYOUT = ((float)boy.ASCENTTIME / 60.0) * NIGK.RRATE;
   flogf("\n\t|Rate of Ascent: %5.2fMeters/Minute",
@@ -481,18 +481,18 @@ void phaseTwo() {
   PrintSystemStatus();
 
   if (boy.SURFACED)
-    boy.PHASE = 3;
+    boy.phase = 3;
 
   OpenTUPort_NIGK(false);
 
-} // phaseTwo //
+} // phase2 //
 /*
  * phase Three
  * Testing iridium/gps connection. 
  * If failed, release winch cable another meter or two.
  * repeat to minimum CTD depth.
  */
-void phaseThree() {
+void phase3() {
   // global: static char uploadfile[] = "c:00000000.dat
   // global ulong PwrOff PwrOn
   short result = 0;
@@ -500,7 +500,7 @@ void phaseThree() {
   short count = 0;
   static short IridCallsNoParams = 0;
   char filenum[9] = "00000000";
-  flogf("\n\t|PHASE THREE");
+  flogf("\n\t|phase THREE");
 
   if (WISPR_Status()) {
     WISPRSafeShutdown();
@@ -532,7 +532,7 @@ void phaseThree() {
 
     if (result >= 1 || gpsFails > 4) {
       // IRIDIUM Successful success/fake/real/5th, next phase
-      boy.PHASE = 4;
+      boy.phase = 4;
     }
     if (result == 1 || result == 2) { 
       // Upload Success / Commands
@@ -551,21 +551,21 @@ void phaseThree() {
     } // Real Commands
     else if (result == -2) {
       // GPS Success, IRID Fail
-      flogf("\n\t|phaseThree(): Failed Iridium Transfer");
+      flogf("\n\t|phase3(): Failed Iridium Transfer");
       IridCallsNoParams++;
       if (IridCallsNoParams > 3) {
         IridCallsNoParams = 0;
         ParseStartupParams(true);
       } // calls>3
-      boy.PHASE = 4;
+      boy.phase = 4;
       break;
     } // GPS Success, IRID Fail
     else if (result == -1) {
       gpsFails++;
       // Bad GPS- GPS fails usually from bad reception.
-      flogf("\n\t|phaseThree(): Failed GPS attempt: %d", gpsFails);
+      flogf("\n\t|phase3(): Failed GPS attempt: %d", gpsFails);
       if (gpsFails >= 5) {
-        flogf("\n\t|Exiting phaseThree()");
+        flogf("\n\t|Exiting phase3()");
         // ?? close ports?
         break;
       } // >=5
@@ -574,7 +574,7 @@ void phaseThree() {
   } // while result<=0
 
   // in recovery, stay on surface 
-  if (NIGK.RECOVERY) boy.PHASE = 1; 
+  if (NIGK.RECOVERY) boy.phase = 1; 
   // NIGK.RECOVERY may be cleared by Params load 
   
   boy.RESTART = false;
@@ -592,11 +592,11 @@ void phaseThree() {
 
   boy.DATA = false;
 
-} // phaseThree //
+} // phase3 //
 /*
- * phaseFour
+ * phase4
  */
-void phaseFour() {
+void phase4() {
 
   float depthChange = 0.0;
   float velocity, descentvelocity;
@@ -616,7 +616,7 @@ void phaseFour() {
   if (boy.BUOYMODE != 0) {
     Winch_Stop();
     WaitForWinch(0);
-    flogf("\nErr phaseFour(): buoy was in motion");
+    flogf("\nErr phase4(): buoy was in motion");
   }
   //
   // turn off antenna, which selects buoy ctd
@@ -626,7 +626,7 @@ void phaseFour() {
 
   // Now descend.
   if (boy.BUOYMODE != 2) {
-    boy.TOPDEPTH = boy.DEPTH;
+    boy.TOPDEPTH = boy.depth;
     DescentStart = Winch_Descend();
     WaitForWinch(2);
     CTD_Sample();
@@ -640,7 +640,7 @@ void phaseFour() {
   If not, then call Winc_Descend Again. After 10, wait for an hour
  */
 
-  prevDepth = boy.DEPTH;
+  prevDepth = boy.depth;
 
   while (boy.BUOYMODE == 2) {
     // reading a sample triggers a new one, in p4
@@ -655,8 +655,8 @@ void phaseFour() {
     // Hopefully it will only come here when TUPort to the AModem stops boy
     // doesn't hear the Winch serial coming.
     if (timecheck - DescentStart > interval * 180) { // ?? known prob w ctd read
-      flogf("\n\t|phaseFour() Check depth change");
-      prevDepth -= boy.DEPTH;
+      flogf("\n\t|phase4() Check depth change");
+      prevDepth -= boy.depth;
       if (prevDepth < 0)
         prevDepth = prevDepth * -1.0;
       if (prevDepth < 3) {
@@ -665,13 +665,13 @@ void phaseFour() {
         DescentStop = Winch_Stop();
         WaitForWinch(0);
       }
-      prevDepth = boy.DEPTH;
+      prevDepth = boy.depth;
       interval++;
     }
   } // while mode==2
 
   if (boy.BUOYMODE == 0)
-    boy.MOORDEPTH = boy.DEPTH;
+    boy.moorDepth = boy.depth;
 
   // Descent Velocity;
   descentvelocity = CTD_CalculateVelocity();
@@ -679,7 +679,7 @@ void phaseFour() {
 
   // Total Vertical depth change. total time change, calculate estimated
   // velocity.
-  depthChange = boy.MOORDEPTH - boy.TOPDEPTH;
+  depthChange = boy.moorDepth - boy.TOPDEPTH;
   boy.DESCENTTIME = (short)(DescentStop - DescentStart);
   flogf("\n\t|Rate of Descent: %fMeters/Minute",
         (depthChange / ((float)boy.DESCENTTIME / 60.0)));
@@ -690,34 +690,34 @@ void phaseFour() {
   Delay_AD_Log(2);
   OpenTUPort_NIGK(false);
 
-  boy.PHASE = 1;
+  boy.phase = 1;
   boy.DATA = false;
 
 } // phase_Four() //
 
 /*
- * phaseFive for deploy time
+ * reboot for deploy time
  */
-void phaseFive() {
+void reboot() {
   ulong nowT, deployT, maxT;
   float nowD=0.0, thenD=0.0;
   int changeless=0;
 
-  DBG0( flogf("\nphaseFive()"); )
+  DBG0( flogf("\nreboot()"); )
   RTCGetTime(&deployT, NULL);
   // give up after two hours
   maxT = (ulong) (2*60*60);
   RTCGetTime(&nowT, NULL);
   // ?? DBG2( flogf("\np5 then: %ld, now: %ld, max %ld", (long) deployT, (long) nowT, (long) maxT);)
   CTD_Select(DEVA);
-  boy.DEPTH=0.0;
+  boy.depth=0.0;
   DBG1( flogf("\n%s\t|P5: wait until >10m", Time(NULL));)
-  while (boy.DEPTH<10.0) {
+  while (boy.depth<10.0) {
     CTD_Sample();
     Delay_AD_Log(3);
     if (!  CTD_Data()) 
       flogf("\nERR in P5 - no CTD data");
-    DBG1(flogf("\nP5 %5.2f", boy.DEPTH);)
+    DBG1(flogf("\nP5 %5.2f", boy.depth);)
     Delay_AD_Log(30);
     RTCGetTime(&nowT, NULL);
     if ((nowT - deployT) > maxT) break; // too long
@@ -725,10 +725,10 @@ void phaseFive() {
   flogf("\n%s\t|P5: wait until no depth changes", Time(NULL));
   // check every minute; if no change for five minutes, then deployed
   while (changeless<5) {
-    thenD=boy.DEPTH;
+    thenD=boy.depth;
     CTD_Sample();
     Delay_AD_Log(3);
-    if (CTD_Data()) nowD=boy.DEPTH;
+    if (CTD_Data()) nowD=boy.depth;
     else  flogf("\nERR in P5 - no CTD data");
     if (abs(nowD-thenD) > 2) { // changed
       flogf("\n%s\t|P5: depth change %4.1f", Time(NULL), (nowD-thenD));
@@ -743,8 +743,8 @@ void phaseFive() {
   // deployed!
   flogf("\n%s\t|P5: deployed", Time(NULL));
   // rise
-  boy.PHASE=2;
-} // phaseFive()
+  boy.phase=2;
+} // reboot()
 
 /*
  * int Incoming_Data()
@@ -757,7 +757,7 @@ int Incoming_Data() {
   int value = 0; // Need to update this if we ever need to return a legit value.
 
   DBG0(flogf("\n Incoming_Data\t");)
-  switch (boy.PHASE) {
+  switch (boy.phase) {
   // Case 0: Only at startup when MPC.STARTUPS>0
   case 0:
     while (incoming) {
@@ -767,8 +767,8 @@ int Incoming_Data() {
       } else if (tgetq(devicePort)) { // ?? very messy handling of ctd
         // DBG1(flogf("CTD Incoming");)
         CTD_Data();
-        if ((!boy.SURFACED && boy.PHASE > 1) || boy.BUOYMODE > 0 ||
-            boy.PHASE == 0) // if not surfaced (target depth not reached.) and
+        if ((!boy.SURFACED && boy.phase > 1) || boy.BUOYMODE > 0 ||
+            boy.phase == 0) // if not surfaced (target depth not reached.) and
                              // winch is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
@@ -821,7 +821,7 @@ int Incoming_Data() {
       } else if (tgetq(devicePort)) {
         DBG1(flogf("CTD Incoming");)
         CTD_Data();
-        if ((!boy.SURFACED && (boy.PHASE == 2 || boy.PHASE == 4)) ||
+        if ((!boy.SURFACED && (boy.phase == 2 || boy.phase == 4)) ||
             boy.BUOYMODE > 0) // if not surfaced (target depth not reached.)
                                // and winch is moving (not stopped)
           CTD_Sample();
@@ -875,7 +875,7 @@ void Console(char in) {
 
   DBG1(flogf("Incoming Char: %c", in);)
   Delayms(2);
-  switch (boy.PHASE) {
+  switch (boy.phase) {
   case 1:
     switch (in) {
     case 'I':
@@ -909,10 +909,10 @@ void Console(char in) {
 
     case 'P':
     case 'p':
-      flogf("\n\t|CHANGE OF PHASE #?");
+      flogf("\n\t|CHANGE OF phase #?");
       c = cgetc() - 48;
       flogf(" phase: %d", c);
-      boy.PHASE = c;
+      boy.phase = c;
       break;
 
     case 'x':
@@ -935,9 +935,9 @@ void Console(char in) {
       break;
     case 'P':
     case 'p':
-      flogf("\n\t|CHANGE OF PHASE #?");
+      flogf("\n\t|CHANGE OF phase #?");
       c = cgetc() - 48;
-      boy.PHASE = c;
+      boy.phase = c;
       break;
     case 'T':
     case 't':
@@ -970,7 +970,7 @@ void Console(char in) {
     case 'p':
       flogf("\n\t|Change of phase #?");
       c = cgetc() - 48;
-      boy.PHASE = c;
+      boy.phase = c;
       break;
     }
     break;
@@ -1272,11 +1272,11 @@ ulong WriteFile(ulong TotalSeconds) {
 char *PrintSystemStatus() {
   // global stringout
   sprintf(stringout, "boy: "
-                        "%d%d%d%d\nMOORDEPTH:%5.2f\nCURRENTDEPTH:%5."
+                        "%d%d%d%d\nmoorDepth:%5.2f\nCURRENTDEPTH:%5."
                         "2f\nTOPDEPTH:%5.2f\nTARGETDPETH:%d\nAVG.VEL:%5."
                         "2f\nCTDSAMPLES:%d\n\0",
-          boy.DATA ? 1 : 0, boy.SURFACED ? 1 : 0, boy.PHASE, boy.BUOYMODE,
-          boy.MOORDEPTH, boy.DEPTH, boy.TOPDEPTH, boy.TDEPTH, boy.AVGVEL,
+          boy.DATA ? 1 : 0, boy.SURFACED ? 1 : 0, boy.phase, boy.BUOYMODE,
+          boy.moorDepth, boy.depth, boy.TOPDEPTH, boy.TDEPTH, boy.AVGVEL,
           boy.CTDSAMPLES);
   flogf("\n%s", stringout);
   Delayms(100);
@@ -1405,12 +1405,12 @@ bool CurrentWarning() {
   CTD_Select(DEVB);
   CTD_Sample();
   CTD_Data();
-  b=boy.DEPTH;
+  b=boy.depth;
   CTD_Select(DEVA);
   CTD_Sample();
   Delayms(1000);
   CTD_Data();
-  a=boy.DEPTH;
+  a=boy.depth;
   flogf("\n\t|CurrentWarning(): a=%5.2f, b=%5.2f", a, b);
   return false;
 }

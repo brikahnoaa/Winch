@@ -1,3 +1,6 @@
+// utils.h
+
+void delayms(int x);
 void DelayTX(int ch);
 int ReadLine(TUPort *port, char *in);
 void WriteLine(TUPort *port, char *out);

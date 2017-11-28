@@ -8,6 +8,8 @@
 // DelayTX(40) delay long enough for transmit 40 chars at 2400bd
 void DelayTX(int ch) { RTCDelayMicroSeconds((long) ch * 3333L); }
 
+void delayms(int x) {RTCDelayMicroSeconds((long) 1000 * (long) x); }
+
 int ReadLine(TUPort *port, char *in) {
   int len;
   for (len=1; len<BUFSZ; len++) {

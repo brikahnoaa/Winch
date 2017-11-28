@@ -26,4 +26,44 @@
 #include <define.h> // common defines
 #include <global.h> // common externals
 #include <utils.h> // shared procs, SW
-#include <mpc.h> // shared procs, HW
+#include <mpc.h> // shared procs, HW ports and lines
+
+#define PLATFORM LARA
+#define PROG_VERSION 4.0
+
+// the DEBUG's each turn on a macro named DBGx()
+// - blocks of code
+#define DEBUG
+// 0 print func names
+#define DEBUG0
+// 1 print more interesting things
+#undef DEBUG1
+// 2 print details
+#define DEBUG2
+// debug related to wispr
+#define DEBUGWISPR
+
+// levels of debug
+#ifdef DEBUG
+#define DBG(X) X
+#else
+#define DBG(X)
+#endif
+// DEBUG0
+#ifdef DEBUG0
+#define DBG0(X) X
+#else
+#define DBG0(X)
+#endif
+// DEBUG1
+#ifdef DEBUG1
+#define DBG1(X) X
+#else
+#define DBG1(X)
+#endif
+// DEBUG2
+#ifdef DEBUG2
+#define DBG2(X) X
+#else
+#define DBG2(X)
+#endif

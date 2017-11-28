@@ -1,9 +1,19 @@
-void phaseZero();
-void phaseOne();
-void phaseTwo();
-void phaseThree();
-void phaseFour();
-void phaseFive();
+// boy.h
+
+#define CTDBAUD 9600L
+#define ANTBAUD 9600L
+#ifdef DEBUGWISPR
+#define WISPRNUMBER 0
+#else
+#define WISPRNUMBER 4
+#endif
+
+void phase0();
+void phase1();
+void phase2();
+void phase3();
+void phase4();
+void reboot();
 void Console(char);
 bool CheckTime(ulong, short, short);
 ulong WriteFile(ulong);
