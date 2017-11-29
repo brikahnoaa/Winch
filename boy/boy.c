@@ -643,21 +643,21 @@ void reboot() {
   float nowD=0.0, thenD=0.0;
   int changeless=0;
 
-  DBG0( flogf("\nreboot()"); )
+  DBG0("\nreboot()")
   RTCGetTime(&deployT, NULL);
   // give up after two hours
   maxT = (ulong) (2*60*60);
   RTCGetTime(&nowT, NULL);
-  // ?? DBG2( flogf("\np5 then: %ld, now: %ld, max %ld", (long) deployT, (long) nowT, (long) maxT);)
+  // ?? DBG2("\np5 then: %ld, now: %ld, max %ld", (long) deployT, (long) nowT, (long) maxT)
   CTD_Select(DEVA);
   boy.depth=0.0;
-  DBG1( flogf("\n%s\t|P5: wait until >10m", Time(NULL));)
+  DBG1("\n%s\t|P5: wait until >10m", Time(NULL))
   while (boy.depth<10.0) {
     CTD_Sample();
     Delay_AD_Log(3);
     if (!  CTD_Data()) 
       flogf("\nERR in P5 - no CTD data");
-    DBG1(flogf("\nP5 %5.2f", boy.depth);)
+    DBG1("\nP5 %5.2f", boy.depth)
     Delay_AD_Log(30);
     RTCGetTime(&nowT, NULL);
     if ((nowT - deployT) > maxT) break; // too long
@@ -696,7 +696,7 @@ int Incoming_Data() {
   static int count = 0;
   int value = 0; // Need to update this if we ever need to return a legit value.
 
-  DBG0(flogf("\n Incoming_Data\t");)
+  DBG0("\n Incoming_Data\t")
   switch (boy.phase) {
   // Case 0: Only at startup when MPC.STARTUPS>0
   case 0:
@@ -705,14 +705,14 @@ int Incoming_Data() {
       if (tgetq(NIGKPort)) {
         AModem_Data();
       } else if (tgetq(devicePort)) { // ?? very messy handling of ctd
-        // DBG1(flogf("CTD Incoming");)
+        // DBG1("CTD Incoming")
         CTD_Data();
         if ((!boy.SURFACED && boy.phase > 1) || boy.BUOYMODE > 0 ||
             boy.phase == 0) // if not surfaced (target depth not reached.) and
                              // winch is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
-        // DBG1(flogf("Console Incoming");)
+        // DBG1("Console Incoming")
         Console(cgetc());
       } else
         incoming = false;
@@ -723,18 +723,18 @@ int Incoming_Data() {
   case 1:
 
     while (incoming) {
-      DBG1(flogf("\n Incoming\t");)
+      DBG1("\n Incoming\t")
       AD_Check();
       // Data coming from WISPR Board
       if (tgetq(PAMPort)) {
-        // DBG1(flogf("WISPR Incoming");)
+        // DBG1("WISPR Incoming")
         WISPR_Data();
       } else if (tgetq(devicePort)) {
         CTD_Data();
       }
       // Console Wake up.
       else if (cgetq()) {
-        // DBG1(flogf("Console Incoming");)
+        // DBG1("Console Incoming")
         Console(cgetc());
       }
       // No more incoming data
@@ -748,25 +748,25 @@ int Incoming_Data() {
   case 4:
 
     while (incoming) {
-      DBG1(flogf("\n Incoming\t");)
+      DBG1("\n Incoming\t")
       // ?? does adcheck need to run between each incoming? how often?
       AD_Check();
       if (tgetq(PAMPort)) {
-        DBG1(flogf("WISPR Incoming");)
+        DBG1("WISPR Incoming")
         WISPR_Data();
       } else if (tgetq(NIGKPort)) {
         // ??? not hearing on bench test
-        DBG1(flogf("NIGK Incoming");)
+        DBG1("NIGK Incoming")
         AModem_Data();
       } else if (tgetq(devicePort)) {
-        DBG1(flogf("CTD Incoming");)
+        DBG1("CTD Incoming")
         CTD_Data();
         if ((!boy.SURFACED && (boy.phase == 2 || boy.phase == 4)) ||
             boy.BUOYMODE > 0) // if not surfaced (target depth not reached.)
                                // and winch is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
-        DBG1(flogf("Console Incoming");)
+        DBG1("Console Incoming")
         Console(cgetc());
       }
       // No more incoming data
@@ -778,13 +778,13 @@ int Incoming_Data() {
   // CASE 3: GPSIRID
   case 3:
     while (incoming) {
-      DBG1(flogf("\n Incoming\t");)
+      DBG1("\n Incoming\t")
       AD_Check();
       if (tgetq(PAMPort)) {
-        // DBG1(flogf("WISPR Incoming");)
+        // DBG1("WISPR Incoming")
         WISPR_Data();
       } else if (cgetq()) {
-        // DBG1(flogf("Console Incoming");)
+        // DBG1("Console Incoming")
         Console(cgetc());
       } else
         incoming = false;
@@ -813,7 +813,7 @@ void Console(char in) {
   // shutdown from here
   short c;
 
-  DBG1(flogf("Incoming Char: %c", in);)
+  DBG1("Incoming Char: %c", in)
   Delayms(2);
   switch (boy.phase) {
   case 1:
@@ -968,7 +968,7 @@ void Sleep(void) {
   //
   PutInSleepMode = false;
   //
-  // DBG2(flogf(".");)
+  // DBG2(".")
   Delayms(10);
 } // Sleep() //
 
@@ -1009,7 +1009,7 @@ void CTDSleep(void) {
   */
   PutInSleepMode = false;
 
-  //   DBG2(flogf(",");)
+  //   DBG2(",")
   Delayms(10);
 } // Sleep() //
 
@@ -1111,7 +1111,7 @@ ulong WriteFile(ulong TotalSeconds) {
   long maxupload;
   ulong LoggingTime;
 
-  DBG1(flogf("\n\t|WriteFile(%s)", uploadfile);)
+  DBG1("\n\t|WriteFile(%s)", uploadfile)
   filehandle = open(uploadfile, O_WRONLY | O_CREAT | O_TRUNC);
 
   if (filehandle <= 0) {
@@ -1131,7 +1131,7 @@ ulong WriteFile(ulong TotalSeconds) {
 
   flogf("\n%s", WriteBuffer);
   bytesWritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
-  DBG2(flogf("\nBytesWritten: %d", bytesWritten);)
+  DBG2("\nBytesWritten: %d", bytesWritten)
 
   // Only comes here if not rebooted.
   if (TotalSeconds != 0) {
@@ -1144,7 +1144,7 @@ ulong WriteFile(ulong TotalSeconds) {
     //*** Winch Status ***//
     sprintf(WriteBuffer, "%s\n\0", PrintSystemStatus());
     bytesWritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
-    DBG2(flogf("\nBytesWritten: %d", bytesWritten);)
+    DBG2("\nBytesWritten: %d", bytesWritten)
   }
   // Else, coming from reboot. Name the PowerLogging File.
   else {
@@ -1168,7 +1168,7 @@ ulong WriteFile(ulong TotalSeconds) {
   if (ctd.UPLOAD || TotalSeconds == 0) {
     sprintf(&detfname[2], "%08ld.ctd", MPC.FILENUM);
     Delayms(50);
-    DBG1(flogf("\n\t|WriteFile:%ld ctd file: %s", MPC.FILENUM, detfname);)
+    DBG1("\n\t|WriteFile:%ld ctd file: %s", MPC.FILENUM, detfname)
     stat(detfname, &info);
     if (info.st_size > (long)(IRID.MAXUPL - 1000))
       maxupload = IRID.MAXUPL - 1000;
@@ -1183,7 +1183,7 @@ ulong WriteFile(ulong TotalSeconds) {
   //*** MPC.LOGFILE upload ***// Note: occurring only after reboot.
   if (TotalSeconds == 0) { //||MPC.UPLOAD==1)
     sprintf(logfile, "%08ld.log", MPC.FILENUM);
-    DBG1(flogf("\n\t|WriteFile: %ld log file: %s", MPC.FILENUM, logfile);)
+    DBG1("\n\t|WriteFile: %ld log file: %s", MPC.FILENUM, logfile)
     stat(logfile, &info);
     if (info.st_size > (long)(IRID.MAXUPL - 2000))
       maxupload = IRID.MAXUPL - 2000;
@@ -1341,7 +1341,7 @@ bool CheckTime(ulong prevTime, short mode, short hour) {
  */
 bool CurrentWarning() {
   float a, b;
-  DBG0(flogf("\n%s\t|CurrentWarning()", Time(NULL));)
+  DBG0("\n%s\t|CurrentWarning()", Time(NULL))
   CTD_Select(DEVB);
   CTD_Sample();
   CTD_Data();
@@ -1360,7 +1360,7 @@ bool CurrentWarning() {
  * devSwitch(&boy.deviceID)
  */
 void devSwitch(int *devID) {
-  DBG2(flogf("\n\t|DevSelect(%d)", *devID);)
+  DBG2("\n\t|DevSelect(%d)", *devID)
   switch (*devID) {
   case DEVB: // switch to antenna module
     *devID=DEVA;

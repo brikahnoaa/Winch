@@ -32,7 +32,7 @@
 #define PROG_VERSION 4.0
 
 // the DEBUG's each turn on a macro named DBGx()
-// - blocks of code
+// - blocks of code, as is
 #define DEBUG
 // 0 print func names
 #define DEBUG0
@@ -51,19 +51,19 @@
 #endif
 // DEBUG0
 #ifdef DEBUG0
-#define DBG0(X) X
+#define DBG0(X) printf(X);
 #else
 #define DBG0(X)
 #endif
 // DEBUG1
 #ifdef DEBUG1
-#define DBG1(X) X
+#define DBG1(X) printf(X);
 #else
 #define DBG1(X)
 #endif
 // DEBUG2
 #ifdef DEBUG2
-#define DBG2(X) X
+#define DBG2(X) printf(X);
 #else
 #define DBG2(X)
 #endif

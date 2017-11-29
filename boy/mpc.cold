@@ -126,9 +126,9 @@ int System_Timer() {
   else if (IRID.CALLMODE == 1) {
     time(&rawtime);
     info = gmtime(&rawtime);
-    // DBG1("\n\t|CallTime: %d, Hour Now %d", IRID.CALLHOUR, info->tm_hour)
+    // DBG1(flogf("\n\t|CallTime: %d, Hour Now %d", IRID.CALLHOUR, info->tm_hour);)
     if (info->tm_hour == IRID.CALLHOUR) {
-      DBG1("\n\t|Current Minutes: %d", info->tm_min)
+      DBG1(flogf("\n\t|Current Minutes: %d", info->tm_min);)
       if (info->tm_min <= 3) {
         DataTimer = 0;
         flogf("\n\t|IRID CALLMODE=1, Call Now!\n\t|IRID CALLHOUR: %d",
@@ -340,14 +340,14 @@ float Check_Timers(ushort PLI) {
 #endif
 
   flogf("\n%s|Check_Timers()", Time(NULL));
-  DBG1("\nMPC.DETINT: %d\nMPC.DATAXINT: %d", MPC.DETINT, MPC.DATAXINT)
+  DBG1(flogf("\nMPC.DETINT: %d\nMPC.DATAXINT: %d", MPC.DETINT, MPC.DATAXINT);)
   // Rounding of our Detection Timer with the Power Logging Cycle "SysTimeInt"
-  DBG1("\n\t|PLI: %hu", PLI)
+  DBG1(flogf("\n\t|PLI: %hu", PLI);)
   DetectionInt = (((long)(MPC.DETINT * 600L) + (int)(PLI - 1)) / PLI);
   callrate = DetectionInt * (PLI / 600.0);
 
   flogf("\n\t|Recording Interval: %4.2f minutes", callrate);
-  DBG1("\n\t|Detection Int: %d", DetectionInt)
+  DBG1(flogf("\n\t|Detection Int: %d", DetectionInt);)
 
 #ifdef REALTIME
   if (IRID.CALLMODE == 0 || NIGK.RECOVERY) {
@@ -356,7 +356,7 @@ float Check_Timers(ushort PLI) {
     if (NIGK.RECOVERY)
       flogf("\n\t|RECOVERY MODE");
     flogf("\n\t|Data Interval %4.2f minutes", callrate);
-    DBG1("\n\t|DataInterval: %d", DataInterval)
+    DBG1(flogf("\n\t|DataInterval: %d", DataInterval);)
   } else if (IRID.CALLMODE == 1) {
     time(&rawtime);
     info = gmtime(&rawtime);
@@ -385,7 +385,7 @@ float Check_Timers(ushort PLI) {
   // Calculate Duty Cycle
   DutyCycleTicks = (int)(DetectionInt * ((float)(WISP.DUTYCYCL / 100.0)));
   flogf("\n\t|WISPR Duty Cycle: %d\%", WISP.DUTYCYCL);
-  DBG1("\n\t|DutyCycleTicks: %d", DutyCycleTicks)
+  DBG1(flogf("\n\t|DutyCycleTicks: %d", DutyCycleTicks);)
 // If some kind of Duty Cycle, keep Wispr Off until duty cycle begins
 
 // Real value...
@@ -510,18 +510,18 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
     memset(WriteBuffer, 0, 256 * sizeof(char));
 
     byteswritten = read(Source, WriteBuffer, BlockLength * sizeof(char));
-    DBG1("\n\t|AppendFiles: bytes read: %d", byteswritten)
+    DBG1(flogf("\n\t|AppendFiles: bytes read: %d", byteswritten);)
     if (i == NumBlks) {
       strcat(WriteBuffer, "\n");
       BlockLength++;
     }
     byteswritten = write(Dest, WriteBuffer, BlockLength * sizeof(char));
-    DBG1("\n\t|AppendFiles: bytes written: %d", byteswritten)
+    DBG1(flogf("\n\t|AppendFiles: bytes written: %d", byteswritten);)
   }
 
   if (erase) {
     if (close(Source) == 0) {
-      DBG1("\n\t|Append_Files() %s Closed", SourceFileName)
+      DBG1(flogf("\n\t|Append_Files() %s Closed", SourceFileName);)
       sprintf(extension, "%c%c%c", SourceFileName[11], SourceFileName[12],
               SourceFileName[13]);
       DOS_Com("del", MPC.FILENUM, extension, NULL);

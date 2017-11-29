@@ -8,23 +8,23 @@
 #include <ctd.h>
 
 bool ctdInit() {
-  DBG0("\n\t|. ctdInit")
+  DBG0( flogf("\n\t|. ctdInit"); )
 
   ctdSampleBreak();
   if (!ctdGetPrompt(stringin)) {
-    DBG2(" fail start getprompt")
+    DBG2(flogf(" fail start getprompt");)
     ctdSampleBreak();
     DevSelect(sbe);
     DelayADLog(3);
     if (!ctdGetPrompt(stringin)) {
-      DBG2(" fail start1 getprompt")
+      DBG2(flogf(" fail start1 getprompt");)
       if (sbe==DEVA) DevSelect(DEVX);
       DelayADLog(1);
       DevSelect(sbe);
       ctdSampleBreak();
       DelayADLog(3);
       if (!ctdGetPrompt(stringin)) {
-        DBG2(" fail start2 getprompt")
+        DBG2(flogf(" fail start2 getprompt");)
       }
     } 
   }
@@ -42,7 +42,7 @@ void ctdDateTime() {
   timet rawtime;
   struct tm *info;
   char buffer[15];
-  DBG1("\n\t|ctdDateTime()")
+  DBG1(flogf("\n\t|ctdDateTime()");)
   time(&rawtime);
 
   info = gmtime(&rawtime);
@@ -82,7 +82,7 @@ bool ctdGetPrompt() {
  */
 void ctdSample() {
   char ch;
-  DBG1("\n . ctdSample")
+  DBG1( flogf("\n . ctdSample"); )
   //if (SyncMode) {
     //TUTxPrintf(ctd.port, "+\r");
     //Delayms(20);
@@ -102,7 +102,7 @@ void ctdSample() {
 /*
  */
 void ctdSyncMode() {
-  DBG0("\n\t|ctdSyncMode()")
+  DBG0(flogf("\n\t|ctdSyncMode()");)
   ctdSampleBreak();
   TUTxPrintf(ctd.port, "Syncmode=y\r");
   Delayms(500);
@@ -146,7 +146,7 @@ bool ctdData() {
   struct tm info;
   timet secs = 0;
 
-  DBG0("\n. ctdData()")
+  DBG0( flogf("\n. ctdData()"); )
   memset(stringin, 0, BUFSZ);
 
   // waits up to 8 seconds - best called after tgetq()
@@ -189,7 +189,7 @@ bool ctdData() {
   }
   LARA.DEPTH = pres;
   // LARA.TEMP = temp; //??
-  DBG1("\nctd->%s", stringout)
+  DBG1(flogf("\nctd->%s", stringout);)
 
   // buoy sbe vvvvv
   // convert date time to secs
@@ -238,7 +238,7 @@ bool ctdData() {
   sprintf(stringin, ",%d/%d/%d,%02d:%02d:%02d", month, info.tmmday,
           info.tmyear - 100, info.tmhour, info.tmmin, info.tmsec);
   strcat( stringout, stringin );
-  DBG1("%s", stringin)
+  DBG1(flogf("%s", stringin);)
 
   secs = mktime(&info);
 
@@ -253,7 +253,7 @@ bool ctdData() {
     return false;
   }
   byteswritten = write(filehandle, stringout, strlen(stringout));
-  DBG2("\nBytes Written: %d", byteswritten)
+  DBG2( flogf("\nBytes Written: %d", byteswritten);)
   if (close(filehandle) != 0) {
     flogf("\nERROR  |ctdLogger: File Close error: %d", errno);
     return false;

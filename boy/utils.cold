@@ -43,7 +43,7 @@ int GetStringWait(TUPort *port, int wait, char *in) {
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   TickleSWSR(); // could have been a long wait
   if (in[0]<0) {
-    DBG1("\n\t|GetStringWait() timeout")
+    DBG1(flogf("\n\t|GetStringWait() timeout");)
     in[0]=0;
     return (-len);
   }
@@ -68,7 +68,7 @@ int GetResponse(TUPort *port, char *out, int wait, char *in) {
   TURxFlush(port);
   // consume echo - up to \n
   if (ReadLine(port, in) < 1) {
-    DBG1("\nErr: GetResponse() echo timeout %s", in)
+    DBG1( flogf( "\nErr: GetResponse() echo timeout %s", in); )
     return 0;
   }
   len = GetStringWait( port, wait, in );
