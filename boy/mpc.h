@@ -1,10 +1,10 @@
 // PINS
 #define AMODEMPWR 21
-#define ANTMODPWR 22 // Iridium Power pin (1=ON, 0=OFF)
-#define DEVICECOM 23 // set ANTMOD (device), clear BUOY (sbe)
+#define ANTMODPWR 22 // antMod Power pin (1=ON, 0=OFF)
+#define DEVICECOM 23 // set = antMod, clear = sbe16
 #define WISPRTHREE 24
 #define WISPRFOUR 25
-#define DIFARPWR 26
+// #define DIFARPWR 26
 #define WISPRONE 29
 #define WISPRTWO 30
 #define DEVICETX 31
@@ -18,7 +18,7 @@
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 
 void PreRun(void);
-void SetupHardware(void);
+void initMPC(void);
 int System_Timer();
 char *Time(ulong *);
 char *TimeDate(ulong *);

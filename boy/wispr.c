@@ -8,15 +8,6 @@ float WISPRFreeSpace = 0.0;
 int TotalDetections;
 int dtxrqst;
 
-// SYSTEM PARAMETERS
-#ifdef SEAGLIDER
-extern SeagliderParameters SEAG;
-#endif
-
-extern SystemParameters MPC;
-
-extern WISPRParameters WISP;
-
 // char* WISPRString;
 // short WISPRStringLength=64;
 // PAM TUPORT Setup
@@ -411,8 +402,7 @@ char *GetWISPRInput(float *numchars) {
   r[0] = '$';
   r[1] = TURxGetByteWithTimeout(PAMPort, 100);
   if (r[1] == -1) {
-    DBG1(flogf("\nThe first input character is negative one");
-        Delayms(20);)
+    DBG1(flogf("\nThe first input character is negative one");)
     return NULL;
   }
   for (i = 2; i < 64; i++) { // Up to 59 characters
@@ -514,8 +504,7 @@ void GetWISPRSettings() {
   //"C" dutycycle
   p = VEEFetchData(DUTYCYCLE_NAME).str;
   WISP.DUTYCYCL = atoi(p ? p : DUTYCYCLE_DEFAULT);
-  DBG1(flogf("DUTYCYCLE=%d (%s)\n", WISP.DUTYCYCL, p ? "vee" : "def");
-      cdrain();)
+  DBG1(flogf("DUTYCYCLE=%d (%s)\n", WISP.DUTYCYCL, p ? "vee" : "def");)
   if (WISP.DUTYCYCL > MAX_DUTYCYCLE) {
     WISP.DUTYCYCL = MAX_DUTYCYCLE;
     VEEStoreShort(DUTYCYCLE_NAME, WISP.DUTYCYCL);
@@ -808,8 +797,7 @@ void UpdateWISPRFRS() {
 
   p = strtok(p + 3, ",");
 
-  DBG1(flogf("\nUpdating WISPRFRS at position %d from %5.2f to %5.2f", length,
-            atof(p), WISPRFreeSpace);)
+  DBG1(flogf("\nUpdating WISPRFRS at position %d from %5.2f to %5.2f", length, atof(p), WISPRFreeSpace);)
 
   sprintf(wispnum, "%5.2f", WISPRFreeSpace);
   lseek(wisprfilehandle, length + 3, SEEK_SET);

@@ -2,31 +2,32 @@
 
 #define CTDBAUD 9600L
 #define ANTBAUD 9600L
+#define STARTS_VEE "STARTS"
+#define STARTSMAX_VEE "STARTSMAX"
 #ifdef DEBUGWISPR
 #define WISPRNUMBER 0
 #else
 #define WISPRNUMBER 4
 #endif
 
-void phase0();
-void phase1();
-void phase2();
-void phase3();
-void phase4();
-void reboot();
-void Console(char);
-bool CheckTime(ulong, short, short);
-ulong WriteFile(ulong);
+void SleepUntilWoken();
+void shutdown();
+void devSwitch(int *devID);
+static void deploy();
+static void phase1();
+static void phase2();
+static void phase3();
+static void phase4();
+static void reboot(int *phase);
+static void restartCheck(long *starts);
+static void Console(char);
+static ulong WriteFile(ulong);
 static void IRQ2_ISR(void);
 static void IRQ3_ISR(void);
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
-void WaitForWinch(short);
-void SleepUntilWoken();
-bool CurrentWarning();
-
-void shutdown();
-void inithw(ulong *);
-
-char *PrintSystemStatus(void);
-int Incoming_Data();
+static void WaitForWinch(short);
+static bool CurrentWarning();
+static void initHW(ulong *);
+static void systemStatus(char *stringout);
+static int Incoming_Data();

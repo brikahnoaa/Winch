@@ -2,22 +2,10 @@
 #include <common.h>
 #include <mpc.h>
 
-// Define WISPR VEEPROM Parameters for use
-extern WISPRParameters WISP;
 int DutyCycleTicks;
-extern float WISPRFreeSpace;
-
-// Define IRIDIUM VEEPROM Parameters for use
-extern IridiumParameters IRID;
-extern AMODEMParameters AMDM;
-
-extern PowerParameters ADS;
-extern CTDParameters CTD;
-extern WINCHParameters NIGK;
 
 // LOCAL VARIABLES
 int DetectionInt;
-
 int DataInterval;
 char time_chr[21];
 
@@ -188,37 +176,21 @@ void PreRun(void) {
       return;
   }
 } //____ PreRun() ____//
+
 /*
- * SetupHardware
- * Set IO pins, set SYSCLK, if surface tries to open GPS receiver and set RTC
-time.
- * Set gain
- * 10/25/2004 H. Matsumoto
+ * Set IO pins, set SYSCLK
  */
-void SetupHardware(void) {
-  short err = 0;
-  short result = 0;
+void initMPC(void) {
   short waitsFlash, waitsRAM, waitsCF;
   ushort nsRAM, nsFlash, nsCF;
   short nsBusAdj;
-  char *p;
-  long counter = 0;
-  char filenum[] = "00000000";
-  char logfile[sizeof "00000000.log"];
 
-  p = VEEFetchData(FILENUM_NAME).str;
-  counter = atol(p);
-  MPC.FILENUM = counter + 1;
-  sprintf(filenum, "%08ld", MPC.FILENUM);
-  sprintf(logfile, "%08ld.log", MPC.FILENUM);
-  VEEStoreStr(FILENUM_NAME, filenum);
-  Initflog(logfile, true);
-  PZCacheSetup('C' - 'A', calloc, free);
+  // Define unused pins here ?? 1-14 20 27 28 34 38-41 43-50
+  uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
+  PIOMirrorList(mirrorpins);
 
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
   TMGSetSpeed(SYSCLK);
-
-  TickleSWSR();
 
   flogf("\n----------------------------------------------------------------");
   flogf("\nProgram: %s,  Version: %3.2f,  Build: %s %s", __FILE__, PROG_VERSION,
@@ -233,19 +205,14 @@ void SetupHardware(void) {
       TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
       waitsCF, *(uchar *)0xFFFFFA21);
   fflush(NULL);
-  coflush();
-  ciflush();
-
-  RTS(flogf("\n\t|Starting FileNumber: %ld", MPC.FILENUM);)
-  // flogf("\n\t|%s logfile created", MPC.LOGFILE);
+  TickleSWSR();
   cdrain();
+  ciflush();
   coflush();
-
-} //____ SetupHardware() ____//
-  /****************************************************************************
-  ** MakeDirectory()
-  ** Setup directories for files not needing to be access anymore.
-  ** AT 7/13/2015
+} // initMPC
+  
+/*
+ * Setup directories for files not needing to be access anymore.
  */
 void Make_Directory(char *path) {
   char DOSCommand[64];

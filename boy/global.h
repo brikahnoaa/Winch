@@ -8,8 +8,11 @@
 
 #define BUFSZ 1024
 
+typdef unsigned long Time;
+
 // ant
 typedef struct AntennaData {
+  bool off;
   bool surfaced;        // Set to true when Antenna is floating
   float ctdPos;         // depth of CTD when floating
   char gpsLong[20];     // 123:45.6789 W
@@ -19,24 +22,27 @@ typedef struct AntennaData {
 
 // System Parameters//Always defined // used as MPC.name
 typedef struct BuoyData {
+  bool off;
+  int deviceID;           // DEVA=1 = antenna, DEVB=2 = buoy ctd
   char programName[20]; // added HM
   char projectID[6];    // rudicsland
   char platformID[6];  // rudicsland
   long filenumber; // current number for filename ####.dat ####.log
-  short starts;
-  short maxStarts; //
-  short dataInt; // VEE:DATAXINTERVAL_NAME
-  short phase; // 1=WISPR, 2=Ascent, 3=Surface, 4=Descent, 5=deployment
-  short phaseStartTime; // time this phase started
-  bool on;       // While "ON", continue running program
+  long starts;
+  long startsMax; 
+  int dataInt; // VEE:DATAXINTERVAL_NAME
+  int phase; // 1=WISPR, 2=Ascent, 3=Surface, 4=Descent, 5=deployment
+  int phaseInitial; // normal start in this phase (2)
+  Time phaseStart; // time this phase started
+  Time onStart;    // startup time
   float depth;     // Most recent depth measurement from sbe16
   float moorDepth; // Depth at beginning of LARA.PHASE==1. Averaged Samples
   float avgVel;
-  TUPort *port; // port for antenna module and ctd
 } BuoyData;
 
 // ctd
 typedef struct CtdData {
+  bool off;
   bool syncMode;  // off = polled
   bool pending;   // polled request pending
   short delay;    // Delay in seconds between polled samples
@@ -63,13 +69,18 @@ typedef struct PowerData {
 } PowerData;
 
 typedef struct WinchData {
-  float delay; // seconds after TUTxAcousticModem before action
-  float rrate;  // Velocity in meters/minute of the rise (ascent) rate
-  float frate;  // Velocity in Meters/minute of the fall (descent) rate
+  bool off;
+  bool pending;       // expecting response
+  float delay;        // seconds after TUTxAcousticModem before action
+  float firstRise;    // Velocity in meters/minute of the rise (ascent) rate
+  float lastRise;     // Velocity in meters/minute of the rise (ascent) rate
+  float firstFall;    // Velocity in meters/minute of the rise (ascent) rate
+  float lastFall;     // Velocity in meters/minute of the rise (ascent) rate
   TUPort *port;
 } WinchData;
 
 typedef struct WisprData {
+  bool off;
   short gain; //-g 0-3
   short num;    // number of WISPR Boards installed
   short detInt;   //-D      //Minutes   //WISPR DET INTERVAL

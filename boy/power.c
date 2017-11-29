@@ -9,6 +9,10 @@ back from JG 12.2.2015
 Updated from ADS.c version 1.5
    -with more efficient storing and calculating of current and voltage.
 
+"Only pin should not be mirrored is pin 20. It is connected to the output of AD. Pin 20 is input and should not be mirrored. Also making pin 19 high turns on A/D, which increases the power usage by a few milliamps. 
+Only pin safe to mirror is pin 15 (/IRQ7). 
+Alex code uses the A/D to monitor the voltage and current, it probably does not matter." - haru
+
 Version 1.5:
 Storing "shorts" in circular array, averaging once every 30 seconds to another
 array of floating point values,

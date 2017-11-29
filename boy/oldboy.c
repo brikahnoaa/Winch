@@ -422,7 +422,6 @@ void InitializeLARA(ulong *PwrOn) {
   create_dtx_file(MPC.FILENUM);
 
 /*
-  DBG0({
   TUChParams *tuch; 
   tuch = TUGetDefaultParams();
   flogf("\nTUChParams: baud %ld, rx %d, tx %d, pf %d",
@@ -433,7 +432,6 @@ void InitializeLARA(ulong *PwrOn) {
   tuch = TUGetDefaultParams();
   flogf("\nTUChParams: baud %ld, rx %d, tx %d, pf %d",
     tuch->baud, tuch->rxqsz, tuch->txqsz, tuch->tpfbsz);
-  })
  */
   
 /*

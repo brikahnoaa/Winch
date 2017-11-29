@@ -34,66 +34,52 @@
  */
 
 #include <common.h>
-#include <boy.h> 
 #include <wispr.h>
-
-extern SystemParameters MPC;
+#include <boy.h> 
 
 // Enable watch dog  HM 3/6/2014
-// WDT Watch Dog Timer definition
-// Not sure if this watchdog is even working You have to define
-#define CUSTOM_SYPCR CustomSYPCR
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
-
-extern CTDParameters CTD;
-extern IridiumParameters IRID;
-extern PowerParameters ADS;
-extern SystemStatus boy;
-extern WINCHParameters NIGK;
-extern WISPRParameters WISP;
-extern WinchCalls WINCH;
 
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
-ulong PwrOff, PwrOn;
-
-bool PutInSleepMode = false;
 static char uploadfile[] = "c:00000000.dat"; 
 
 /*
- * Main
+ * initHW and SW structures. loop over phase 1-4
  */
 void main() {
-  // global boy
-  int phase;
-
+  // global ant, boy, ctd, winch, wispr
+  long starts;
+  restartCheck(&starts);
   initHW(&ant.port, &ctd.port, &winch.port, &wispr.port);
-  setup(&boy);
-  // phase 0:  Deployment
-  if (boy.phase==0) {
-    phase0();
-  }
+  startup(&boy);
+  if (starts==0) {     // phase 0:  Deployment
+    deploy(&boy.moorDepth);
+    boy.phase = boy.phaseInitial;
+  } else
+    reboot(&boy.phase);
 
-  while (boy.on) {
+
+  while (!boy.off) {
     switch (boy.phase) {
-    // phase 1: Recording WISPR
-    case 1:
+    case 1: // phase 1: Recording WISPR
       phase1();
+      boy.phase=2;
       break;
-    // phase 2: Ascend buoy
-    case 2:
+    case 2: // phase 2: Ascend buoy
       phase2();
+      boy.phase=3;
       break;
-    // phase 3: Call into Satellite
-    case 3:
+    case 3: // phase 3: Call into Satellite
       phase3();
+      boy.phase=4;
       break;
-    // phase 4:  Descend buoy
-    case 4:
+    case 4: // phase 4:  Descend buoy
       phase4();
+      boy.phase=1;
       break;
     }
-  } // while boy.on
+  } 
 
   shutdown();
 } // main() 
@@ -112,59 +98,42 @@ void shutdown() {
 }
 
 /*
- * initHW - init and test pins, ports, power
+ * check veeprom STARTS_VEE to see if we are rebooting wildly
  */
-void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
-  // Define unused pins here
-  uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
-  PIOMirrorList(mirrorpins);
-
-  TUInit(calloc, free);  // enable TUAlloc for serial ports
-  SetupHardware();
-  PreRun();   // 10 sec for user abort to DOS
-  if (STARTS >= MPC.STARTMAX) {
+void restartCheck(long *starts) {
+  long startsMax;
+  starts = VEEFetchLong(STARTS_VEE, 0L);
+  startsMax = VEEFetchLong(STARTSMAX_VEE, 0L);
+  if (starts>startsMax) {
     flogf("\nInit(): startups>startmax");
     SleepUntilWoken();
-    BIOSReset(); // Full hardware reset
+    BIOSReset(); // Full hardware reset = ak
   }
+  VEEStoreLong(STARTS_VEE, starts+1L);
+} // restartCheck
+
+/*
+ * init pins, ports, power
+ */
+void initHW(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
+  PreRun();   // 10 sec for user abort to DOS
+  initMPC();
+  PZCacheSetup('C' - 'A', calloc, free);
+  TUInit(calloc, free);  // enable TUAlloc for serial ports
+  Initflog(logfile, true);
 
   // Identify IDs
   flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
         MPC.PROGNAME, MPC.PROJID, MPC.PLTFRMID, MPC.STARTUPS);
 
   // Get Power On Time
-  Time(&time);
-  *PwrOn = time;
 
   flogf("\nProgram Start time: %s", TimeDate(NULL));
-
-  // WINCH Struct Init
-  WINCH.ASCENTCALLS = 0;
-  WINCH.ASCENTRCV = 0;
-  WINCH.DESCENTCALLS = 0;
-  WINCH.DESCENTRCV = 0;
-  WINCH.STOPCALLS = 0;
-  WINCH.STOPRCV = 0;
-  WINCH.BUOYRCV = 0;
-  WINCH.WINCHCALLS = 0;
-  // boy Struct Init
-  boy.phase = 0; // Decided Below
-  boy.DATA = false;
-  boy.ON = true;
-  boy.BUOYMODE = 0;     // Also Decided Below
-  boy.SURFACED = false; // Decided Below
-  boy.depth = 0;        // Received from first CTD
-  boy.moorDepth = 0;    // Eventually init
-  boy.TOPDEPTH = 0; // depth at start of descent // Eventually Init
-  boy.TDEPTH = 0;       // Decided from Param file
-  boy.AVGVEL = 0;
 
   // Get Free Disk Space
   Free_Disk_Space(); // Does finding the free space of a large CF card cause
                      // program to crash? or Hang?
 
-  // must init GPSIRID first
-  GPSIRID_Init();
   CTD_Init(); // buoy sbe
 
   // If initializing after reboot... Write previous WriteFile for upload
@@ -325,35 +294,6 @@ void initHW(TUPort *antPort, $ctdPort, *winchPort, *wisprPort) {
   ADCounter = 0;
 
   create_dtx_file(MPC.FILENUM);
-
-/*
-  DBG0({
-  TUChParams *tuch; 
-  tuch = TUGetDefaultParams();
-  flogf("\nTUChParams: baud %ld, rx %d, tx %d, pf %d",
-    tuch->baud, tuch->rxqsz, tuch->txqsz, tuch->tpfbsz);
-  tuch->rxqsz=4096;
-  tuch->txqsz=4096;
-  TUSetDefaultParams(tuch);
-  tuch = TUGetDefaultParams();
-  flogf("\nTUChParams: baud %ld, rx %d, tx %d, pf %d",
-    tuch->baud, tuch->rxqsz, tuch->txqsz, tuch->tpfbsz);
-  })
- */
-  
-/*
- * typedef struct {
- * short bits; // data bits exclusive of start, stop, parity
- * short parity; // parity: 'o','O','e','E', all else is none
- * short autobaud; // automatically adjust baud when clock changes
- * long baud; // baud rate
- * short rxpri; // receive channel TPUPriority
- * short txpri; // transmit channel TPUPriority
- * short rxqsz; // receive channel queue buffer size
- * short txqsz; // transmit channel queue buffer size
- * short tpfbsz; // transmit channel printf buffer size
- * } TUChParams;
- */
 
 } // InitializeAUH() //
 /*
@@ -1414,4 +1354,28 @@ bool CurrentWarning() {
   flogf("\n\t|CurrentWarning(): a=%5.2f, b=%5.2f", a, b);
   return false;
 }
+
+/*
+ * switch to other device - DEVA=1 = antenna, DEVB=2 = buoy ctd
+ * devSwitch(&boy.deviceID)
+ */
+void devSwitch(int *devID) {
+  DBG2(flogf("\n\t|DevSelect(%d)", *devID);)
+  switch (*devID) {
+  case DEVB: // switch to antenna module
+    *devID=DEVA;
+    if (PIOTestAssertClear(ANTMODPWR)) { // ant module is off, turn it on
+      PIOSet(ANTMODPWR);
+      Delay_AD_Log(5); // power up delay
+    }
+    PIOSet(DEVICECOM);
+    break;
+  case DEVA: // switch to buoy sbe
+    *devID=DEVB;
+    PIOClear(DEVICECOM); // do not turn off ant module
+    break;
+  } //switch
+  return;
+} //DevSelect
+
 

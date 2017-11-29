@@ -242,13 +242,11 @@ void GetWinchSettings() {
 
   p = VEEFetchData(NIGKANTENNALENGTH_NAME).str;
   NIGK.ANTLEN = atoi(p ? p : NIGKANTENNALENGTH_DEFAULT);
-  DBG1(uprintf("NIGK.ANTLEN=%u (%s)\n", NIGK.ANTLEN, p ? "vee" : "def");
-      cdrain();)
+  DBG1(uprintf("NIGK.ANTLEN=%u (%s)\n", NIGK.ANTLEN, p ? "vee" : "def");)
 
   p = VEEFetchData(NIGKTARGETDEPTH_NAME).str;
   NIGK.TDEPTH = atoi(p ? p : NIGKTARGETDEPTH_DEFAULT);
-  DBG1(uprintf("NIGK.TDEPTH=%u (%s)\n", NIGK.TDEPTH, p ? "vee" : "def");
-      cdrain();)
+  DBG1(uprintf("NIGK.TDEPTH=%u (%s)\n", NIGK.TDEPTH, p ? "vee" : "def");)
 
   p = VEEFetchData(NIGKRISERATE_NAME).str;
   NIGK.RRATE = atoi(p ? p : NIGKRISERATE_DEFAULT);
@@ -260,13 +258,11 @@ void GetWinchSettings() {
 
   p = VEEFetchData(NIGKPROFILES_NAME).str;
   NIGK.PROFILES = atoi(p ? p : NIGKPROFILES_DEFAULT);
-  DBG1(uprintf("NIGK.PROFILES=%u (%s)\n", NIGK.PROFILES, p ? "vee" : "def");
-      cdrain();)
+  DBG1(uprintf("NIGK.PROFILES=%u (%s)\n", NIGK.PROFILES, p ? "vee" : "def");)
 
   p = VEEFetchData(NIGKRECOVERY_NAME).str;
   NIGK.RECOVERY = atoi(p ? p : NIGKRECOVERY_DEFAULT);
-  DBG1(uprintf("NIGK.RECOVERY=%u (%s)\n", NIGK.RECOVERY, p ? "vee" : "def");
-      cdrain();)
+  DBG1(uprintf("NIGK.RECOVERY=%u (%s)\n", NIGK.RECOVERY, p ? "vee" : "def");)
 }
 /*
  * void Winch_Monitor(int filehandle)
