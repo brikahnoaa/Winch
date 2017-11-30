@@ -1,15 +1,13 @@
-// settings 
+// settings.c
+
+#include <common.h>
+#include <settings.h>
+
 /* 
  * static setVar settings[] = array of {shortname, longname, ptr, type}
  * scan it for name when updating a setting
  * { "dh", "boy.depth", &boy.depth, 'f'},
- */
-
-#include <common.h>
-#include <global.h>
-#include <settings.h>
-
-/*
+ *
  * try to use first,last char for shortname
  * use variable name for longname
  * &ptr can be any extern var or struct component

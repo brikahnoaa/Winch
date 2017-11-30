@@ -44,8 +44,9 @@ averaged.
 transfer into the real power write time.
  */
 #include <common.h>
-#include <ads.h>
-#include <settings.h>
+#include <power.h>
+
+PowerData power = {};
 
 IEV_C_PROTO(ADTimingRuptHandler);
 IEV_C_PROTO(ADSamplingRuptHandler);

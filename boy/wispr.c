@@ -1,6 +1,11 @@
 #include <common.h>
 #include <wispr.h>
 
+// gain num detMax detNum dutycycl port
+WisprData wisp = {
+  2, 4, 10, 0, 360, NULL
+};
+
 bool SendWISPRGPS = false;
 static int WISPRGPSSends;
 bool WISPR_On;

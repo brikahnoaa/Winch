@@ -28,6 +28,12 @@
    16: 1638.4                 13.183
  */
 
+typedef struct PowerData {
+  char batCap[9];
+  short batLog;    // t logging change in battery capacity
+  char minVolt[6]; //-v %.2f  minimum system voltage
+} PowerData;
+extern PowerData power;
 
 void Delay_AD_Log(short);
 void Setup_Acquisition(ushort);

@@ -2,6 +2,11 @@
 #include <common.h>
 #include <ant.h>
 
+// surfaced ctdPos gpsLong[20] gpsLat[20] port
+AntennaData ant = {
+  false, 1.5, "123:45.6789 W", "45:67.8900 N", NULL
+};
+
 /*
  * AntMode(G|I|S)
  * Switch antenna module between SBE39 TD, Iridium and GPS.

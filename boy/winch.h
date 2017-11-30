@@ -1,50 +1,42 @@
+// winch.h
 // AModemPort and WISPR Transmission
-void AModem_Data();
 
-ulong Winch_Ascend();
-ulong Winch_Descend();
-ulong Winch_Stop();
-void Buoy_Status();
-void WinchConsole();
-void OpenTUPort_NIGK(bool);
-void GetWinchSettings();
-ulong Winch_Status();
-void Winch_Monitor(int);
-extern TUPort *NIGKPort;
-
-extern bool Surfaced;
-
-#define NIGK_MIN_DEPTH 6
+#define NIGKMINDEPTH 6
 #define AMODEMBAUD 4800L
 
-// pin defines moved to platform.h
-
-
-typedef struct {
-
-  short TDEPTH; // CTD depth at optimal position for iridium/gps comms (Antenna
-                // at surface when winch cable angle <10')
-  short DELAY; // Time in seconds post TUTxAcousticModem when the Winch actually
-               // accepts character. Strictly for timing & Calculation of cable
-               // length
-  short RRATE;  // Velocity in meters/minute of the rise (ascent) rate
-  short FRATE;  // Velocity in Meters/minute of the fall (descent) rate
-  short ANTLEN; // Length from CTD to antenna. More specifically: From CTD Depth
-                // Sensor to water surface when antenna is out of water.
-  short PROFILES; // Keep record of number of profiles
-  short RECOVERY; // If 1, call in repeatedly @ specified interval. 'A' reset to
-                  // 30minutes.
-
-} WINCHParameters;
+typedef struct WinchData {
+  bool pending;       // expecting response
+  float delay;        // seconds after TUTxAcousticModem before action
+  float firstRise;    // Velocity in meters/minute of the rise (ascent) rate
+  float lastRise;     // Velocity in meters/minute of the rise (ascent) rate
+  float firstFall;    // Velocity in meters/minute of the rise (ascent) rate
+  float lastFall;     // Velocity in meters/minute of the rise (ascent) rate
+} WinchData;
+extern WinchData winch;
 
 // Tracking number of calls
-typedef struct {
-  short ASCENTCALLS;
-  short ASCENTRCV;
-  short DESCENTCALLS;
-  short DESCENTRCV;
-  short STOPCALLS;
-  short STOPRCV;
-  short BUOYRCV;
-  short WINCHCALLS;
-} WinchCalls;
+typedef struct AmodemData {
+  bool off;
+  short ascentCalls;
+  short ascentRcv;
+  short descentCalls;
+  short descentRcv;
+  short stopCalls;
+  short stopRcv;
+  short buoyRcv;
+  short winchCalls;
+  TUPort *port;
+} AmodemData;
+extern AmodemData amodem;
+
+void AModemData();
+ulong WinchAscend();
+ulong WinchDescend();
+ulong WinchStop();
+void BuoyStatus();
+void WinchConsole();
+void OpenTUPortNIGK(bool);
+void GetWinchSettings();
+ulong WinchStatus();
+void WinchMonitor(int);
+

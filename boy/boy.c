@@ -37,6 +37,15 @@
 #include <wispr.h>
 #include <boy.h> 
 
+// progname[20] projID[6] pltfrmID[6] filenum starts maxStarts
+// detInt dataInt phase phaseStart on
+// depth moorDepth avgVel port
+BuoyData boy = {
+  "LARA", "QUEH", "LR01", 0, 0, 50,
+  0, 0, 0, 2, 1,
+  0, 0, 0, NULL
+};
+
 // Enable watch dog  HM 3/6/2014
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 
@@ -89,10 +98,8 @@ void main() {
  */
 void shutdown() {
   WISPRSafeShutdown();
-
   PIOClear(ANTENNAPWR); 
   PIOClear(AMODEMPWR); 
-
   SleepUntilWoken();
   BIOSReset();
 }
@@ -115,7 +122,7 @@ void restartCheck(long *starts) {
 /*
  * init pins, ports, power
  */
-void initHW(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
+void initSystem(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
   PreRun();   // 10 sec for user abort to DOS
   initMPC();
   PZCacheSetup('C' - 'A', calloc, free);
@@ -296,6 +303,7 @@ void initHW(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
   create_dtx_file(MPC.FILENUM);
 
 } // InitializeAUH() //
+
 /*
  * phase1
  * The initial recording and detecting phase while ICE housing is at/near winch.

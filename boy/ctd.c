@@ -7,6 +7,11 @@
 #include <common.h>
 #include <ctd.h>
 
+// syncMode pending delay port
+CtdData ctd = {
+  0, 0, 3.5, NULL
+};
+
 bool ctdInit() {
   DBG0("\n\t|. ctdInit")
 

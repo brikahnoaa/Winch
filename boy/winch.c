@@ -1,44 +1,41 @@
 #include <common.h>
 #include <winch.h>
 
-WINCHParameters NIGK;
-TUPort *NIGKPort;
-char NextCharacter;
+// pending delay firstRise lastRise firstFall lastFall
+WinchData winch = {
+  false, 0.0, 0.0, 0.0, 0.0, 0.0,
+};
+// off ascentCalls ascentRcv descentCalls descentRcv 
+// stopCalls stopRcv buoyRcv winchCalls port
+AmodemData amodem = {
+  false, 0, 0, 0, 0, 0, 0, 0, 0, NULL,
+};
 
-// extern SystemStatus LARA;
-bool Surfaced;
-extern bool PutInSleepMode;
-extern SystemStatus LARA;
-
-WinchCalls WINCH;
-
-/*
- */
-void WinchConsole() {
+void winchConsole() {
   char in;
   cprintf("\n\t|WinchConsole():");
   in = cgetc();
 
   // Stop
   if (in == 'S')
-    Winch_Stop();
+    winchStop();
   // Descend
   else if (in == 'F')
-    Winch_Descend();
+    winchDescend();
   // Ascend
   else if (in == 'R')
-    Winch_Ascend();
+    winchAscend();
   // Buoy Status?
   else if (in == 'B')
-    Buoy_Status();
+    BuoyStatus();
   else
     cprintf("Bad Input Character.");
 
-} //_____ Console_Data() _____//
+} //____ Console_Data() _____//
 
 /*
  */
-void AModem_Data(void) {
+void AModemData(void) {
   char *inString; // Array for input command/response
   short inchar;
   char prechar; // Two ints to grab different characters of the input
@@ -60,7 +57,7 @@ void AModem_Data(void) {
       inString[i] = (char)inchar;
   }
 
-  // if command from Winch. If stop, why? Update LARA System Statuses
+  // if command from winch. If stop, why? Update LARA System Statuses
   if (strchr(inString, '#') != NULL) {
     command = strtok(inString, "#");
     flogf("\n%s\t|Command: #%s", Time(NULL), command);
@@ -86,32 +83,32 @@ void AModem_Data(void) {
   if (prechar == 'R') {
 
     if (LARA.BUOYMODE == 0)
-      CTD_Sample(1);
+      CTDSample(1);
     LARA.BUOYMODE = 1;
-    WINCH.ASCENTRCV++;
+    amodem.ASCENTRCV++;
     // if(!symbol)
 
   } else if (prechar == 'F') {
 
     if (LARA.BUOYMODE == 0)
-      CTD_Sample(1);
+      CTDSample(1);
     LARA.BUOYMODE = 2;
-    WINCH.DESCENTRCV++;
+    amodem.DESCENTRCV++;
 
   } else if (prechar == 'S') {
 
     if (symbol) {
-      WINCH.STOPRCV++;
+      amodem.STOPRCV++;
       flogf("\n%s|Stop Command Received", Time(NULL));
 
-      if (LARA.BUOYMODE == 1) { // Winch Stops buoy from Ascending... Lack of
+      if (LARA.BUOYMODE == 1) { // winch Stops buoy from Ascending... Lack of
                                 // Tension? Are we close to TDepth? Try Calling?
-        depth = LARA.DEPTH - NIGK.TDEPTH;
-        flogf("\n\t|AModem_Data() Winch Stopped Buoy");
+        depth = LARA.DEPTH - winch.TDEPTH;
+        flogf("\n\t|AModemData() winch Stopped Buoy");
         if (depth > 5.0 &&
             AscentStopTries <
                 2) { // if buoy still too deep. try ascending again
-          Winch_Ascend();
+          winchAscend();
           AscentStopTries++;
         } else if (depth < 2.0 ||
                    AscentStopTries >= 1) { // if buoy less than 5 meters to
@@ -129,45 +126,45 @@ void AModem_Data(void) {
   }
 
   else if (prechar == 'B')
-    Buoy_Status();
+    BuoyStatus();
 
   TURxFlush(NIGKPort);
   free(inString);
   return;
 
-} //____ AModem_Data() ____//
+} //___ AModem_Data() ____//
 /*
  */
-ulong Winch_Ascend(void) {
-  DBG0("\n%s|Winch_Ascend():", Time(NULL))
+ulong winchAscend(void) {
+  DBG0("\n%s|WinchAscend():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#R,01,03\n");
   Delayms(25);
-  WINCH.ASCENTCALLS++;
-  return (time(NULL) + (ulong)NIGK.DELAY);
-} //____ Ascend() ____//
+  amodem.ASCENTCALLS++;
+  return (time(NULL) + (ulong)winch.DELAY);
+} //___ Ascend() ____//
 /*
  */
-ulong Winch_Descend(void) {
-  DBG0("\n%s|Winch_Descend():", Time(NULL))
+ulong winchDescend(void) {
+  DBG0("\n%s|WinchDescend():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#F,01,00\n");
   Delayms(25);
-  WINCH.DESCENTCALLS++;
-  return (time(NULL) + (ulong)NIGK.DELAY); // why return time?
-} //____ Descend() ____//
+  amodem.DESCENTCALLS++;
+  return (time(NULL) + (ulong)winch.DELAY); // why return time?
+} //___ Descend() ____//
 /*
  */
-ulong Winch_Stop(void) {
-  DBG0("\n%s|Winch_Stop():", Time(NULL))
+ulong winchStop(void) {
+  DBG0("\n%s|WinchStop():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#S,01,00\n");
   Delayms(25);
-  WINCH.STOPCALLS++;
-  return (time(NULL) + (ulong)NIGK.DELAY);
+  amodem.STOPCALLS++;
+  return (time(NULL) + (ulong)winch.DELAY);
 }
 /*
  * void Buoy(void)
@@ -175,44 +172,44 @@ ulong Winch_Stop(void) {
  * The return call through NIGKPort sends 2 bytes of data as the
  * response to the Buoy CommandWinch from the Deck Unit
  */
-void Buoy_Status(void) {
-  char B_Status[3] = "00"; // Base return call
+void BuoyStatus(void) {
+  char BStatus[3] = "00"; // Base return call
   DBG0("\n%s|Buoy Status:", Time(NULL))
 
   if (LARA.BUOYMODE != 0) // If CTDPort is Active and the Buoy is in motion
-    B_Status[1] = '1';
+    BStatus[1] = '1';
   else if (LARA.BUOYMODE == 0) // If the Buoy is inactive and the CTDPort is off
-    B_Status[0] = '1';
+    BStatus[0] = '1';
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(
-      NIGKPort, "%%B,01,%c%c\n", B_Status[0],
-      B_Status[1]); // Send rest of status via acoustic remote to deck unit
+      NIGKPort, "%%B,01,%c%c\n", BStatus[0],
+      BStatus[1]); // Send rest of status via acoustic remote to deck unit
   Delayms(5000);        // Make sure all the Buoy Calls have been received....
   TURxFlush(NIGKPort); // Before clearing the NIGKPort Rx
-  WINCH.BUOYRCV++;
+  amodem.BUOYRCV++;
 
-} //____ Buoy() ____//
+} //___ Buoy() ____//
 /*
- * void OpenTUPort_NIGK(bool)
+ * void OpenTUPortNIGK(bool)
  */
-void OpenTUPort_NIGK(bool on) {
+void OpenTUPortNIGK(bool on) {
   static bool once = true;
-  short AModem_RX, AModem_TX;
-  flogf("\n\t|%s NIGK Winch TUPort", on ? "Open" : "Close");
+  short AModemRX, AModem_TX;
+  flogf("\n\t|%s NIGK winch TUPort", on ? "Open" : "Close");
 
   if (on) {
-    AModem_RX = TPUChanFromPin(AMODEMRX);
-    AModem_TX = TPUChanFromPin(AMODEMTX);
+    AModemRX = TPUChanFromPin(AMODEMRX);
+    AModemTX = TPUChanFromPin(AMODEMTX);
 
     PIOClear(AMODEMPWR);
     Delayms(250);
     PIORead(48);
     PIOSet(AMODEMPWR); // Powers up the DC-DC for the Acoustic Modem Port
-    NIGKPort = TUOpen(AModem_RX, AModem_TX, AMODEMBAUD, 0);
+    NIGKPort = TUOpen(AModemRX, AModem_TX, AMODEMBAUD, 0);
     Delayms(150);
     if (NIGKPort == 0)
-      flogf("\n\t|Bad Winch TUPort\n");
+      flogf("\n\t|Bad winch TUPort\n");
     else {
       TUTxFlush(NIGKPort);
       TURxFlush(NIGKPort);
@@ -229,45 +226,45 @@ void OpenTUPort_NIGK(bool on) {
   }
   return;
 
-} //____ OpenTUPort_NIGK() ____//
+} //___ OpenTUPort_NIGK() ____//
 /*
  * void GetWinchSettings()
  */
 void GetWinchSettings() {
   char *p;
 
-  p = VEEFetchData(NIGKDELAY_NAME).str;
-  NIGK.DELAY = atoi(p ? p : NIGKDELAY_DEFAULT);
-  DBG1("NIGK.DELAY=%u (%s)\n", NIGK.DELAY, p ? "vee" : "def")
+  p = VEEFetchData(NIGKDELAYNAME).str;
+  winch.DELAY = atoi(p ? p : NIGKDELAYDEFAULT);
+  DBG1("winch.DELAY=%u (%s)\n", winch.DELAY, p ? "vee" : "def")
 
-  p = VEEFetchData(NIGKANTENNALENGTH_NAME).str;
-  NIGK.ANTLEN = atoi(p ? p : NIGKANTENNALENGTH_DEFAULT);
-  DBG1("NIGK.ANTLEN=%u (%s)\n", NIGK.ANTLEN, p ? "vee" : "def")
+  p = VEEFetchData(NIGKANTENNALENGTHNAME).str;
+  winch.ANTLEN = atoi(p ? p : NIGKANTENNALENGTHDEFAULT);
+  DBG1("winch.ANTLEN=%u (%s)\n", winch.ANTLEN, p ? "vee" : "def")
 
-  p = VEEFetchData(NIGKTARGETDEPTH_NAME).str;
-  NIGK.TDEPTH = atoi(p ? p : NIGKTARGETDEPTH_DEFAULT);
-  DBG1("NIGK.TDEPTH=%u (%s)\n", NIGK.TDEPTH, p ? "vee" : "def")
+  p = VEEFetchData(NIGKTARGETDEPTHNAME).str;
+  winch.TDEPTH = atoi(p ? p : NIGKTARGETDEPTHDEFAULT);
+  DBG1("winch.TDEPTH=%u (%s)\n", winch.TDEPTH, p ? "vee" : "def")
 
-  p = VEEFetchData(NIGKRISERATE_NAME).str;
-  NIGK.RRATE = atoi(p ? p : NIGKRISERATE_DEFAULT);
-  DBG1("NIGK.RRATE=%u (%s)\n", NIGK.RRATE, p ? "vee" : "def")
+  p = VEEFetchData(NIGKRISERATENAME).str;
+  winch.RRATE = atoi(p ? p : NIGKRISERATEDEFAULT);
+  DBG1("winch.RRATE=%u (%s)\n", winch.RRATE, p ? "vee" : "def")
 
-  p = VEEFetchData(NIGKFALLRATE_NAME).str;
-  NIGK.FRATE = atoi(p ? p : NIGKFALLRATE_DEFAULT);
-  DBG1("NIGK.FRATE=%u (%s)\n", NIGK.FRATE, p ? "vee" : "def")
+  p = VEEFetchData(NIGKFALLRATENAME).str;
+  winch.FRATE = atoi(p ? p : NIGKFALLRATEDEFAULT);
+  DBG1("winch.FRATE=%u (%s)\n", winch.FRATE, p ? "vee" : "def")
 
-  p = VEEFetchData(NIGKPROFILES_NAME).str;
-  NIGK.PROFILES = atoi(p ? p : NIGKPROFILES_DEFAULT);
-  DBG1("NIGK.PROFILES=%u (%s)\n", NIGK.PROFILES, p ? "vee" : "def")
+  p = VEEFetchData(NIGKPROFILESNAME).str;
+  winch.PROFILES = atoi(p ? p : NIGKPROFILESDEFAULT);
+  DBG1("winch.PROFILES=%u (%s)\n", winch.PROFILES, p ? "vee" : "def")
 
-  p = VEEFetchData(NIGKRECOVERY_NAME).str;
-  NIGK.RECOVERY = atoi(p ? p : NIGKRECOVERY_DEFAULT);
-  DBG1("NIGK.RECOVERY=%u (%s)\n", NIGK.RECOVERY, p ? "vee" : "def")
+  p = VEEFetchData(NIGKRECOVERYNAME).str;
+  winch.RECOVERY = atoi(p ? p : NIGKRECOVERYDEFAULT);
+  DBG1("winch.RECOVERY=%u (%s)\n", winch.RECOVERY, p ? "vee" : "def")
 }
 /*
- * void Winch_Monitor(int filehandle)
+ * void winchMonitor(int filehandle)
  */
-void Winch_Monitor(int filehandle) {
+void winchMonitor(int filehandle) {
   // global WriteBuffer
   int byteswritten = 0;
   memset(WriteBuffer, 0, BUFSZ);
@@ -276,24 +273,24 @@ void Winch_Monitor(int filehandle) {
                    "%s\nProfile:%d\nDelay:%d\nTDepth:%d\nRiseRate:%d\nFallRate:"
                    "%d\nASCENTCALLS:%d, RCV:%d\nDESCENTCALLS:%d, "
                    "RCV%d\nSTOPCALLS:%d, RCV%d\n\0",
-      NIGK.RECOVERY ? "RECOVERY" : "ON", NIGK.PROFILES, NIGK.DELAY, NIGK.TDEPTH,
-      NIGK.RRATE, NIGK.FRATE, WINCH.ASCENTCALLS, WINCH.ASCENTRCV,
-      WINCH.DESCENTCALLS, WINCH.DESCENTRCV, WINCH.STOPCALLS, WINCH.STOPRCV);
+      winch.RECOVERY ? "RECOVERY" : "ON", winch.PROFILES, winch.DELAY, winch.TDEPTH,
+      winch.RRATE, winch.FRATE, amodem.ASCENTCALLS, amodem.ASCENTRCV,
+      amodem.DESCENTCALLS, amodem.DESCENTRCV, amodem.STOPCALLS, amodem.STOPRCV);
 
   // Maybe include something about calculated velocities and cable length of
   // winch after #of seconds.
-  flogf("\n\t|Winch_Monitor():\n%s", WriteBuffer);
+  flogf("\n\t|WinchMonitor():\n%s", WriteBuffer);
 
   byteswritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
   DBG1("\nBytesWritten: %d", byteswritten)
   // free(writebuffer);
 
-  WINCH.ASCENTCALLS = 0;
-  WINCH.ASCENTRCV = 0;
-  WINCH.DESCENTCALLS = 0;
-  WINCH.DESCENTRCV = 0;
-  WINCH.STOPCALLS = 0;
-  WINCH.STOPRCV = 0;
-  WINCH.BUOYRCV = 0;
-  WINCH.WINCHCALLS = 0;
+  amodem.ASCENTCALLS = 0;
+  amodem.ASCENTRCV = 0;
+  amodem.DESCENTCALLS = 0;
+  amodem.DESCENTRCV = 0;
+  amodem.STOPCALLS = 0;
+  amodem.STOPRCV = 0;
+  amodem.BUOYRCV = 0;
+  amodem.WINCHCALLS = 0;
 }

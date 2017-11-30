@@ -28,9 +28,6 @@
 #include <utils.h> // shared procs, SW
 #include <mpc.h> // shared procs, HW ports and lines
 
-#define PLATFORM LARA
-#define PROG_VERSION 4.0
-
 // the DEBUG's each turn on a macro named DBGx()
 // - blocks of code, as is
 #define DEBUG
