@@ -2,7 +2,7 @@
 #include <wispr.h>
 
 // gain num detMax detNum dutycycl port
-WisprData wisp = {
+WisprInfo wisp = {
   2, 4, 10, 0, 360, NULL
 };
 
@@ -16,7 +16,7 @@ int dtxrqst;
 // char* WISPRString;
 // short WISPRStringLength=64;
 // PAM TUPORT Setup
-TUPort *PAMPort;
+Serial PAMPort;
 short PAM_RX, PAM_TX;
 
 char *GetWISPRInput(float *);
@@ -32,7 +32,7 @@ Power is applied to the wispr board and after the program starts it waits
 for GPS time and location. That's when we send it.
  */
 void WISPRPower(bool power) {
-  // must call OpenTUPort_WISPR first
+  // must call wisprInit first
   if (power) {
 
     flogf("\n%s|WISPR: ON", Time(NULL));
@@ -51,7 +51,7 @@ void WISPRPower(bool power) {
     Delayms(1000);
   }
 
-} //_____ WISPRInit() _____//
+} // WISPRInit
 /*
  * void WISPR_Data()
  * Incoming WISPR ASCII Communication. Looks for certain commands starting with
@@ -241,7 +241,7 @@ short WISPR_Data() {
 
   return 0;
 
-} //_____ WISPR_Data() _____//
+} // WISPR_Data
 /*
  * int WISPRDet()
 This is where we inquire about the total number of detections every so often.
@@ -267,7 +267,7 @@ void WISPRDet(int dtx) {
 
   Delayms(500);
 
-} //_____ WISPRDet() _____//
+} // WISPRDet
 /*
  * int WISPRGPS()
 This is where we send the GPS Time and Location to WISPR Board at startup
@@ -301,7 +301,7 @@ void WISPRGPS() {
 
   SendWISPRGPS = true;
 
-} //_____ WISPRGPS() _____//
+} // WISPRGPS
 /*
  * int WISPRGain()
 We can update the gain parameters for the WISPR Board.
@@ -320,7 +320,7 @@ void WISPRGain(short c) {
   TUTxWaitCompletion(PAMPort);
   Delayms(2);
 
-} //_____ WISPRGain() _____//
+} // WISPRGain
 /*
  * int WISPRDFP()
  */
@@ -333,7 +333,7 @@ void WISPRDFP() {
   TUTxWaitCompletion(PAMPort);
   Delayms(250);
 
-} //_____ WISPRDFP() _____//
+} // WISPRDFP
 /*
  * int WISPRTFP()
  */
@@ -346,7 +346,7 @@ void WISPRTFP() {
   TUTxWaitCompletion(PAMPort);
   Delayms(250);
 
-} //_____ WISPRDFP() _____//
+} // WISPRDFP
 /*
  * int WISPRExit()
  */
@@ -368,7 +368,7 @@ bool WISPRExit() {
   } else
     return false;
 
-} //_____ WISPRExit() _____//
+} // WISPRExit
 /*
  * char* GetWISPRInput()
 1. Gets incoming serial data from ActivePAM on MPC
@@ -455,7 +455,7 @@ char *GetWISPRInput(float *numchars) {
 
   return WisprString;
 
-} //_____ GetIRIDInput() _____//
+} // GetIRIDInput
   /***************************************************************************************
   ** void ChangeWISPR()
  */
@@ -469,10 +469,10 @@ void ChangeWISPR(short wnum) {
     }
   }
 
-  OpenTUPort_WISPR(false);
+  wisprInit(false);
   Delayms(100);
   WISP.NUM = wnum;
-  OpenTUPort_WISPR(true);
+  wisprInit(true);
   WISPRPower(true);
 }
 /*
@@ -530,7 +530,7 @@ void GetWISPRSettings() {
     VEEStoreShort(WISPRNUM_NAME, WISP.NUM);
   }
 
-} //____ GetWISPRSettings() ___//
+} // GetWISPRSettings
 /*
  * void WISPRSafeShutdown()
  */
@@ -557,7 +557,7 @@ void WISPRSafeShutdown() {
   } else
     return;
 
-} //___ WISPRSafeShutdown() ___//
+} // WISPRSafeShutdown
 /*
  * Void WISPRWriteFile()
  */
@@ -614,7 +614,7 @@ void WISPRWriteFile(int uploadfilehandle) {
 
   TotalDetections = 0;
 
-} //____ WISPRWriteFile() ____//
+} // WISPRWriteFile
 /*
  * float GetWISPRFreeSpace
  * Read "wisprfs.bat" file. return free space of current WISPR? ||  return free
@@ -624,7 +624,7 @@ float GetWISPRFreeSpace() {
 
   return WISPRFreeSpace;
 
-} //____ GetWISPRFreeSpace() ____//
+} // GetWISPRFreeSpace
 /*
 void AppendDetections(char *DTXString, int FileDescriptor) {
   int i;
@@ -744,12 +744,12 @@ void GatherWISPRFreeSpace() {
     }
   }
 
-  OpenTUPort_WISPR(false);
+  wisprInit(false);
   Delayms(100);
   WISP.NUM = wnum;
   VEEStoreShort(WISPRNUM_NAME, WISP.NUM);
 
-} //____GatherWISPRFreeSpace() ____//
+} //GatherWISPRFreeSpace
 /*
  * void UpdateWISPRFRS()
  * 
@@ -814,11 +814,11 @@ void UpdateWISPRFRS() {
 
   close(wisprfilehandle);
 
-} //____ UpdateWISPRFRS() ____//
+} // UpdateWISPRFRS
 /*
- * void OpenTUPort_WISPR()
+ * void wisprInit()
  */
-void OpenTUPort_WISPR(bool on) {
+void wisprInit(bool on) {
   // global WisprStr
   int WisprNum;
 
@@ -827,7 +827,7 @@ void OpenTUPort_WISPR(bool on) {
   if (on) {
     PAM_RX = TPUChanFromPin(28);
     PAM_TX = TPUChanFromPin(27);
-    PAMPort = TUOpen(PAM_RX, PAM_TX, BAUD, 0);
+    PAMPort = TUOpen(PAM_RX, PAM_TX, WISPRBAUD, 0);
   } else if (!on) {
     TUTxFlush(PAMPort);
     TURxFlush(PAMPort);
@@ -896,9 +896,9 @@ void OpenTUPort_WISPR(bool on) {
 bool WISPRExpectedReturn(short expected, bool reboot) {
 
   if (WISPR_Data() != expected) {
-    OpenTUPort_WISPR(false);
+    wisprInit(false);
     Delay_AD_Log(2);
-    OpenTUPort_WISPR(true);
+    wisprInit(true);
     Delay_AD_Log(1);
     switch (expected) {
     case 1:
@@ -924,4 +924,4 @@ bool WISPRExpectedReturn(short expected, bool reboot) {
   } else
     return true;
 
-} //____ WISPRExpectedReturn ____//
+} // WISPRExpectedReturn //

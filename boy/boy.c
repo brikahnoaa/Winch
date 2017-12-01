@@ -40,7 +40,7 @@
 // progname[20] projID[6] pltfrmID[6] filenum starts maxStarts
 // detInt dataInt phase phaseStart on
 // depth moorDepth avgVel port
-BuoyData boy = {
+BuoyInfo boy = {
   "LARA", "QUEH", "LR01", 0, 0, 50,
   0, 0, 0, 2, 1,
   0, 0, 0, NULL
@@ -122,7 +122,7 @@ void restartCheck(long *starts) {
 /*
  * init pins, ports, power
  */
-void initSystem(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
+void initSystem(Serial antPort, ctdPort, winchPort, wisprPort) {
   PreRun();   // 10 sec for user abort to DOS
   initMPC();
   PZCacheSetup('C' - 'A', calloc, free);
@@ -176,9 +176,9 @@ void initSystem(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
     VEEStoreShort(DUTYCYCLE_NAME, WISP.DUTYCYCL);
     // Possibility of WISPR still being on after reboot. Shut it down.
     // ?? check wispr power state first
-    OpenTUPort_WISPR(true);
+    wisprInit(true);
     WISPRSafeShutdown();
-    OpenTUPort_WISPR(false);
+    wisprInit(false);
     boy.LOWPOWER = true;
   } 
 
@@ -205,7 +205,7 @@ void initSystem(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
     if (WISPRNUMBER > 1) { // total number
       if (WISP.NUM != 1)
         WISP.NUM = 1; // current used board
-      OpenTUPort_WISPR(true);
+      wisprInit(true);
       // Gather all #WISPRNUMBER freespace and sync time.
       GatherWISPRFreeSpace();
     }
@@ -302,7 +302,7 @@ void initSystem(TUPort *antPort, *ctdPort, *winchPort, *wisprPort) {
 
   create_dtx_file(MPC.FILENUM);
 
-} // InitializeAUH() //
+} // InitializeAUH
 
 /*
  * phase1
@@ -349,7 +349,7 @@ void phase2() {
   int halfway;
 
   flogf("\n\t|phase TWO: Target Depth:%d", NIGK.TDEPTH);
-  OpenTUPort_NIGK(true);
+  amodemInit(true);
   PrintSystemStatus();
 
   CTD_Select(DEVA);
@@ -369,7 +369,7 @@ void phase2() {
     boy.TOPDEPTH = boy.depth;
     boy.SURFACED = true;
     boy.phase = 3;
-    OpenTUPort_NIGK(false);
+    amodemInit(false);
     return;
   }
   if (boy.BUOYMODE != 1) {
@@ -431,7 +431,7 @@ void phase2() {
   if (boy.SURFACED)
     boy.phase = 3;
 
-  OpenTUPort_NIGK(false);
+  amodemInit(false);
 
 } // phase2 //
 /*
@@ -453,7 +453,7 @@ void phase3() {
   if (WISPR_Status()) {
     WISPRSafeShutdown();
   }
-  OpenTUPort_WISPR(false);
+  wisprInit(false);
 
   // should do this at boot
   if (boy.RESTART) { 
@@ -534,7 +534,7 @@ void phase3() {
   boy.TDEPTH = NIGK.TDEPTH;
 
   if (WISP.DUTYCYCL > 50) {
-    OpenTUPort_WISPR(true);
+    wisprInit(true);
     WISPRPower(true);
   }
 
@@ -554,7 +554,7 @@ void phase4() {
   int interval = 1;
 
   flogf("\n%s|phase_Four():", Time(NULL));
-  OpenTUPort_NIGK(true);
+  amodemInit(true);
 
   boy.SURFACED = false;
 
@@ -600,7 +600,7 @@ void phase4() {
 
     timecheck = time(NULL);
     // Check depth change every 60 seconds... This is an out of the while loop.
-    // Hopefully it will only come here when TUPort to the AModem stops boy
+    // Hopefully it will only come here when AModem stops boy
     // doesn't hear the Winch serial coming.
     if (timecheck - DescentStart > interval * 180) { // ?? known prob w ctd read
       flogf("\n\t|phase4() Check depth change");
@@ -636,12 +636,12 @@ void phase4() {
   flogf("\n\t|Time for Descent: %d", boy.DESCENTTIME);
   PrintSystemStatus();
   Delay_AD_Log(2);
-  OpenTUPort_NIGK(false);
+  amodemInit(false);
 
   boy.phase = 1;
   boy.DATA = false;
 
-} // phase_Four() //
+} // phase_Four
 
 /*
  * reboot for deploy time
@@ -811,7 +811,7 @@ int Incoming_Data() {
 
   return value;
 
-} // Incoming_Data() //
+} // Incoming_Data
 /*
  * void Console
  * Platform Specific Console Communication
@@ -938,7 +938,7 @@ IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 
   PinRead(IRQ5);
 
-} // ExtFinishPulseRuptHandler() //
+} // ExtFinishPulseRuptHandler
 
 /*
  * SleepUntilWoken		Finish up
@@ -978,7 +978,7 @@ void Sleep(void) {
   //
   // DBG2(".")
   Delayms(10);
-} // Sleep() //
+} // Sleep
 
 /*
  * CTDSleep
@@ -1019,7 +1019,7 @@ void CTDSleep(void) {
 
   //   DBG2(",")
   Delayms(10);
-} // Sleep() //
+} // Sleep
 
 /*
  * SleepUntilWoken		Sleep until IRQ4 is interrupted
@@ -1072,7 +1072,7 @@ void SleepUntilWoken(void) {
   putflush(); // tell 'em we're back
               //			BIOSResetToPicoDOS();
               //}
-} // SleepUntilWoken() //
+} // SleepUntilWoken
 /*
  * static void Irq3ISR(void)
  */
@@ -1093,14 +1093,14 @@ static void IRQ2_ISR(void) {
 static void IRQ4_ISR(void) {
   PinIO(IRQ4RXD);
   RTE();
-} // Irq2ISR() //
+} // Irq2ISR
 /*
  * static void IRQ5_ISR(void) WISPR
  */
 static void IRQ5_ISR(void) {
   PinIO(IRQ5);
   RTE();
-} // Irq5ISR() //
+} // Irq5ISR
 /*
  * WriteFile      The Data File For Lara
 1) Initially upload MPC parameters
@@ -1213,7 +1213,7 @@ ulong WriteFile(ulong TotalSeconds) {
   else
     return 0;
 
-} // WriteFile() //
+} // WriteFile
 /*
  * PrintSystemStatus()
  */
@@ -1264,7 +1264,7 @@ void WaitForWinch(short expectedBuoyMode) {
   if (boy.BUOYMODE == expectedBuoyMode) // success
     flogf("\n\t|Successful BUOY Status Correction");
 
-} // WaitForWinch() //
+} // WaitForWinch
 /*
  * void CheckTime()
  * Only comes here after reboot when MPC.STARTUPS>0
@@ -1342,7 +1342,7 @@ bool CheckTime(ulong prevTime, short mode, short hour) {
   }
   return returnvalue;
 
-} // CheckTime() //
+} // CheckTime
 
 /*
  * CurrentWarning() - current reduces distance between CTD's

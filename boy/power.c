@@ -46,7 +46,7 @@ transfer into the real power write time.
 #include <common.h>
 #include <power.h>
 
-PowerData power = {};
+PowerInfo power = {};
 
 IEV_C_PROTO(ADTimingRuptHandler);
 IEV_C_PROTO(ADSamplingRuptHandler);
@@ -128,7 +128,7 @@ ushort Setup_ADS(bool ads_on, long filecounter, ushort val) {
     ADCounter = 0;
   }
   return ADSTIME;
-} //_____ void SetUpADS() _____//
+} // void SetUpADS
   /*********************************************************\
   ** Void OpenAvgFile()
  */
@@ -146,7 +146,7 @@ void Open_Avg_File(long counter) {
 
   Delayms(10);
 
-} //_____ void OpenAvgFile() _____//
+} // void OpenAvgFile
 /*
  * Setup Acquisition
  */
@@ -198,7 +198,7 @@ void Setup_Acquisition(ushort BitShift) {
   PITSet51msPeriod(PITRATE);
   data = false;
 
-} //_____ SetupAcquistion() _____//
+} // SetupAcquistion
 /*
  * AD_Log
  * 1)Comes here from Main() if either data or data2 is true
@@ -234,11 +234,11 @@ void AD_Log(void) {
   flogf("\n\t|POWER: %5.3fA, %5.2fV", current, Voltage);
 
   AD_Write(AveragedEnergy);
-} //_____ ADLog() _____//
+} // ADLog
 /*
  * Get_Voltage()
  */
-float Get_Voltage() { return Voltage; } //____ Get_Voltage ____//
+float Get_Voltage() { return Voltage; } // Get_Voltage //
 /*
  * Voltage Now()
  */
@@ -252,7 +252,7 @@ float Voltage_Now() {
   Voltage = volts;
   return volts;
 
-} //____ Voltage_Now() ____//
+} // Voltage_Now
 /*
  * AD Write
  * Open file of Current averages, go to end of file and grab last averaged
@@ -288,7 +288,7 @@ void AD_Write(ushort *AveragedEnergy) {
  
   Delayms(10);
 
-} //_____ AD_Write() _____//
+} // AD_Write
 /*
  * PowerMonitor
  * This function is called when the WriteInterval (WRTINT) is met.
@@ -413,7 +413,7 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
 
   return floater;
 
-} //_____ PowerMonitor() _____//
+} // PowerMonitor
 /*
  * ADTimingRuptHandler Chore		Initiate conversion
  * 1) Makes sure QSM is running and repeats previous synchronization
@@ -452,7 +452,7 @@ IEV_C_FUNCT(ADTimingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
     Nsamps = 0;
   }
 
-} //____ ADTimingRuptHandler() ____//
+} // ADTimingRuptHandler
 /*
  * ADSamplingRuptHandler		Move raw QPSI data to main buffer
  */
@@ -464,7 +464,7 @@ IEV_C_FUNCT(
   CPUWriteInterruptMask(SIM_PITR_DEF_IPL);
   QPBClearInterrupt();
 
-} //____ ADSamplingRuptHandler() ____//
+} // ADSamplingRuptHandler
 
 /*
  * 

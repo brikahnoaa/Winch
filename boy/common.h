@@ -23,10 +23,8 @@
 #include <time.h>
 #include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 
-#include <define.h> // common defines
 #include <global.h> // common externals
 #include <utils.h> // shared procs, SW
-#include <mpc.h> // shared procs, HW ports and lines
 
 // the DEBUG's each turn on a macro named DBGx()
 // - blocks of code, as is

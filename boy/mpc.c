@@ -141,7 +141,7 @@ int System_Timer() {
 
   return 1;
 
-} //____ System_Timer() _____//
+} // System_Timer
 /*
  * PreRun		Exit opportunity before we start the program
  */
@@ -175,7 +175,7 @@ void PreRun(void) {
     if (c != -1) // !timeout
       return;
   }
-} //____ PreRun() ____//
+} // PreRun
 
 /*
  * Set IO pins, set SYSCLK
@@ -299,7 +299,7 @@ char *Time(ulong *seconds) {
           rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
   return time_chr;
 
-} //____ Time() ____//
+} // Time
 /*
  * Time & Date String
  * Get the RTC time seconds since 1970 and convert it 
@@ -319,7 +319,7 @@ char *TimeDate(ulong *seconds) {
           rtc_time->tm_min, rtc_time->tm_sec);
   return time_chr;
 
-} //____ TimeDate() ____//
+} // TimeDate
 
 /*
  * void CheckTimerIntervals()
@@ -397,7 +397,7 @@ float Check_Timers(ushort PLI) {
 
   return callrate;
 
-} //____ Check_Timers() ____//
+} // Check_Timers
 /*
  * Check_Vitals
  * //Voltage: checking the average
@@ -461,7 +461,7 @@ short Check_Vitals() {
 
   return returnvalue;
 
-} //____ Check_Vitals() ____//
+} // Check_Vitals
 /*
  * void AppendFile
  */
@@ -537,7 +537,7 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
 
   return true;
 
-} //____ AppendFiles() ____//
+} // AppendFiles
 
 /*
  * Free_Disk_Space *   Returns the free space in kBytes
@@ -566,7 +566,7 @@ void VEEStoreShort(char *veename, short value) {
   sprintf(string, "%d", value);
   VEEStoreStr(veename, string);
 
-} //____ VEEStoreShort() ____//
+} // VEEStoreShort
 
 void print_clock_cycle_count(clock_t start, clock_t stop, char *label) {
 

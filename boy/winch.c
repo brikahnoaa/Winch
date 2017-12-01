@@ -2,12 +2,12 @@
 #include <winch.h>
 
 // pending delay firstRise lastRise firstFall lastFall
-WinchData winch = {
+WinchInfo winch = {
   false, 0.0, 0.0, 0.0, 0.0, 0.0,
 };
 // off ascentCalls ascentRcv descentCalls descentRcv 
 // stopCalls stopRcv buoyRcv winchCalls port
-AmodemData amodem = {
+AmodemInfo amodem = {
   false, 0, 0, 0, 0, 0, 0, 0, 0, NULL,
 };
 
@@ -31,7 +31,7 @@ void winchConsole() {
   else
     cprintf("Bad Input Character.");
 
-} //____ Console_Data() _____//
+} // Console_Data
 
 /*
  */
@@ -132,7 +132,7 @@ void AModemData(void) {
   free(inString);
   return;
 
-} //___ AModem_Data() ____//
+} // AModem_Data
 /*
  */
 ulong winchAscend(void) {
@@ -143,7 +143,7 @@ ulong winchAscend(void) {
   Delayms(25);
   amodem.ASCENTCALLS++;
   return (time(NULL) + (ulong)winch.DELAY);
-} //___ Ascend() ____//
+} // Ascend
 /*
  */
 ulong winchDescend(void) {
@@ -154,7 +154,7 @@ ulong winchDescend(void) {
   Delayms(25);
   amodem.DESCENTCALLS++;
   return (time(NULL) + (ulong)winch.DELAY); // why return time?
-} //___ Descend() ____//
+} // Descend
 /*
  */
 ulong winchStop(void) {
@@ -189,11 +189,11 @@ void BuoyStatus(void) {
   TURxFlush(NIGKPort); // Before clearing the NIGKPort Rx
   amodem.BUOYRCV++;
 
-} //___ Buoy() ____//
+} // Buoy
 /*
- * void OpenTUPortNIGK(bool)
+ * void amodemInit(bool)
  */
-void OpenTUPortNIGK(bool on) {
+void amodemInit(bool on) {
   static bool once = true;
   short AModemRX, AModem_TX;
   flogf("\n\t|%s NIGK winch TUPort", on ? "Open" : "Close");
@@ -226,7 +226,7 @@ void OpenTUPortNIGK(bool on) {
   }
   return;
 
-} //___ OpenTUPort_NIGK() ____//
+} // amodemInit
 /*
  * void GetWinchSettings()
  */

@@ -8,61 +8,65 @@
 #include <ctd.h>
 
 // syncMode pending delay port
-CtdData ctd = {
+CtdInfo ctd = {
   0, 0, 3.5, NULL
 };
 
-bool ctdInit() {
-  DBG0("\n\t|. ctdInit")
-
-  ctdSampleBreak();
-  if (!ctdGetPrompt(stringin)) {
-    DBG2(" fail start getprompt")
-    ctdSampleBreak();
-    DevSelect(sbe);
-    DelayADLog(3);
-    if (!ctdGetPrompt(stringin)) {
-      DBG2(" fail start1 getprompt")
-      if (sbe==DEVA) DevSelect(DEVX);
-      DelayADLog(1);
-      DevSelect(sbe);
-      ctdSampleBreak();
-      DelayADLog(3);
-      if (!ctdGetPrompt(stringin)) {
-        DBG2(" fail start2 getprompt")
-      }
-    } 
+bool ctdOpen() {
+  DBG0(" ctdOpen()")
+  // global ctd .off .port .pending
+  if (ctd.off) {
+    ctd.port = TUOpen(DEVICERX, DEVICETX, CTDBAUD, 0);
+    if (ctd.port) ctd.off = false;
+    else flogf( "\nERR ctdOpen(): fail TUOpen" );
   }
-  ctdDateTime();
-  // ctdSyncMode();
+  ctdBreak(ctd.port);
+  if (!ctdPrompt() && !ctdPrompt()) {   // try twice
+    flogf( "\nERR ctdOpen(): no prompt" );
+    ctdClose();
+    return false;
+  }
+  ctdSetDate();
+  if (ctd.syncmode) ctdSyncmode();
+  
+  ctd.off = false;
+  ctd.pending = false;
+  ctd.filehandle = open(ctd.filename, OAPPEND | OCREAT | ORDWR);
+  if (ctd.filehandle <= 0) {
+    flogf("\nERR %s open errno: %d", ctd.filename, errno);
+    return false;
+  }
   return true;
-} // ctdInit
+} // ctdOpen
 
 
 
 /*
+ * date, time for ctd. also some params.
  */
-void ctdDateTime() {
-
+void ctdSetDate() {
+  DBG0(" ctdSetDate()")
+  // global ctd .port
   timet rawtime;
   struct tm *info;
   char buffer[15];
-  DBG1("\n\t|ctdDateTime()")
+  
   time(&rawtime);
-
   info = gmtime(&rawtime);
-
   //	strftime(buffer, 15, "%m%d%Y%H%M%S", info);
-  sprintf(buffer, "%02d%02d%04d%02d%02d%02d", info->tmmon+1, info->tmmday,
-          info->tmyear + 1900, info->tmhour, info->tmmin, info->tmsec);
-  printf("\nctdDateTime(): %s\n");
+  sprintf(buffer, "datetime=%02d%02d%04d%02d%02d%02d", 
+    info->tmmon+1, info->tmmday, info->tmyear + 1900, 
+    info->tmhour, info->tmmin, info->tmsec);
+  flogf("\n\t|ctdSetDate(): %s\n", buffer);
 
-  TUTxPrintf(ctd.port, "DATETIME=%s\r", buffer);
-  Delayms(250);
-  while (tgetq(ctd.port))
-    cprintf("%c", TURxGetByte(ctd.port, true));
+  serWrite(ctd.port, buffer);
+  serReadWait(ctd.port, scratch, 1);
+  serWrite(ctd.port, "syncwait=0\r");
+  serReadWait(ctd.port, scratch, 1);
+  serWrite(ctd.port, "DelayBeforeSampling=0\r");
+  serReadWait(ctd.port, scratch, 1);
 
-} // ctdDateTime() 
+} // ctdSetDate() 
 
 // sbe16
 // \r input, echos input.  \r\n before next output.
@@ -71,201 +75,102 @@ void ctdDateTime() {
 // pause between ts\r\n and result, 4.32s
 
 /*
- * ctdGetPrompt - poke buoy CTD, look for prompt
+ * ctdPrompt - poke buoy CTD, look for prompt
  */
-bool ctdGetPrompt() {
+bool ctdPrompt() {
   static char str[32];
   TURxFlush(ctd.port);
   TUTxPutByte(ctd.port, '\r', true);
-  GetStringWait(ctd.port, 2, str);
+  getStringWait(ctd.port, 2, str);
   // looking for S>
   if (strstr(str, "S>") != NULL) return true;
   else return false;
 }
 
-/*
- */
 void ctdSample() {
+  DBG0(" ctdSample()")
+  // global ctd .pending
   char ch;
-  DBG1("\n . ctdSample")
-  //if (SyncMode) {
-    //TUTxPrintf(ctd.port, "+\r");
-    //Delayms(20);
-    //TURxFlush(ctd.port);
-  //} else {
-  // TUTxPrintf(ctd.port, "TS\r");
-  TUTxPutByte(ctd.port, 'T', true);
-  ch=TURxGetByteWithTimeout(ctd.port, 10);
-  TUTxPutByte(ctd.port, 'S', true);
-  ch=TURxGetByteWithTimeout(ctd.port, 10);
-  TUTxPutByte(ctd.port, '\r', true);
-  ch=TURxGetByteWithTimeout(ctd.port, 10);
-  ch=TURxGetByteWithTimeout(ctd.port, 10);
-  //}
-} // ctdSample() //
+  int len;
+
+  if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
+  else {
+    serWrite(ctd.port, "TS\r");
+    // consume echo
+    len = serReadWait(port, char *in, 1);
+    if (len<3) flogf("\nERR ctdSample, TS command fail");
+  }
+  ctd.pending = true;
+} // ctdSample
 
 /*
  */
-void ctdSyncMode() {
-  DBG0("\n\t|ctdSyncMode()")
-  ctdSampleBreak();
-  TUTxPrintf(ctd.port, "Syncmode=y\r");
-  Delayms(500);
-  TUTxPrintf(ctd.port, "QS\r");
-  Delayms(500);
-  SyncMode = true;
+void ctdSyncmode() {
+  DBG0(" ctdSyncmode()")
+  // global ctd .port .syncmode
+  serWrite(ctd.port, "Syncmode=y\r");
+  ctdPrompt();
+  serWrite(ctd.port, "QS\r");
+  ctd.syncmode = true;
+  Delayms(100);
   TURxFlush(ctd.port);
 } 
 
 /*
  */
-void ctdSampleBreak() {
+void ctdBreak() {
+  DBG0(" ctdBreak()")
+  // global ctd .port
   TUTxBreak(ctd.port, 5000);
-  SyncMode = false;
 }
 
 
 /*
- * bool ctdData() 
- * Temp, conductivity, depth, fluromtr, PAR, salinity, time
- * 16.7301,  0.00832,    0.243, 0.0098, 0.0106,   0.0495, 14 May 2017 23:18:20
- * The response is approximately 2 sec.
- * FLS and PAR data in between the depth and salinity. Ignore the conductivity.
- * !! too many functions here
- * !! sets lara.depth lara.temp
- * !! ctdvertvel
- * !! log scientific
- * waits up to 8 seconds - best called after tgetq()
+ * sbe16 response is just over 3sec in sync, well over 4sec in command
+ * returns depth
  */
-bool ctdData() {
-  // global stringin CTDLogFile
-  char *strin;  // pointer into stringin
-  int filehandle;
-  int i=0;
-  int byteswritten, month;
-  long len;
-  char *splittemp, *splitcond, *splitpres;
-  char *splitflu, *splitpar, *splitsal;
+float ctdData(char *stringout) {
+  DBG0(" ctdData()")
+  // global scratch, ctd .port .depth .pending
+  int len;
   float temp, cond, pres, flu, par, sal;
-  char *splitdate, *mon;
-  struct tm info;
-  timet secs = 0;
+  char *day, *month, *year, *time;
+  char stringin[BUFSZ];
 
-  DBG0("\n. ctdData()")
-  memset(stringin, 0, BUFSZ);
+  if (ctd.off) ctdOpen();
 
   // waits up to 8 seconds - best called after tgetq()
-  len = GetStringWait(stringin, (short) 8000);
-  DBG( printsafe(len, stringin);)
+  len = serReadWait(ctd.port, 8, stringin);
+  DBG2("\nctd-->%s", printSafe(scratch, stringin))
 
-  TURxFlush(ctd.port);
-  strin=stringin;
+  // Temp, conductivity, depth, fluromtr, PAR, salinity, time
+  // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
+  // note: picks up trailing S> prompt if not in syncmode
+  // note: leading # in syncmode
+  temp = atof( strtok(stringin, "\r\n# "));
+  cond = atof( strtok(NULL, ", ")); 
+  pres = atof( strtok(NULL, ", "));
+  flu = atof( strtok(NULL, ", "));
+  par = atof( strtok(NULL, ", "));
+  sal = atof( strtok(NULL, ", "));
+  // rest is date time
+  day = strtok(NULL, ", ");
+  month = strtok(NULL, " ");
+  year = strtok(NULL, " ");
+  time = strtok(NULL, " \r\n");
 
-  memset(stringout, 0, BUFSZ);
-  // Split data string up into separate values
-  if (sbeID==DEVB) { // buoy sbe
-    // Example: # 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50
-    // Example: 20.6538,  0.01145,    01 Aug 2016, 12:16:50
-    splittemp = strtok(strin, "\r\n# ");
-    splitcond = strtok(NULL, ", "); 
-    splitpres = strtok(NULL, ", ");
-    splitflu = strtok(NULL, ", ");
-    splitpar = strtok(NULL, ", ");
-    splitsal = strtok(NULL, ", ");
-    splitdate = strtok(NULL, "\r\n"); 
-
-    temp = atof(splittemp);
-    cond = atof(splitcond);
-    pres = atof(splitpres);
-    flu = atof(splitflu);
-    par = atof(splitpar);
-    sal = atof(splitsal);
-    sprintf(stringout, "%.4f,%.5f,%.3f,%.4f,%.4f,%.4f", 
-      temp, cond, pres, flu, par, sal);
-  } else { // antMod sbe
-    // Example: # 20.6538,  0.217,   01 Aug 2016 12:16:50
-    splittemp = strtok(strin, "\r\n#, ");
-    splitpres = strtok(NULL, ", ");
-    splitdate = strtok(NULL, "\r\n"); 
-
-    temp = atof(splittemp);
-    pres = atof(splitpres);
-    sprintf(stringout, "%.4f,%.3f", temp, pres);
-  }
-  LARA.DEPTH = pres;
-  // LARA.TEMP = temp; //??
-  DBG1("\nctd->%s", stringout)
-
-  // buoy sbe vvvvv
-  // convert date time to secs
-  info.tmmday = atoi(strtok(splitdate, ", "));
-  mon = strtok(NULL, " ");
-  info.tmyear = (atoi(strtok(NULL, " ,")) - 1900);
-  info.tmhour = atoi(strtok(NULL, ":"));
-  info.tmmin = atoi(strtok(NULL, ":"));
-  info.tmsec = atoi(strtok(NULL, " "));
-
-  info.tmmon = -1;
-  if (strstr(mon, "Jan") != NULL)
-    info.tmmon = 0;
-  else if (strstr(mon, "Feb") != NULL)
-    info.tmmon = 1;
-  else if (strstr(mon, "Mar") != NULL)
-    info.tmmon = 2;
-  else if (strstr(mon, "Apr") != NULL)
-    info.tmmon = 3;
-  else if (strstr(mon, "May") != NULL)
-    info.tmmon = 4;
-  else if (strstr(mon, "Jun") != NULL)
-    info.tmmon = 5;
-  else if (strstr(mon, "Jul") != NULL)
-    info.tmmon = 6;
-  else if (strstr(mon, "Aug") != NULL)
-    info.tmmon = 7;
-  else if (strstr(mon, "Sep") != NULL)
-    info.tmmon = 8;
-  else if (strstr(mon, "Oct") != NULL)
-    info.tmmon = 9;
-  else if (strstr(mon, "Nov") != NULL)
-    info.tmmon = 10;
-  else if (strstr(mon, "Dec") != NULL)
-    info.tmmon = 11;
-
-  // need better sanity checks
-  if (info.tmmon == -1) {
-    flogf("\nERROR|ctdData(): month %s incorrect. ", mon);
-    flogf("\n\t|''%s''", stringin);
-    return false;
-  } 
-  else month = info.tmmon + 2;
-
-  memset(stringin, 0, 32);
-  sprintf(stringin, ",%d/%d/%d,%02d:%02d:%02d", month, info.tmmday,
-          info.tmyear - 100, info.tmhour, info.tmmin, info.tmsec);
-  strcat( stringout, stringin );
-  DBG1("%s", stringin)
-
-  secs = mktime(&info);
-
-  // if antMod DEVA, we are done, no log
-  if (sbeID==DEVA) { return true; }
+  sprintf(stringout, 
+    "%.4f,%.5f,%.3f,%.4f,%.4f,%.4f,%s%s,%s", 
+    temp, cond, pres, flu, par, sal, month, day, time);
+  flogf("ctd: %s\n", stringout);
 
   // Log WriteString
-  filehandle = open(CTDLogFile, OAPPEND | OCREAT | ORDWR);
-  if (filehandle <= 0) {
-    flogf("\nERROR  |ctdlogfile '%s' fd %d", CTDLogFile, filehandle);
-    flogf("\nERROR  |ctdLogger() %s open errno: %d", CTDLogFile, errno);
-    return false;
+  len = strlen(stringout);
+  if (write(ctd.filehandle, stringout, len)<len) {
+    flogf("\nERR ctdData log fail");
   }
-  byteswritten = write(filehandle, stringout, strlen(stringout));
-  DBG2("\nBytes Written: %d", byteswritten)
-  if (close(filehandle) != 0) {
-    flogf("\nERROR  |ctdLogger: File Close error: %d", errno);
-    return false;
-  }
-  // this incr looks strange, but lara.ctd is not ctdsamples, not part of averaging
-  LARA.CTDSAMPLES++;
-  if (LARA.BUOYMODE != 0) ctdVertVel(secs); // ??
-  return true;
-} // ctdData() //
+
+  ctd.depth = pres;
+  return (pres);
+} // ctdData
 

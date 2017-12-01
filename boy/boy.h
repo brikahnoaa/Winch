@@ -11,7 +11,7 @@
 #endif
 
 // boy
-typedef struct BuoyData {
+typedef struct BuoyInfo {
   bool off;
   int deviceID;           // DEVA=1 = antenna, DEVB=2 = buoy ctd
   char programName[20]; // added HM
@@ -28,8 +28,8 @@ typedef struct BuoyData {
   float depth;     // Most recent depth measurement from sbe16
   float moorDepth; // Depth at beginning of LARA.PHASE==1. Averaged Samples
   float avgVel;
-} BuoyData;
-extern BuoyData boy;
+} BuoyInfo;
+extern BuoyInfo boy;
 
 void SleepUntilWoken();
 void shutdown();
