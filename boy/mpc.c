@@ -53,8 +53,6 @@ int System_Timer() {
     RTS(DataTimer++;)
     flogf("\n%s|System_Timer(%d/%d):", Time(NULL), DataTimer, DataInterval);
 
-// WISPR MEASUREMENTS
-#ifdef WISPR
     // If WISPR ON
     if (WISPR_Status()) {
       flogf("\n\t|Detection Call: Requesting %d DTX", WISP.DETMAX);
@@ -69,7 +67,6 @@ int System_Timer() {
         WISPRExpectedReturn(2, true);
       }
     }
-#endif
 
 // CTD Measurements
 #ifdef CTDSENSOR
@@ -126,9 +123,9 @@ int System_Timer() {
   else if (IRID.CALLMODE == 1) {
     time(&rawtime);
     info = gmtime(&rawtime);
-    // DBG1("\n\t|CallTime: %d, Hour Now %d", IRID.CALLHOUR, info->tm_hour)
+    // DBG1("\t|CallTime: %d, Hour Now %d", IRID.CALLHOUR, info->tm_hour)
     if (info->tm_hour == IRID.CALLHOUR) {
-      DBG1("\n\t|Current Minutes: %d", info->tm_min)
+      DBG1("\t|Current Minutes: %d", info->tm_min)
       if (info->tm_min <= 3) {
         DataTimer = 0;
         flogf("\n\t|IRID CALLMODE=1, Call Now!\n\t|IRID CALLHOUR: %d",
@@ -322,41 +319,33 @@ char *TimeDate(ulong *seconds) {
 } // TimeDate
 
 /*
- * void CheckTimerIntervals()
  * Check the input values from cmdfile() and makes sure  they are divisible by
 SysTimeInt. If not, rounds them up.
  * PLI: Power Log Interval
-/*
+ */
 float Check_Timers(ushort PLI) {
-
+  DBG0("Check_Timers()")
   float callrate;
   ulong rawtime;
   struct tm *info;
   int minutes, hours, hour;
+  // PLI = adstime = 1044
 
-#ifdef RAOT
-  MPC.DETINT += 5;
-  MPC.DATAXINT += MPC.DETINT;
-#endif
-
-  flogf("\n%s|Check_Timers()", Time(NULL));
-  DBG1("\nMPC.DETINT: %d\nMPC.DATAXINT: %d", MPC.DETINT, MPC.DATAXINT)
   // Rounding of our Detection Timer with the Power Logging Cycle "SysTimeInt"
-  DBG1("\n\t|PLI: %hu", PLI)
+  // ??
   DetectionInt = (((long)(MPC.DETINT * 600L) + (int)(PLI - 1)) / PLI);
   callrate = DetectionInt * (PLI / 600.0);
 
   flogf("\n\t|Recording Interval: %4.2f minutes", callrate);
-  DBG1("\n\t|Detection Int: %d", DetectionInt)
+  DBG1("\t|Detection Int: %d", DetectionInt)
 
-#ifdef REALTIME
   if (IRID.CALLMODE == 0 || NIGK.RECOVERY) {
     DataInterval = (MPC.DATAXINT + (MPC.DETINT - 1)) / MPC.DETINT;
     callrate = callrate * DataInterval;
     if (NIGK.RECOVERY)
       flogf("\n\t|RECOVERY MODE");
     flogf("\n\t|Data Interval %4.2f minutes", callrate);
-    DBG1("\n\t|DataInterval: %d", DataInterval)
+    DBG1("\t|DataInterval: %d", DataInterval)
   } else if (IRID.CALLMODE == 1) {
     time(&rawtime);
     info = gmtime(&rawtime);
@@ -374,23 +363,16 @@ float Check_Timers(ushort PLI) {
     minutes = minutes + (60 * hours);
     flogf("\n\t|Time until call: %d minutes", minutes);
   }
-#endif
 
-#ifdef RAOT
-  MPC.DATAXINT -= MPC.DETINT;
-  MPC.DETINT -= 5;
-#endif
 
-#ifdef WISPR
   // Calculate Duty Cycle
   DutyCycleTicks = (int)(DetectionInt * ((float)(WISP.DUTYCYCL / 100.0)));
   flogf("\n\t|WISPR Duty Cycle: %d\%", WISP.DUTYCYCL);
-  DBG1("\n\t|DutyCycleTicks: %d", DutyCycleTicks)
+  DBG1("\t|DutyCycleTicks: %d", DutyCycleTicks)
 // If some kind of Duty Cycle, keep Wispr Off until duty cycle begins
 
 // Real value...
 
-#endif
 
   // Reset SystemTimer by zeroing out ADCounter
   Reset_ADCounter();
@@ -510,18 +492,18 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
     memset(WriteBuffer, 0, 256 * sizeof(char));
 
     byteswritten = read(Source, WriteBuffer, BlockLength * sizeof(char));
-    DBG1("\n\t|AppendFiles: bytes read: %d", byteswritten)
+    DBG1("\t|AppendFiles: bytes read: %d", byteswritten)
     if (i == NumBlks) {
       strcat(WriteBuffer, "\n");
       BlockLength++;
     }
     byteswritten = write(Dest, WriteBuffer, BlockLength * sizeof(char));
-    DBG1("\n\t|AppendFiles: bytes written: %d", byteswritten)
+    DBG1("\t|AppendFiles: bytes written: %d", byteswritten)
   }
 
   if (erase) {
     if (close(Source) == 0) {
-      DBG1("\n\t|Append_Files() %s Closed", SourceFileName)
+      DBG1("\t|Append_Files() %s Closed", SourceFileName)
       sprintf(extension, "%c%c%c", SourceFileName[11], SourceFileName[12],
               SourceFileName[13]);
       DOS_Com("del", MPC.FILENUM, extension, NULL);

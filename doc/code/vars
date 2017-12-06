@@ -1,0 +1,5 @@
+power.c:ADSTIME // Time duration of AD Sampling interval in Deciseconds
+ ADSTIME = (10 * SAMPLES * .051     (PITRATE * PITPERIOD))
+ SAMPLES = 2**BITSHIFT = 2**11 = 2048
+ ADSTIME = 1044 = 104seconds
+

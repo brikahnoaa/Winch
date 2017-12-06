@@ -1,25 +1,4 @@
 /*
-ADS Version for Seaglider version 3.0
-
-Updates from ADS.c version 2.0
-   -Working to make file open more efficient.
-   -Received many errno=0 when fopen return NULL. No idea why. waiting to hear
-back from JG 12.2.2015
-
-Updated from ADS.c version 1.5
-   -with more efficient storing and calculating of current and voltage.
-
-"Only pin should not be mirrored is pin 20. It is connected to the output of AD. Pin 20 is input and should not be mirrored. Also making pin 19 high turns on A/D, which increases the power usage by a few milliamps. 
-Only pin safe to mirror is pin 15 (/IRQ7). 
-Alex code uses the A/D to monitor the voltage and current, it probably does not matter." - haru
-
-Version 1.5:
-Storing "shorts" in circular array, averaging once every 30 seconds to another
-array of floating point values,
-after 5 minutes averaging those 20 different 8-byte floating point values and
-writing to file.
-
-Version 2.0:
 Summing "shorts" for giving sampling interval which lasts
 #seconds=(2^#bits*PITRATE*PITINT)
 Here we can average a large number of samples at a quick rate due to bit shift
@@ -44,7 +23,58 @@ averaged.
 transfer into the real power write time.
  */
 #include <common.h>
-#include <power.h>
+#include <ADExamples.h>
+
+#define FCHAN 0   // first channel
+#define NCHAN 2   // number of channels, just accumulating current in buffers.
+#define PITRATE 1 // 1=51ms cycle, 2=102ms,etc..... @ 100us. 250=25ms.
+#define PITPERIOD .051 // represents 51ms
+
+#define POWERERROR 1.02
+// volts or 11.0 for 15V Battery System of Seaglider
+#define MIN_BATTERY_VOLTAGE 11.0
+// kiloJoules
+#define INITIAL_BATTERY_CAPACITY 5000
+#define MINIMUM_BATTERY_CAPACITY INITIAL_BATTERY_CAPACITY * 0.1
+
+#define BITSHIFT 11
+// Crucial to ADS Timing of Program. explained in ads power consumption
+// calculation excel file
+/*
+   10: 25.6seconds/file write 843.75 bytes/hour
+   11: 51.2secs/file write    421.875bytes/hr
+   12: 102.4secs/file         201.937bytes/hr
+   13: 204.8secs/file         105.468
+   14: 409.6                  52.734
+   15: 819.2                  26.367
+   16: 1638.4                 13.183
+ */
+
+typedef struct PowerInfo {
+  char batCap[9];
+  short batLog;    // t logging change in battery capacity
+  char minVolt[6]; //-v %.2f  minimum system voltage
+} PowerInfo;
+extern PowerInfo power;
+
+void Delay_AD_Log(short);
+void Setup_Acquisition(ushort);
+void AD_Write(ushort *);
+void AD_Log(void);
+ushort GetSystemTimeInt();
+bool AD_Check();
+ushort Setup_ADS(bool, long, ushort);
+float Power_Monitor(ulong, int, ulong *);
+void Delay_AD_Log(short Sec);
+float Get_Voltage();
+float Voltage_Now();
+void Open_Avg_File(long);
+ushort Return_ADSTIME();
+int Get_ADCounter();
+bool ADS_Status();
+void GetPowerSettings();
+void Reset_ADCounter();
+void ADSFileName(long);
 
 PowerInfo power = {};
 

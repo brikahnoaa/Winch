@@ -15,7 +15,7 @@ AntennaData ant = {
 int AntMode(char r) {
   static char ant='-', dev='-';
   char a, d;
-  DBG2("\n\t|AntMode(%c)", r)
+  DBG2("\t|AntMode(%c)", r)
   DevSelect(DEVA);
   // select ant SBE16, switch ant device
   switch (r) {

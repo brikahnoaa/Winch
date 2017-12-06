@@ -24,7 +24,7 @@ int serReadWait(Serial port, char *in, int wait) {
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   TickleSWSR(); // could have been a long wait
   if (in[0]<=0) {
-    DBG1("\n\t|getStringWait() timeout")
+    DBG1("\t|getStringWait() timeout")
     in[0]=0;
     return (-1);
   }

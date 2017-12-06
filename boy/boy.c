@@ -1,72 +1,48 @@
-/* 
- * boy.c
- * Acoustic Real-Time Sensor ARTS, aka LARA
- */
-/*
- * short phase; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent
- * short BUOYMODE;  // 0=stopped 1=ascend 2=descend 3=careful ascent
- *        At depth and no velocity. phase 1 && BuoyMode 0
- *        Ascending phase 2 && BuoyMode 1
- *        On surface phase 3 && BuoyMode 0
- *        Descending phase 4 && BuoyMode 2
- * 
- *WISPR BOARD
- * * TPU 6    27 PAM1 WISPR TX
- * * TPU 7    28 PAM1 WISPR RX
- * * TPU 8    29 1= turns on MAX3222
- * * TPU 9    30 0= enables MAX3222
- *
- *Interrupts:
- * 
- * IRQ2 Wakes up from the sleep mode while waiting for ASC string from COM2
- * IRQ3
- * IRQ5 Interrupt to stop the program
- * 
- * ***************************************************************************
- * Before deploying, set CF2 time and SM2 time, format SD cards, 
- * replace SM2 and CF2 clock batteries
- * erase activity.log, set status=0, set startups=0,
- * verify boottime is correct, verify pwrondepth and pwroffdepth are correct,
- * make sure you have the correct mA multiplier set in the mAh calculation in
- * status 5 for the SM2 settings that you are using (compression, kHz, etc.)
- * as power consumption varies between those settings
- * 
- */
+// boy.c
+// Acoustic Real-Time Sensor ARTS, aka LARA
 
 #include <common.h>
-#include <wispr.h>
 #include <boy.h> 
+#include <ant.h> 
+#include <ctd.h>
+#include <mpc.h>
+#include <winch.h>
+#include <wispr.h>
 
-// progname[20] projID[6] pltfrmID[6] filenum starts maxStarts
-// detInt dataInt phase phaseStart on
-// depth moorDepth avgVel port
+// bool off; char platformID[6]; char programName[20]; char projectID[6];
+// float avgVel; float depth; float moorDepth; 
+// int dataInt; int deviceID; int phase; int logFile; int phaseInitial; 
+// long filenumber; long starts; long startsMax; Time onStart; Time phaseStart;
 BuoyInfo boy = {
-  "LARA", "QUEH", "LR01", 0, 0, 50,
-  0, 0, 0, 2, 1,
-  0, 0, 0, NULL
+  true, "QUEH", "LARA", "LR01", 
+  0.0, 0.0, 0.0, 
+  0, 0, 0, 2, 0, 
+  0L, 0L, 0L, 0L, 0L
 };
 
+static char uploadfile[] = "c:00000000.dat"; 
 // Enable watch dog  HM 3/6/2014
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
-static char uploadfile[] = "c:00000000.dat"; 
-
 /*
  * initHW and SW structures. loop over phase 1-4
  */
 void main() {
-  // global ant, boy, ctd, winch, wispr
+  // &boy.*, &ant.port, &ctd.port, &winch.port, &wispr.port
   long starts;
   restartCheck(&starts);
   initHW(&ant.port, &ctd.port, &winch.port, &wispr.port);
   startup(&boy);
-  if (starts==0) {     // phase 0:  Deployment
+  if (boy.phase==0) {     
+    // phase 0:  Deployment
     deploy(&boy.moorDepth);
     boy.phase = boy.phaseInitial;
-  } else
+  } else {
+    // reboot: where are we?
     reboot(&boy.phase);
+  }
 
 
   while (!boy.off) {
@@ -105,16 +81,15 @@ void shutdown() {
 }
 
 /*
- * check veeprom STARTS_VEE to see if we are rebooting wildly
+ * check STARTS_VEE>STARTSMAX_VEE to see if we are rebooting wildly
+ * these two settings are in veeprom to allow check before startup
  */
-void restartCheck(long *starts) {
-  long startsMax;
+void restartCheck(long *starts, long *startsMax) {
   starts = VEEFetchLong(STARTS_VEE, 0L);
   startsMax = VEEFetchLong(STARTSMAX_VEE, 0L);
   if (starts>startsMax) {
     flogf("\nInit(): startups>startmax");
-    SleepUntilWoken();
-    BIOSReset(); // Full hardware reset = ak
+    shutdown();
   }
   VEEStoreLong(STARTS_VEE, starts+1L);
 } // restartCheck
@@ -122,40 +97,19 @@ void restartCheck(long *starts) {
 /*
  * init pins, ports, power
  */
-void initSystem(Serial antPort, ctdPort, winchPort, wisprPort) {
+void boyInit(Serial antPort, ctdPort, winchPort, wisprPort) {
   PreRun();   // 10 sec for user abort to DOS
   initMPC();
   PZCacheSetup('C' - 'A', calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
   Initflog(logfile, true);
 
-  // Identify IDs
   flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
         MPC.PROGNAME, MPC.PROJID, MPC.PLTFRMID, MPC.STARTUPS);
-
-  // Get Power On Time
-
   flogf("\nProgram Start time: %s", TimeDate(NULL));
 
-  // Get Free Disk Space
-  Free_Disk_Space(); // Does finding the free space of a large CF card cause
-                     // program to crash? or Hang?
-
-  CTD_Init(); // buoy sbe
-
-  // If initializing after reboot... Write previous WriteFile for upload
-  if (MPC.STARTUPS > 0) {
-    MPC.FILENUM--;
-    sprintf(&uploadfile[2], "%08ld.dat", MPC.FILENUM);
-    prevTime = WriteFile(0); // By Sending 0 we understand this is the file
-                             // being salvaged from a reboot when analyzing over
-                             // RUDICS, also this zero is passed to
-                             // Power_Monitor to properly calculate previous
-                             // startups power consumption.
-
-    MPC.FILENUM++;
-  } else // MPC.STARTUPS == 0
-    Setup_ADS(true, MPC.FILENUM, BITSHIFT); // not done > 0 ??
+  Free_Disk_Space(); 
+  ctdInit(); 
 
   volts = Voltage_Now();
   flogf("\n\t|Check Startup Voltage: %5.2fV", volts);
@@ -167,148 +121,23 @@ void initSystem(Serial antPort, ctdPort, winchPort, wisprPort) {
     BIOSReset();
   }
   // lower than user set minimum.
-  if (volts >= atof(ADS.MINVOLT)) 
-    boy.LOWPOWER = false;
-  else {
-    WISP.DUTYCYCL = 0; // Booting up with default.cfg will never have a set
-                       // value for turning on the WISPR. WISPR can only be
-                       // turned on again if
-    VEEStoreShort(DUTYCYCLE_NAME, WISP.DUTYCYCL);
-    // Possibility of WISPR still being on after reboot. Shut it down.
-    // ?? check wispr power state first
-    wisprInit(true);
-    WISPRSafeShutdown();
-    wisprInit(false);
-    boy.LOWPOWER = true;
-  } 
-
-  CTD_CreateFile(MPC.FILENUM); // for science, descent
-
-  // Initialize More System Parameters
-  boy.PAYOUT = -1;
-  boy.ASCENTTIME = -1;
-  boy.DESCENTTIME = -1;
-  boy.STATUS = -1;
-  // boy.SWITCH;
-  boy.CTDSAMPLES = 0;
-
-  // If First startup, parse system.cfg file and initialize all WISPR Boards.
-  if (MPC.STARTUPS == 0) {
-    boy.RESTART = false;
-    ParseStartupParams(false);
-    boy.BUOYMODE = 0;
-    boy.phase = 5; // deploy phase
-    boy.SURFACED = false;
-    Make_Directory("SNT");
-    Make_Directory("CTD");
-    Make_Directory("LOG");
-    if (WISPRNUMBER > 1) { // total number
-      if (WISP.NUM != 1)
-        WISP.NUM = 1; // current used board
-      wisprInit(true);
-      // Gather all #WISPRNUMBER freespace and sync time.
-      GatherWISPRFreeSpace();
-    }
-
-  }
-  // Startups>0 Go to default callmode @ callhour.
-  else {
-    boy.RESTART = true;
-    boy.phase = 0; // phase 0 when finding the winch status and ctd position as
-                    // to place the Buoy in the proper phase
-    // Get previous call mode
-    prevMode = IRID.CALLMODE;
-    flogf("\nLast Irid call mode: %d", prevMode);
-    // Depending on callmode, give variable hour the call trigger variable.
-    if (prevMode == 0)
-      hour = MPC.DATAXINT;
-    else
-      hour = IRID.CALLHOUR;
-    // Parse startups, needed to set target depth back to a safe value.
-    ParseStartupParams(true);
-    // Force IRID.CALLMODE to one even if default.cfg parses a 0
-    IRID.CALLMODE = 1;
-
-    // check for motion
-    depth = CTD_AverageDepth(9, &velocity);
-    DevSelect(DEVX);
-
-    // Place Buouy in correct state
-    if (depth > NIGK.TDEPTH) {
-      boy.SURFACED = false;
-      if (velocity < -.05) {
-        flogf(
-            "\n\t|Ascending Velocity Calculated. phase 2 && BuoyMode 1"); // Ascending
-        boy.BUOYMODE = 1;
-        boy.phase = 2;
-      } else if (velocity > 0.5) { // Descending
-        flogf("\n\t|Descending Velocity Calculated. phase 4 && BuoyMode 2");
-        boy.phase = 4;
-        boy.BUOYMODE = 2;
-      } else {
-        flogf(
-            "\n\t|At depth and no velocity. phase 1 && BuoyMode 0"); // Stationary
-                                                                     // at depth
-        boy.phase = 1;
-        boy.BUOYMODE = 0;
-        boy.moorDepth = boy.depth;
-        CheckTime(prevTime, prevMode, hour);
-      }
-    } // depth> TD
-    else if (depth <= NIGK.TDEPTH) { 
-      // Upon restart, Winch must be at or near surface.
-      // if((Calltime-hours now)-prevTime)<3600 seconds)
-      // try calling... phase 3? What tuports needed?
-      boy.SURFACED = true;
-      //   		boy.BUOYMODE=1; //Removed after first Lake W. Deployment.
-      //   This skips the ascent call in phase two
-      if (prevTime != 0) {
-        if (CheckTime(prevTime, prevMode, hour))
-          boy.phase = 3;
-        else
-          boy.phase = 4;
-      } else
-        boy.phase = 4;
-    }
-
-    PrintSystemStatus();
-
-    if (boy.phase == 0)
-      boy.phase = 1;
-  }
-
-  boy.TDEPTH = NIGK.TDEPTH;
-
-  // Store Number of Bootups
-  MPC.STARTUPS++;
-  VEEStoreShort(STARTUPS_NAME, MPC.STARTUPS);
-  if (MPC.STARTUPS >= MPC.STARTMAX) {
-    WISPRSafeShutdown();
-    PIOClear(ANTMODPWR);
-    PIOClear(AMODEMPWR);
-    PIOClear(DIFARPWR);
-    SleepUntilWoken();
-    BIOSReset();
-  }
-  if (NIGK.RECOVERY) {
-    MPC.DATAXINT = 30;
-    VEEStoreShort(DATAXINTERVAL_NAME, MPC.DATAXINT);
-  }
-
-  boy.ON = true;
-  TickleSWSR();
-
-  ADCounter = 0;
-
-  create_dtx_file(MPC.FILENUM);
-
-} // InitializeAUH
+} // boyInit()
 
 /*
- * phase1
- * The initial recording and detecting phase while ICE housing is at/near winch.
+ * figure out whats happening, continue as possible
+ */
+void reboot(int *phase) {
+  // load info from saved previous phase
+  // check STARTSVEE - was saved state really the last boot?
+  // match hardware to saved state
+  // ask antmod for our velocity
+} // reboot()
+
+/*
+ * wispr recording and detecting, buoy is moored to winch
  */
 void phase1() {
+  DBG0("phase1()")
   flogf("\n\t|phase ONE");
 
   // Initialize System Timers
@@ -330,17 +159,10 @@ void phase1() {
     WISPRSafeShutdown();
   }
 
-  // This would mean the profiling buoy is at//near surface.
-  // if (NIGK.RECOVERY && boy.depth < NIGK.TDEPTH)
-  if (NIGK.RECOVERY && boy.depth < boy.TDEPTH)
-    boy.phase = 3;
-  if (boy.DATA)
-    boy.phase = 2;
+} // phase1()
 
-} // phase1 //
 /*
- * phase2
- * Ascending phase of Winch.
+ * Ascending
  */
 void phase2() {
   ulong AscentStart, AscentStop, timeChange;
@@ -651,21 +473,21 @@ void reboot() {
   float nowD=0.0, thenD=0.0;
   int changeless=0;
 
-  DBG0("\nreboot()")
+  DBG0("reboot()")
   RTCGetTime(&deployT, NULL);
   // give up after two hours
   maxT = (ulong) (2*60*60);
   RTCGetTime(&nowT, NULL);
-  // ?? DBG2("\np5 then: %ld, now: %ld, max %ld", (long) deployT, (long) nowT, (long) maxT)
+  // ?? DBG2("p5 then: %ld, now: %ld, max %ld", (long) deployT, (long) nowT, (long) maxT)
   CTD_Select(DEVA);
   boy.depth=0.0;
-  DBG1("\n%s\t|P5: wait until >10m", Time(NULL))
+  DBG1("%s\t|P5: wait until >10m", Time(NULL))
   while (boy.depth<10.0) {
     CTD_Sample();
     Delay_AD_Log(3);
     if (!  CTD_Data()) 
       flogf("\nERR in P5 - no CTD data");
-    DBG1("\nP5 %5.2f", boy.depth)
+    DBG1("P5 %5.2f", boy.depth)
     Delay_AD_Log(30);
     RTCGetTime(&nowT, NULL);
     if ((nowT - deployT) > maxT) break; // too long
@@ -704,7 +526,7 @@ int Incoming_Data() {
   static int count = 0;
   int value = 0; // Need to update this if we ever need to return a legit value.
 
-  DBG0("\n Incoming_Data\t")
+  DBG0("Incoming_Data\t")
   switch (boy.phase) {
   // Case 0: Only at startup when MPC.STARTUPS>0
   case 0:
@@ -731,7 +553,7 @@ int Incoming_Data() {
   case 1:
 
     while (incoming) {
-      DBG1("\n Incoming\t")
+      DBG1("Incoming\t")
       AD_Check();
       // Data coming from WISPR Board
       if (tgetq(PAMPort)) {
@@ -756,7 +578,7 @@ int Incoming_Data() {
   case 4:
 
     while (incoming) {
-      DBG1("\n Incoming\t")
+      DBG1("Incoming\t")
       // ?? does adcheck need to run between each incoming? how often?
       AD_Check();
       if (tgetq(PAMPort)) {
@@ -786,7 +608,7 @@ int Incoming_Data() {
   // CASE 3: GPSIRID
   case 3:
     while (incoming) {
-      DBG1("\n Incoming\t")
+      DBG1("Incoming\t")
       AD_Check();
       if (tgetq(PAMPort)) {
         // DBG1("WISPR Incoming")
@@ -941,18 +763,19 @@ IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 } // ExtFinishPulseRuptHandler
 
 /*
- * SleepUntilWoken		Finish up
+ * LPStopCSE(FastStop) sleep until irq4 (cons), irq5 (pam), spurious
+ * note, spurious could occur on other pins ??
  */
 void Sleep(void) {
-  Delayms(10);
+  // these handlers just set the pin to I/O mode; wakeup, destroys data
   IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector); // Console Interrupt
   IEVInsertAsmFunct(IRQ4_ISR, spuriousInterrupt);
   IEVInsertAsmFunct(IRQ5_ISR, level5InterruptAutovector); // PAMPort Interrupt
-  IEVInsertAsmFunct(IRQ5_ISR, spuriousInterrupt);
+  // IEVInsertAsmFunct(IRQ5_ISR, spuriousInterrupt);
   //
-  SCITxWaitCompletion();
-  EIAForceOff(true);
-  CFEnable(false);
+  SCITxWaitCompletion();    // clear serial buffers
+  EIAForceOff(true);        // turn off rs232 transmitters
+  CFEnable(false);          // disable CF card
   //
   PinBus(IRQ4RXD); // Console Interrupt
   while ((PinTestIsItBus(IRQ4RXD)) == 0)
@@ -985,12 +808,14 @@ void Sleep(void) {
  */
 void CTDSleep(void) {
   Delayms(10);
+  // these handlers just set the pin to I/O mode, just used for wakeup
+  // not a sensible way to handle spurious, should I/O both 4&5 together
   IEVInsertAsmFunct(IRQ3_ISR, level3InterruptAutovector); // AModem Interrupt
-  IEVInsertAsmFunct(IRQ3_ISR, spuriousInterrupt);
+  // IEVInsertAsmFunct(IRQ3_ISR, spuriousInterrupt);
   IEVInsertAsmFunct(IRQ2_ISR, level2InterruptAutovector); // devicePort/Seaglider
-  IEVInsertAsmFunct(IRQ2_ISR, spuriousInterrupt);
+  // IEVInsertAsmFunct(IRQ2_ISR, spuriousInterrupt);
   IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector); // Console Interrupt
-  IEVInsertAsmFunct(IRQ4_ISR, spuriousInterrupt);
+  // IEVInsertAsmFunct(IRQ4_ISR, spuriousInterrupt);
   IEVInsertAsmFunct(IRQ5_ISR, level5InterruptAutovector); // PAMPort Interrupt
   IEVInsertAsmFunct(IRQ5_ISR, spuriousInterrupt);
   //
@@ -1119,7 +944,7 @@ ulong WriteFile(ulong TotalSeconds) {
   long maxupload;
   ulong LoggingTime;
 
-  DBG1("\n\t|WriteFile(%s)", uploadfile)
+  DBG1("\t|WriteFile(%s)", uploadfile)
   filehandle = open(uploadfile, O_WRONLY | O_CREAT | O_TRUNC);
 
   if (filehandle <= 0) {
@@ -1139,7 +964,7 @@ ulong WriteFile(ulong TotalSeconds) {
 
   flogf("\n%s", WriteBuffer);
   bytesWritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
-  DBG2("\nBytesWritten: %d", bytesWritten)
+  DBG2("BytesWritten: %d", bytesWritten)
 
   // Only comes here if not rebooted.
   if (TotalSeconds != 0) {
@@ -1152,7 +977,7 @@ ulong WriteFile(ulong TotalSeconds) {
     //*** Winch Status ***//
     sprintf(WriteBuffer, "%s\n\0", PrintSystemStatus());
     bytesWritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
-    DBG2("\nBytesWritten: %d", bytesWritten)
+    DBG2("BytesWritten: %d", bytesWritten)
   }
   // Else, coming from reboot. Name the PowerLogging File.
   else {
@@ -1176,7 +1001,7 @@ ulong WriteFile(ulong TotalSeconds) {
   if (ctd.UPLOAD || TotalSeconds == 0) {
     sprintf(&detfname[2], "%08ld.ctd", MPC.FILENUM);
     Delayms(50);
-    DBG1("\n\t|WriteFile:%ld ctd file: %s", MPC.FILENUM, detfname)
+    DBG1("\t|WriteFile:%ld ctd file: %s", MPC.FILENUM, detfname)
     stat(detfname, &info);
     if (info.st_size > (long)(IRID.MAXUPL - 1000))
       maxupload = IRID.MAXUPL - 1000;
@@ -1191,7 +1016,7 @@ ulong WriteFile(ulong TotalSeconds) {
   //*** MPC.LOGFILE upload ***// Note: occurring only after reboot.
   if (TotalSeconds == 0) { //||MPC.UPLOAD==1)
     sprintf(logfile, "%08ld.log", MPC.FILENUM);
-    DBG1("\n\t|WriteFile: %ld log file: %s", MPC.FILENUM, logfile)
+    DBG1("\t|WriteFile: %ld log file: %s", MPC.FILENUM, logfile)
     stat(logfile, &info);
     if (info.st_size > (long)(IRID.MAXUPL - 2000))
       maxupload = IRID.MAXUPL - 2000;
@@ -1349,7 +1174,7 @@ bool CheckTime(ulong prevTime, short mode, short hour) {
  */
 bool CurrentWarning() {
   float a, b;
-  DBG0("\n%s\t|CurrentWarning()", Time(NULL))
+  DBG0("%s\t|CurrentWarning()", Time(NULL))
   CTD_Select(DEVB);
   CTD_Sample();
   CTD_Data();
@@ -1368,7 +1193,7 @@ bool CurrentWarning() {
  * devSwitch(&boy.deviceID)
  */
 void devSwitch(int *devID) {
-  DBG2("\n\t|DevSelect(%d)", *devID)
+  DBG2("\t|DevSelect(%d)", *devID)
   switch (*devID) {
   case DEVB: // switch to antenna module
     *devID=DEVA;
@@ -1387,3 +1212,33 @@ void devSwitch(int *devID) {
 } //DevSelect
 
 
+/*
+ * short phase; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent
+ * short BUOYMODE;  // 0=stopped 1=ascend 2=descend 3=careful ascent
+ *        At depth and no velocity. phase 1 && BuoyMode 0
+ *        Ascending phase 2 && BuoyMode 1
+ *        On surface phase 3 && BuoyMode 0
+ *        Descending phase 4 && BuoyMode 2
+ * 
+ *WISPR BOARD
+ * * TPU 6    27 PAM1 WISPR TX
+ * * TPU 7    28 PAM1 WISPR RX
+ * * TPU 8    29 1= turns on MAX3222
+ * * TPU 9    30 0= enables MAX3222
+ *
+ *Interrupts:
+ * 
+ * IRQ2 Wakes up from the sleep mode while waiting for ASC string from COM2
+ * IRQ3
+ * IRQ5 Interrupt to stop the program
+ * 
+ * ***************************************************************************
+ * Before deploying, set CF2 time and SM2 time, format SD cards, 
+ * replace SM2 and CF2 clock batteries
+ * erase activity.log, set status=0, set startups=0,
+ * verify boottime is correct, verify pwrondepth and pwroffdepth are correct,
+ * make sure you have the correct mA multiplier set in the mAh calculation in
+ * status 5 for the SM2 settings that you are using (compression, kHz, etc.)
+ * as power consumption varies between those settings
+ * 
+ */

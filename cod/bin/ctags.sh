@@ -1,13 +1,19 @@
 #!/bin/bash
 # make lara tags file
+usage="$0: [Files]
+defaults to ant/* boy/*, run from top of git tree"
+if [ ! -d ./.git ]; then echo $usage; exit; fi
 dir=$(dirname $0)
 if [ $# -eq 0 ]; then
-  Files="$(cat $dir/filelist.lara)"
+#  Files="$(cat $dir/filelist.lara)"
+  Files="ant/*.? boy/*.?"
 else
   Files="$*"
 fi
+echo "Files:"
+echo "$Files" | fmt
 
-ctags -o .tags $Files 
+ctags -o .tags $Files
 
 
 # Headers="$(find ~/cf2/headers/*/Headers -name '*.h')"

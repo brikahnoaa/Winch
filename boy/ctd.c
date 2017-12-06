@@ -13,7 +13,7 @@ CtdInfo ctd = {
 };
 
 bool ctdOpen() {
-  DBG0(" ctdOpen()")
+  DBG0("ctdOpen()")
   // global ctd .off .port .pending
   if (ctd.off) {
     ctd.port = TUOpen(DEVICERX, DEVICETX, CTDBAUD, 0);
@@ -45,7 +45,7 @@ bool ctdOpen() {
  * date, time for ctd. also some params.
  */
 void ctdSetDate() {
-  DBG0(" ctdSetDate()")
+  DBG0("ctdSetDate()")
   // global ctd .port
   timet rawtime;
   struct tm *info;
@@ -88,7 +88,7 @@ bool ctdPrompt() {
 }
 
 void ctdSample() {
-  DBG0(" ctdSample()")
+  DBG0("ctdSample()")
   // global ctd .pending
   char ch;
   int len;
@@ -106,7 +106,7 @@ void ctdSample() {
 /*
  */
 void ctdSyncmode() {
-  DBG0(" ctdSyncmode()")
+  DBG0("ctdSyncmode()")
   // global ctd .port .syncmode
   serWrite(ctd.port, "Syncmode=y\r");
   ctdPrompt();
@@ -119,7 +119,7 @@ void ctdSyncmode() {
 /*
  */
 void ctdBreak() {
-  DBG0(" ctdBreak()")
+  DBG0("ctdBreak()")
   // global ctd .port
   TUTxBreak(ctd.port, 5000);
 }
@@ -130,7 +130,7 @@ void ctdBreak() {
  * returns depth
  */
 float ctdData(char *stringout) {
-  DBG0(" ctdData()")
+  DBG0("ctdData()")
   // global scratch, ctd .port .depth .pending
   int len;
   float temp, cond, pres, flu, par, sal;
@@ -141,7 +141,7 @@ float ctdData(char *stringout) {
 
   // waits up to 8 seconds - best called after tgetq()
   len = serReadWait(ctd.port, 8, stringin);
-  DBG2("\nctd-->%s", printSafe(scratch, stringin))
+  DBG2("ctd-->%s", printSafe(scratch, stringin))
 
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
