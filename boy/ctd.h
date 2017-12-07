@@ -13,10 +13,10 @@ typedef struct CtdInfo {
 extern CtdInfo ctd;
 
 float ctdData(char *stringout);
-bool ctdOpen();     // ctd .off .port .pending .filehandle
-void ctdClose();    // ctd .off .port .pending .filehandle
-bool ctdPrompt();
-static void ctdSetDate();
-void ctdSample();   // ctd .pending
-void ctdSyncmode(); 
-void ctdBreak();
+bool ctdOpen(void);     // ctd .off .port .pending .filehandle
+void ctdClose(void);    // ctd .off .port .pending .filehandle
+bool ctdPrompt(void);
+static void ctdSetDate(void);
+void ctdSample(void);   // ctd .pending
+void ctdSyncmode(void); 
+void ctdBreak(void);

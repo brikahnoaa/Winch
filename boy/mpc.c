@@ -22,7 +22,7 @@ volatile clock_t stop_clock;
  * 2: Data Interval Timer
  * 
  */
-int System_Timer() {
+int System_Timer(void) {
   int remainder;
   int adcount = 0;
   time_t rawtime;
@@ -396,7 +396,7 @@ float Check_Timers(ushort PLI) {
  * return 4 if MIN WISPR FREE Space
  * return 5 if No CF2 Free Space
  */
-short Check_Vitals() {
+short Check_Vitals(void) {
 
   short returnvalue = 0;
 
@@ -524,7 +524,7 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
 /*
  * Free_Disk_Space *   Returns the free space in kBytes
  */
-long Free_Disk_Space() {
+long Free_Disk_Space(void) {
   long freeSpacekB;
   long freeSectors;
   long totalSectors;

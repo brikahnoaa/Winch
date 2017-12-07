@@ -25,7 +25,7 @@ void AppendDetections(char *, int);
 static char wisprfile[] = "c:WISPRFRS.DAT";
 static char WisprString[64];
 
-bool WISPR_Status() { return WISPR_On; }
+bool WISPR_Status(void) { return WISPR_On; }
 /*
  * void WISPRInit(short)
 Power is applied to the wispr board and after the program starts it waits
@@ -67,7 +67,7 @@ void WISPRPower(bool power) {
  * -1: No Match
  * -2: <MIN FREE SPACE
  */
-short WISPR_Data() {
+short WISPR_Data(void) {
   float returndouble;
   int i;
   int WISPRFile;
@@ -272,7 +272,7 @@ void WISPRDet(int dtx) {
  * int WISPRGPS()
 This is where we send the GPS Time and Location to WISPR Board at startup
  */
-void WISPRGPS() {
+void WISPRGPS(void) {
 
   float minutes;
   float decimal;
@@ -324,7 +324,7 @@ void WISPRGain(short c) {
 /*
  * int WISPRDFP()
  */
-void WISPRDFP() {
+void WISPRDFP(void) {
 
   DBG0("\t|WISPRDFP(%d)", WISP.NUM)
   TURxFlush(PAMPort);
@@ -337,7 +337,7 @@ void WISPRDFP() {
 /*
  * int WISPRTFP()
  */
-void WISPRTFP() {
+void WISPRTFP(void) {
 
   DBG0("\t|WISPRTFP(%d)", WISP.NUM)
   TURxFlush(PAMPort);
@@ -350,7 +350,7 @@ void WISPRTFP() {
 /*
  * int WISPRExit()
  */
-bool WISPRExit() {
+bool WISPRExit(void) {
 
   flogf("\n\t|WISPRExit()");
 
@@ -478,7 +478,7 @@ void ChangeWISPR(short wnum) {
 /*
  * void GetWISPRSettings()
  */
-void GetWISPRSettings() {
+void GetWISPRSettings(void) {
   char *p;
   p = VEEFetchData(DETECTIONMAX_NAME).str;
   WISP.DETMAX = atoi(p ? p : DETECTIONMAX_DEFAULT);
@@ -533,7 +533,7 @@ void GetWISPRSettings() {
 /*
  * void WISPRSafeShutdown()
  */
-void WISPRSafeShutdown() {
+void WISPRSafeShutdown(void) {
 
   int i;
 
@@ -619,7 +619,7 @@ void WISPRWriteFile(int uploadfilehandle) {
  * Read "wisprfs.bat" file. return free space of current WISPR? ||  return free
 space of last wispr
  */
-float GetWISPRFreeSpace() {
+float GetWISPRFreeSpace(void) {
 
   return WISPRFreeSpace;
 
@@ -655,7 +655,7 @@ void create_dtx_file(long fnum) {
  * GatherWISPRFreeSpace()
  * Only should come here upon MPC.STARTUPS==0 && WISPRNUMBER>1
  */
-void GatherWISPRFreeSpace() {
+void GatherWISPRFreeSpace(void) {
   short wret = 0, i, count = 0, wnum = 1;
   int byteswritten = 0;
   int writenum = 0;
@@ -754,7 +754,7 @@ void GatherWISPRFreeSpace() {
  * 
  * Write to file: WISPRFRS.DAT with the current wispr's free space
  */
-void UpdateWISPRFRS() {
+void UpdateWISPRFRS(void) {
   // global *WisprString;
   int wisprfilehandle;
   struct stat fileinfo;

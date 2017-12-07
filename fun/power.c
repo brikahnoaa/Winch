@@ -22,7 +22,7 @@ averaged.
    C) ADSTIME will be saved as a "ushort" and can be divided by "10.0" to
 transfer into the real power write time.
  */
-#include <common.h>
+#include <test.h>
 #include <ADExamples.h>
 
 #define FCHAN 0   // first channel
@@ -454,9 +454,8 @@ in buffer
  */
 IEV_C_FUNCT(ADTimingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
 {
-
 #pragma unused(ievstack)
-
+  // global CURRENT VOLTAGE Nsamps++ TotalPower data maxcurrent minvoltage
   QSMRun();
   QPBRepeatAsync(); // starts the QSPI running with previous parameters
 

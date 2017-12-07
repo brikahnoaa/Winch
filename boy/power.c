@@ -90,8 +90,8 @@ static char ADAvgFileName[] = "c:00000000.pwr";
 
 int ADSFileHandle;
 
-ushort Return_ADSTIME() { return ADSTIME; }
-bool AD_Check() {
+ushort Return_ADSTIME(void) { return ADSTIME; }
+bool AD_Check(void) {
   if (data == true && ADSOn) {
     TickleSWSR();
     AD_Log();
@@ -99,9 +99,9 @@ bool AD_Check() {
   } else
     return false;
 }
-bool ADS_Status() { return ADSOn; }
-int Get_ADCounter() { return ADCounter; }
-void Reset_ADCounter() { ADCounter = 0; }
+bool ADS_Status(void) { return ADSOn; }
+int Get_ADCounter(void) { return ADCounter; }
+void Reset_ADCounter(void) { ADCounter = 0; }
 void ADSFileName(long counter) {
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
 }
@@ -238,11 +238,11 @@ void AD_Log(void) {
 /*
  * Get_Voltage()
  */
-float Get_Voltage() { return Voltage; } // Get_Voltage //
+float Get_Voltage(void) { return Voltage; } // Get_Voltage //
 /*
  * Voltage Now()
  */
-float Voltage_Now() {
+float Voltage_Now(void) {
   float volts = 0.0;
 
   QPBRepeatAsync(); // starts the QSPI running with previous parameters
@@ -469,7 +469,7 @@ IEV_C_FUNCT(
 /*
  * 
  */
-void GetPowerSettings() {
+void GetPowerSettings(void) {
 
   char *p;
 

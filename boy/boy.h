@@ -32,17 +32,17 @@ typedef struct BuoyInfo {
 } BuoyInfo;
 extern BuoyInfo boy;
 
-void shutdown();
-static bool currentWarning();
-static int incomingData();
+void shutdown(void);
+static bool currentWarning(void);
+static int incomingData(void);
 static ulong writeFile(ulong);
-static void sleepUntilWoken();
+static void sleepUntilWoken(void);
 static void devSwitch(int *devID);
-static void deploy();
-static void phase1();
-static void phase2();
-static void phase3();
-static void phase4();
+static void deploy(void);
+static void phase1(void);
+static void phase2(void);
+static void phase3(void);
+static void phase4(void);
 static void reboot(int *phase);
 static void restartCheck(long *starts);
 static void Console(char);

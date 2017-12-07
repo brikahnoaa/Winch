@@ -12,7 +12,7 @@ CtdInfo ctd = {
   0, 0, 3.5, NULL
 };
 
-bool ctdOpen() {
+bool ctdOpen(void) {
   DBG0("ctdOpen()")
   // global ctd .off .port .pending
   if (ctd.off) {
@@ -44,7 +44,7 @@ bool ctdOpen() {
 /*
  * date, time for ctd. also some params.
  */
-void ctdSetDate() {
+void ctdSetDate(void) {
   DBG0("ctdSetDate()")
   // global ctd .port
   timet rawtime;
@@ -77,7 +77,7 @@ void ctdSetDate() {
 /*
  * ctdPrompt - poke buoy CTD, look for prompt
  */
-bool ctdPrompt() {
+bool ctdPrompt(void) {
   static char str[32];
   TURxFlush(ctd.port);
   TUTxPutByte(ctd.port, '\r', true);
@@ -87,7 +87,7 @@ bool ctdPrompt() {
   else return false;
 }
 
-void ctdSample() {
+void ctdSample(void) {
   DBG0("ctdSample()")
   // global ctd .pending
   char ch;
@@ -105,7 +105,7 @@ void ctdSample() {
 
 /*
  */
-void ctdSyncmode() {
+void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
   // global ctd .port .syncmode
   serWrite(ctd.port, "Syncmode=y\r");
@@ -118,7 +118,7 @@ void ctdSyncmode() {
 
 /*
  */
-void ctdBreak() {
+void ctdBreak(void) {
   DBG0("ctdBreak()")
   // global ctd .port
   TUTxBreak(ctd.port, 5000);

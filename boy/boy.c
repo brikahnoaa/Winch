@@ -29,7 +29,7 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 /*
  * initHW and SW structures. loop over phase 1-4
  */
-void main() {
+void main(void) {
   // &boy.*, &ant.port, &ctd.port, &winch.port, &wispr.port
   long starts;
   restartCheck(&starts);
@@ -72,7 +72,7 @@ void main() {
 /*
  * shutdown buoy, sleep, reset
  */
-void shutdown() {
+void shutdown(void) {
   WISPRSafeShutdown();
   PIOClear(ANTENNAPWR); 
   PIOClear(AMODEMPWR); 
@@ -136,7 +136,7 @@ void reboot(int *phase) {
 /*
  * wispr recording and detecting, buoy is moored to winch
  */
-void phase1() {
+void phase1(void) {
   DBG0("phase1()")
   flogf("\n\t|phase ONE");
 
@@ -164,7 +164,7 @@ void phase1() {
 /*
  * Ascending
  */
-void phase2() {
+void phase2(void) {
   ulong AscentStart, AscentStop, timeChange;
   float depthChange;
   float velocity = 0.0;
@@ -262,7 +262,7 @@ void phase2() {
  * If failed, release winch cable another meter or two.
  * repeat to minimum CTD depth.
  */
-void phase3() {
+void phase3(void) {
   // global: static char uploadfile[] = "c:00000000.dat
   // global ulong PwrOff PwrOn
   short result = 0;
@@ -366,7 +366,7 @@ void phase3() {
 /*
  * phase4
  */
-void phase4() {
+void phase4(void) {
 
   float depthChange = 0.0;
   float velocity, descentvelocity;
@@ -468,7 +468,7 @@ void phase4() {
 /*
  * reboot for deploy time
  */
-void reboot() {
+void reboot(void) {
   ulong nowT, deployT, maxT;
   float nowD=0.0, thenD=0.0;
   int changeless=0;
@@ -521,7 +521,7 @@ void reboot() {
  * ?? very fragile, caution
  * called by phase1,2,3,4
  */
-int Incoming_Data() {
+int Incoming_Data(void) {
   bool incoming = true;
   static int count = 0;
   int value = 0; // Need to update this if we ever need to return a legit value.
@@ -1042,7 +1042,7 @@ ulong WriteFile(ulong TotalSeconds) {
 /*
  * PrintSystemStatus()
  */
-char *PrintSystemStatus() {
+char *PrintSystemStatus(void) {
   // global stringout
   sprintf(stringout, "boy: "
                         "%d%d%d%d\nmoorDepth:%5.2f\nCURRENTDEPTH:%5."
@@ -1172,7 +1172,7 @@ bool CheckTime(ulong prevTime, short mode, short hour) {
 /*
  * CurrentWarning() - current reduces distance between CTD's
  */
-bool CurrentWarning() {
+bool CurrentWarning(void) {
   float a, b;
   DBG0("%s\t|CurrentWarning()", Time(NULL))
   CTD_Select(DEVB);

@@ -11,7 +11,7 @@ AmodemInfo amodem = {
   false, 0, 0, 0, 0, 0, 0, 0, 0, NULL,
 };
 
-void winchConsole() {
+void winchConsole(void) {
   char in;
   cprintf("\n\t|WinchConsole():");
   in = cgetc();
@@ -230,7 +230,7 @@ void amodemInit(bool on) {
 /*
  * void GetWinchSettings()
  */
-void GetWinchSettings() {
+void GetWinchSettings(void) {
   char *p;
 
   p = VEEFetchData(NIGKDELAYNAME).str;
