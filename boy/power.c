@@ -1,136 +1,150 @@
-/*
-ADS Version for Seaglider version 3.0
-
-Updates from ADS.c version 2.0
-   -Working to make file open more efficient.
-   -Received many errno=0 when fopen return NULL. No idea why. waiting to hear
-back from JG 12.2.2015
-
-Updated from ADS.c version 1.5
-   -with more efficient storing and calculating of current and voltage.
-
-"Only pin should not be mirrored is pin 20. It is connected to the output of AD. Pin 20 is input and should not be mirrored. Also making pin 19 high turns on A/D, which increases the power usage by a few milliamps. 
-Only pin safe to mirror is pin 15 (/IRQ7). 
-Alex code uses the A/D to monitor the voltage and current, it probably does not matter." - haru
-
-Version 1.5:
-Storing "shorts" in circular array, averaging once every 30 seconds to another
-array of floating point values,
-after 5 minutes averaging those 20 different 8-byte floating point values and
-writing to file.
-
-Version 2.0:
-Summing "shorts" for giving sampling interval which lasts
-#seconds=(2^#bits*PITRATE*PITINT)
-Here we can average a large number of samples at a quick rate due to bit shift
-division. At the end of every
-average, we write the three different "ushort" values (current, voltage, and
-time of sampling) to the power file.
-Only when power monitor is called does the power file sum its "ushort" values
-and divided again ( non-bit shifted integer division)
-before it is converted to a floating point value with "CFxADRawToVolts(...)"
-This makes for a very fast and efficient power logging
-process.
-
-   A) Need to check which BITSHIFT size leads to overflow.
-      1) BITSHIFT of 10 results in 25.6 secon buffers, 11: 51.2, 12: 102.4 etc.
-16? Too big?
-
-   B) No required Array allocation or "data2" for knowing power needs to be
-averaged.
-      2) Just checking to see if "data" is true will spark averaging.
-
-   C) ADSTIME will be saved as a "ushort" and can be divided by "10.0" to
-transfer into the real power write time.
- */
+// power.c
 #include <common.h>
 #include <power.h>
 
-PowerInfo power = {};
+/*
+ * 12.2.2015 - Received many errno=0 when fopen return NULL. 
+ * No idea why. waiting to hear back from JG 
+ *
+ * Summing "shorts" for giving sampling interval which lasts
+ * #seconds=(2^#bits*PITRATE*PITINT)
+ * Here we can average a large number of samples at a quick rate due to
+ * bit shift division. At the end of every average, we write the three
+ * different "ushort" values (current, voltage, and time of sampling)
+ * to the power file.  Only when power monitor is called does the power
+ * file sum its "ushort" values and divided again ( non-bit shifted
+ * integer division) before it is converted to a floating point value with
+ * "CFxADRawToVolts(...)"  This makes for a very fast and efficient power
+ * logging process.
+ * 
+ * 1) BITSHIFT of 10 results in 25.6 secon buffers, 11: 51.2, 12: 102.4 etc.
+ * len(short)=2B, len(int)=4B, so room for at least 2^15 += short
+ * 16? Too big? only if unsigned short and signed int
+ * 
+ * 2) power.interval will be saved as a "ushort" in decisecs
+ */
 
 IEV_C_PROTO(ADTimingRuptHandler);
-IEV_C_PROTO(ADSamplingRuptHandler);
+IEV_C_PROTO(ADSamplingRuptHandler); // ??
 
 extern volatile clock_t start_clock;
 extern volatile clock_t stop_clock;
-extern bool data;
-extern int ADCounter;
 
-// Total Number of samples per ADSTIME. Defined by BITSHIFT and sampling
-// frequency
-ushort SAMPLES;
-ushort BitShift;
+ushort intervalSamples;
+ushort bitshift;
 
 // File to save all values for Power Logging;
 CFxAD *ad, adbuf;
-bool ADSOn;
 
 // ADSample is ptr returned by CFxADQueueToArray(), alloc'd by magic
 short *ADSample;
-long TotalPower[2] = {0, 0};
-
-// Time duration of AD Sampling interval in Deciseconds
-ushort ADSTIME = 0;
+long powerSum[2] = {0, 0};
 
 // Parameters Summed for calculation of ADS
-long VOLTAGE; // Summation of channel 1 from QSPI sampling function
-long CURRENT; // Summation of channel 0 from QSPI...
-long Nsamps;  // Incremented upon each sample. Once Nsamps equals SAMPLES
-             // (2^BITSHIFT)
+static long voltsSum = 0L; // Summation of channel 1 from QSPI sampling function
+static long currentSum = 0L; // Summation of channel 0 from QSPI...
+static long sampleCnt = 0L;  // if sampleCnt == intervalSamples, p.sampleReady=true
 
-ushort minvoltage = 0;
-ushort maxcurrent = 0;
+ushort power.voltsMin = 0;
+ushort power.currentMax = 0;
 
-float Voltage = 0.0;
-
-bool data;
-int ADCounter = 0;
-extern PowerParameters ADS;
+float voltage = 0.0;
 static char ADAvgFileName[] = "c:00000000.pwr";
 
-int ADSFileHandle;
+// bool off; bool sampleReady; float minBatCharge; float minBatVolt;
+// int counter; int filehdl; long batCap; short interval;
+// ushort currentMax; ushort voltsMin;
+PowerInfo power = {
+  true, false, 150.0, 12.5,
+  0, 0, 123000, 1440, 
+  99, 99,
+  }
 
-ushort Return_ADSTIME(void) { return ADSTIME; }
+void resetPowerCounter(void) { power.counter = 0; }
+float getVoltage(void) { return voltage; } 
+void ADSFileName(long id) { sprintf(&ADAvgFileName[2], "%08ld.pwr", id); }
+
+/*
+ * ADTimingRuptHandler Chore		Initiate conversion
+ * Makes sure QSM is running and repeats previous synchronization
+ */
+IEV_C_FUNCT(ADTimingRuptHandler) {
+// implied (IEVStack *ievstack:__a0) parameter
+#pragma unused(ievstack)
+  static long currentSum, voltsSum;     // these could be int
+  static short sampleCnt;
+  QSMRun();
+  QPBRepeatAsync(); // starts the QSPI running with previous parameters
+
+  // QSPI driver function to sample '2' channels from
+  // 'ad' and save into ushort array 'ADSample'
+  ADSample = (short *)CFxADQueueToArray( ad, (void *)QRR, 2); 
+  // function does magic alloc, or has static store
+
+  currentSum += (long)(ADSample[0]); // Here we sum the voltage and current
+  voltsSum += (long)(ADSample[1]);
+  sampleCnt++;
+
+  if (ADSample[0] > power.currentMax) {
+    power.currentMax = ADSample[0];
+    power.voltsMin = ADSample[1];
+  }
+
+  if (sampleCnt >= intervalSamples) {
+    powerSum[0] = currentSum;
+    powerSum[1] = voltsSum;
+    currentSum = 0;
+    voltsSum = 0;
+    power.sampleReady = true;
+    sampleCnt = 0;
+  }
+} // ADTimingRuptHandler
+
+/*
+ * not used - Move raw QPSI data to main buffer
+ */
+IEV_C_FUNCT(ADSamplingRuptHandler) {
+// implied (IEVStack *ievstack:__a0) parameter
+#pragma unused(ievstack)
+  CPUWriteInterruptMask(SIM_PITR_DEF_IPL);
+  QPBClearInterrupt();
+} // ADSamplingRuptHandler
+
 bool AD_Check(void) {
-  if (data == true && ADSOn) {
+  if (power.sampleReady == true && !power.off) {
     TickleSWSR();
     AD_Log();
     return true;
   } else
     return false;
 }
-bool ADS_Status(void) { return ADSOn; }
-int Get_ADCounter(void) { return ADCounter; }
-void Reset_ADCounter(void) { ADCounter = 0; }
-void ADSFileName(long counter) {
-  sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
-}
+
 /*
- * Void SetUpADS()
  * Set up AD to sample voltage and current usage.
  * Name the file name with 8-digit numeral as a counter
  * No need to calculate current upon Power off
  */
-ushort Setup_ADS(bool ads_on, long filecounter, ushort val) {
-
-  ADSOn = ads_on;
-  if (ADSOn) {
-    BitShift = val;
+ushort powerInit(bool ads_on, long filecounter, ushort val) {
+  // global power
+  power.off = !ads_on;
+  if (!power.off) {
+    bitshift = val;
     Open_Avg_File(filecounter);
     flogf("\n%s|ADS(%s)", Time(NULL), ADAvgFileName);
-    Setup_Acquisition(BitShift);
+    Setup_Acquisition(bitshift);
 
-  } else if (!ADSOn) {
+  } else {
     PITSet100usPeriod(PITOff); // Stop sampling
     PITRemoveChore(0);
     Delayms(10);
-    data = true;
-    ADCounter = 0;
+    power.sampleReady = true;
+    power.counter = 0;
   }
-  return ADSTIME;
+  return power.interval;
 } // void SetUpADS
-  /*********************************************************\
-  ** Void OpenAvgFile()
+  
+/*
+ * Void OpenAvgFile()
  */
 void Open_Avg_File(long counter) {
 
@@ -147,11 +161,12 @@ void Open_Avg_File(long counter) {
   Delayms(10);
 
 } // void OpenAvgFile
+
 /*
  * Setup Acquisition
  */
-void Setup_Acquisition(ushort BitShift) {
-  // global ADSample
+void Setup_Acquisition(ushort bitshift) {
+  // global ADSample ad 
   double vref = VREF;
   bool uni = true; // true for unipolar, false for bipolar
   bool sgl = true; // true for single-ended, false for differential
@@ -162,8 +177,8 @@ void Setup_Acquisition(ushort BitShift) {
 
   Delayms(20);
 
-  TotalPower[0] = 0L;
-  TotalPower[1] = 0L;
+  powerSum[0] = 0L;
+  powerSum[1] = 0L;
 
   // Initialize AD Slot and Lock
   ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
@@ -181,64 +196,48 @@ void Setup_Acquisition(ushort BitShift) {
 
   IEVInsertCFunct(&ADTimingRuptHandler, pitVector); // replacement fast routine
 
-  // Current and voltage samples per ADSTIME interval
-  SAMPLES = (ushort)pow(2, BitShift);
-  ADSTIME = (10 * SAMPLES * (PITRATE * PITPERIOD));
+  // Current and voltage samples per power.interval interval
+  intervalSamples = (ushort)(1 << bitshift);
+  power.interval = (10 * intervalSamples * (PITRATE * PITPERIOD));
 
-  DBG1("\t|Writing every %4.1fSeconds", ADSTIME / 10.0)
+  DBG1("\t|Writing every %4.1fSeconds", power.interval / 10.0)
   Delayms(1);
 
   // Set the Rate and start the PIT
-  Nsamps = 0;
-  CURRENT = 0;
-  VOLTAGE = 0;
-  minvoltage = 0;
-  maxcurrent = 0;
-
   PITSet51msPeriod(PITRATE);
-  data = false;
-
+  power.sampleReady = false;
 } // SetupAcquistion
+
 /*
- * AD_Log
- * 1)Comes here from Main() if either data or data2 is true
- * 2)Checks both booleans and writes correct side of AD Buffer to file (doesn't
-acutally
- * save file, rather averages each side of buffer and stores one averaged value
-for set buffer period)
- * 3)Once both data booleans are false set PutInSleepMode=true
+ * 1) Comes here when power.sampleReady == true
+ * 2) writes correct side of AD Buffer to file 
  */
 void AD_Log(void) {
 
   ushort AveragedEnergy[3] = {0, 0, 0};
   float current = 0.0;
 
-  ADCounter++;
+  power.counter++;
 
-  Delayms(5);
-
-  if (data == true) {
-    AveragedEnergy[0] = (ushort)(TotalPower[0] >> BitShift); // Voltage
-    AveragedEnergy[1] = (ushort)(TotalPower[1] >> BitShift); // Current
-    AveragedEnergy[2] = ADSTIME;                             // Time
-    data = false;
-
-  } else if (data == true && ADSOn == false) {
-    AveragedEnergy[0] = (ushort)(TotalPower[0] >> BitShift);
-    AveragedEnergy[1] = (ushort)(TotalPower[1] >> BitShift);
-    AveragedEnergy[2] = ADSTIME;
+  if (power.sampleReady == true) {
+    AveragedEnergy[0] = (ushort)(powerSum[0] >> bitshift); // voltage
+    AveragedEnergy[1] = (ushort)(powerSum[1] >> bitshift); // Current
+    AveragedEnergy[2] = power.interval;                             // Time
+    power.sampleReady = false;
+  // ??
+  } else if (power.sampleReady == true && !power.off == false) {
+    AveragedEnergy[0] = (ushort)(powerSum[0] >> bitshift);
+    AveragedEnergy[1] = (ushort)(powerSum[1] >> bitshift);
+    AveragedEnergy[2] = power.interval;
   }
 
   current = CFxADRawToVolts(ad, AveragedEnergy[0], VREF, true);
-  Voltage = CFxADRawToVolts(ad, AveragedEnergy[1], VREF, true) * 100;
-  flogf("\n\t|POWER: %5.3fA, %5.2fV", current, Voltage);
+  voltage = CFxADRawToVolts(ad, AveragedEnergy[1], VREF, true) * 100;
+  flogf("\n\t|POWER: %5.3fA, %5.2fV", current, voltage);
 
   AD_Write(AveragedEnergy);
 } // ADLog
-/*
- * Get_Voltage()
- */
-float Get_Voltage(void) { return Voltage; } // Get_Voltage //
+
 /*
  * Voltage Now()
  */
@@ -249,40 +248,40 @@ float Voltage_Now(void) {
 
   ADSample = (short *)CFxADQueueToArray(ad, (void *)QRR, 2);
   volts = CFxADRawToVolts(ad, (ushort)ADSample[1], VREF, true) * 100;
-  Voltage = volts;
+  voltage = volts;
   return volts;
-
 } // Voltage_Now
+
 /*
  * AD Write
  * Open file of Current averages, go to end of file and grab last averaged
 reading.
- * This function will increment the variable ADCounter==FWT ~5minutes
+ * This function will increment the variable power.counter==FWT ~5minutes
  * 
  */
-void AD_Write(ushort *AveragedEnergy) {
-
+void powerWrite(ushort *AveragedEnergy) {
+  DBG0("powerWrite")
+  // global
   CLK(start_clock = clock();)
-  ADSFileHandle = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
-  if (ADSFileHandle <= 0) {
+  power.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
+  if (power.filehdl <= 0) {
     flogf("\nERROR|AD_Write() %s open fail. errno: %d", ADAvgFileName, errno);
     return;
   }
-  // DBG(   else      flogf("\n\t|AD_Write() %s opened", ADAvgFileName);)
 
   CLK(stop_clock = clock();
       print_clock_cycle_count(start_clock, stop_clock, "AD_Write: open");)
 
   CLK(start_clock = clock();)
 
-  write(ADSFileHandle, AveragedEnergy, 3 * sizeof(ushort));
+  write(power.filehdl, AveragedEnergy, 3 * sizeof(ushort));
   Delayms(25);
   CLK(stop_clock = clock();
       print_clock_cycle_count(start_clock, stop_clock, "AD_Write: write");)
 
-  if (!ADSOn) // SetupAD(false) from power monitor
+  if (power.off) // SetupAD(false) from power monitor
     return;
-  if (close(ADSFileHandle) < 0)
+  if (close(power.filehdl) < 0)
     flogf("\nERROR  |AD_Write() %s Close error: %d", ADAvgFileName, errno);
   // DBG(   else      flogf("\n\t|AD_Write() %s Closed", ADAvgFileName);)
  
@@ -313,15 +312,16 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   // Normal enterance to Power_Monitor
   if (totaltime != 0) {
     Setup_ADS(false, NULL, NULL);
-    if (ADSTIME < 1)
-      ADSTIME = 1044;
-    ADSTIME = ((10 * totaltime) % ADSTIME); // Last AD Power Buffer size
+    if (power.interval < 1)
+      power.interval = 1044;
+    // Last AD Power Buffer size
+    power.interval = ((10 * totaltime) % power.interval); 
     AD_Log();
     // opens adsfh
   }
   // Coming in after reboot // Setup_ADS(false), AD_Log also opens .pwr file
   else {
-    ADSFileHandle = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
+    power.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
     ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
     if (!CFxADLock(ad)) {
       flogf("\nCouldn't lock and own A-D with QSPI\n");
@@ -342,28 +342,28 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
 
   // if file unwritten to
   if (filelength < 6) {
-    if (close(ADSFileHandle) < 0)
+    if (close(power.filehdl) < 0)
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
     DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
     return 0.0;
   }
 
-  if (ADSFileHandle > 0) {
+  if (power.filehdl > 0) {
     // we maybe just wrote into file, so seek back to start
-    lseek(ADSFileHandle, 0, SEEK_SET);
+    lseek(power.filehdl, 0, SEEK_SET);
     // 6 is the number of bytes for the values of current, voltage, time.
     filelength = filelength / 6; 
 
     // Get the number of times file has been written to
     while (DataCount < filelength) {
-      byteswritten = read(ADSFileHandle, energy, 3 * sizeof(ushort));
+      byteswritten = read(power.filehdl, energy, 3 * sizeof(ushort));
       TotalAmp += energy[0];
       TotalVolts += energy[1];
       TotalTime += (ulong)energy[2];
       DataCount++;
     }
 
-    if (close(ADSFileHandle) < 0)
+    if (close(power.filehdl) < 0)
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
     DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
 
@@ -380,8 +380,8 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
     TotalTime = TotalTime / 10;
     kjoules = (amps * voltage * TotalTime) / 1000.0;
   }
-  MaxCurrent = CFxADRawToVolts(ad, maxcurrent, VREF, true);
-  MinVoltage = CFxADRawToVolts(ad, minvoltage, VREF, true) * 100;
+  MaxCurrent = CFxADRawToVolts(ad, power.currentMax, VREF, true);
+  MinVoltage = CFxADRawToVolts(ad, power.voltsMin, VREF, true) * 100;
   *LoggingTime = TotalTime;
 
   sprintf(WriteBuffer, "\n---POWER---\nTime: %lu\nEnergy:%.2fkJ\nAvg "
@@ -414,57 +414,7 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   return floater;
 
 } // PowerMonitor
-/*
- * ADTimingRuptHandler Chore		Initiate conversion
- * 1) Makes sure QSM is running and repeats previous synchronization
- * 2) While ADRawHead is Less than the total buffer size, take sample and store
-in buffer
- * 3) If equal to half, make sure on next system wake, to catch and write data
- * 4)
- */
-IEV_C_FUNCT(ADTimingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
-{
 
-#pragma unused(ievstack)
-
-  QSMRun();
-  QPBRepeatAsync(); // starts the QSPI running with previous parameters
-
-  ADSample = (short *)CFxADQueueToArray(
-      ad, (void *)QRR, 2); // QSPI driver function to sample '2' channels from
-                           // 'ad' and save into ushort array 'ADSample'
-
-  CURRENT += (ulong)(ADSample[0]); // Here we sum the voltage and current
-  VOLTAGE += (ulong)(ADSample[1]);
-  Nsamps++;
-
-  if (ADSample[0] > maxcurrent) {
-    maxcurrent = ADSample[0];
-    minvoltage = ADSample[1];
-  }
-
-  if (Nsamps == SAMPLES) {
-    TotalPower[0] = CURRENT;
-    TotalPower[1] = VOLTAGE;
-    VOLTAGE = 0;
-    CURRENT = 0;
-    data = true;
-    Nsamps = 0;
-  }
-
-} // ADTimingRuptHandler
-/*
- * ADSamplingRuptHandler		Move raw QPSI data to main buffer
- */
-IEV_C_FUNCT(
-    ADSamplingRuptHandler) // implied (IEVStack *ievstack:__a0) parameter
-{
-#pragma unused(ievstack)
-
-  CPUWriteInterruptMask(SIM_PITR_DEF_IPL);
-  QPBClearInterrupt();
-
-} // ADSamplingRuptHandler
 
 /*
  * 

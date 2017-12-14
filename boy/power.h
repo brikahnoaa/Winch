@@ -29,9 +29,16 @@
  */
 
 typedef struct PowerInfo {
-  char batCap[9];
-  short batLog;    // t logging change in battery capacity
-  char minVolt[6]; //-v %.2f  minimum system voltage
+  bool off;             // track and log battery capacity
+  bool sampleReady;     // sample should be saved, until written
+  float minBatCharge;   // minimum system capacity to run
+  float minBatVolt;     // minimum system voltage to run
+  int counter;          // power monitor count
+  int filehdl;          // log file
+  long batCap;          // for lithium
+  short interval;       // deciSecs for PIT timer interrupt
+  ushort currentMax;
+  ushort voltsMin;
 } PowerInfo;
 extern PowerInfo power;
 
@@ -47,9 +54,5 @@ void Delay_AD_Log(short Sec);
 float Get_Voltage(void);
 float Voltage_Now(void);
 void Open_Avg_File(long);
-ushort Return_ADSTIME(void);
-int Get_ADCounter(void);
-bool ADS_Status(void);
 void GetPowerSettings(void);
-void Reset_ADCounter(void);
 void ADSFileName(long);

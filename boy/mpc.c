@@ -2,26 +2,54 @@
 #include <common.h>
 #include <mpc.h>
 
-int DutyCycleTicks;
+/*
+ * "Only pin should not be mirrored is pin 20. It is connected to the
+ * output of AD. Pin 20 is input and should not be mirrored. Also making pin
+ * 19 high turns on A/D, which increases the power usage by a few milliamps.
+ * Only pin safe to mirror is pin 15 (/IRQ7).  Alex code uses the A/D to
+ * monitor the voltage and current, it probably does not matter." - haru
+ */
 
-// LOCAL VARIABLES
-int DetectionInt;
-int DataInterval;
 char time_chr[21];
 
-#ifdef TIMING
-volatile clock_t start_clock;
-volatile clock_t stop_clock;
-#endif
+typedef enum { 
+  Nada_it=0,
+  Watch_it=1,
+  Power_it=1<<1,
+  Winch_it=1<<2,
+  Wispr_it=1<<3,
+  Data_it=1<<4,
+  Call_it=1<<5,
+  } IntervalTimer;
+
+typdef struct ITnode {
+  long time;
+  IntervalTimer it;
+  ITnode *prev, *next;
+  } = {0L, Nada_it, NULL, NULL} ITnode;
 
 /*
- * void System_Timer();
+ * interval timer, abstracted for general purpose
+ * call often. triggers watchdog reset and power monitor (144s)
+ * fast check for next timer, so low overhead
+ * auto regen for some types, but must be seeded during init
  * 
- * Return value:
- * 1: Detection Interval Timer
- * 2: Data Interval Timer
- * 
+ * Returns: enum IntervalType * use bitshifted values i.e. flags
+ * Nada_it
+ * Watch_it - emergency watchdog
+ * Power_it - record power stats
+ * Winch_it - expected response
+ * Wispr_it - detection duty cycle
+ * Data_it - surface and phone home
+ * Call_it - give up call and descend
  */
+IntervalTimer addIT(void) {
+  debug0("addIT()")
+  static long nextTime;
+  static ITnode *next;
+  static ITNode head;
+} // mpcTimer
+
 int System_Timer(void) {
   int remainder;
   int adcount = 0;
@@ -30,9 +58,9 @@ int System_Timer(void) {
   static int DataTimer;
   float vel, depth;
 
-  // Counting the number of ADS file writes, Timing is a function of this
-  // number.
-  adcount = Get_ADCounter();
+  // Counting the number of ADS file writes, Timing is a function of this number
+  // ?? use time instead
+  adcount = power.counter;
 
   // To avoid Division by zero: we can just return here.
   if (adcount == 0)
@@ -68,8 +96,7 @@ int System_Timer(void) {
       }
     }
 
-// CTD Measurements
-#ifdef CTDSENSOR
+    // CTD Measurements
     // Get an average of CTD Depth and calculate velocity
     depth = CTD_AverageDepth(9, &vel);
     // If initial average is less than target depth... why?
@@ -80,15 +107,7 @@ int System_Timer(void) {
       // interval to 30 minutes.
       if (depth < NIGK.TDEPTH) {
         flogf(
-            "\nERROR|System_Timer(CTD): DEPTH LESS THAN TARGET DEPTH!"); // This
-                                                                         // will
-                                                                         // be
-                                                                         // interest
-                                                                         // to
-                                                                         // happen.
-                                                                         // Most
-                                                                         // likely
-                                                                         // detachment.
+            "\nERROR|System_Timer(CTD): DEPTH LESS THAN TARGET DEPTH!"); 
         // Set NIGK to recovery?
         NIGK.RECOVERY = 1;
         VEEStoreShort(NIGKRECOVERY_NAME, NIGK.RECOVERY);
@@ -100,45 +119,14 @@ int System_Timer(void) {
         return 2;
       }
     }
-#endif
 
     // Reset AD Counter for next Detection Interval
-    Reset_ADCounter();
+    resetPowerCounter();
   }
-
-// This only happens if our Platform is a REALTIME System.
-#ifdef REALTIME
-  // If calling on DATATRANSFERINTERVAL
-  if (IRID.CALLMODE == 0 || NIGK.RECOVERY) {
-    if (DataTimer == 0)
-      return 0;
-    remainder = DataTimer % DataInterval;
-    if (remainder == 0) {
-      flogf("\n\t|IRID CALLMODE=0, call now!");
-      DataTimer = 0;
-      return 2;
-    }
-  }
-  // Else if calling at set tiem of day.
-  else if (IRID.CALLMODE == 1) {
-    time(&rawtime);
-    info = gmtime(&rawtime);
-    // DBG1("\t|CallTime: %d, Hour Now %d", IRID.CALLHOUR, info->tm_hour)
-    if (info->tm_hour == IRID.CALLHOUR) {
-      DBG1("\t|Current Minutes: %d", info->tm_min)
-      if (info->tm_min <= 3) {
-        DataTimer = 0;
-        flogf("\n\t|IRID CALLMODE=1, Call Now!\n\t|IRID CALLHOUR: %d",
-              IRID.CALLHOUR);
-        return 2;
-      }
-    }
-  }
-#endif
 
   return 1;
-
 } // System_Timer
+
 /*
  * PreRun		Exit opportunity before we start the program
  */
@@ -369,17 +357,12 @@ float Check_Timers(ushort PLI) {
   DutyCycleTicks = (int)(DetectionInt * ((float)(WISP.DUTYCYCL / 100.0)));
   flogf("\n\t|WISPR Duty Cycle: %d\%", WISP.DUTYCYCL);
   DBG1("\t|DutyCycleTicks: %d", DutyCycleTicks)
-// If some kind of Duty Cycle, keep Wispr Off until duty cycle begins
-
-// Real value...
-
-
+  // If some kind of Duty Cycle, keep Wispr Off until duty cycle begins
   // Reset SystemTimer by zeroing out ADCounter
-  Reset_ADCounter();
-
+  resetPowerCounter();
   return callrate;
-
 } // Check_Timers
+
 /*
  * Check_Vitals
  * //Voltage: checking the average
@@ -400,7 +383,6 @@ short Check_Vitals(void) {
 
   short returnvalue = 0;
 
-#ifdef POWERLOGGING
   float currentvoltage;
   float minvolt;
 
@@ -427,7 +409,6 @@ short Check_Vitals(void) {
       returnvalue = 2; // Hibernate? Stop WISPR?
     }
   }
-#endif
 
   // Free_Disk_Space() somewhere else
   if (SystemFreeSpace < 100) {

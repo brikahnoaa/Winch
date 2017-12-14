@@ -23,60 +23,9 @@
 #include <time.h>
 #include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 
-#include <global.h> // common externals
-#include <debug.h>
 #include <utils.h> // shared procs, SW
+#include <mpc.h> // platform, HW
 
+#define PLATFORM LARA
+#define PROG_VERSION 4.0
 
-// the DEBUG's each turn on a macro named DBGx()
-
-// - blocks of code, as is
-#define DEBUG
-
-// 0 print func names
-#define DEBUG0
-// 1 print more interesting things
-#undef DEBUG1
-// 2 print details
-#define DEBUG2
-// debug related to wispr
-#define DEBUGWISPR
-
-// levels of debug
-#undef DBGLVL
-#ifdef DBGLVL
-#if (DBGLVL<=0)
-#define DEBUG0
-#endif
-#if (DBGLVL<=1)
-#define DEBUG1
-#endif
-#if (DBGLVL<=2)
-#define DEBUG2
-#endif
-#endif // #ifdef DBGLVL
-
-// DBG*
-#ifdef DEBUG
-#define DBG(X) X
-#else
-#define DBG(X)
-#endif
-// DEBUG0
-#ifdef DEBUG0
-#define DBG0(X) flogf("\n" X);
-#else
-#define DBG0(X)
-#endif
-// DEBUG1
-#ifdef DEBUG1
-#define DBG1(X) flogf("\n" X);
-#else
-#define DBG1(X)
-#endif
-// DEBUG2
-#ifdef DEBUG2
-#define DBG2(X) flogf("\n" X);
-#else
-#define DBG2(X)
-#endif

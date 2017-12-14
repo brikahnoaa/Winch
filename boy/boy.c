@@ -141,19 +141,15 @@ void phase1(void) {
   flogf("\n\t|phase ONE");
 
   // Initialize System Timers
-  Check_Timers(Return_ADSTIME());
+  Check_Timers(power.interval);
 
   // Stay here until system_timer says it's time to send data, user input for
   // different phase, NIGK R
   while (!boy.DATA && boy.phase == 1) {
-
     Sleep();
     Incoming_Data();
     if (System_Timer() == 2)
       boy.DATA = true;
-
-    if (!boy.ON)
-      break;
   }
   if (WISPR_Status()) { // moved here from p3
     WISPRSafeShutdown();

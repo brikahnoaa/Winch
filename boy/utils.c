@@ -1,6 +1,6 @@
-// global.c - utility stuff
+// utils.c - utility stuff
+#include <utils.h>
 
-#include <global.h>
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHARDELAY 50
 

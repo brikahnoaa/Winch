@@ -36,7 +36,8 @@ void winchConsole(void) {
 /*
  */
 void AModemData(void) {
-  char *inString; // Array for input command/response
+  // global scratch
+  char *inString=scratch; // Array for input command/response
   short inchar;
   char prechar; // Two ints to grab different characters of the input
   int i, decimal = 0, multiplier = 4096; // location within input array
@@ -46,8 +47,6 @@ void AModemData(void) {
   char hexCode[] = "0000";
   float depth;
   static int AscentStopTries = 0;
-
-  inString = (char *)calloc(64, sizeof(char));
 
   for (i = 0; i < 64; i++) { // Scan through input from NIGKPort
     inchar = TURxGetByteWithTimeout(NIGKPort, 500);
@@ -75,7 +74,6 @@ void AModemData(void) {
     cprintf("OK");
     TURxFlush(NIGKPort);
     TUTxFlush(NIGKPort);
-    free(inString);
     return;
   } else
     flogf("\n%s\t|other: %s", Time(NULL), inString);
@@ -129,7 +127,6 @@ void AModemData(void) {
     BuoyStatus();
 
   TURxFlush(NIGKPort);
-  free(inString);
   return;
 
 } // AModem_Data
@@ -283,7 +280,6 @@ void winchMonitor(int filehandle) {
 
   byteswritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
   DBG1("BytesWritten: %d", byteswritten)
-  // free(writebuffer);
 
   amodem.ASCENTCALLS = 0;
   amodem.ASCENTRCV = 0;
