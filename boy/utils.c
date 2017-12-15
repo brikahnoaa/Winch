@@ -6,8 +6,6 @@
 
 char scratch[BUFSZ];
 
-void delayms(int x) {RTCDelayMicroSeconds((long) 1000 * (long) x); }
-
 /*
  * put string to serial
  */
