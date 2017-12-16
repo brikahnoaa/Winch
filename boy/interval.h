@@ -13,4 +13,5 @@ typedef enum {
 void addIT(IntervalType intT, int secs);
 static void removeIT(int id);
 int checkIT(void);
+int cancelIT(IntervalType intT);
 

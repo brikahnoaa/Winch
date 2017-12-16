@@ -64,8 +64,8 @@ void addIT(IntervalType intT, int secs) {
 static void removeIT(Interval* in) {
   debug0("removeIT()")
   // global it
-  // 
-  in->next->prev = in->prev;
+  // removing tail?
+  if (in->next) in->next->prev = in->prev;
   in->prev->next = in->next;
   free(in);
   // 
@@ -104,3 +104,20 @@ int checkIT(void) {
   return r;
 } // checkIT
 
+/*
+ * cancel all intervals of a type, e.g. detection interval
+ * return: # removed
+ */
+int cancelIT(IntervalType iType) {
+  // global it
+  int r=0;
+  // it.list->next is first list item
+  for (Interval* i=it.list->next; i!=NULL; i=i->next) {
+    if (i->intT==intType) {
+      i = i->prev;
+      removeIT(i->next);
+      r++;
+    }
+  }
+  return r;
+}
