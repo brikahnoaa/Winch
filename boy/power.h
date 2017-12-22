@@ -15,20 +15,8 @@
 #define INITIAL_BATTERY_CAPACITY 5000
 #define MINIMUM_BATTERY_CAPACITY INITIAL_BATTERY_CAPACITY * 0.1
 
+// 104 second power cycle
 #define BITSHIFT 11
-// Crucial to ADS Timing of Program. explained in ads power consumption
-// calculation excel file
-/*
- * orig alex - seems to be off, should be double. 1<<1==2^1
- * 11:: PITRATE*PITPERIOD*1<<11 = 104.448
-   10: 25.6seconds/file write 843.75 bytes/hour
-   11: 51.2secs/file write    421.875bytes/hr
-   12: 102.4secs/file         201.937bytes/hr
-   13: 204.8secs/file         105.468
-   14: 409.6                  52.734
-   15: 819.2                  26.367
-   16: 1638.4                 13.183
- */
 
 typedef struct PowerInfo {
   bool on;             // track and log battery capacity
@@ -44,17 +32,30 @@ typedef struct PowerInfo {
 } PowerInfo;
 extern PowerInfo power;
 
-void Delay_AD_Log(short);
+void powLog(void);
+void powLogDelay(short sec);
 void Setup_Acquisition(ushort);
-void AD_Write(ushort *);
-void AD_Log(void);
+void powLogWrite(ushort *);
 ushort GetSystemTimeInt(void);
-bool AD_Check(void);
-ushort Setup_ADS(bool, long, ushort);
-float Power_Monitor(ulong, int, ulong *);
-void Delay_AD_Log(short Sec);
+bool powCheck(void);
+ushort powInit(bool, long, ushort);
+float powMonitor(ulong, int, ulong *);
 float Get_Voltage(void);
 float Voltage_Now(void);
-void Open_Avg_File(long);
+void powOpenLog(long);
 void GetPowerSettings(void);
-void ADSFileName(long);
+void powFileName(long);
+
+// Crucial to ADS Timing of Program. explained in ads power consumption
+// calculation excel file
+/*
+ * orig alex - seems to be off, should be double. 1<<1==2^1
+ * 11:: PITRATE*PITPERIOD*1<<11 = 104.448
+   10: 25.6seconds/file write 843.75 bytes/hour
+   11: 51.2secs/file write    421.875bytes/hr
+   12: 102.4secs/file         201.937bytes/hr
+   13: 204.8secs/file         105.468
+   14: 409.6                  52.734
+   15: 819.2                  26.367
+   16: 1638.4                 13.183
+ */

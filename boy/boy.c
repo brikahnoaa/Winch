@@ -465,27 +465,20 @@ void phase4(void) {
  * phase0 deploy buoy sequence
  * on ship, sinking, at bottom wait boy.settleTime, gather info, phase2
  */
-void deploy(void) {
-  DBG0("deploy()")
-  ulong nowT, deployT, maxT;
+void phase0(void) {
+  DBG0("phase0()")
+  // time and depth
+  time_t deployT = time(0);
   float nowD=0.0, thenD=0.0;
-  int changeless=0;
 
-  RTCGetTime(&deployT, NULL);
-  // give up after two hours
-  maxT = (ulong) (2*60*60);
-  RTCGetTime(&nowT, NULL);
-  boy.depth=0.0;
-  DBG1("%s\t|P5: wait until >10m", Time(NULL))
+  flogf("\n%s\t|deploy(): wait until >10m", Time(NULL))
   while (boy.depth<10.0) {
-    CTD_Sample();
-    Delay_AD_Log(3);
-    if (!  CTD_Data()) 
-      flogf("\nERR in P5 - no CTD data");
-    DBG1("P5 %5.2f", boy.depth)
+    ctdSample();
+    while (!incoming());         // wait for input
+    DBG1("P0 %5.2f", boy.depth)
     Delay_AD_Log(30);
-    RTCGetTime(&nowT, NULL);
-    if ((nowT - deployT) > maxT) break; // too long
+    // after two hours; give up, shut down - assume accidental start
+    if (time(0) > deployT + (2*60*60)) shutdown();
   }
   flogf("\n%s\t|P5: wait until no depth changes", Time(NULL));
   // check every minute; if no change for five minutes, then deployed
@@ -509,7 +502,7 @@ void deploy(void) {
   flogf("\n%s\t|P5: deployed", Time(NULL));
   // rise
   boy.phase=2;
-} // reboot()
+} // phase0()
 
 /*
  * int Incoming_Data()

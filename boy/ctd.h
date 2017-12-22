@@ -4,7 +4,7 @@
 typedef struct CtdInfo {
   bool on;
   bool syncmode;  // use syncmode
-  bool pending;   // polled request pending
+  bool pending;   // request pending, expect response
   float depth;
   short delay;    // Delay in seconds between polled samples
   int filehandle; // log file

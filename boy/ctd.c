@@ -87,6 +87,10 @@ bool ctdPrompt(void) {
   else return false;
 }
 
+/*
+ * poke ctd to get sample, set interval timer
+ * set: ctd.pending, it
+ */
 void ctdSample(void) {
   DBG0("ctdSample()")
   // global ctd .pending
@@ -101,6 +105,8 @@ void ctdSample(void) {
     if (len<3) flogf("\nERR ctdSample, TS command fail");
   }
   ctd.pending = true;
+  // expect response in 6sec
+  itAdd( Ctd_it, 6 );
 } // ctdSample
 
 /*

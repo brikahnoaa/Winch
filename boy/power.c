@@ -111,10 +111,10 @@ IEV_C_FUNCT(ADSamplingRuptHandler) {
   QPBClearInterrupt();
 } // ADSamplingRuptHandler
 
-bool AD_Check(void) {
+bool powCheck(void) {
   if (power.sampleReady == true && !power.off) {
     TickleSWSR();
-    AD_Log();
+    powLog();
     return true;
   } else
     return false;
@@ -130,7 +130,7 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
   power.off = !ads_on;
   if (!power.off) {
     bitshift = val;
-    Open_Avg_File(filecounter);
+    powOpenLog(filecounter);
     flogf("\n%s|ADS(%s)", Time(NULL), ADAvgFileName);
     Setup_Acquisition(bitshift);
 
@@ -147,7 +147,7 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
 /*
  * Void OpenAvgFile()
  */
-void Open_Avg_File(long counter) {
+void powOpenLog(long counter) {
 
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
   Delayms(25);
@@ -157,7 +157,7 @@ void Open_Avg_File(long counter) {
     return;
   }
   if (close(ADSFileHandle) != 0)
-    flogf("\nERROR  |Open_Avg_File() %s Close error: %d", ADAvgFileName, errno);
+    flogf("\nERROR  |powOpenLog() %s Close error: %d", ADAvgFileName, errno);
 
   Delayms(10);
 
@@ -214,7 +214,7 @@ void Setup_Acquisition(ushort bitshift) {
  * 2) writes correct side of AD Buffer to file 
  * sets: power.sampleReady=false
  */
-void AD_Log(void) {
+void powLog(void) {
 
   ushort AveragedEnergy[2] = {0, 0};
   float current = 0.0;
@@ -288,7 +288,7 @@ void powerWrite(ushort *AveragedEnergy) {
  * With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
 minutes)
  */
-float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
+float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   struct stat fileinfo;
   ulong DataCount = 0;
   ulong filelength = 0;
@@ -303,17 +303,17 @@ float Power_Monitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   int byteswritten;
   float voltage = 0.0, amps = 0.0;
 
-  // Normal enterance to Power_Monitor
+  // Normal enterance to powMonitor
   if (totaltime != 0) {
-    Setup_ADS(false, NULL, NULL);
+    powInit(false, NULL, NULL);
     if (power.interval < 1)
       power.interval = 1044;
     // Last AD Power Buffer size
     power.interval = ((10 * totaltime) % power.interval); 
-    AD_Log();
+    powLog();
     // opens adsfh
   }
-  // Coming in after reboot // Setup_ADS(false), AD_Log also opens .pwr file
+  // Coming in after reboot // powInit(false), powLog also opens .pwr file
   else {
     power.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
     ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
@@ -438,12 +438,12 @@ void GetPowerSettings(void) {
 }
 
 /*
- * Delay_AD_Log()
- * AD function with time delay.  Do AD_Log at 5 sec incrment.
+ * powLogDelay()
+ * AD function with time delay.  Do powLog at 5 sec incrment.
  * number of seconds for delay while watching Power
  * Logging & Tickling Watch Dog Timer
  */
-void Delay_AD_Log(short Sec) {
+void powLogDelay(short Sec) {
   short i;
   long last, rem;
   DBG1(" {%d} ", Sec )
@@ -454,13 +454,13 @@ void Delay_AD_Log(short Sec) {
   TickleSWSR(); // another reprieve
   for (i = 0; i < last; i++) {
 
-    AD_Check();
+    powCheck();
     Delayms(5000);
   }
-  AD_Check();
+  powCheck();
   Delayms(rem * 1000);
   TickleSWSR();                         // another reprieve
 
-} //Delay_AD_Log()
+} //powLogDelay()
 
 
