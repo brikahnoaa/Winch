@@ -1,0 +1,58 @@
+print_help()
+WISPR Data Logger/Detector 
+Version X.X 
+Options:           DESCRIPTION                                DEFAULT
+ -M {mode}         Processing mode number                     [ 1 ]
+ -T {secs}         Size of ADC data buffers in seconds        [ 8 seconds ]
+ -F {level}        Sets flac compression level                [ 2 ]
+ -s {bitshift}     Sets data bitshift                         [ 8 ]
+ -o {organization} Organization string                        [ none ]
+ -b {number}       Number of data buffers per file            [ 10 ]
+ -n {nclick}       Min number of click for detection          [ 10 ]
+ -b {nbufs}        Number of ADC buffers for detection window [ 5 ]
+ -i {number}       Number buffers to skip between file        [ 10 ]
+ -p {prefix}       Data file name prefix                      [ wispr_ ]
+ -l {filename}     Log file name                              [ no log file ]
+ -v {level}        Verbose level (0=none)                     [ 0 ]
+ -L                Enable LEDs                                [ disabled ]
+ -r                Set RTC and lat/lon at startup             [ disabled ] 
+ -W                Run in Wave Test Mode                      [ disabled ] 
+
+Modes: 
+ - Mode 1: Record continuously, no detection functionality 
+ - Mode 2: Record continuously with detection functionality 
+ - Mode 3: Record intermittently. 
+           Skip specified number of buffers between files. 
+ - Mode 4: Run detection function only. 
+           Process incoming data continuously with the detection function,
+           but only write a file when a detection appeared.
+ - Mode 5: Run detection function and record data intermittently.
+           Same idea as mode 4 + record data intermittently.
+           Used to get an idea how many encounters were missed or 
+           to monitor noise levels regularly).
+
+ - Wave Test Mode:
+           Test mode that reads data from a wave file and 
+           overwrites the adc buffer before processing the buffer.
+
+getopt()
+M:T:s:g:C:i:n:b:m:f:F:o:l:p:v:rLhWx
+   'C': // number of files to record I
+   'F': // flac compression level (1-8) I
+   'L': // LEDs enable 1
+   'M': // wispr mode (1-6) I
+   'T': // adc buffer duration F
+   'W': // Enable wave test mode 1
+   'b': // num_bufs_per_file I
+   'f': // adc sampling frequency I
+   'g': // gain I
+   'h': // help
+   'i': // num_bufs_skipped_between_files I
+   'l': // override default log file name XXX/32
+   'n': // number of clicks per detection I
+   'o': // "ORGANIZATION" in flac metadata XXXXX
+   'p': // output data file prefix XXXXX
+   'r': // set clock on startup 1
+   's': // bit shift I
+   'v': // verbose I
+   'x': // do_clock_cycle_count 1

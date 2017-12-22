@@ -2,7 +2,7 @@
 
 // ant
 typedef struct AntennaData {
-  bool off;
+  bool on;
   bool surfaced;        // Set to true when Antenna is floating
   float ctdPos;         // depth of CTD when floating
   char gpsLong[20];     // 123:45.6789 W

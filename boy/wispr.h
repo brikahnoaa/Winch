@@ -5,7 +5,7 @@
 // moment. 060116- AT
 
 typedef struct WisprInfo {
-  bool off;
+  bool on;
   short gain; //-g 0-3
   short num;    // number of WISPR Boards installed
   short detInt;   //-D      //Minutes   //WISPR DET INTERVAL

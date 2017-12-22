@@ -40,7 +40,7 @@ void main(void) {
     deploy(&boy.moorDepth);
     boy.phase = boy.phaseInitial;
   } else {
-    // reboot: where are we?
+    // just woke up: where are we?
     reboot(&boy.phase);
   }
 
@@ -146,7 +146,8 @@ void phase1(void) {
   // Stay here until system_timer says it's time to send data, user input for
   // different phase, NIGK R
   while (!boy.DATA && boy.phase == 1) {
-    Sleep();
+    // sleep needs a lot of optimizing to be worth the trouble
+    // Sleep();
     Incoming_Data();
     if (System_Timer() == 2)
       boy.DATA = true;
@@ -458,24 +459,22 @@ void phase4(void) {
 
   boy.phase = 1;
   boy.DATA = false;
-
 } // phase_Four
 
 /*
- * reboot for deploy time
+ * phase0 deploy buoy sequence
+ * on ship, sinking, at bottom wait boy.settleTime, gather info, phase2
  */
-void reboot(void) {
+void deploy(void) {
+  DBG0("deploy()")
   ulong nowT, deployT, maxT;
   float nowD=0.0, thenD=0.0;
   int changeless=0;
 
-  DBG0("reboot()")
   RTCGetTime(&deployT, NULL);
   // give up after two hours
   maxT = (ulong) (2*60*60);
   RTCGetTime(&nowT, NULL);
-  // ?? DBG2("p5 then: %ld, now: %ld, max %ld", (long) deployT, (long) nowT, (long) maxT)
-  CTD_Select(DEVA);
   boy.depth=0.0;
   DBG1("%s\t|P5: wait until >10m", Time(NULL))
   while (boy.depth<10.0) {
@@ -759,8 +758,11 @@ IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 } // ExtFinishPulseRuptHandler
 
 /*
- * LPStopCSE(FastStop) sleep until irq4 (cons), irq5 (pam), spurious
- * note, spurious could occur on other pins ??
+ * !! this routine is run for every PIT interrupt!
+ ** plus other stuff in the loop that calls Sleep(), in phase1()
+ * Usually sleeps until power interrupt PIT (20Hz), 
+ * but can also break on serial ints irq4 (cons), irq5 (pam), or spurious
+ * note, spurious could occur on other pins 
  */
 void Sleep(void) {
   // these handlers just set the pin to I/O mode; wakeup, destroys data
@@ -799,48 +801,6 @@ void Sleep(void) {
   Delayms(10);
 } // Sleep
 
-/*
- * CTDSleep
- */
-void CTDSleep(void) {
-  Delayms(10);
-  // these handlers just set the pin to I/O mode, just used for wakeup
-  // not a sensible way to handle spurious, should I/O both 4&5 together
-  IEVInsertAsmFunct(IRQ3_ISR, level3InterruptAutovector); // AModem Interrupt
-  // IEVInsertAsmFunct(IRQ3_ISR, spuriousInterrupt);
-  IEVInsertAsmFunct(IRQ2_ISR, level2InterruptAutovector); // devicePort/Seaglider
-  // IEVInsertAsmFunct(IRQ2_ISR, spuriousInterrupt);
-  IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector); // Console Interrupt
-  // IEVInsertAsmFunct(IRQ4_ISR, spuriousInterrupt);
-  IEVInsertAsmFunct(IRQ5_ISR, level5InterruptAutovector); // PAMPort Interrupt
-  IEVInsertAsmFunct(IRQ5_ISR, spuriousInterrupt);
-  //
-  SCITxWaitCompletion();
-  EIAForceOff(true);
-  CFEnable(false);
-  //
-  PinBus(IRQ2);    // CTDPort Seaglider Interrupt
-  PinBus(IRQ3RXX); // AModem
-  PinBus(IRQ4RXD); // Console Interrupt
-  PinBus(IRQ5);
-  //
-  while (PinRead(IRQ2) && PinRead(IRQ5) && PinRead(IRQ3RXX) &&
-         PinRead(IRQ4RXD) && !data)
-    LPStopCSE(CPUStop); // we will be here until interrupted
-  //
-  EIAForceOff(false); // turn on the RS232 driver
-  CFEnable(true);     // turn on the CompactFlash card
-  /*
-  PIORead(IRQ4RXD);
-  PIORead(IRQ3RXX);
-  PIORead(IRQ2);
-  PIORead(IRQ5);
-  */
-  PutInSleepMode = false;
-
-  //   DBG2(",")
-  Delayms(10);
-} // Sleep
 
 /*
  * SleepUntilWoken		Sleep until IRQ4 is interrupted
@@ -1035,6 +995,7 @@ ulong WriteFile(ulong TotalSeconds) {
     return 0;
 
 } // WriteFile
+
 /*
  * PrintSystemStatus()
  */
@@ -1052,118 +1013,6 @@ char *PrintSystemStatus(void) {
 
   return stringout;
 }
-/*
- * WaitForWinch
- */
-void WaitForWinch(short expectedBuoyMode) {
-  ulong timenow;
-  ulong BreakTime = time(NULL) + 13; // 13 second wait time for Winch Response;
-
-  flogf("\n%s|WaitForWinch(): ExpectedBuoyMode: %d", Time(NULL),
-        expectedBuoyMode);
-  timenow = time(NULL);
-  while (timenow < BreakTime) {
-
-    if (tgetq(NIGKPort)) {
-      AModem_Data();
-      if (expectedBuoyMode == boy.BUOYMODE) {
-        flogf("\n%s|Received Expected BuoyMode", Time(NULL));
-        return;
-      } else if (expectedBuoyMode == -1)
-        break;
-      else if (expectedBuoyMode == 3)
-        return;
-    } else if (tgetq(devicePort)) {
-      CTD_Data();
-
-    } else
-      Delayms(250);
-
-    timenow = time(NULL);
-  }
-
-  if (boy.BUOYMODE == expectedBuoyMode) // success
-    flogf("\n\t|Successful BUOY Status Correction");
-
-} // WaitForWinch
-/*
- * void CheckTime()
- * Only comes here after reboot when MPC.STARTUPS>0
- * Check the previous ADS File Time.
- * If previous time was close to finishing go ahead and call in: Return True
- * If previous time isn't close enough, return false
- */
-bool CheckTime(ulong prevTime, short mode, short hour) {
-  struct tm *info;
-  ulong seconds, rawtime;
-  int mins;
-  short hours;
-  bool returnvalue = false;
-  int rem;
-
-  time(&rawtime);
-  info = gmtime(&rawtime);
-
-  flogf("\n%s|CheckCallTime():", Time(NULL));
-  // Time in seconds received from Power_Monitor
-  flogf("\n\t|Time to check %lu ", prevTime);
-
-  // Previous mode was set to interval calling
-  if (mode == 0) {
-    // variable hour here is really minutes in system variable: MPC.DATAXINT
-    seconds = (ulong)hour * 60;
-    flogf("of expected data interval time: %lu", seconds);
-    // calculate difference in seconds until call time.
-    if (prevTime > seconds)
-      prevTime = seconds;
-    seconds -= prevTime;
-    flogf("\n\t|Remaining seconds from last startup: %lu", seconds);
-    // Get minutes
-    seconds = seconds / 60;
-    flogf("minutes: %lu", seconds);
-
-    mins = (int)seconds % 60;
-    hours = (int)seconds / 60;
-    mins = info->tm_min + mins;
-    // If minutes now plus estimated minutes remaining is greater than one hour
-    if (mins > 59) {
-      flogf("\nmins now %d is greater than 59", mins);
-      hours++;
-    }
-    // If hour 23 + 8 hours.
-    hours = (short)info->tm_hour + hours;
-    // If the system is estimated to call this hour. increment one hour.
-    if (info->tm_hour == hours) {
-      flogf("\n\t|Hour now and calculated call hour is same...");
-      hours++;
-      returnvalue = false;
-    }
-    if (hours > 23)
-      hour -= 24;
-    flogf("\nhour to call: %d", hours);
-    IRID.CALLHOUR = hours;
-    if (IRID.CALLHOUR > 23)
-      IRID.CALLHOUR = 23;
-    else if (IRID.CALLHOUR < 0)
-      IRID.CALLHOUR = 0;
-    VEEStoreShort(CALLHOUR_NAME, IRID.CALLHOUR);
-    flogf("\n\t|New Call Hour: %d", IRID.CALLHOUR);
-
-  }
-  // Previous mode set to Time of Day calling
-  else if (mode == 1) {
-    flogf("\nhour now %d vs call hour %d", info->tm_hour, hour);
-
-    rem = abs(info->tm_hour - hour);
-    // If we are within one hour of calling anyways...
-    if (rem <= 1 || rem >= 23) {
-      flogf("\n\t|CheckTime(Less than an hour until call... call now)");
-      // returnvalue= true;
-    }
-  }
-  return returnvalue;
-
-} // CheckTime
 
 /*
  * CurrentWarning() - current reduces distance between CTD's
@@ -1183,29 +1032,6 @@ bool CurrentWarning(void) {
   flogf("\n\t|CurrentWarning(): a=%5.2f, b=%5.2f", a, b);
   return false;
 }
-
-/*
- * switch to other device - DEVA=1 = antenna, DEVB=2 = buoy ctd
- * devSwitch(&boy.deviceID)
- */
-void devSwitch(int *devID) {
-  DBG2("\t|DevSelect(%d)", *devID)
-  switch (*devID) {
-  case DEVB: // switch to antenna module
-    *devID=DEVA;
-    if (PIOTestAssertClear(ANTMODPWR)) { // ant module is off, turn it on
-      PIOSet(ANTMODPWR);
-      Delay_AD_Log(5); // power up delay
-    }
-    PIOSet(DEVICECOM);
-    break;
-  case DEVA: // switch to buoy sbe
-    *devID=DEVB;
-    PIOClear(DEVICECOM); // do not turn off ant module
-    break;
-  } //switch
-  return;
-} //DevSelect
 
 
 /*

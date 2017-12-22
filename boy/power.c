@@ -101,11 +101,12 @@ IEV_C_FUNCT(ADTimingRuptHandler) {
 } // ADTimingRuptHandler
 
 /*
- * not used - Move raw QPSI data to main buffer
+ * Move raw QPSI data to main buffer
  */
 IEV_C_FUNCT(ADSamplingRuptHandler) {
 // implied (IEVStack *ievstack:__a0) parameter
 #pragma unused(ievstack)
+  // #define SIM_PITR_DEF_IPL        6 
   CPUWriteInterruptMask(SIM_PITR_DEF_IPL);
   QPBClearInterrupt();
 } // ADSamplingRuptHandler
@@ -211,31 +212,24 @@ void Setup_Acquisition(ushort bitshift) {
 /*
  * 1) Comes here when power.sampleReady == true
  * 2) writes correct side of AD Buffer to file 
+ * sets: power.sampleReady=false
  */
 void AD_Log(void) {
 
-  ushort AveragedEnergy[3] = {0, 0, 0};
+  ushort AveragedEnergy[2] = {0, 0};
   float current = 0.0;
 
-  power.counter++;
-
-  if (power.sampleReady == true) {
-    AveragedEnergy[0] = (ushort)(powerSum[0] >> bitshift); // voltage
-    AveragedEnergy[1] = (ushort)(powerSum[1] >> bitshift); // Current
-    AveragedEnergy[2] = power.interval;                             // Time
-    power.sampleReady = false;
-  // ??
-  } else if (power.sampleReady == true && !power.off == false) {
+  if (power.sampleReady && !power.off) {
     AveragedEnergy[0] = (ushort)(powerSum[0] >> bitshift);
     AveragedEnergy[1] = (ushort)(powerSum[1] >> bitshift);
-    AveragedEnergy[2] = power.interval;
   }
 
   current = CFxADRawToVolts(ad, AveragedEnergy[0], VREF, true);
   voltage = CFxADRawToVolts(ad, AveragedEnergy[1], VREF, true) * 100;
   flogf("\n\t|POWER: %5.3fA, %5.2fV", current, voltage);
 
-  AD_Write(AveragedEnergy);
+  power.sampleReady = false;
+  powerWrite(AveragedEnergy);
 } // ADLog
 
 /*
@@ -265,29 +259,29 @@ void powerWrite(ushort *AveragedEnergy) {
   CLK(start_clock = clock();)
   power.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
   if (power.filehdl <= 0) {
-    flogf("\nERROR|AD_Write() %s open fail. errno: %d", ADAvgFileName, errno);
+    flogf("\nERROR|powerWrite() %s open fail. errno: %d", ADAvgFileName, errno);
     return;
   }
 
   CLK(stop_clock = clock();
-      print_clock_cycle_count(start_clock, stop_clock, "AD_Write: open");)
+      print_clock_cycle_count(start_clock, stop_clock, "powerWrite: open");)
 
   CLK(start_clock = clock();)
 
   write(power.filehdl, AveragedEnergy, 3 * sizeof(ushort));
   Delayms(25);
   CLK(stop_clock = clock();
-      print_clock_cycle_count(start_clock, stop_clock, "AD_Write: write");)
+      print_clock_cycle_count(start_clock, stop_clock, "powerWrite: write");)
 
   if (power.off) // SetupAD(false) from power monitor
     return;
   if (close(power.filehdl) < 0)
-    flogf("\nERROR  |AD_Write() %s Close error: %d", ADAvgFileName, errno);
-  // DBG(   else      flogf("\n\t|AD_Write() %s Closed", ADAvgFileName);)
+    flogf("\nERROR  |powerWrite() %s Close error: %d", ADAvgFileName, errno);
+  // DBG(   else      flogf("\n\t|powerWrite() %s Closed", ADAvgFileName);)
  
   Delayms(10);
 
-} // AD_Write
+} // powerWrite
 /*
  * PowerMonitor
  * This function is called when the WriteInterval (WRTINT) is met.

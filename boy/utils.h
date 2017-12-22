@@ -1,6 +1,5 @@
 // utils.h - utility and shared stuff
 
-typedef unsigned long Time;
 typedef TUPort *Serial;
 
 // global extern

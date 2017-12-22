@@ -2,7 +2,7 @@
 
 // ctd
 typedef struct CtdInfo {
-  bool off;
+  bool on;
   bool syncmode;  // use syncmode
   bool pending;   // polled request pending
   float depth;

@@ -26,32 +26,29 @@ static char wisprfile[] = "c:WISPRFRS.DAT";
 static char WisprString[64];
 
 bool WISPR_Status(void) { return WISPR_On; }
+
 /*
- * void WISPRInit(short)
-Power is applied to the wispr board and after the program starts it waits
-for GPS time and location. That's when we send it.
+ * Power is applied to the wispr boards
  */
 void WISPRPower(bool power) {
+  DBG0("WISPRPower()")
   // must call wisprInit first
   if (power) {
-
     flogf("\n%s|WISPR: ON", Time(NULL));
     PIOSet(WISPR_PWR_ON);
     Delayms(10);
     PIOClear(WISPR_PWR_ON);
-    WISPR_On = true;
-    WISPRGPSSends = 0;
-    SendWISPRGPS = false;
+    wispr.on = true;
   } else {
     flogf("\n%s|WISPR: OFF", Time(NULL));
     PIOSet(WISPR_PWR_OFF);
     Delayms(10);
     PIOClear(WISPR_PWR_OFF);
-    WISPR_On = false;
-    Delayms(1000);
+    wispr.on = false;
+    Delayms(1000);        //??
   }
-
 } // WISPRInit
+
 /*
  * void WISPR_Data()
  * Incoming WISPR ASCII Communication. Looks for certain commands starting with

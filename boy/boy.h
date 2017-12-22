@@ -12,7 +12,7 @@
 
 // boy
 typedef struct BuoyInfo {
-  bool off;
+  bool on;
   char platformID[6];  // rudicsland
   char programName[20]; // added HM
   char projectID[6];    // rudicsland
@@ -27,8 +27,10 @@ typedef struct BuoyInfo {
   long filenumber; // current number for filename ####.dat ####.log
   long starts;
   long startsMax;
-  Time onStart;    // startup time
-  Time phaseStart; // time this phase started
+  short callTime;     // 24hr time description, e.g. 1330 = 1:30pm local
+  short callFreq;     // number of times per day to call
+  time_t runStart;    // startup time
+  time_t phaseStart; // time this phase started
 } BuoyInfo;
 extern BuoyInfo boy;
 

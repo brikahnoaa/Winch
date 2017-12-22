@@ -6,7 +6,7 @@
 #define FCHAN 0   // first channel
 #define NCHAN 2   // number of channels, just accumulating current in buffers.
 #define PITRATE 1 // 1=51ms cycle, 2=102ms,etc..... @ 100us. 250=25ms.
-#define PITPERIOD .051 // represents 51ms
+#define PITPERIOD .051 // represents 51ms (about 20Hz)
 
 #define POWERERROR 1.02
 // volts or 11.0 for 15V Battery System of Seaglider
@@ -19,6 +19,8 @@
 // Crucial to ADS Timing of Program. explained in ads power consumption
 // calculation excel file
 /*
+ * orig alex - seems to be off, should be double. 1<<1==2^1
+ * 11:: PITRATE*PITPERIOD*1<<11 = 104.448
    10: 25.6seconds/file write 843.75 bytes/hour
    11: 51.2secs/file write    421.875bytes/hr
    12: 102.4secs/file         201.937bytes/hr
@@ -29,7 +31,7 @@
  */
 
 typedef struct PowerInfo {
-  bool off;             // track and log battery capacity
+  bool on;             // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
   float minBatCharge;   // minimum system capacity to run
   float minBatVolt;     // minimum system voltage to run

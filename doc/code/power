@@ -1,0 +1,18 @@
+power.c - uses ad functions 
+?? is it being setup and used properly?
+.   ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
+. ADExamples.h sets the default to 8344
+.. #include <ADExamples.h>
+ /home/kahn/cf2/headers/CFX/Examples/A-DExamples/ADExamples.h
+ #define     ADSLOT      NMPCS3            // The QPB slot number (0..14)
+ #define     ADTYPE      ADisADS8344
+ #include      <ADS8344.h>             // Burr-Brown ADS8344 SPI A-D QPB Driver
+ #define       ADInitFunction  ADS8344Init
+..  /home/kahn/cf2/headers/CFX/Headers/Drivers/ADS8344.h
+..  find ~/cf2/headers/ -type f -print0 | xargs -0 grep ADS8344Init
+ /home/kahn/cf2/headers/CFX/Source/Drivers/ADS8344.c:bool ADS8344Init(ushort qslot, CFxAD *ad)
+
+. by default codewar includes SOURCE/cfxad.c, Drivers/Max146.c, /ADS8344.c
+.. thus we get CFxADInit calling ad->init set to 
+
+looks like ADSamplingRuptHandler should move raw QPSI data to main buffer

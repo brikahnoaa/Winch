@@ -16,7 +16,7 @@ extern WinchInfo winch;
 
 // Tracking number of calls
 typedef struct AmodemInfo {
-  bool off;
+  bool on;
   short ascentCalls;
   short ascentRcv;
   short descentCalls;
