@@ -33,23 +33,17 @@ typedef struct PowerInfo {
 extern PowerInfo power;
 
 void powLog(void);
-void powLogDelay(short sec);
-void Setup_Acquisition(ushort);
+void powDelay(short sec);
 void powLogWrite(ushort *);
-ushort GetSystemTimeInt(void);
 bool powCheck(void);
 ushort powInit(bool, long, ushort);
 float powMonitor(ulong, int, ulong *);
-float Get_Voltage(void);
-float Voltage_Now(void);
+float powVoltage(void);
 void powOpenLog(long);
-void GetPowerSettings(void);
 void powFileName(long);
 
-// Crucial to ADS Timing of Program. explained in ads power consumption
-// calculation excel file
 /*
- * orig alex - seems to be off, should be double. 1<<1==2^1
+ * orig by alex - seems to be off, should be double. 1<<1==2^1
  * 11:: PITRATE*PITPERIOD*1<<11 = 104.448
    10: 25.6seconds/file write 843.75 bytes/hour
    11: 51.2secs/file write    421.875bytes/hr

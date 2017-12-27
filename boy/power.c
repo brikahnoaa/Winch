@@ -438,12 +438,12 @@ void GetPowerSettings(void) {
 }
 
 /*
- * powLogDelay()
+ * powDelay()
  * AD function with time delay.  Do powLog at 5 sec incrment.
  * number of seconds for delay while watching Power
  * Logging & Tickling Watch Dog Timer
  */
-void powLogDelay(short Sec) {
+void powDelay(short Sec) {
   short i;
   long last, rem;
   DBG1(" {%d} ", Sec )
@@ -461,6 +461,6 @@ void powLogDelay(short Sec) {
   Delayms(rem * 1000);
   TickleSWSR();                         // another reprieve
 
-} //powLogDelay()
+} //powDelay()
 
 

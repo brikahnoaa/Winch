@@ -10,7 +10,7 @@
 #include <wispr.h>
 
 // bool off; char platformID[6]; char programName[20]; char projectID[6];
-// float avgVel; float depth; float moorDepth; 
+// float avgVel; float depth; float dockDepth; 
 // int dataInt; int deviceID; int phase; int logFile; int phaseInitial; 
 // long filenumber; long starts; long startsMax; Time onStart; Time phaseStart;
 BuoyInfo boy = {
@@ -37,7 +37,7 @@ void main(void) {
   startup(&boy);
   if (boy.phase==0) {     
     // phase 0:  Deployment
-    deploy(&boy.moorDepth);
+    deploy(&boy.dockDepth);
     boy.phase = boy.phaseInitial;
   } else {
     // just woke up: where are we?
@@ -134,7 +134,7 @@ void reboot(int *phase) {
 } // reboot()
 
 /*
- * wispr recording and detecting, buoy is moored to winch
+ * wispr recording and detecting, buoy is docked to winch
  */
 void phase1(void) {
   DBG0("phase1()")
@@ -159,24 +159,42 @@ void phase1(void) {
 } // phase1()
 
 /*
- * Ascending
+ * a^2 + b^2 = c^2, solve for b
+ */
+float sideShift(float antD, boyD) {
+  float a=(boyD-antD);
+  float c=winch.buoy2ant;
+  float b=sqrt(pow(c,2)-pow(a,2));
+  return b;
+}
+
+/*
+ * turn on ant, ascend. check angle, go up halfway, check angle, surface.
+ * angle is caused by ocean current pushing the buoy and antmod
  */
 void phase2(void) {
-  ulong AscentStart, AscentStop, timeChange;
-  float depthChange;
-  float velocity = 0.0;
-  int halfway;
-
-  flogf("\n\t|phase TWO: Target Depth:%d", NIGK.TDEPTH);
-  amodemInit(true);
-  PrintSystemStatus();
-
-  CTD_Select(DEVA);
-  boy.depth = CTD_AverageDepth(9, &velocity);
+  debug0("phase2()")
+  time_t startT, nowT;
+  float sideShift, bDepth, aDepth, halfway, velocity;
+  int samples=0;
+  // depth may be less than dockDepth due to angle
+  bDepth = ctdDepth();
+  aDepth = antDepth();
+  flogf("\t| p2 sideShift @%.1f=%.1f ", aDepth, sideShift);
+  if (angle>boy.angleMax) {
+    flogf("too strong, cancel ascent");
+    stats.alarm[angle_alarm]++;
+    boy.phase = 1;
+    return;
+  }
+  antInit();
+  // rise
+  startT = time(0);
+  while (boy.depth<halfway) {
 
   // Coming here from phase one. Induced by system_timer==2
   if (boy.DATA) {
-    boy.moorDepth = boy.depth;
+    boy.dockDepth = boy.depth;
     boy.DATA = false;
   }
 
@@ -238,7 +256,7 @@ void phase2(void) {
   }
 
   if (CurrentWarning()) {}
-  depthChange = boy.TOPDEPTH - boy.moorDepth;
+  depthChange = boy.TOPDEPTH - boy.dockDepth;
   timeChange = AscentStop - AscentStart;
   boy.PAYOUT = ((float)boy.ASCENTTIME / 60.0) * NIGK.RRATE;
   flogf("\n\t|Rate of Ascent: %5.2fMeters/Minute",
@@ -438,7 +456,7 @@ void phase4(void) {
   } // while mode==2
 
   if (boy.BUOYMODE == 0)
-    boy.moorDepth = boy.depth;
+    boy.dockDepth = boy.depth;
 
   // Descent Velocity;
   descentvelocity = CTD_CalculateVelocity();
@@ -446,7 +464,7 @@ void phase4(void) {
 
   // Total Vertical depth change. total time change, calculate estimated
   // velocity.
-  depthChange = boy.moorDepth - boy.TOPDEPTH;
+  depthChange = boy.dockDepth - boy.TOPDEPTH;
   boy.DESCENTTIME = (short)(DescentStop - DescentStart);
   flogf("\n\t|Rate of Descent: %fMeters/Minute",
         (depthChange / ((float)boy.DESCENTTIME / 60.0)));
@@ -454,7 +472,7 @@ void phase4(void) {
         ((float)boy.DESCENTTIME / 60.0) * NIGK.FRATE);
   flogf("\n\t|Time for Descent: %d", boy.DESCENTTIME);
   PrintSystemStatus();
-  Delay_AD_Log(2);
+  powDelay(2);
   amodemInit(false);
 
   boy.phase = 1;
@@ -464,42 +482,46 @@ void phase4(void) {
 /*
  * phase0 deploy buoy sequence
  * on ship, sinking, at bottom wait boy.settleTime, gather info, phase2
+ * set: boy.dockDepth
  */
 void phase0(void) {
   DBG0("phase0()")
-  // time and depth
-  time_t deployT = time(0);
-  float nowD=0.0, thenD=0.0;
+  // global ctd.depth, boy.runStart
+  short checkDepth=30; 
+  time_t deployMax=boy.runStart + (2*60*60);
 
   flogf("\n%s\t|deploy(): wait until >10m", Time(NULL))
   while (boy.depth<10.0) {
     ctdSample();
     while (!incoming());         // wait for input
-    DBG1("P0 %5.2f", boy.depth)
-    Delay_AD_Log(30);
-    // after two hours; give up, shut down - assume accidental start
-    if (time(0) > deployT + (2*60*60)) shutdown();
+    DBG2(" P0 %.1f ", ctd.depth)
+    powDelay(checkDepth);
+    // too long? give up, shut down - assume accidental start
+    if (time(0) > (deployMax))
+      shutdown("\nERR P0() exceeded max deploy time");
   }
-  flogf("\n%s\t|P5: wait until no depth changes", Time(NULL));
-  // check every minute; if no change for five minutes, then deployed
-  while (changeless<5) {
-    thenD=boy.depth;
-    CTD_Sample();
-    Delay_AD_Log(3);
+  // checkDepth=30 secs; if no change for settleTime=120 secs, then deployed
+  float prevDepth=0.0, bigChange=1.0;
+  short settle=120, noChange=0;
+  while (noChange < settle)
+    powDelay(checkDepth);
+    ctdSample();
     if (CTD_Data()) nowD=boy.depth;
-    else  flogf("\nERR in P5 - no CTD data");
-    if (abs(nowD-thenD) > 2) { // changed
-      flogf("\n%s\t|P5: depth change %4.1f", Time(NULL), (nowD-thenD));
+    else  flogf("\nERR in Phase0() - no CTD data");
+    if (abs(prevDepth-boy.depth) > big) { // changed
+      flogf("\n%s\t|Phase0(): depth change %4.1f", Time(NULL), (nowD-thenD));
       changeless=0;
     } else changeless++;
-    Delay_AD_Log(60);
-    RTCGetTime(&nowT, NULL);
-    if ((nowT - deployT) > maxT) break; // too long
+    if (time(0) > (deployMax))
+      shutdown("\nERR P0() exceeded max deploy time");
+    // no big change for checkDepth secs
+    prevDepth = ctd.depth;
+    noChange += checkDepth;
   }
-  // do nothing for 30minutes
-  Delay_AD_Log(30*60);
-  // deployed!
-  flogf("\n%s\t|P5: deployed", Time(NULL));
+  boy.dockDepth = ctd.depth;
+  // do nothing for 3 minutes
+  powDelay(3*60);
+  flogf("\n%s\t|P0: deployed", Time(NULL));
   // rise
   boy.phase=2;
 } // phase0()
@@ -995,11 +1017,11 @@ ulong WriteFile(ulong TotalSeconds) {
 char *PrintSystemStatus(void) {
   // global stringout
   sprintf(stringout, "boy: "
-                        "%d%d%d%d\nmoorDepth:%5.2f\nCURRENTDEPTH:%5."
+                        "%d%d%d%d\ndockDepth:%5.2f\nCURRENTDEPTH:%5."
                         "2f\nTOPDEPTH:%5.2f\nTARGETDPETH:%d\nAVG.VEL:%5."
                         "2f\nCTDSAMPLES:%d\n\0",
           boy.DATA ? 1 : 0, boy.SURFACED ? 1 : 0, boy.phase, boy.BUOYMODE,
-          boy.moorDepth, boy.depth, boy.TOPDEPTH, boy.TDEPTH, boy.AVGVEL,
+          boy.dockDepth, boy.depth, boy.TOPDEPTH, boy.TDEPTH, boy.AVGVEL,
           boy.CTDSAMPLES);
   flogf("\n%s", stringout);
   Delayms(100);

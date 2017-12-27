@@ -13,24 +13,23 @@
 // boy
 typedef struct BuoyInfo {
   bool on;
-  char platformID[6];  // rudicsland
+  char platformID[6];   // rudicsland
   char programName[20]; // added HM
   char projectID[6];    // rudicsland
   float avgVel;
-  float depth;     // Most recent depth measurement from sbe16
-  float moorDepth; // Depth at beginning of LARA.PHASE==1. Averaged Samples
-  int dataInt; // VEE:DATAXINTERVAL_NAME
-  int deviceID;           // DEVA=1 = antenna, DEVB=2 = buoy ctd
+  float boy2ant;        // distance from buoy sbe16 to antmod sbe39
+  float depth;          // Most recent depth measurement from sbe16
+  float dockDepth;      // Depth when docked in winch
+  int callHour;         // 0-23 (midnight-11pm) hour to call home 
+  int callFreq;         // number of times per day to call, expect 1
+  int fileNum;          // current number for filename ####.dat ####.log
   int logFile;
-  int phase; // 1=WISPR, 2=Ascent, 3=Surface, 4=Descent, 5=deployment
-  int phaseInitial; // normal start in this phase (2)
-  long filenumber; // current number for filename ####.dat ####.log
-  long starts;
-  long startsMax;
-  short callTime;     // 24hr time description, e.g. 1330 = 1:30pm local
-  short callFreq;     // number of times per day to call
-  time_t runStart;    // startup time
-  time_t phaseStart; // time this phase started
+  int phase;            // 0=deploy, 1=WISPR, 2=Ascent, 3=Surface, 4=Descent
+  int phaseInitial;     // normal start in this phase (2)
+  int starts;
+  int startsMax;
+  time_t deployT;       // startup time
+  time_t phaseStartT;   // time this phase started
 } BuoyInfo;
 extern BuoyInfo boy;
 

@@ -5,12 +5,12 @@
 #define AMODEMBAUD 4800L
 
 typedef struct WinchInfo {
-  bool pending;       // expecting response
+  bool on;            // winch motor running
   float delay;        // seconds after TUTxAcousticModem before action
-  float firstRise;    // Velocity in meters/minute of the rise (ascent) rate
-  float lastRise;     // Velocity in meters/minute of the rise (ascent) rate
-  float firstFall;    // Velocity in meters/minute of the rise (ascent) rate
-  float lastFall;     // Velocity in meters/minute of the rise (ascent) rate
+  float firstRise;    // Velocity meters/min of the first rise (ascent)
+  float lastRise;     // Velocity meters/min of the most recent rise 
+  float firstFall;    // Velocity meters/min of the first fall (descent)
+  float lastFall;     // Velocity meters/min of the most recent fall 
 } WinchInfo;
 extern WinchInfo winch;
 
