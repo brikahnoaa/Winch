@@ -97,9 +97,10 @@ void restartCheck(long *starts, long *startsMax) {
 /*
  * init pins, ports, power
  */
-void boyInit(Serial antPort, ctdPort, winchPort, wisprPort) {
-  PreRun();   // 10 sec for user abort to DOS
-  initMPC();
+void boyInit() {
+  // global boy .port .device
+  preRun();   // 10 sec for user abort to DOS
+  mpcInit();
   PZCacheSetup('C' - 'A', calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
   Initflog(logfile, true);
@@ -109,13 +110,15 @@ void boyInit(Serial antPort, ctdPort, winchPort, wisprPort) {
   flogf("\nProgram Start time: %s", TimeDate(NULL));
 
   Free_Disk_Space(); 
-  ctdInit(); 
+  // serial
+  winInit(&amodem);
+  boyDevInit(&boy.port, &boy.device);
 
-  volts = Voltage_Now();
-  flogf("\n\t|Check Startup Voltage: %5.2fV", volts);
+  mpcVoltage( &mpc.volts );
+  flogf("\n\t|Check Startup Voltage: %5.2fV", mpc.volts);
 
   // Safety Check. Absoleute Minimum Voltage
-  if (volts < MIN_BATTERY_VOLTAGE) {
+  if (mpc.volts < mpc.voltMin) {
     flogf("\n\t|Battery Voltage Below Minimum. Activate Hibernation Mode");
     SleepUntilWoken();
     BIOSReset();
@@ -174,25 +177,29 @@ float sideShift(float antD, boyD) {
  */
 void phase2(void) {
   debug0("phase2()")
-  time_t startT, nowT;
-  float sideShift, bDepth, aDepth, halfway, velocity;
+  // global ctd .delay, boy .phaseStartT .sideShiftMax .phase
+  // global stats .alarm
+  time_t riseStartT, nowT;
+  float sShift, bDepth, aDepth, halfway, velocity;
   int samples=0;
-  // depth may be less than dockDepth due to angle
+  boy.phaseStartT=time(0);
+  // depth may be lower than dockDepth due to water current
   bDepth = ctdDepth();
+  antInit();
   aDepth = antDepth();
-  flogf("\t| p2 sideShift @%.1f=%.1f ", aDepth, sideShift);
-  if (angle>boy.angleMax) {
+  sShift = sideShift(aDepth, bDepth);
+  flogf("\t| p2 sideShift @%.1f=%.1f ", aDepth, sShift);
+  if (sShift>boy.sideShiftMax) {
     flogf("too strong, cancel ascent");
     stats.alarm[angle_alarm]++;
     boy.phase = 1;
     return;
   }
-  antInit();
   // rise
-  startT = time(0);
+  riseStartT=time(0)+ctd.delay;
+  winAscend();
   while (boy.depth<halfway) {
 
-  // Coming here from phase one. Induced by system_timer==2
   if (boy.DATA) {
     boy.dockDepth = boy.depth;
     boy.DATA = false;

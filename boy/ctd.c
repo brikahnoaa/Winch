@@ -14,32 +14,31 @@ CtdInfo ctd = {
 
 bool ctdOpen(void) {
   DBG0("ctdOpen()")
-  // global ctd .off .port .pending
-  if (ctd.off) {
+  // global ctd .on .port .pending
+  if (!ctd.on) {
     ctd.port = TUOpen(DEVICERX, DEVICETX, CTDBAUD, 0);
-    if (ctd.port) ctd.off = false;
-    else flogf( "\nERR ctdOpen(): fail TUOpen" );
+    if (ctd.port==NULL) { 
+      flogf( "\nERR ctdOpen(): fail TUOpen" );
+      return false;
+    }
   }
   ctdBreak(ctd.port);
   if (!ctdPrompt() && !ctdPrompt()) {   // try twice
     flogf( "\nERR ctdOpen(): no prompt" );
-    ctdClose();
     return false;
   }
-  ctdSetDate();
-  if (ctd.syncmode) ctdSyncmode();
   
-  ctd.off = false;
-  ctd.pending = false;
   ctd.filehandle = open(ctd.filename, OAPPEND | OCREAT | ORDWR);
   if (ctd.filehandle <= 0) {
     flogf("\nERR %s open errno: %d", ctd.filename, errno);
     return false;
   }
+  ctd.on = true;
+  ctd.pending = false;
+  ctdSetDate();
+  ctdSyncMode();
   return true;
 } // ctdOpen
-
-
 
 /*
  * date, time for ctd. also some params.
@@ -133,11 +132,12 @@ void ctdBreak(void) {
 
 /*
  * sbe16 response is just over 3sec in sync, well over 4sec in command
+ * data is reformatted to save a little space, written to ctd.filehandle
  * returns depth
  */
 float ctdData(char *stringout) {
   DBG0("ctdData()")
-  // global scratch, ctd .port .depth .pending
+  // global scratch, ctd .depth .pending .filehandle, boy .port
   int len;
   float temp, cond, pres, flu, par, sal;
   char *day, *month, *year, *time;
@@ -146,7 +146,7 @@ float ctdData(char *stringout) {
   if (ctd.off) ctdOpen();
 
   // waits up to 8 seconds - best called after tgetq()
-  len = serReadWait(ctd.port, 8, stringin);
+  len = serReadWait(boy.port, 8, stringin);
   DBG2("ctd-->%s", printSafe(scratch, stringin))
 
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time

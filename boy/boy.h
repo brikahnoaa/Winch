@@ -10,6 +10,8 @@
 #define WISPRNUMBER 4
 #endif
 
+typedef enum { ctd_dev=0, ant_dev } SerialDev;
+
 // boy
 typedef struct BuoyInfo {
   bool on;
@@ -28,18 +30,18 @@ typedef struct BuoyInfo {
   int phaseInitial;     // normal start in this phase (2)
   int starts;
   int startsMax;
+  Serial port;          // for CTD & antMod
+  SerialDev device;     // SBE16=0, antMod=1
   time_t deployT;       // startup time
   time_t phaseStartT;   // time this phase started
 } BuoyInfo;
 extern BuoyInfo boy;
 
-void shutdown(void);
-static bool currentWarning(void);
+void boyShut(void);
 static int incomingData(void);
 static ulong writeFile(ulong);
 static void sleepUntilWoken(void);
-static void devSwitch(int *devID);
-static void deploy(void);
+static void phase0(void);
 static void phase1(void);
 static void phase2(void);
 static void phase3(void);
@@ -53,4 +55,4 @@ static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
 static void WaitForWinch(short);
 static void boyInit(Serial antPort, ctdPort, winchPort, wisprPort);
-static void systemStatus(char *stringout);
+static void boyStatus(char *stringout);

@@ -1,14 +1,14 @@
 // it.h interval timer
 
 typedef enum {
-  Null_it=0,
-  Sink_it,
-  Settle_it,
-  Winch_it,
-  Wispr_it,
-  Rest_it,
-  Raise_it,
-  Drop_it,
+  null_it=0,
+  sink_it,
+  settle_it,
+  winch_it,
+  wispr_it,
+  rest_it,
+  raise_it,
+  drop_it,
   } IntervalType;
 
 void itAdd(IntervalType intT, int secs);

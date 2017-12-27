@@ -18,8 +18,15 @@
 #define WISPR_PWR_ON 37
 #define WISPR_PWR_OFF 42
 
+typedef struct MpcInfo {
+  float joules;
+  float volts;
+  float voltMin;
+} MpcInfo;
+
 void PreRun(void);
-void initMPC(void);
+void mpcVoltage(float *volts);
+void mpcInit(void);
 int System_Timer(void);
 char *Time(ulong *);
 char *TimeDate(ulong *);

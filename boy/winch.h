@@ -29,14 +29,14 @@ typedef struct AmodemInfo {
 } AmodemInfo;
 extern AmodemInfo amodem;
 
-void AModemData(void);
-ulong WinchAscend(void);
-ulong WinchDescend(void);
-ulong WinchStop(void);
-void BuoyStatus(void);
-void WinchConsole(void);
+void aModemData(void);
+ulong winchAscend(void);
+ulong winchDescend(void);
+ulong winchStop(void);
+void buoyStatus(void);
+void winchConsole(void);
 void amodemInit(bool);
-void GetWinchSettings(void);
-ulong WinchStatus(void);
-void WinchMonitor(int);
+void getWinchSettings(void);
+ulong winchStatus(void);
+void winchMonitor(int);
 
