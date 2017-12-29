@@ -421,3 +421,17 @@ void print_clock_cycle_count(clock_t start, clock_t stop, char *label) {
   flogf("\n%f seconds for %s",
         ((double)(stop - start)) / (double)CLOCKS_PER_SEC, label);
 }
+
+/*
+ * sets: mpc.device
+ */
+void mpcDevSwitch(SerialDev dev) {
+  DBG0("mpcDevSwitch()")
+  // do we need to close/reopen com port?
+  // TUOpen(COM1RX, COM1TX, COM1BAUD, 0);
+  if (dev==ctd_dev)
+    PIOClear(COM1SELECT);
+  else
+    PIOSet(COM1SELECT);
+  mpc.device = dev;
+}

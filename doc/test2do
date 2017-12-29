@@ -1,0 +1,9 @@
+Fri, Dec 29, 2017 10:07:29 AM
+. ant/ctd switching
+.. should we close com1 and reopen, or just switch HW?
+.. with sbe16 in syncmode, switch serial to ant and back, does it hiccup?
+.. try different delays
+. power
+.. write to author, ask about init routine
+.. measure vs calc
+.. power when optimize vs not (dummy)

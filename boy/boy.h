@@ -1,7 +1,5 @@
 // boy.h
 
-#define CTDBAUD 9600L
-#define ANTBAUD 9600L
 #define STARTS_VEE "STARTS"
 #define STARTSMAX_VEE "STARTSMAX"
 #ifdef DEBUGWISPR
@@ -10,8 +8,6 @@
 #define WISPRNUMBER 4
 #endif
 
-typedef enum { ctd_dev=0, ant_dev } SerialDev;
-
 // boy
 typedef struct BuoyInfo {
   bool on;
@@ -19,9 +15,8 @@ typedef struct BuoyInfo {
   char programName[20]; // added HM
   char projectID[6];    // rudicsland
   float avgVel;
-  float boy2ant;        // distance from buoy sbe16 to antmod sbe39
-  float depth;          // Most recent depth measurement from sbe16
   float dockDepth;      // Depth when docked in winch
+  float sideways;       // displacement due to ocean current
   int callHour;         // 0-23 (midnight-11pm) hour to call home 
   int callFreq;         // number of times per day to call, expect 1
   int fileNum;          // current number for filename ####.dat ####.log
@@ -30,8 +25,6 @@ typedef struct BuoyInfo {
   int phaseInitial;     // normal start in this phase (2)
   int starts;
   int startsMax;
-  Serial port;          // for CTD & antMod
-  SerialDev device;     // SBE16=0, antMod=1
   time_t deployT;       // startup time
   time_t phaseStartT;   // time this phase started
 } BuoyInfo;

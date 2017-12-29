@@ -140,8 +140,8 @@ void reboot(int *phase) {
  * wispr recording and detecting, buoy is docked to winch
  */
 void phase1(void) {
-  DBG0("phase1()")
   flogf("\n\t|phase ONE");
+  boy.phaseStartT=time(0);
 
   // Initialize System Timers
   Check_Timers(power.interval);
@@ -162,29 +162,18 @@ void phase1(void) {
 } // phase1()
 
 /*
- * a^2 + b^2 = c^2, solve for b
- */
-float sideShift(float antD, boyD) {
-  float a=(boyD-antD);
-  float c=winch.buoy2ant;
-  float b=sqrt(pow(c,2)-pow(a,2));
-  return b;
-}
-
-/*
  * turn on ant, ascend. check angle, go up halfway, check angle, surface.
- * angle is caused by ocean current pushing the buoy and antmod
+ * sideways is caused by ocean current pushing the buoy and antmod
+ * uses: ctd.delay boy.phaseStartT .sideShiftMax .phase
+ * sets: stats.alarm
  */
 void phase2(void) {
-  debug0("phase2()")
-  // global ctd .delay, boy .phaseStartT .sideShiftMax .phase
-  // global stats .alarm
+  flogf("\n\t| phase2()");
   time_t riseStartT, nowT;
-  float sShift, bDepth, aDepth, halfway, velocity;
+  float halfway, velocity;
   int samples=0;
   boy.phaseStartT=time(0);
   // depth may be lower than dockDepth due to water current
-  bDepth = ctdDepth();
   antInit();
   aDepth = antDepth();
   sShift = sideShift(aDepth, bDepth);
@@ -276,8 +265,8 @@ void phase2(void) {
     boy.phase = 3;
 
   amodemInit(false);
-
 } // phase2 //
+
 /*
  * phase Three
  * Testing iridium/gps connection. 
@@ -293,6 +282,7 @@ void phase3(void) {
   static short IridCallsNoParams = 0;
   char filenum[9] = "00000000";
   flogf("\n\t|phase THREE");
+  boy.phaseStartT=time(0);
 
   if (WISPR_Status()) {
     WISPRSafeShutdown();
@@ -398,6 +388,7 @@ void phase4(void) {
   int interval = 1;
 
   flogf("\n%s|phase_Four():", Time(NULL));
+  boy.phaseStartT=time(0);
   amodemInit(true);
 
   boy.SURFACED = false;
@@ -1037,22 +1028,30 @@ char *PrintSystemStatus(void) {
 }
 
 /*
- * CurrentWarning() - current reduces distance between CTD's
+ * uses: ant.on winch.boy2ant
+ * sets: ant.depth ctd.depth boy.sideways
  */
-bool CurrentWarning(void) {
-  float a, b;
-  DBG0("%s\t|CurrentWarning()", Time(NULL))
-  CTD_Select(DEVB);
-  CTD_Sample();
-  CTD_Data();
-  b=boy.depth;
-  CTD_Select(DEVA);
-  CTD_Sample();
-  Delayms(1000);
-  CTD_Data();
-  a=boy.depth;
-  flogf("\n\t|CurrentWarning(): a=%5.2f, b=%5.2f", a, b);
-  return false;
+float boyOceanCurrent() {
+  float a, b, c;
+  // usually called while antMod is on
+  if (ant.on) {
+    antDepth(&ant.depth);
+    // ctd is still powered up, just switch serial
+    mpcDevSwitch(ctd_dev);
+    ctdDepth(&ctd.depth);
+    mpcDevSwitch(ant_dev);
+  } else {
+    ctdDepth(&ctd.depth);
+    mpcDevSwitch(ant_dev);
+    antDepth(&ant.depth);
+    // ctd is still powered up, just switch serial
+    mpcDevSwitch(ctd_dev);
+  }
+  a=ctd.depth-ant.depth;
+  c=winch.boy2ant;
+  b=sqrt(pow(c,2)-pow(a,2));
+  boy.sideways = b;
+  return b;
 }
 
 

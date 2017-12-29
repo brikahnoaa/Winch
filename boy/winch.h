@@ -6,6 +6,7 @@
 
 typedef struct WinchInfo {
   bool on;            // winch motor running
+  float boy2ant;      // meters from buoy ctd to ant ctd under still water
   float delay;        // seconds after TUTxAcousticModem before action
   float firstRise;    // Velocity meters/min of the first rise (ascent)
   float lastRise;     // Velocity meters/min of the most recent rise 
