@@ -12,19 +12,18 @@ CtdInfo ctd = {
   0, 0, 3.5, NULL
 };
 
-bool ctdOpen(void) {
-  DBG0("ctdOpen()")
-  // global ctd .on .port .pending
-  if (!ctd.on) {
-    ctd.port = TUOpen(DEVICERX, DEVICETX, CTDBAUD, 0);
-    if (ctd.port==NULL) { 
-      flogf( "\nERR ctdOpen(): fail TUOpen" );
-      return false;
-    }
-  }
-  ctdBreak(ctd.port);
-  if (!ctdPrompt() && !ctdPrompt()) {   // try twice
-    flogf( "\nERR ctdOpen(): no prompt" );
+/*
+ * buoy sbe16 set date, sync mode
+ * pre: mpcInit sets up serial
+ * sets: ctd.on
+ */
+bool ctdInit(void) {
+  DBG0("ctdInit()")
+  if (!ctd.on) 
+    mpcDevSelect(ctd_dev);
+  ctdBreak(mpc.com1);
+  if (!(ctdPrompt() || ctdPrompt())) {   // fails twice 
+    flogf( "\nERR ctdInit(): no prompt" );
     return false;
   }
   

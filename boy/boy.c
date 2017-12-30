@@ -164,107 +164,29 @@ void phase1(void) {
 /*
  * turn on ant, ascend. check angle, go up halfway, check angle, surface.
  * sideways is caused by ocean current pushing the buoy and antmod
- * uses: ctd.delay boy.phaseStartT .sideShiftMax .phase
- * sets: stats.alarm
+ * uses: ctd.delay .sideMax
+ * sets: boy.phaseStartT .phase ant.depth ctd.depth
+ * sets: stats.alarm[] 
  */
 void phase2(void) {
   flogf("\n\t| phase2()");
   time_t riseStartT, nowT;
-  float halfway, velocity;
+  float sideways, halfway, velocity;
   int samples=0;
   boy.phaseStartT=time(0);
-  // depth may be lower than dockDepth due to water current
   antInit();
-  aDepth = antDepth();
-  sShift = sideShift(aDepth, bDepth);
-  flogf("\t| p2 sideShift @%.1f=%.1f ", aDepth, sShift);
-  if (sShift>boy.sideShiftMax) {
-    flogf("too strong, cancel ascent");
-    stats.alarm[angle_alarm]++;
-    boy.phase = 1;
-    return;
-  }
-  // rise
-  riseStartT=time(0)+ctd.delay;
+  // this log line is appended by boyOceanCurrentCheck()
+  flogf("\n\t| p2() ocean current ");
+  // sets: stats.alarm boy.phase
+  if (boyOceanCurrentCheck()) return;
+  // rise halfway
+  halfway = ant.depth/2.0;
+  riseStartT = time(0)+ctd.delay;
   winAscend();
-  while (boy.depth<halfway) {
-
-  if (boy.DATA) {
-    boy.dockDepth = boy.depth;
-    boy.DATA = false;
+  while (ant.depth<halfway) {
   }
-
-  // Else, sensor package deeper than target depth. Ascend.
-  if (CurrentWarning()) {
-  }
-  if (boy.depth < NIGK.TDEPTH) {
-    flogf("\n\t|Profiling Float Already at target depth");
-    boy.TOPDEPTH = boy.depth;
-    boy.SURFACED = true;
-    boy.phase = 3;
-    amodemInit(false);
-    return;
-  }
-  if (boy.BUOYMODE != 1) {
-    AscentStart = Winch_Ascend();
-    CTD_Sample();
-    WaitForWinch(1);
-  }
-
-  // Increment Profile number...
-  NIGK.PROFILES++;
-  VEEStoreShort(NIGKPROFILES_NAME, NIGK.PROFILES);
-
-  // halfway to tdepth, +2 to allow for coasting
-  halfway = ((boy.depth - NIGK.TDEPTH) / 2) + NIGK.TDEPTH + 2;
-  // What's the best way out of this loop? Do we set a time limit for ascent?
-  while ((!boy.SURFACED || boy.BUOYMODE == 1) && boy.phase == 2) {
-    Incoming_Data();
-
-    if (boy.depth <= halfway) {
-      AscentStop = Winch_Stop();
-      WaitForWinch(0);
-      if (CurrentWarning()) {
-      }
-      AscentStart = Winch_Ascend();
-//??      CTD_Sample();
-      WaitForWinch(1);
-      // continue
-      halfway=0;
-    }
-
-    // What if winch tells us its stopping? What AscentStop time do we get?
-    if (boy.depth <= NIGK.TDEPTH) {
-      cprintf("\n\t|REACHED TARGETDPETH!");
-      AscentStop = Winch_Stop();
-      WaitForWinch(0);
-      boy.TOPDEPTH = boy.depth;
-      // If we stop at the target Depth
-      if (boy.TOPDEPTH <= NIGK.TDEPTH)
-        boy.SURFACED = true;
-
-      boy.AVGVEL = CTD_CalculateVelocity();
-      if (boy.AVGVEL == 0.0)
-        boy.AVGVEL = ((float)NIGK.RRATE / 60.0);
-      break;
-    }
-    if (!boy.ON) break;
-  }
-
-  if (CurrentWarning()) {}
-  depthChange = boy.TOPDEPTH - boy.dockDepth;
-  timeChange = AscentStop - AscentStart;
-  boy.PAYOUT = ((float)boy.ASCENTTIME / 60.0) * NIGK.RRATE;
-  flogf("\n\t|Rate of Ascent: %5.2fMeters/Minute",
-        (depthChange / ((float)timeChange / 60.0)));
-  flogf("\n\t|Calculated Cable Payout: %5.1fMeters", boy.PAYOUT);
-  flogf("\n%s\t|Time for Ascent: %lu", Time(NULL), timeChange);
-  PrintSystemStatus();
-
-  if (boy.SURFACED)
-    boy.phase = 3;
-
-  amodemInit(false);
+  // now halfway
+  if (boyOceanCurrentCheck()) return;
 } // phase2 //
 
 /*
@@ -1029,7 +951,7 @@ char *PrintSystemStatus(void) {
 
 /*
  * uses: ant.on winch.boy2ant
- * sets: ant.depth ctd.depth boy.sideways
+ * sets: ant.depth ctd.depth 
  */
 float boyOceanCurrent() {
   float a, b, c;
@@ -1050,10 +972,25 @@ float boyOceanCurrent() {
   a=ctd.depth-ant.depth;
   c=winch.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
-  boy.sideways = b;
   return b;
 }
 
+/*
+ * uses: ctd.depth boy.sidewaysMax
+ * sets: stats.alarm boy.phase
+ */
+bool boyOceanCurrentCheck() {
+  sideways = boyOceanCurrent();
+  flogf(" @%.1f=%.1f ", ctd.depth, sideways);
+  if (sideways>boy.sidewaysMax) {
+    flogf("too strong, cancel ascent");
+    stats.alarm[current_alm]++;
+    winchDescend();
+    boy.phase = 1;
+    return true;
+  }
+  return false;
+}
 
 /*
  * short phase; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent

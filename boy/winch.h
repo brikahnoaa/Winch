@@ -1,11 +1,11 @@
 // winch.h
 // AModemPort and WISPR Transmission
 
-#define NIGKMINDEPTH 6
 #define AMODEMBAUD 4800L
 
 typedef struct WinchInfo {
   bool on;            // winch motor running
+  bool pending;       // waiting for comm
   float boy2ant;      // meters from buoy ctd to ant ctd under still water
   float delay;        // seconds after TUTxAcousticModem before action
   float firstRise;    // Velocity meters/min of the first rise (ascent)

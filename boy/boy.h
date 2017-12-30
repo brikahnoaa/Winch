@@ -16,7 +16,7 @@ typedef struct BuoyInfo {
   char projectID[6];    // rudicsland
   float avgVel;
   float dockDepth;      // Depth when docked in winch
-  float sideways;       // displacement due to ocean current
+  float sidewaysMax;    // 
   int callHour;         // 0-23 (midnight-11pm) hour to call home 
   int callFreq;         // number of times per day to call, expect 1
   int fileNum;          // current number for filename ####.dat ####.log
