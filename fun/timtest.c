@@ -1,8 +1,7 @@
 #include <unitTest.h>
-#include <event.c>
+#include <timer.c>
 
 int main(){
-  Event e = WinchStop_ev;
   time_t now=time(NULL);
   time_t then=now+2;
 
