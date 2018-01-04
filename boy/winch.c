@@ -130,38 +130,43 @@ void AModemData(void) {
   return;
 
 } // AModem_Data
-/*
- */
-ulong winchAscend(void) {
-  DBG0("%s|WinchAscend():", Time(NULL))
 
+/*
+ * send up command, no brake, "#R,01,03"
+ * sets: win.on .pending
+ */
+void winAscend(void) {
+  DBG0("\n%s\t|winAscend():", Time(NULL))
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#R,01,03\n");
-  Delayms(25);
-  amodem.ASCENTCALLS++;
-  return (time(NULL) + (ulong)winch.DELAY);
+  win.on = true;          // motor on
+  win.pending = true;     // response pending
 } // Ascend
+
 /*
+ * down "#F,01,00"
+ * sets: win.on .pending
  */
-ulong winchDescend(void) {
-  DBG0("%s|WinchDescend():", Time(NULL))
+void winDescend(void) {
+  DBG0("\n%s\t|winDescend():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#F,01,00\n");
-  Delayms(25);
-  amodem.DESCENTCALLS++;
-  return (time(NULL) + (ulong)winch.DELAY); // why return time?
+  win.on = true;          // motor on
+  win.pending = true;     // response pending
 } // Descend
+
 /*
+ * stop "#S,01,00"
+ * sets: win.on .pending
  */
-ulong winchStop(void) {
-  DBG0("%s|WinchStop():", Time(NULL))
+void winStop(void) {
+  DBG0("\n%s\t|winStop():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#S,01,00\n");
-  Delayms(25);
-  amodem.STOPCALLS++;
-  return (time(NULL) + (ulong)winch.DELAY);
+  win.on = false;          // motor off
+  win.pending = true;     // response pending
 }
 /*
  * void Buoy(void)

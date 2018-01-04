@@ -2,15 +2,10 @@
 #include <common.h>
 #include <mpc.h>
 
-/*
- * "Only pin should not be mirrored is pin 20. It is connected to the
- * output of AD. Pin 20 is input and should not be mirrored. Also making pin
- * 19 high turns on A/D, which increases the power usage by a few milliamps.
- * Only pin safe to mirror is pin 15 (/IRQ7).  Alex code uses the A/D to
- * monitor the voltage and current, it probably does not matter." - haru
- */
-
-char time_chr[21];
+MpcData mpc = {
+  1500.0, 15.0, 12.5,
+  NULL, ctd_dev,
+};
 
 /*
  * PreRun		Exit opportunity before we start the program
@@ -156,7 +151,7 @@ void DOS_Com(char *command, long filenum, char *ext, char *extt) {
  * push the RTC seconds into (*seconds) and return HH:MM:SS global *time_chr
  */
 char *Time(ulong *seconds) {
-  // global time_chr
+  // global scratch[]
   RTCtm *rtc_time;
   ulong secs = NULL;
 
@@ -165,9 +160,9 @@ char *Time(ulong *seconds) {
   RTCGetTime(&secs, &ticks);
   rtc_time = RTClocaltime(&secs);
   *seconds = secs;
-  sprintf(time_chr, "%02d:%02d:%02d", 
+  sprintf(scratch, "%02d:%02d:%02d", 
           rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
-  return time_chr;
+  return scratch;
 
 } // Time
 /*
@@ -425,7 +420,7 @@ void print_clock_cycle_count(clock_t start, clock_t stop, char *label) {
 /*
  * sets: mpc.device
  */
-void mpcDevSwitch(SerialDev dev) {
+void mpcDevSwitch(SerialDevType dev) {
   DBG0("mpcDevSwitch()")
   // do we need to close/reopen com port?
   // TUOpen(COM1RX, COM1TX, COM1BAUD, 0);
@@ -435,3 +430,11 @@ void mpcDevSwitch(SerialDev dev) {
     PIOSet(COM1SELECT);
   mpc.device = dev;
 }
+
+/*
+ * "Only pin should not be mirrored is pin 20. It is connected to the
+ * output of AD. Pin 20 is input and should not be mirrored. Also making pin
+ * 19 high turns on A/D, which increases the power usage by a few milliamps.
+ * Only pin safe to mirror is pin 15 (/IRQ7).  Alex code uses the A/D to
+ * monitor the voltage and current, it probably does not matter." - haru
+ */

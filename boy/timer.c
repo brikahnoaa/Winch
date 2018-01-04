@@ -1,122 +1,79 @@
 // timer.c - interval timer
+#include <common.h>
 #include <timer.h>
-#include <utils.h>
 
-/*
- * interval timer, abstracted for general purpose
- * fast check for next timeout, so low overhead
- * 
- * null_tim
- * sink_tim - checking depth as we sink
- * settle_tim - let the mooring settle
- * winch_tim - expect response from winch
- * wispr_tim - detection duty cycle
- * rest_tim - no detection, sleep
- * raise_tim - go up for to phone home
- * drop_tim - enough talk, hang up and go down
- */
-
-typedef struct Timer {
-  time_t when;
-  TimerType timT;
-  struct Timer* next, prev;
-} Timer;
-
-// head is an empty node, never removed from list, only head.next is used
-Timer emptyNode = {(time_t)0, null_tim, NULL, NULL};
-
-// tim.head->next is first list item
+// initialized to all zeros
 static struct {
+  TimerType next;
   time_t nextWhen;
-  int nextTim;
-  Timer* head;
-} tim = {(time_t)0, (Timer*)NULL, &emptyNode};
+  time_t timers[sizeof_tim];
+} tim;
 
+static void timNext(void);
 
 /*
- * add an interval timer to list
+ * find next timer expiration
+ * sets: tim.next*
+ */
+static void timNext(void) {
+  tim.next = null_tim;
+  tim.nextWhen = (time_t) 0;
+  for (int i=null_tim; i<sizeof_tim; i++)  {
+    // if timer is active
+    if (tim.timers[i])  {
+      // if .next is null, or this timer runs out sooner
+      if ((tim.next==null_tim) ||
+          (tim.nextWhen>tim.timers[i])) {
+        // replace tim.next
+        tim.next = i;
+        tim.nextWhen = tim.timers[i];
+        // test
+        printf("tim.next = %d at %ld\n", tim.next, tim.nextWhen);
+      }
+    }
+  }
+} // timNext
+  
+/*
+ * activate an interval timer, or reset timer if active
  * check time against nextWhen
  */
-void timAdd(TimerType timT, int secs) {
-  debug0("timAdd()")
-  // global tim
-  Timer* new = malloc(sizeof(Timer));
-  // set values, insert node after head
-  new.when = time(0)+secs;
-  new.timT = timT;
-  new.next = tim.head->next;
-  new.prev = tim.head;
-  tim.head->next = new;
-  if (new.when < tim.nextWhen) {
-    tim.nextTim = new;
-    tim.nextWhen = new.when;
-  }
-} // timAdd
+void timStart(TimerType timT, int secs) {
+  debug0("timStart()")
+  time_t when = time(0)+secs;
+  tim.timers[timT] = when;
+  if (tim.nextWhen>when) timNext();
+} // timStart
 
 /*
- * remove and free node
- * set: tim.next*
+ * sets: tim.timers tim.next*
  */
-static void timRemove(Timer* timer) {
-  debug0("timRemove()")
-  // global tim
-  if (timer->next) timer->next->prev = timer->prev;
-  timer->prev->next = timer->next;
-  free(timer);
-  // 
-  if (tim.head->next==NULL) {
-    // empty list
-    tim.nextTim = NULL;
-    tim.nextWhen = (time_t)0;
-  }
-  // if timer was nextTim, find new next
-  if (tim.nextTim==timer) {
-    // start with top of list
-    tim.nextTim = tim.head->next;
-    // not null
-    if (tim.nextTim)
-      tim.nextWhen = tim.head->next->when;
-    // check against rest of list
-    for (Timer* i=tim.head->next->next; i!=NULL; i=i->next) {
-      if (i->when < tim.nextWhen) {
-        tim.nextTim = i;
-        tim.nextWhen = i->when;
-      } // if
-    } // for
-  } // if
-} // timRemove
+void timStop(TimerType timT) {
+  debug0("timStop()")
+  tim.timers[timT] = 0;
+  if (tim.next==timT) timNext();
+} // timStop
 
 /*
- * remove all timers of a type, e.g. detection timers
+ * check if timer is expired
+ * sets: tim.*
  */
-void timCancel(TimerType timT) {
-  // global tim
-  for (Timer* i=tim.head->next; i!=NULL; i=i->next) 
-    if (i->timT==timT) 
-      timRemove(i);
-}
-
 TimerType timCheck(void) {
   debug0("timCheck()")
-  // global tim
-  if (!tim.nextTim || (tim.nextWhen>time(0)) return null_tim;
-  // timers elapsed
-  int r = tim.nextTim->timT;
-  // timRemove sets tim.next*
-  timRemove(tim.nextTim);
+  TimerType r = null_tim;
+  // .next is set and before now
+  if ((tim.next!=null_tim) &&
+      (tim.nextWhen<time(0))) {
+    r = tim.next;
+    timStop(tim.next);
+  }
   return r;
 } // timCheck
 
-time_t timQuery(TimerType timT) {
-  // global tim
-  time_t r=0;
-  if (!tim.nextTim) return r;
-  // tim.head->next is first list item
-  for (Timer* i=tim.head->next; i!=NULL; i=i->next) {
-    if (i->timT==timT)
-      if (!r || (r>i->when))
-        r = i->when;
-  }
-  return r;
-}
+/*
+ * how long until next timer expires
+ */
+int timQuery(TimerType timT) {
+  return tim.timers[timT]-time(0);
+} // timQuery
 

@@ -12,6 +12,9 @@ char *unprintf (char *out, *in);    // format unprintable string
 
 #define BUFSZ 1024
 
+#define PLATFORM LARA
+#define PROG_VERSION 4.0
+
 
 // #define DEBUGx enables a macro named DBGx()
 // see also DBGLVL below

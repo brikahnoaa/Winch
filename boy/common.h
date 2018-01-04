@@ -26,6 +26,3 @@
 #include <utils.h> // shared procs, SW
 #include <mpc.h> // platform, HW
 
-#define PLATFORM LARA
-#define PROG_VERSION 4.0
-

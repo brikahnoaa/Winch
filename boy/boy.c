@@ -9,15 +9,11 @@
 #include <winch.h>
 #include <wispr.h>
 
-// bool off; char platformID[6]; char programName[20]; char projectID[6];
-// float avgVel; float depth; float dockDepth; 
-// int dataInt; int deviceID; int phase; int logFile; int phaseInitial; 
-// long filenumber; long starts; long startsMax; Time onStart; Time phaseStart;
-BuoyInfo boy = {
+BuoyData boy = {
   true, "QUEH", "LARA", "LR01", 
-  0.0, 0.0, 0.0, 
-  0, 0, 0, 2, 0, 
-  0L, 0L, 0L, 0L, 0L
+  3.0, 60.0, 8.0, 
+  1, 1, 100, 0, 0, 0, 50, 
+  (time_t)0, (time_t)0,
 };
 
 static char uploadfile[] = "c:00000000.dat"; 
@@ -30,18 +26,20 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
  * initHW and SW structures. loop over phase 1-4
  */
 void main(void) {
-  // &boy.*, &ant.port, &ctd.port, &winch.port, &wispr.port
-  long starts;
-  restartCheck(&starts);
-  initHW(&ant.port, &ctd.port, &winch.port, &wispr.port);
+  restartCheck(&boy.starts);
+  initHW(&mpc.com1, &winch.port, &wispr.port);
+  // sets: boy.starts++ 
   startup(&boy);
-  if (boy.phase==0) {     
+  if (boy.starts==1) {
+    // normal start
+    phase0(&boy.dockDepth);
+  if (boy.phaseInitial==0) {     
     // phase 0:  Deployment
-    deploy(&boy.dockDepth);
-    boy.phase = boy.phaseInitial;
+    boy.phase = 2;          // surface
   } else {
-    // just woke up: where are we?
-    reboot(&boy.phase);
+      // post-deploy startup
+      reboot(&boy.phase);
+    boy.phase = boy.phaseInitial;
   }
 
 
@@ -177,16 +175,28 @@ void phase2(void) {
   antInit();
   // this log line is appended by boyOceanCurrentCheck()
   flogf("\n\t| p2() ocean current ");
-  // sets: stats.alarm boy.phase
-  if (boyOceanCurrentCheck()) return;
+  if (boyOceanCurrentCheck()) {
+    stats.alarm[bottomCurrent_alm] += 1;
+    boy.phase = 1;
+    return;
+  }
   // rise halfway
   halfway = ant.depth/2.0;
-  riseStartT = time(0)+ctd.delay;
+  riseStartT = time(0);
   winAscend();
-  while (ant.depth<halfway) {
+  timStart(winch_tim, 7);       // response within 7 sec
+  while (ant.depth>halfway) {
+    // winch: "going up" or "stopped"
+    // no message from winch, timeout
+    // ant depth update
   }
   // now halfway
-  if (boyOceanCurrentCheck()) return;
+  if (boyOceanCurrentCheck()) {
+    stats.alarm[midwayCurrent_alm] += 1;
+    boy.phase = 3;
+    return;
+  }
+  winAscend();
 } // phase2 //
 
 /*

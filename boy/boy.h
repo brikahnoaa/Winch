@@ -8,8 +8,21 @@
 #define WISPRNUMBER 4
 #endif
 
+typedef enum { 
+  bottomCurrent_alm=0, 
+  midwayCurrent_alm, 
+  ice_alm,
+  sizeof_alm,
+  } AlarmType;
+
+// stats
+typedef struct stats {
+  int alarm[sizeof_alm];
+} statsData;
+extern statsData stats;
+
 // boy
-typedef struct BuoyInfo {
+typedef struct BuoyData {
   bool on;
   char platformID[6];   // rudicsland
   char programName[20]; // added HM
@@ -20,15 +33,14 @@ typedef struct BuoyInfo {
   int callHour;         // 0-23 (midnight-11pm) hour to call home 
   int callFreq;         // number of times per day to call, expect 1
   int fileNum;          // current number for filename ####.dat ####.log
-  int logFile;
   int phase;            // 0=deploy, 1=WISPR, 2=Ascent, 3=Surface, 4=Descent
-  int phaseInitial;     // normal start in this phase (2)
+  int phaseInitial;     // normal start in this phase (0=deploy)
   int starts;
   int startsMax;
   time_t deployT;       // startup time
   time_t phaseStartT;   // time this phase started
-} BuoyInfo;
-extern BuoyInfo boy;
+} BuoyData;
+extern BuoyData boy;
 
 void boyShut(void);
 static int incomingData(void);

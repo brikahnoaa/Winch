@@ -19,18 +19,19 @@
 #define WISPR_PWR_ON 37
 #define WISPR_PWR_OFF 42
 
-typedef enum { ctd_dev=0, ant_dev } SerialDev;
+typedef enum { ctd_dev=0, ant_dev } SerialDevType;
 
-typedef struct MpcInfo {
+typedef struct MpcData {
   float joules;
   float volts;
   float voltMin;
   Serial com1;
-  SerialDev device;
-} MpcInfo;
+  SerialDevType device;
+} MpcData;
+extern MpcData mpc;
 
 void PreRun(void);
-void mpcDevSwitch(SerialDev dev);
+void mpcDevSwitch(SerialDevType dev);
 void mpcVoltage(float *volts);
 void mpcInit(void);
 int System_Timer(void);
