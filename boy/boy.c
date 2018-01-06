@@ -168,27 +168,54 @@ void phase1(void) {
  */
 void phase2(void) {
   flogf("\n\t| phase2()");
-  time_t riseStartT, nowT;
+  time_t riseStartT=0;
   float sideways, halfway, velocity;
-  int samples=0;
+  int i, samples=0;
   boy.phaseStartT=time(0);
   antInit();
-  // this log line is appended by boyOceanCurrentCheck()
+  depth = antDepth();
+  // this log line can be appended by boyOceanCurrentCheck()
   flogf("\n\t| p2() ocean current ");
   if (boyOceanCurrentCheck()) {
     stats.alarm[bottomCurrent_alm] += 1;
-    boy.phase = 1;
+    boy.phase = wispr_pha;
     return;
   }
   // rise halfway
   halfway = ant.depth/2.0;
-  riseStartT = time(0);
-  winAscend();
-  timStart(winch_tim, 7);       // response within 7 sec
   while (ant.depth>halfway) {
+    // start rise (or retry if winch timeout)
+    if (!riseStartT) {
+      riseStartT = time(0);
+      winAscend();
+      timStart(winch_tim, 7);       // response within 7 sec
+    }
     // winch: "going up" or "stopped"
-    // no message from winch, timeout
-    // ant depth update
+    switch (i=winResponse()) {
+    case 0: // none
+      break;
+    case 1: // stop
+      flogf("\np0(): winch stop during rise, before halfway");
+      boy.phase = descend_pha;      // down
+      return;
+    case 2: // rise ack
+      timStop(winch_tim);
+      break;
+    }
+    // ack timeout
+    switch (i=timCheck()) {
+    case 0: // none
+      break;
+    case winch_tim: // rise ack timeout
+      riseStartT = 0;
+      break;
+    default: // what?
+      timSurpriseTimer(i);
+      break;
+    }
+  depth = antDepth();
+  } // while (>halfway)
+      
   }
   // now halfway
   if (boyOceanCurrentCheck()) {

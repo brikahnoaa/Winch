@@ -168,6 +168,7 @@ void winStop(void) {
   win.on = false;          // motor off
   win.pending = true;     // response pending
 }
+
 /*
  * void Buoy(void)
  * A function call to the Buoy to get the status of equipment.

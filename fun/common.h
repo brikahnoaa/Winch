@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define debug(x)
-#define debug0(x)
-#define debug1(x)
-#define debug2(x)
+#define DBG(x)
+#define DBG0(x) printf(x);
+#define DBG1(x)
+#define DBG2(x)
 #define UnitTest

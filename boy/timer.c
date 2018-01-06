@@ -16,19 +16,19 @@ static void timNext(void);
  * sets: tim.next*
  */
 static void timNext(void) {
+  DBG0("timNext() ")
   tim.next = null_tim;
   tim.nextWhen = (time_t) 0;
   for (int i=null_tim; i<sizeof_tim; i++)  {
     // if timer is active
     if (tim.timers[i])  {
       // if .next is null, or this timer runs out sooner
-      if ((tim.next==null_tim) ||
-          (tim.nextWhen>tim.timers[i])) {
+      if (!tim.next || tim.nextWhen>tim.timers[i]) {
         // replace tim.next
         tim.next = i;
         tim.nextWhen = tim.timers[i];
         // test
-        printf("tim.next = %d at %ld\n", tim.next, tim.nextWhen);
+        // printf("tim.next = %d at %ld\n", tim.next, tim.nextWhen);
       }
     }
   }
@@ -39,17 +39,17 @@ static void timNext(void) {
  * check time against nextWhen
  */
 void timStart(TimerType timT, int secs) {
-  debug0("timStart()")
+  DBG0("timStart()")
   time_t when = time(0)+secs;
   tim.timers[timT] = when;
-  if (tim.nextWhen>when) timNext();
+  if (!tim.next || tim.nextWhen>when) timNext();
 } // timStart
 
 /*
  * sets: tim.timers tim.next*
  */
 void timStop(TimerType timT) {
-  debug0("timStop()")
+  DBG0("timStop()")
   tim.timers[timT] = 0;
   if (tim.next==timT) timNext();
 } // timStop
@@ -59,11 +59,9 @@ void timStop(TimerType timT) {
  * sets: tim.*
  */
 TimerType timCheck(void) {
-  debug0("timCheck()")
   TimerType r = null_tim;
   // .next is set and before now
-  if ((tim.next!=null_tim) &&
-      (tim.nextWhen<time(0))) {
+  if (tim.next && tim.nextWhen<=time(0)) {
     r = tim.next;
     timStop(tim.next);
   }
@@ -73,7 +71,10 @@ TimerType timCheck(void) {
 /*
  * how long until next timer expires
  */
-int timQuery(TimerType timT) {
-  return tim.timers[timT]-time(0);
+time_t timQuery(TimerType timT) {
+  if (tim.timers[timT]) 
+    return tim.timers[timT]-time(0);
+  else
+    return 0;
 } // timQuery
 

@@ -13,10 +13,18 @@ typedef enum {
   midwayCurrent_alm, 
   ice_alm,
   sizeof_alm,
-  } AlarmType;
+} AlarmType;
+
+typedef enum {
+  deploy_pha=0,
+  wispr_pha,
+  ascend_pha,
+  rudics_pha,
+  descend_pha,
+} PhaseType;
 
 // stats
-typedef struct stats {
+typedef struct statsData {
   int alarm[sizeof_alm];
 } statsData;
 extern statsData stats;
