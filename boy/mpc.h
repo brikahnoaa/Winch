@@ -30,7 +30,6 @@ typedef struct MpcData {
 } MpcData;
 extern MpcData mpc;
 
-void PreRun(void);
 void mpcDevSwitch(SerialDevType dev);
 void mpcVoltage(float *volts);
 void mpcInit(void);

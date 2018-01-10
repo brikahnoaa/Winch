@@ -16,49 +16,42 @@ typedef enum {
 } AlarmType;
 
 typedef enum {
-  deploy_pha=0,
-  wispr_pha,
-  ascend_pha,
-  rudics_pha,
-  descend_pha,
+  init_pha=0,
+  data_pha,
+  rise_pha,
+  call_pha,
+  drop_pha,
 } PhaseType;
-
-// stats
-typedef struct statsData {
-  int alarm[sizeof_alm];
-} statsData;
-extern statsData stats;
 
 // boy
 typedef struct BuoyData {
   bool on;
-  char platformID[6];   // rudicsland
-  char programName[20]; // added HM
-  char projectID[6];    // rudicsland
   float avgVel;
   float dockDepth;      // Depth when docked in winch
-  float sidewaysMax;    // 
+  float sidewaysMax;    // too much ocean current
+  int alarm[sizeof_alm];
   int callHour;         // 0-23 (midnight-11pm) hour to call home 
-  int callFreq;         // number of times per day to call, expect 1
+  int callFreq;         // number of times per day to call (1)
   int fileNum;          // current number for filename ####.dat ####.log
-  int phase;            // 0=deploy, 1=WISPR, 2=Ascent, 3=Surface, 4=Descent
-  int phaseInitial;     // normal start in this phase (0=deploy)
-  int starts;
-  int startsMax;
+  PhaseType phase;      // 0=deploy, 1=WISPR, 2=Ascent, 3=Surface, 4=Descent
+  PhaseType startPhase; // start in this phase (0=deploy)
+  Serial port;          // sbe16 / ant mod
   time_t deployT;       // startup time
   time_t phaseStartT;   // time this phase started
 } BuoyData;
 extern BuoyData boy;
 
 void boyShut(void);
+void boyInit(void);
+void boyStatus(char *buffer);
 static int incomingData(void);
 static ulong writeFile(ulong);
 static void sleepUntilWoken(void);
-static void phase0(void);
-static void phase1(void);
-static void phase2(void);
-static void phase3(void);
-static void phase4(void);
+static void deployPhase(void);
+static void dataPhase(void);
+static void risePhase(void);
+static void callPhase(void);
+static void dropPhase(void);
 static void reboot(int *phase);
 static void restartCheck(long *starts);
 static void Console(char);
@@ -66,6 +59,3 @@ static void IRQ2_ISR(void);
 static void IRQ3_ISR(void);
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
-static void WaitForWinch(short);
-static void boyInit(Serial antPort, ctdPort, winchPort, wisprPort);
-static void boyStatus(char *stringout);

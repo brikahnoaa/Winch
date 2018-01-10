@@ -3,10 +3,12 @@
 
 #include <common.h>
 #include <boy.h> 
+
 #include <ant.h> 
 #include <ctd.h>
 #include <mpc.h>
-#include <winch.h>
+#include <ngk.h>
+#include <sys.h>
 #include <wispr.h>
 
 BuoyData boy = {
@@ -16,118 +18,57 @@ BuoyData boy = {
   (time_t)0, (time_t)0,
 };
 
-static char uploadfile[] = "c:00000000.dat"; 
-// Enable watch dog  HM 3/6/2014
-short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
-
-IEV_C_PROTO(ExtFinishPulseRuptHandler);
-
 /*
- * initHW and SW structures. loop over phase 1-4
+ * deploy or reboot, loop over phase 1-4
+ * uses: .startPhase
+ * sets: .dockDepth .phase  
  */
-void main(void) {
-  restartCheck(&boy.starts);
-  initHW(&mpc.com1, &winch.port, &wispr.port);
-  // sets: boy.starts++ 
-  startup(&boy);
-  if (boy.starts==1) {
-    // normal start
-    phase0(&boy.dockDepth);
-  if (boy.phaseInitial==0) {     
-    // phase 0:  Deployment
-    boy.phase = 2;          // surface
+void boyMain(int starts) {
+  // normal case is last
+  boy.phase = boy.startPhase;
+  if (starts>1) {
+    // post-deploy restart
+    reboot(&boy.phase);
+  } else if (boy.phase!=deploy_pha) {
+    // testing, skip ahead to startPhase
+    flogf("\nboyMain(): testing, start phase %d", boy.phase);
   } else {
-      // post-deploy startup
-      reboot(&boy.phase);
-    boy.phase = boy.phaseInitial;
+    // normal start
+    deployPhase(&boy.dockDepth);
   }
-
-
-  while (!boy.off) {
+    
+  while (true) {
     switch (boy.phase) {
-    case 1: // phase 1: Recording WISPR
-      phase1();
-      boy.phase=2;
+    case data_pha: // data collect by WISPR
+      dataPhase();
+      boy.phase=rise_pha;
       break;
-    case 2: // phase 2: Ascend buoy
-      phase2();
-      boy.phase=3;
+    case rise_pha: // Ascend buoy, check for current and ice
+      risePhase();
+      boy.phase=call_pha;
       break;
-    case 3: // phase 3: Call into Satellite
-      phase3();
-      boy.phase=4;
+    case call_pha: // Call home via Satellite
+      callPhase();
+      boy.phase=drop_pha;
       break;
-    case 4: // phase 4:  Descend buoy
-      phase4();
-      boy.phase=1;
+    case drop_pha: // Descend buoy, science sampling
+      dropPhase();
+      boy.phase=data_pha;
       break;
     }
-  } 
-
-  shutdown();
-} // main() 
+  } // while true
+} // boyMain() 
 
 /*
- * shutdown buoy, sleep, reset
+ * set up ctd, serial port
  */
-void shutdown(void) {
-  WISPRSafeShutdown();
-  PIOClear(ANTENNAPWR); 
-  PIOClear(AMODEMPWR); 
-  SleepUntilWoken();
-  BIOSReset();
-}
-
-/*
- * check STARTS_VEE>STARTSMAX_VEE to see if we are rebooting wildly
- * these two settings are in veeprom to allow check before startup
- */
-void restartCheck(long *starts, long *startsMax) {
-  starts = VEEFetchLong(STARTS_VEE, 0L);
-  startsMax = VEEFetchLong(STARTSMAX_VEE, 0L);
-  if (starts>startsMax) {
-    flogf("\nInit(): startups>startmax");
-    shutdown();
-  }
-  VEEStoreLong(STARTS_VEE, starts+1L);
-} // restartCheck
-
-/*
- * init pins, ports, power
- */
-void boyInit() {
-  // global boy .port .device
-  preRun();   // 10 sec for user abort to DOS
-  mpcInit();
-  PZCacheSetup('C' - 'A', calloc, free);
-  TUInit(calloc, free);  // enable TUAlloc for serial ports
-  Initflog(logfile, true);
-
-  flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
-        MPC.PROGNAME, MPC.PROJID, MPC.PLTFRMID, MPC.STARTUPS);
-  flogf("\nProgram Start time: %s", TimeDate(NULL));
-
-  Free_Disk_Space(); 
-  // serial
-  winInit(&amodem);
-  boyDevInit(&boy.port, &boy.device);
-
-  mpcVoltage( &mpc.volts );
-  flogf("\n\t|Check Startup Voltage: %5.2fV", mpc.volts);
-
-  // Safety Check. Absoleute Minimum Voltage
-  if (mpc.volts < mpc.voltMin) {
-    flogf("\n\t|Battery Voltage Below Minimum. Activate Hibernation Mode");
-    SleepUntilWoken();
-    BIOSReset();
-  }
-  // lower than user set minimum.
-} // boyInit()
+void boyInit(Serial *port) {
+} // boyInit
 
 /*
  * figure out whats happening, continue as possible
  */
-void reboot(int *phase) {
+void sysReboot(int *phase) {
   // load info from saved previous phase
   // check STARTSVEE - was saved state really the last boot?
   // match hardware to saved state
@@ -135,9 +76,9 @@ void reboot(int *phase) {
 } // reboot()
 
 /*
- * wispr recording and detecting, buoy is docked to winch
+ * wispr recording and detecting, buoy is docked to ngk
  */
-void phase1(void) {
+void dataPhase(void) {
   flogf("\n\t|phase ONE");
   boy.phaseStartT=time(0);
 
@@ -164,72 +105,75 @@ void phase1(void) {
  * sideways is caused by ocean current pushing the buoy and antmod
  * uses: ctd.delay .sideMax
  * sets: boy.phaseStartT .phase ant.depth ctd.depth
- * sets: stats.alarm[] 
+ * sets: sys.alarm[] 
  */
 void phase2(void) {
   flogf("\n\t| phase2()");
   time_t riseStartT=0;
-  float sideways, halfway, velocity;
-  int i, samples=0;
+  float depth, depthStart, sideways, halfway, velocity;
+  //
   boy.phaseStartT=time(0);
   antInit();
-  depth = antDepth();
-  // this log line can be appended by boyOceanCurrentCheck()
-  flogf("\n\t| p2() ocean current ");
+  depthStart = depth = antDepth();
+  // algor: current check. rise halfway, checking response
   if (boyOceanCurrentCheck()) {
-    stats.alarm[bottomCurrent_alm] += 1;
-    boy.phase = wispr_pha;
+    sys.alarm[dockedCurrent_alm] += 1;
+    boy.phase = data_pha;
     return;
   }
-  // rise halfway
-  halfway = ant.depth/2.0;
-  while (ant.depth>halfway) {
-    // start rise (or retry if winch timeout)
+  halfway = depth/2.0;
+  while (depth>halfway) {
+    // start rise (or retry if ngk timeout)
     if (!riseStartT) {
       riseStartT = time(0);
-      winAscend();
-      timStart(winch_tim, 7);       // response within 7 sec
+      timStart(ngk_tim, 16);       // response comes in 13s
+      ngkAscend();
+      // start tracking antDepth
     }
-    // winch: "going up" or "stopped"
-    switch (i=winResponse()) {
-    case 0: // none
-      break;
-    case 1: // stop
-      flogf("\np0(): winch stop during rise, before halfway");
-      boy.phase = descend_pha;      // down
+    // ngk: "going up" or "stopped"
+    switch (ngkResponse()) {
+    case 0: break;
+    case 1: // unexpected stop
+      flogf("\np0(): ngk stop during rise, before halfway");
+      boy.phase = drop_pha;      // go down
       return;
     case 2: // rise ack
-      timStop(winch_tim);
-      break;
+      timStop(ngk_tim);
+      // start velocity measure
+      riseStartT = time(0);
+      depthStart = antDepth();
     }
-    // ack timeout
-    switch (i=timCheck()) {
-    case 0: // none
-      break;
-    case winch_tim: // rise ack timeout
-      riseStartT = 0;
-      break;
-    default: // what?
-      timSurpriseTimer(i);
-      break;
-    }
-  depth = antDepth();
-  } // while (>halfway)
-      
-  }
-  // now halfway
+    // ngk timeout (note, this ignores other *_tim)
+    if (timCheck()==ngk_tim) {
+      sys.alarm[ngkTimeout_alm] += 1;
+      if (depthStart-antDepth() < 3) {
+        // not rising. log, reset, retry
+        flogf("\n\t|p2() timeout on ngk, retry rise"); 
+        riseStartT = 0;
+      } else {
+        // odd, we are rising; log but ignore
+        flogf("\n\t|p2() timeout on ngk, but rising"); 
+      }
+    } // if ngk_tim
+    depth = antDepth();
+  } // while (depth>halfway)
+  // algor: halfway. figure velocity, stop
+  ngk.lastRise = (depthStart-depth) / (time(0)-riseStartT);
+  ngkStop();
+  // algor: current check. rise to surface, checking response
   if (boyOceanCurrentCheck()) {
-    stats.alarm[midwayCurrent_alm] += 1;
-    boy.phase = 3;
+    sys.alarm[midwayCurrent_alm] += 1;
+    boy.phase = drop_pha;
     return;
   }
-  winAscend();
+  ngkAscend();
+  // set ngk.firstRise
 } // phase2 //
 
 /*
  * phase Three
  * Testing iridium/gps connection. 
- * If failed, release winch cable another meter or two.
+ * If failed, release ngk cable another meter or two.
  * repeat to minimum CTD depth.
  */
 void phase3(void) {
@@ -259,7 +203,7 @@ void phase3(void) {
   // VEEPROM: SystemParameters MPC;
   sprintf(&uploadfile[2], "%08ld.dat", MPC.FILENUM);
   cprintf("\n\t|File Number: %08ld", MPC.FILENUM);
-  // writefile 1) MPC 2) Winch Info 3) Winch Status
+  // writefile 1) MPC 2) Ngk Info 3) Ngk Status
   // v
   WriteFile(PwrOff);
   // Init New LogFile, set PwrOn which is start of dataxint cycle
@@ -356,7 +300,7 @@ void phase4(void) {
   // sanity check
   CTD_AverageDepth(9, &velocity);
   if (boy.BUOYMODE != 0) {
-    Winch_Stop();
+    Ngk_Stop();
     WaitForWinch(0);
     flogf("\nErr phase4(): buoy was in motion");
   }
@@ -369,7 +313,7 @@ void phase4(void) {
   // Now descend.
   if (boy.BUOYMODE != 2) {
     boy.TOPDEPTH = boy.depth;
-    DescentStart = Winch_Descend();
+    DescentStart = Ngk_Descend();
     WaitForWinch(2);
     CTD_Sample();
   } else
@@ -388,23 +332,23 @@ void phase4(void) {
     // reading a sample triggers a new one, in p4
     Incoming_Data();
 
-    // Receive Stop command from Winch...
+    // Receive Stop command from Ngk...
     if (boy.BUOYMODE == 0)
       DescentStop = (time(NULL) - (ulong)(NIGK.DELAY));
 
     timecheck = time(NULL);
     // Check depth change every 60 seconds... This is an out of the while loop.
     // Hopefully it will only come here when AModem stops boy
-    // doesn't hear the Winch serial coming.
+    // doesn't hear the Ngk serial coming.
     if (timecheck - DescentStart > interval * 180) { // ?? known prob w ctd read
       flogf("\n\t|phase4() Check depth change");
       prevDepth -= boy.depth;
       if (prevDepth < 0)
         prevDepth = prevDepth * -1.0;
       if (prevDepth < 3) {
-        flogf("\nERROR|Depth change less than 3 meters... Winch hasn't "
+        flogf("\nERROR|Depth change less than 3 meters... Ngk hasn't "
               "responded STOP");
-        DescentStop = Winch_Stop();
+        DescentStop = Ngk_Stop();
         WaitForWinch(0);
       }
       prevDepth = boy.depth;
@@ -506,7 +450,7 @@ int Incoming_Data(void) {
         CTD_Data();
         if ((!boy.SURFACED && boy.phase > 1) || boy.BUOYMODE > 0 ||
             boy.phase == 0) // if not surfaced (target depth not reached.) and
-                             // winch is moving (not stopped)
+                             // ngk is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
         // DBG1("Console Incoming")
@@ -560,7 +504,7 @@ int Incoming_Data(void) {
         CTD_Data();
         if ((!boy.SURFACED && (boy.phase == 2 || boy.phase == 4)) ||
             boy.BUOYMODE > 0) // if not surfaced (target depth not reached.)
-                               // and winch is moving (not stopped)
+                               // and ngk is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
         DBG1("Console Incoming")
@@ -589,7 +533,7 @@ int Incoming_Data(void) {
     break;
 
   default:
-    // Lost winch phase. Get boy System Status decided which phase it best
+    // Lost ngk phase. Get boy System Status decided which phase it best
     // belongs.
 
     cprintf("default switch");
@@ -668,7 +612,7 @@ void Console(char in) {
     switch (in) {
     case 'W':
     case 'w':
-      WinchConsole();
+      NgkConsole();
       break;
     case 'P':
     case 'p':
@@ -857,8 +801,8 @@ static void IRQ5_ISR(void) {
 /*
  * WriteFile      The Data File For Lara
 1) Initially upload MPC parameters
-2) Winch Info
-3) Winch Status
+2) Ngk Info
+3) Ngk Status
  */
 ulong WriteFile(ulong TotalSeconds) {
   // global uploadfile, WriteBuffer
@@ -896,13 +840,13 @@ ulong WriteFile(ulong TotalSeconds) {
 
   // Only comes here if not rebooted.
   if (TotalSeconds != 0) {
-    //*** Winch Info   ***//
+    //*** Ngk Info   ***//
     // blk 
-    Winch_Monitor(filehandle);
+    Ngk_Monitor(filehandle);
     Delayms(50);
     memset(WriteBuffer, 0, BUFSZ);
 
-    //*** Winch Status ***//
+    //*** Ngk Status ***//
     sprintf(WriteBuffer, "%s\n\0", PrintSystemStatus());
     bytesWritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
     DBG2("BytesWritten: %d", bytesWritten)
@@ -987,56 +931,50 @@ char *PrintSystemStatus(void) {
 }
 
 /*
- * uses: ant.on winch.boy2ant
- * sets: ant.depth ctd.depth 
+ * uses: ngk.boy2ant
+ * sets: ant.on
  */
 float boyOceanCurrent() {
-  float a, b, c;
+  float aD, cD, a, b, c;
   // usually called while antMod is on
-  if (ant.on) {
-    antDepth(&ant.depth);
-    // ctd is still powered up, just switch serial
-    mpcDevSwitch(ctd_dev);
-    ctdDepth(&ctd.depth);
-    mpcDevSwitch(ant_dev);
-  } else {
-    ctdDepth(&ctd.depth);
-    mpcDevSwitch(ant_dev);
-    antDepth(&ant.depth);
-    // ctd is still powered up, just switch serial
-    mpcDevSwitch(ctd_dev);
-  }
-  a=ctd.depth-ant.depth;
-  c=winch.boy2ant;
+  if (!ant.on) antInit();
+  aD=antDepth();
+  mpcDevSwitch(ctd_dev);
+  cD=ctdDepth();
+  mpcDevSwitch(ant_dev);
+  // a^2 + b^2 = c^2
+  a=cD-aD;
+  c=ngk.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
   return b;
 }
 
 /*
- * uses: ctd.depth boy.sidewaysMax
- * sets: stats.alarm boy.phase
+ * uses: ant.depth boy.sidewaysMax
  */
 bool boyOceanCurrentCheck() {
+  flogf("\n\t| ocean current ");
   sideways = boyOceanCurrent();
-  flogf(" @%.1f=%.1f ", ctd.depth, sideways);
+  flogf(" @%.1f=%.1f ", ant.depth, sideways);
   if (sideways>boy.sidewaysMax) {
     flogf("too strong, cancel ascent");
-    stats.alarm[current_alm]++;
-    winchDescend();
-    boy.phase = 1;
     return true;
   }
   return false;
 }
 
 /*
- * short phase; // 1=AUH, 2=Ascent, 3=Surface Communication, 4= Descent
- * short BUOYMODE;  // 0=stopped 1=ascend 2=descend 3=careful ascent
- *        At depth and no velocity. phase 1 && BuoyMode 0
- *        Ascending phase 2 && BuoyMode 1
- *        On surface phase 3 && BuoyMode 0
- *        Descending phase 4 && BuoyMode 2
- * 
+ * shutdown buoy, sleep, reset
+ */
+void boyShutdown(void) {
+  WISPRSafeShutdown();
+  PIOClear(ANTENNAPWR); 
+  PIOClear(AMODEMPWR); 
+  SleepUntilWoken();
+  BIOSReset();
+}
+
+/*
  *WISPR BOARD
  * * TPU 6    27 PAM1 WISPR TX
  * * TPU 7    28 PAM1 WISPR RX

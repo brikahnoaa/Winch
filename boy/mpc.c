@@ -7,45 +7,13 @@ MpcData mpc = {
   NULL, ctd_dev,
 };
 
-/*
- * PreRun		Exit opportunity before we start the program
- */
-void PreRun(void) {
-  short ndelay = 10;
-  short i;
-  char c;
-  time_t nowsecs;
-  char strbuf[64];
-  struct tm t;
-  ushort Ticks;
-  char *ProgramDescription = { "\n" "press '.' to exit into DOS" "\n"};
-
-  nowsecs = RTCGetTime(NULL, &Ticks); // get RTC clock right now
-  t = *localtime(&nowsecs);
-  strftime(strbuf, sizeof(strbuf), "%m/%d/%Y  %H:%M:%S", &t);
-
-  flogf("\nProgram start time: %s.%.3d [ctime: %lu]\n", strbuf, Ticks / 40,
-        nowsecs);
-  cprintf(ProgramDescription);
-  flogf("You have %d seconds to launch\n", ndelay);
-
-  TickleSWSR();
-
-  for (i = ndelay; i > 0; i--) {
-    cprintf("%u..", i);
-    c = SCIRxGetCharWithTimeout(1000); // 1 second
-    if (c == '.')
-      BIOSResetToPicoDOS();
-    // any other char, run
-    if (c != -1) // !timeout
-      return;
-  }
-} // PreRun
+// Enable watch dog  HM 3/6/2014
+short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 
 /*
  * Set IO pins, set SYSCLK
  */
-void initMPC(void) {
+void mpcInit(void) {
   short waitsFlash, waitsRAM, waitsCF;
   ushort nsRAM, nsFlash, nsCF;
   short nsBusAdj;
@@ -74,7 +42,7 @@ void initMPC(void) {
   cdrain();
   ciflush();
   coflush();
-} // initMPC
+} // mpcInit
   
 /*
  * Setup directories for files not needing to be access anymore.

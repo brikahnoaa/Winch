@@ -3,6 +3,14 @@
 #include <common.h>
 #include <settings.h>
 
+#include <ant.h>
+#include <boy.h>
+#include <ctd.h>
+#include <dat.h>
+#include <mpc.h>
+#include <ngk.h>
+#include <sys.h>
+
 /* 
  * static setVar settings[] = array of {shortname, longname, ptr, type}
  * scan it for name when updating a setting

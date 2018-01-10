@@ -1,10 +1,10 @@
-// winch.h
+// ngk.h
 // AModemPort and WISPR Transmission
 
 #define AMODEMBAUD 4800L
 
-typedef struct WinchInfo {
-  bool on;            // winch motor running
+typedef struct NgkInfo {
+  bool on;            // ngk motor running
   bool pending;       // waiting for comm
   float boy2ant;      // meters from buoy ctd to ant ctd under still water
   float delay;        // seconds after TUTxAcousticModem before action
@@ -12,8 +12,8 @@ typedef struct WinchInfo {
   float lastRise;     // Velocity meters/min of the most recent rise 
   float firstFall;    // Velocity meters/min of the first fall (descent)
   float lastFall;     // Velocity meters/min of the most recent fall 
-} WinchInfo;
-extern WinchInfo winch;
+} NgkInfo;
+extern NgkInfo ngk;
 
 // Tracking number of calls
 typedef struct AmodemInfo {
@@ -25,19 +25,19 @@ typedef struct AmodemInfo {
   short stopCalls;
   short stopRcv;
   short buoyRcv;
-  short winchCalls;
+  short ngkCalls;
   Serial port;
 } AmodemInfo;
 extern AmodemInfo amodem;
 
 void aModemData(void);
-ulong winchAscend(void);
-ulong winchDescend(void);
-ulong winchStop(void);
+ulong ngkAscend(void);
+ulong ngkDescend(void);
+ulong ngkStop(void);
 void buoyStatus(void);
-void winchConsole(void);
+void ngkConsole(void);
 void amodemInit(bool);
-void getWinchSettings(void);
-ulong winchStatus(void);
-void winchMonitor(int);
+void getNgkSettings(void);
+ulong ngkStatus(void);
+void ngkMonitor(int);
 

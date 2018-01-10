@@ -24,5 +24,3 @@
 #include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 
 #include <utils.h> // shared procs, SW
-#include <mpc.h> // platform, HW
-

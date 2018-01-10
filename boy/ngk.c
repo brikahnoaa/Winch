@@ -1,30 +1,30 @@
 #include <common.h>
-#include <winch.h>
+#include <ngk.h>
 
 // pending delay firstRise lastRise firstFall lastFall
-WinchInfo winch = {
+NgkInfo ngk = {
   false, 0.0, 0.0, 0.0, 0.0, 0.0,
 };
 // off ascentCalls ascentRcv descentCalls descentRcv 
-// stopCalls stopRcv buoyRcv winchCalls port
+// stopCalls stopRcv buoyRcv ngkCalls port
 AmodemInfo amodem = {
   false, 0, 0, 0, 0, 0, 0, 0, 0, NULL,
 };
 
-void winchConsole(void) {
+void ngkConsole(void) {
   char in;
-  cprintf("\n\t|WinchConsole():");
+  cprintf("\n\t|NgkConsole():");
   in = cgetc();
 
   // Stop
   if (in == 'S')
-    winchStop();
+    ngkStop();
   // Descend
   else if (in == 'F')
-    winchDescend();
+    ngkDescend();
   // Ascend
   else if (in == 'R')
-    winchAscend();
+    ngkAscend();
   // Buoy Status?
   else if (in == 'B')
     BuoyStatus();
@@ -56,14 +56,14 @@ void AModemData(void) {
       inString[i] = (char)inchar;
   }
 
-  // if command from winch. If stop, why? Update LARA System Statuses
+  // if command from ngk. If stop, why? Update LARA System Statuses
   if (strchr(inString, '#') != NULL) {
     command = strtok(inString, "#");
     flogf("\n%s\t|Command: #%s", Time(NULL), command);
     prechar = command[0];
     symbol = true;
   }
-  // Confirming a new winch command//response from command
+  // Confirming a new ngk command//response from command
   else if (strchr(inString, '%') != NULL) {
     command = strtok(inString, "%");
     flogf("\n%s\t|Response: %%%s", Time(NULL), command);
@@ -99,14 +99,14 @@ void AModemData(void) {
       amodem.STOPRCV++;
       flogf("\n%s|Stop Command Received", Time(NULL));
 
-      if (LARA.BUOYMODE == 1) { // winch Stops buoy from Ascending... Lack of
+      if (LARA.BUOYMODE == 1) { // ngk Stops buoy from Ascending... Lack of
                                 // Tension? Are we close to TDepth? Try Calling?
-        depth = LARA.DEPTH - winch.TDEPTH;
-        flogf("\n\t|AModemData() winch Stopped Buoy");
+        depth = LARA.DEPTH - ngk.TDEPTH;
+        flogf("\n\t|AModemData() ngk Stopped Buoy");
         if (depth > 5.0 &&
             AscentStopTries <
                 2) { // if buoy still too deep. try ascending again
-          winchAscend();
+          ngkAscend();
           AscentStopTries++;
         } else if (depth < 2.0 ||
                    AscentStopTries >= 1) { // if buoy less than 5 meters to
@@ -133,40 +133,40 @@ void AModemData(void) {
 
 /*
  * send up command, no brake, "#R,01,03"
- * sets: win.on .pending
+ * sets: ngk.on .pending
  */
-void winAscend(void) {
-  DBG0("\n%s\t|winAscend():", Time(NULL))
+void ngkAscend(void) {
+  DBG0("\n%s\t|ngkAscend():", Time(NULL))
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#R,01,03\n");
-  win.on = true;          // motor on
-  win.pending = true;     // response pending
+  ngk.on = true;          // motor on
+  ngk.pending = true;     // response pending
 } // Ascend
 
 /*
  * down "#F,01,00"
- * sets: win.on .pending
+ * sets: ngk.on .pending
  */
-void winDescend(void) {
-  DBG0("\n%s\t|winDescend():", Time(NULL))
+void ngkDescend(void) {
+  DBG0("\n%s\t|ngkDescend():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#F,01,00\n");
-  win.on = true;          // motor on
-  win.pending = true;     // response pending
+  ngk.on = true;          // motor on
+  ngk.pending = true;     // response pending
 } // Descend
 
 /*
  * stop "#S,01,00"
- * sets: win.on .pending
+ * sets: ngk.on .pending
  */
-void winStop(void) {
-  DBG0("\n%s\t|winStop():", Time(NULL))
+void ngkStop(void) {
+  DBG0("\n%s\t|ngkStop():", Time(NULL))
 
   TUTxWaitCompletion(NIGKPort);
   TUTxPrintf(NIGKPort, "#S,01,00\n");
-  win.on = false;          // motor off
-  win.pending = true;     // response pending
+  ngk.on = false;          // motor off
+  ngk.pending = true;     // response pending
 }
 
 /*
@@ -199,7 +199,7 @@ void BuoyStatus(void) {
 void amodemInit(bool on) {
   static bool once = true;
   short AModemRX, AModem_TX;
-  flogf("\n\t|%s NIGK winch TUPort", on ? "Open" : "Close");
+  flogf("\n\t|%s NIGK ngk TUPort", on ? "Open" : "Close");
 
   if (on) {
     AModemRX = TPUChanFromPin(AMODEMRX);
@@ -212,7 +212,7 @@ void amodemInit(bool on) {
     NIGKPort = TUOpen(AModemRX, AModem_TX, AMODEMBAUD, 0);
     Delayms(150);
     if (NIGKPort == 0)
-      flogf("\n\t|Bad winch TUPort\n");
+      flogf("\n\t|Bad ngk TUPort\n");
     else {
       TUTxFlush(NIGKPort);
       TURxFlush(NIGKPort);
@@ -237,37 +237,37 @@ void GetWinchSettings(void) {
   char *p;
 
   p = VEEFetchData(NIGKDELAYNAME).str;
-  winch.DELAY = atoi(p ? p : NIGKDELAYDEFAULT);
-  DBG1("winch.DELAY=%u (%s)", winch.DELAY, p ? "vee" : "def")
+  ngk.DELAY = atoi(p ? p : NIGKDELAYDEFAULT);
+  DBG1("ngk.DELAY=%u (%s)", ngk.DELAY, p ? "vee" : "def")
 
   p = VEEFetchData(NIGKANTENNALENGTHNAME).str;
-  winch.ANTLEN = atoi(p ? p : NIGKANTENNALENGTHDEFAULT);
-  DBG1("winch.ANTLEN=%u (%s)", winch.ANTLEN, p ? "vee" : "def")
+  ngk.ANTLEN = atoi(p ? p : NIGKANTENNALENGTHDEFAULT);
+  DBG1("ngk.ANTLEN=%u (%s)", ngk.ANTLEN, p ? "vee" : "def")
 
   p = VEEFetchData(NIGKTARGETDEPTHNAME).str;
-  winch.TDEPTH = atoi(p ? p : NIGKTARGETDEPTHDEFAULT);
-  DBG1("winch.TDEPTH=%u (%s)", winch.TDEPTH, p ? "vee" : "def")
+  ngk.TDEPTH = atoi(p ? p : NIGKTARGETDEPTHDEFAULT);
+  DBG1("ngk.TDEPTH=%u (%s)", ngk.TDEPTH, p ? "vee" : "def")
 
   p = VEEFetchData(NIGKRISERATENAME).str;
-  winch.RRATE = atoi(p ? p : NIGKRISERATEDEFAULT);
-  DBG1("winch.RRATE=%u (%s)", winch.RRATE, p ? "vee" : "def")
+  ngk.RRATE = atoi(p ? p : NIGKRISERATEDEFAULT);
+  DBG1("ngk.RRATE=%u (%s)", ngk.RRATE, p ? "vee" : "def")
 
   p = VEEFetchData(NIGKFALLRATENAME).str;
-  winch.FRATE = atoi(p ? p : NIGKFALLRATEDEFAULT);
-  DBG1("winch.FRATE=%u (%s)", winch.FRATE, p ? "vee" : "def")
+  ngk.FRATE = atoi(p ? p : NIGKFALLRATEDEFAULT);
+  DBG1("ngk.FRATE=%u (%s)", ngk.FRATE, p ? "vee" : "def")
 
   p = VEEFetchData(NIGKPROFILESNAME).str;
-  winch.PROFILES = atoi(p ? p : NIGKPROFILESDEFAULT);
-  DBG1("winch.PROFILES=%u (%s)", winch.PROFILES, p ? "vee" : "def")
+  ngk.PROFILES = atoi(p ? p : NIGKPROFILESDEFAULT);
+  DBG1("ngk.PROFILES=%u (%s)", ngk.PROFILES, p ? "vee" : "def")
 
   p = VEEFetchData(NIGKRECOVERYNAME).str;
-  winch.RECOVERY = atoi(p ? p : NIGKRECOVERYDEFAULT);
-  DBG1("winch.RECOVERY=%u (%s)", winch.RECOVERY, p ? "vee" : "def")
+  ngk.RECOVERY = atoi(p ? p : NIGKRECOVERYDEFAULT);
+  DBG1("ngk.RECOVERY=%u (%s)", ngk.RECOVERY, p ? "vee" : "def")
 }
 /*
- * void winchMonitor(int filehandle)
+ * void ngkMonitor(int filehandle)
  */
-void winchMonitor(int filehandle) {
+void ngkMonitor(int filehandle) {
   // global WriteBuffer
   int byteswritten = 0;
   memset(WriteBuffer, 0, BUFSZ);
@@ -276,13 +276,13 @@ void winchMonitor(int filehandle) {
                    "%s\nProfile:%d\nDelay:%d\nTDepth:%d\nRiseRate:%d\nFallRate:"
                    "%d\nASCENTCALLS:%d, RCV:%d\nDESCENTCALLS:%d, "
                    "RCV%d\nSTOPCALLS:%d, RCV%d\n\0",
-      winch.RECOVERY ? "RECOVERY" : "ON", winch.PROFILES, winch.DELAY, winch.TDEPTH,
-      winch.RRATE, winch.FRATE, amodem.ASCENTCALLS, amodem.ASCENTRCV,
+      ngk.RECOVERY ? "RECOVERY" : "ON", ngk.PROFILES, ngk.DELAY, ngk.TDEPTH,
+      ngk.RRATE, ngk.FRATE, amodem.ASCENTCALLS, amodem.ASCENTRCV,
       amodem.DESCENTCALLS, amodem.DESCENTRCV, amodem.STOPCALLS, amodem.STOPRCV);
 
   // Maybe include something about calculated velocities and cable length of
-  // winch after #of seconds.
-  flogf("\n\t|WinchMonitor():\n%s", WriteBuffer);
+  // ngk after #of seconds.
+  flogf("\n\t|NgkMonitor():\n%s", WriteBuffer);
 
   byteswritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
   DBG1("BytesWritten: %d", byteswritten)
