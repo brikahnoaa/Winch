@@ -1,27 +1,24 @@
 v4
-<--> commands, response is "cmd [#]"
-phase #         := 1 wispr, 2 ascend, 3 surface, 4 descend
-target #.#      := set target depth for ascend
-velocity #      := return avg next # depth / time readings
-depth           := return next depth value
-temp            := return next temp value
+after power up  := OK\r
+<--> commands, response is OK
+call on|off     := call and transfer data
 file name size  := load file to antmod
+gps             := query location and time
+irid on|off     := turn iridium modem on/off
+sbe on|off      := continuous poll for depth, temp
 
-status          := "status P#, sent #/# #, errors string"
 set string      := set setting, same format as irid download
+status          := #/# # (sent # of # files, # bytes)
+
 pico x x        := response from dos, then "pico"
 
 <-- async alerts, not in direct response to query
-ice #.#         := detected low temp, suggesting winch stop
-target #.#      := depth < target set by buoy request
-surfaced #.#    := depth < ant.surface setting
 gps #:#:#.#     := acquired GPS time
-signal #        := csq 5
-connected       := sending data
-sent #/# #      := sent # of # files, # bytes (ready to descend)
-failed          := tried to connect, giving up (ready to descend)
-done            := done with surface
-set string      := settings down from irid
+sig #           := csq 5
+data            := sending data
+err string      := tried to connect, giving up
+set string      := settings sent down from irid
+done            := done with surface, due to time or data done
 
 
 v3

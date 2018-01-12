@@ -126,16 +126,15 @@ void phase2(void) {
     // start rise (or retry if ngk timeout)
     if (!riseStartT) {
       riseStartT = time(0);
-      timStart(ngk_tim, 16);       // response comes in 13s
-      ngkAscend();
+      ngkCommand( rise_cmd );
       // start tracking antDepth
     }
     // ngk: "going up" or "stopped"
     switch (ngkResponse()) {
     case 0: break;
     case 1: // unexpected stop
-      flogf("\np0(): ngk stop during rise, before halfway");
-      boy.phase = drop_pha;      // go down
+      flogf("\np0(): ngk unexpected stop during rise, before halfway");
+      boy.phase = drop_pha;      // go down, try again tomorrow
       return;
     case 2: // rise ack
       timStop(ngk_tim);
@@ -145,7 +144,7 @@ void phase2(void) {
     }
     // ngk timeout (note, this ignores other *_tim)
     if (timCheck()==ngk_tim) {
-      sys.alarm[ngkTimeout_alm] += 1;
+      boyAlarm(ngkTimeout_alm);
       if (depthStart-antDepth() < 3) {
         // not rising. log, reset, retry
         flogf("\n\t|p2() timeout on ngk, retry rise"); 
@@ -159,16 +158,30 @@ void phase2(void) {
   } // while (depth>halfway)
   // algor: halfway. figure velocity, stop
   ngk.lastRise = (depthStart-depth) / (time(0)-riseStartT);
-  ngkStop();
+  if (ngk.firstRise==0)
+    ngk.firstRise = ngk.lastRise;
+  ngkCommand( stop_cmd );
   // algor: current check. rise to surface, checking response
   if (boyOceanCurrentCheck()) {
     sys.alarm[midwayCurrent_alm] += 1;
     boy.phase = drop_pha;
     return;
   }
+  ngkCommand( stop_cmd );
   ngkAscend();
-  // set ngk.firstRise
-} // phase2 //
+} // risePhase
+
+/*
+ * turn off sbe, on irid/gps (takes 30 sec). data files from boy to ant.
+ * read gps date, loc. 
+ */
+void callPhase(void) {
+}
+
+/*
+ * sets: boy.alarm[]
+ */
+int boyAlarm(AlarmType alarm) { boy.alarm[alarm] += 1; }
 
 /*
  * phase Three
