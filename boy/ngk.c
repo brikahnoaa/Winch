@@ -7,31 +7,57 @@ NgkInfo ngk = {
 };
 // off ascentCalls ascentRcv descentCalls descentRcv 
 // stopCalls stopRcv buoyRcv ngkCalls port
-AmodemInfo amodem = {
+AmodemInfo mdm = {
   false, 0, 0, 0, 0, 0, 0, 0, 0, NULL,
 };
 
-void ngkConsole(void) {
-  char in;
-  cprintf("\n\t|NgkConsole():");
-  in = cgetc();
 
-  // Stop
-  if (in == 'S')
-    ngkStop();
-  // Descend
-  else if (in == 'F')
-    ngkDescend();
-  // Ascend
-  else if (in == 'R')
-    ngkAscend();
-  // Buoy Status?
-  else if (in == 'B')
-    BuoyStatus();
-  else
-    cprintf("Bad Input Character.");
+/*
+ * send command string via amodem
+ * sets: mdm.command .pending .lastCmd
+ * uses: mdm.delay
+ */
+void ngkCommand(CommandType cmd) {
+  switch (cmd) {
+  case rise_cmd:
+    break;
+  case drop_cmd:
+    break;
+  case stop_cmd:
+    break;
+  default: // not a command
+    return;
+  } // switch
+  mdm.command[cmd] += 1;
+  mdm.pending = time(0) + mdm.delay;
+  mdm.lastCmd = cmd;         // used by timeout
+} // ngkCommand
 
-} // Console_Data
+/*
+ * get winch response if available and parse it, check timeout
+ * uses: mdm.pending
+ * sets: mdm.pending .respond[] .timeout[] scratch
+ */
+RespondType ngkRespond(void) {
+  int d;
+  RespondType r;
+  if (d=serData(&scratch)) {
+    // parse response, unset .pending
+    // tbd
+    ngk.on = true;
+    mdm.pending = (time_t)0;
+    mdm.respond[r] += 1;
+    return r;
+  } else if ((mdm.pending>0) && (time(0) > mdm.pending)) {
+    // timeout
+    mdm.pending = (time_t)0;
+    mdm.timeout[lastCmd] += 1;
+    return time_res;
+  } else {
+    // keep waiting
+    return null_res;
+  }
+} // ngkRespond
 
 /*
  */

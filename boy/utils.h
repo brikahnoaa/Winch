@@ -5,10 +5,11 @@ typedef TUPort *Serial;
 // global extern
 extern char scratch[];
 
+int serData(Serial port, char *in);     // get available serial data 
 void delayms(int x);
 void serWrite(Serial port, char *out);
-int serReadWait(Serial port, char *in, int wait);
-char *unprintf (char *out, *in);    // format unprintable string
+int serRead(Serial port, char *in, int wait);
+char *unprintf (char *out, *in);        // format unprintable string
 
 #define BUFSZ 1024
 

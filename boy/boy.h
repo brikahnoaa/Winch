@@ -9,7 +9,8 @@
 #endif
 
 typedef enum { 
-  bottomCurrent_alm=0, 
+  null_alm=0,
+  bottomCurrent_alm, 
   midwayCurrent_alm, 
   ice_alm,
   ngkTimeout_alm,
@@ -17,7 +18,8 @@ typedef enum {
 } AlarmType;
 
 typedef enum {
-  init_pha=0,
+  null_pha=0,
+  init_pha,
   data_pha,
   rise_pha,
   call_pha,

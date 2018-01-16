@@ -2,10 +2,20 @@
 #include <common.h>
 #include <ant.h>
 
-// surfaced ctdPos gpsLong[20] gpsLat[20] port
+// on surfaced ctdPos depth gpsLong[20] gpsLat[20] 
 AntennaData ant = {
-  false, 1.5, "123:45.6789 W", "45:67.8900 N", NULL
+  false, false, 1.5, 0.0, "123:45.6789 W", "45:67.8900 N" 
 };
+
+/*
+ * start antenna, wait until ant responds
+ * read depth
+ * sets: .depth
+ */
+void antInit(void){
+  DBG0("\nantInit()")
+
+} // antInit
 
 /*
  * AntMode(G|I|S)
