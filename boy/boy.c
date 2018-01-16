@@ -98,10 +98,10 @@ void dataPhase(void) {
     WISPRSafeShutdown();
   }
 
-} // phase1()
+} // dataPhase
 
 /*
- * turn on ant, ascend. check angle, go up halfway, check angle, surface.
+ * turn on ant, ascend. check angle, go up midway, check angle, surface.
  * sideways is caused by ocean current pushing the buoy and antmod
  * uses: ctd.delay .sideMax
  * sets: boy.phaseStartT .phase ant.depth ctd.depth
@@ -110,19 +110,20 @@ void dataPhase(void) {
 void phase2(void) {
   flogf("\n\t| phase2()");
   time_t riseStartT=0;
-  float depth, depthStart, sideways, halfway, velocity;
+  float depth, depthStart, sideways, midway, velocity;
   //
   boy.phaseStartT=time(0);
   antInit();
   depthStart = depth = antDepth();
-  // algor: current check. rise halfway, checking response
+  // algor: current check. rise midway, checking response
   if (boyOceanCurrentCheck()) {
     sys.alarm[dockedCurrent_alm] += 1;
     boy.phase = data_pha;
     return;
   }
-  halfway = depth/2.0;
-  while (depth>halfway) {
+  // midway = depth/2.0;
+  midway = 10.0;
+  while (depth>midway) {
     // start rise (or retry if ngk timeout)
     if (!riseStartT) {
       riseStartT = time(0);
@@ -133,7 +134,7 @@ void phase2(void) {
     switch (ngkResponse()) {
     case 0: break;
     case 1: // unexpected stop
-      flogf("\np0(): ngk unexpected stop during rise, before halfway");
+      flogf("\np0(): ngk unexpected stop during rise, before midway");
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
     case 2: // rise ack
@@ -145,6 +146,7 @@ void phase2(void) {
     // ngk timeout (note, this ignores other *_tim)
     if (timCheck()==ngk_tim) {
       boyAlarm(ngkTimeout_alm);
+      amodem.timeout[rise_cmd] += 1;
       if (depthStart-antDepth() < 3) {
         // not rising. log, reset, retry
         flogf("\n\t|p2() timeout on ngk, retry rise"); 
@@ -155,11 +157,11 @@ void phase2(void) {
       }
     } // if ngk_tim
     depth = antDepth();
-  } // while (depth>halfway)
-  // algor: halfway. figure velocity, stop
-  ngk.lastRise = (depthStart-depth) / (time(0)-riseStartT);
+  } // while (depth>midway)
+  // algor: midway. figure velocity, stop
+  ngk.recentRise = (depthStart-depth) / (time(0)-riseStartT);
   if (ngk.firstRise==0)
-    ngk.firstRise = ngk.lastRise;
+    ngk.firstRise = ngk.recentRise;
   ngkCommand( stop_cmd );
   // algor: current check. rise to surface, checking response
   if (boyOceanCurrentCheck()) {
@@ -167,8 +169,8 @@ void phase2(void) {
     boy.phase = drop_pha;
     return;
   }
-  ngkCommand( stop_cmd );
-  ngkAscend();
+  // TBD
+  
 } // risePhase
 
 /*
