@@ -9,12 +9,12 @@
 #endif
 
 typedef enum { 
-  null_alm=0,
-  bottomCurrent_alm, 
-  midwayCurrent_alm, 
-  ice_alm,
-  ngkTimeout_alm,
-  sizeof_alm,
+  null_ala=0,
+  bottomCurrent_ala, 
+  midwayCurrent_ala, 
+  ice_ala,
+  ngkTimeout_ala,
+  sizeof_ala,
 } AlarmType;
 
 typedef enum {
@@ -34,7 +34,7 @@ typedef struct BuoyData {
   float currCheckD;     // stop at this depth to check ocean current
   float currMax;        // too much ocean current
   float dockD;          // Depth when docked in winch
-  int alarm[sizeof_alm];
+  int alarm[sizeof_ala];
   int callHour;         // 0-23 (midnight-11pm) hour to call home 
   int callFreq;         // number of times per day to call (1)
   int fileNum;          // current number for filename ####.dat ####.log

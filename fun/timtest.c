@@ -20,7 +20,7 @@ int main(){
   printf("timCheck() loop...\n");
   TimerType i = null_tim;
   while (i==null_tim)
-    i = timCheck();
+    i = timAnyExp();
   printf("timer %d at %ld\n", i, time(0));
   printf("timer data_tim %d at timQuery %ld\n", data_tim, timQuery(data_tim));
 }

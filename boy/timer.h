@@ -11,8 +11,9 @@ typedef enum {
   sizeof_tim,
   } TimerType;
 
-time_t timQuery(TimerType timT);
-void timStart(TimerType timT, int secs);
-void timStop(TimerType timT);
-TimerType timCheck(void);
+bool timExp(TimerType tmr);
+int timQuery(TimerType tmr);
+void timStart(TimerType tmr, int secs);
+void timStop(TimerType tmr);
+TimerType timAnyExp(void);
 

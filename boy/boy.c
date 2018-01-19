@@ -111,48 +111,50 @@ void risePhase(void) {
   flogf("\n\t| risePhase()");
   time_t riseStartT=(time_t)0;
   float depth, depthStart, sideways, target, velocity;
+  RespondType rsp;
   //
   boy.phaseStartT=time(0);
   antInit();
   depthStart = depth = antDepth();
   // algor: current check. rise midway, checking response
   if (boyOceanCurrentCheck()) {
-    sys.alarm[dockedCurrent_alm] += 1;
+    sys.alarm[dockedCurrent_ala] += 1;
     boy.phase = data_pha;
     return;
   }
   // target = depth/2.0;
   target = 10.0;
   riseStartT = time(0);
-  ngkCommand( rise_cmd );
+  ngkSend( rise_msg );
   while ((depth = antDepth()) > target) {
     // start rise (or retry if ngk timeout)
     // ngk: "going up" or "stopped"
-    switch (ngkRespond(&r)) {
-    case null_rsp: break;
-    case rise_rsp: // rise ack
+    ngkRecv(&rsp);
+    switch (rsp) {
+    case null_msg: break;
+    case rise_msg: // rise ack
       timStop(ngk_tim);
       // start velocity measure
       riseStartT = time(0);
       depthStart = antDepth();
       break;
-    case drop_rsp: // unexpected 
+    case drop_msg: // unexpected 
       flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", depth);
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
-    case stop_rsp: // unexpected 
+    case stop_msg: // unexpected 
       flogf("\nERR\t|risePhase(): ngk unexpected stop at %03.1f m", depth);
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
-    case time_rsp: // timeout
-      boyAlarm(ngkTimeout_alm);
-      amodem.timeout[rise_cmd] += 1;
+    case time_msg: // timeout
+      boyAlarm(ngkTimeout_ala);
+      amodem.timeout[rise_msg] += 1;
       if (depthStart-depth < 3) {
         // not rising from dock. log, reset, retry 5 times or abort
         if (retry++ < 5) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry); 
           riseStartT = time(0);
-          ngkCommand( rise_cmd );
+          ngkSend( rise_msg );
         } else { // abort
           flogf("\nERR\t|risePhase() timeout on ngk, %d times, abort", retry); 
           boy.phase = drop_pha;
@@ -169,10 +171,10 @@ void risePhase(void) {
   ngk.lastRise = (depthStart-depth) / (time(0)-riseStartT);
   if (ngk.firstRise==0)
     ngk.firstRise = ngk.lastRise;
-  ngkCommand( stop_cmd );
+  ngkSend( stop_msg );
   // algor: current check. rise to surface, checking response
   if (boyOceanCurrentCheck()) {
-    sys.alarm[midwayCurrent_alm] += 1;
+    sys.alarm[midwayCurrent_ala] += 1;
     boy.phase = drop_pha;
     return;
   }
@@ -181,29 +183,29 @@ void risePhase(void) {
   // 
   // tbd
   while ((depth = antDepth()) > (ant.surfaceD+1)) {
-    switch (ngkRespond(&r)) {
-    case null_rsp: break;
-    case rise_rsp: // rise ack
+    switch (ngkRecv(&r)) {
+    case null_msg: break;
+    case rise_msg: // rise ack
       timStop(ngk_tim);
       // start velocity measure
       riseStartT = time(0);
       depthStart = antDepth();
       break;
-    case drop_rsp: // unexpected
+    case drop_msg: // unexpected
       flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", depth);
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
-    case stop_rsp: // slack auto-stop
+    case stop_msg: // slack auto-stop
       continue;
-    case time_rsp: // timeout
-      boyAlarm(ngkTimeout_alm);
-      amodem.timeout[rise_cmd] += 1;
+    case time_msg: // timeout
+      boyAlarm(ngkTimeout_ala);
+      amodem.timeout[rise_msg] += 1;
       if (depthStart-depth < 3) {
         // not rising from dock. log, reset, retry 5 times or abort
         if (retry++ < 5) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry);
           riseStartT = time(0);
-          ngkCommand( rise_cmd );
+          ngkSend( rise_msg );
         } else { // abort
           flogf("\nERR\t|risePhase() timeout on ngk, %d times, abort", retry);
           boy.phase = drop_pha;

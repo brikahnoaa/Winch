@@ -2,79 +2,57 @@
 #include <common.h>
 #include <timer.h>
 
-// initialized to all zeros
+// initialized to all zeros, that works
 static struct {
-  TimerType next;
-  time_t nextWhen;
-  time_t timers[sizeof_tim];
+  bool on[sizeof_tim];
+  time_t timer[sizeof_tim];
 } tim;
-
-static void timNext(void);
-
-/*
- * find next timer expiration
- * sets: tim.next*
- */
-static void timNext(void) {
-  DBG0("timNext() ")
-  tim.next = null_tim;
-  tim.nextWhen = (time_t) 0;
-  for (int i=null_tim; i<sizeof_tim; i++)  {
-    // if timer is active
-    if (tim.timers[i])  {
-      // if .next is null, or this timer runs out sooner
-      if (!tim.next || tim.nextWhen>tim.timers[i]) {
-        // replace tim.next
-        tim.next = i;
-        tim.nextWhen = tim.timers[i];
-        // test
-        // printf("tim.next = %d at %ld\n", tim.next, tim.nextWhen);
-      }
-    }
-  }
-} // timNext
   
 /*
- * activate an interval timer, or reset timer if active
- * check time against nextWhen
+ * sets: tim.on .timer[]
  */
-void timStart(TimerType timT, int secs) {
+void timStart(TimerType tmr, int secs) {
   DBG0("timStart()")
-  time_t when = time(0)+secs;
-  tim.timers[timT] = when;
-  if (!tim.next || tim.nextWhen>when) timNext();
+  tim.on[tmr] = true;
+  tim.timer[tmr] = time(0)+secs;
 } // timStart
 
-/*
- * sets: tim.timers tim.next*
- */
-void timStop(TimerType timT) {
+void timStop(TimerType tmr) {
   DBG0("timStop()")
-  tim.timers[timT] = 0;
-  if (tim.next==timT) timNext();
+  tim.on[tmr] = false;
 } // timStop
 
 /*
- * check if timer is expired
- * sets: tim.*
+ * is timer expired? turn it off
+ * timer==now is not expired, so now+1 runs at least 1 sec 
  */
-TimerType timCheck(void) {
-  TimerType r = null_tim;
-  // .next is set and before now
-  if (tim.next && tim.nextWhen<=time(0)) {
-    r = tim.next;
-    timStop(tim.next);
+bool timExp(TimerType tmr) {
+  if (tim.on[tmr] && (tim.timer[tmr] < time(0))) {
+    // on and expired
+    tim.on[tmr] = false;
+    return true;
+  } else {
+    // off or still running
+    return false;
   }
-  return r;
-} // timCheck
+} // timExp
 
 /*
- * how long until next timer expires
+ * how long until a timer expires (else 0=off, neg=expired)
  */
-time_t timQuery(TimerType timT) {
-  if (tim.timers[timT]) 
-    return tim.timers[timT]-time(0);
+int timQuery(TimerType tmr) {
+  if (tim.on[tmr]) 
+    return (int)(tim.timer[tmr]-time(0))+1;
   else
     return 0;
 } // timQuery
 
+/*
+ * check if any timer is expired
+ */
+TimerType timAnyExp(void) {
+  for(TimerType t = null_tim+1; t<sizeof_tim; t++)
+    if (timExp(t))
+      return t;
+  return null_tim;
+} // timCheck

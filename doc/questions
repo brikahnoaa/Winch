@@ -12,3 +12,8 @@ Mon, Jan 08, 2018  5:16:48 PM
 .. any unexpected response besides ack or stop (e.g. riseCmd->fallResp)
 .. when does winch reel back in automatically?
 .. test rise-until-slack-no-brake
+.. #R,01,03 is test rise - just unbraked, or auto reel in?
+.. does stop command set brake after ,03 slack unbraked stop
+. amodem
+.. what is timing and crlf in winch response
+.. what if new command and response collide?
