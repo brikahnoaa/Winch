@@ -4,18 +4,18 @@
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 #define COM1BAUD 9600L
 // PINS
-#define AMODEMPWR 21
-#define ANTMODPWR 22  // antMod Power pin (1=ON, 0=OFF)
+#define MDM_PWR 21
+#define ANT_PWR 22  // antenna module Power pin (1=ON, 0=OFF)
 #define COM1SELECT 23  // set = antMod, clear = sbe16
 #define WISPR3 24
 #define WISPR4 25
-#define DFRPWR 26   // unused
+// #define DFRPWR 26   // unused
 #define WISPR1 29
 #define WISPR2 30
-#define COM1TX 31
-#define COM1RX 32
-#define AMODEMRX 33
-#define AMODEMTX 35
+#define COM1_TX 31
+#define COM1_RX 32
+#define MDM_RX 33
+#define MDM_TX 35
 #define WISPR_PWR_ON 37
 #define WISPR_PWR_OFF 42
 
