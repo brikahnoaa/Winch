@@ -1,16 +1,8 @@
 #include <common.h>
 #include <ngk.h>
 
-// pending delay firstRise lastRise firstFall lastFall
-NgkInfo ngk = {
-  false, 0.0, 0.0, 0.0, 0.0, 0.0,
-};
-// off ascentCalls ascentRcv descentCalls descentRcv 
-// stopCalls stopRcv buoyRcv ngkCalls port
-MdmInfo mdm = {
-  false, 0, 0, 0, 0, 0, 0, 0, 0, NULL,
-};
-
+NgkInfo ngk;
+MdmInfo mdm;
 
 /*
  * send message to winch via amodem
@@ -110,7 +102,7 @@ bool msgParse(char *str, MsgType *msg) {
  */
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
-  if (serStr(mdm.port, scratch)) {
+  if (serRead(mdm.port, scratch)) {
     if (msgParse(scratch, &m)) {
       // m == stop, quit, rise, drop, status, buoy
       // tbd TBD check if lastSend matches?
@@ -136,43 +128,26 @@ MsgType ngkRecv(MsgType *msg) {
   return m;
 } // ngkRecv
 
-// tbd
-//
-//
 /*
  * void amodemInit(bool)
  */
-void amodemInit(bool on) {
-  static bool once = true;
-  short AModemRX, AModem_TX;
-  flogf("\n\t|%s NIGK ngk TUPort", on ? "Open" : "Close");
+void ngkInit(Serial &port) {
+  short mdmRX, mdmTX;
+  Serial p;
+  DBG0("mdmInit()");
 
-  if (on) {
-    AModemRX = TPUChanFromPin(AMODEMRX);
-    AModemTX = TPUChanFromPin(AMODEMTX);
-
-    PIOClear(AMODEMPWR);
-    Delayms(250);
-    PIORead(48);
-    PIOSet(AMODEMPWR); // Powers up the DC-DC for the Acoustic Modem Port
-    NIGKPort = TUOpen(AModemRX, AModem_TX, AMODEMBAUD, 0);
-    Delayms(150);
-    if (NIGKPort == 0)
-      flogf("\n\t|Bad ngk TUPort\n");
-    else {
-      TUTxFlush(NIGKPort);
-      TURxFlush(NIGKPort);
-      Delayms(5000); // Wait 5 seconds for NIGKPort to power up
-      TUTxPrintf(NIGKPort, "\n");
-      Delayms(250);
-      TUTxFlush(NIGKPort);
-      TURxFlush(NIGKPort);
-    }
-  } else {
-    Delayms(500);
-    PIOClear(AMODEMPWR);
-    TUClose(NIGKPort);
+  mdmRX = TPUChanFromPin(MDM_RX);
+  mdmTX = TPUChanFromPin(MDM_TX);
+  // Power up the DC-DC for the Acoustic Modem Port
+  PIOClear(MDM_PWR);
+  Delayms(250);
+  PIOSet(MDM_PWR); 
+  p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
+  if (p == 0)
+    flogf("\n\t|Bad ngk TUPort\n");
+  else {
+    TUTxFlush(p);
+    TURxFlush(p);
   }
-  return;
-
-} // amodemInit
+  *port = p;
+} // ngkInit

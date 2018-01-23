@@ -14,6 +14,8 @@ Mon, Jan 08, 2018  5:16:48 PM
 .. test rise-until-slack-no-brake
 .. #R,01,03 is test rise - just unbraked, or auto reel in?
 .. does stop command set brake after ,03 slack unbraked stop
+.. brake, no brake: 00, 03; 
 . amodem
 .. what is timing and crlf in winch response
 .. what if new command and response collide?
+.. does init need a \n to set up?

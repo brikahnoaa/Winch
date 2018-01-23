@@ -1,16 +1,16 @@
 // ngk.h
 // AModemPort and WISPR Transmission
 
-#define AMODEMBAUD 4800L
-#define BUOYID "00"
-#define WINCHID "01"
+#define MDM_BAUD 4800L
+#define BUOY_ID "00"
+#define WINCH_ID "01"
 // 00 or 03? 00 slacks at surface, 03 brakes underwater
-#define RISE_CMD "#R," WINCHID ",03"
-#define SURF_CMD "#R," WINCHID ",00"
-#define DROP_CMD "#F," WINCHID ",00"
-#define STOP_CMD "#S," WINCHID ",00"
-#define STAT_CMD "#W," WINCHID ",00"
-#define QUIT_RSP "%S," WINCHID ",00"
+#define RISE_CMD "#R," WINCH_ID ",03"
+#define SURF_CMD "#R," WINCH_ID ",00"
+#define DROP_CMD "#F," WINCH_ID ",00"
+#define STOP_CMD "#S," WINCH_ID ",00"
+#define STAT_CMD "#W," WINCH_ID ",00"
+#define QUIT_RSP "%S," WINCH_ID ",00"
 
 typedef enum {
   null_msg=0,
@@ -40,20 +40,17 @@ extern NgkInfo ngk;
 // Tracking number of calls
 typedef struct MdmInfo {
   bool on;            // expect response 
-  MsgType lastSend;
-  MsgType lastRecv;
-  int send[sizeof_msg];
   int recv[sizeof_msg];
+  int send[sizeof_msg];
   int timeout[sizeof_msg];
+  MsgType lastRecv;
+  MsgType lastSend;
   Serial port;
   short delay;        // time to transmit msg (7s)
 } MdmInfo;
 extern MdmInfo mdm;
 
-void amodemData(void);
-void ngkSend(MsgType);
-MsgType ngkRecv(void);
-void ngkConsole(void);
-void amodemInit(bool);
-void ngkStatus(char *string);
-
+MsgType ngkRecv(MsgType *msg);
+bool msgParse(char *str, MsgType *msg);
+void ngkInit(Serial *port);
+void ngkSend(MsgType cmd);

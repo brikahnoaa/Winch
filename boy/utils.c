@@ -14,6 +14,25 @@ void serWrite(Serial port, char *out) {
 }
 
 /*
+ * read all the chars on the port, with a normal delay
+ */
+int serRead(Serial port, char *in) {
+  int len;
+  if (TURxGetQueue(port)>0) {
+    for (len=0; len<BUFSZ; len++) {
+      in[len] = TURxGetByteWithTimeout(port, CHARDELAY);
+      if (in[len]<0) {
+        // expect timeout to end
+        break;
+      }
+    }
+    in[len]=0;
+  } // if queued
+  return len;
+}
+
+
+/*
  *  delay up to wait seconds for first char, null terminate
  *  return length
  */
