@@ -44,6 +44,62 @@ void ngkSend(MsgType cmd) {
 } // ngkSend
 
 /*
+ * get winch message if available and parse it, check timeout
+ * sets: ngk.on mdm.on .recv[] .timeout[] scratch (*msg)
+ */
+MsgType ngkRecv(MsgType *msg) {
+  MsgType m = null_msg;                // change this if successful
+  if (serRead(mdm.port, scratch)) {
+    if (msgParse(scratch, &m)) {
+      // m == stop, quit, rise, drop, status, buoy
+      // tbd TBD check if lastSend matches?
+      mdm.on = false;
+      mdm.recv[m] += 1;
+      timStop(winch_tim);
+      // winch motor
+      if (m==rise_msg || m==drop_msg) 
+        ngk.on = true;
+      if (m==stop_msg || m==quit_msg) 
+        ngk.on = false;
+    } else {
+      // parse fail. already logged by msgParse. wait for timeout? resend?
+      // ngkSend( mdm.lastSend );
+    }
+  } else if (timExp(winch_tim)) {
+    // no response and timeout
+    mdm.on = false;
+    mdm.timeout[lastSend] += 1;
+    m = timeout_msg;
+  }
+  *msg = m;
+  return m;
+} // ngkRecv
+
+/*
+ * void ngkInit(bool)
+ */
+void ngkInit(Serial &port) {
+  short mdmRX, mdmTX;
+  Serial p;
+  DBG0("mdmInit()");
+
+  mdmRX = TPUChanFromPin(MDM_RX);
+  mdmTX = TPUChanFromPin(MDM_TX);
+  // Power up the DC-DC for the Acoustic Modem Port
+  PIOClear(MDM_PWR);
+  delayms(250);
+  PIOSet(MDM_PWR); 
+  p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
+  if (p == 0)
+    flogf("\n\t|Bad ngk TUPort\n");
+  else {
+    TUTxFlush(p);
+    TURxFlush(p);
+  }
+  *port = p;
+} // ngkInit
+
+/*
  * validate - count \r and % chars, one of each; length 10
  * parse - based on %R %S %F
  * status - save response values "%W,00,XYcrlf"
@@ -96,58 +152,3 @@ bool msgParse(char *str, MsgType *msg) {
     return true;
 } // msgParse
 
-/*
- * get winch message if available and parse it, check timeout
- * sets: ngk.on mdm.on .recv[] .timeout[] scratch (*msg)
- */
-MsgType ngkRecv(MsgType *msg) {
-  MsgType m = null_msg;                // change this if successful
-  if (serRead(mdm.port, scratch)) {
-    if (msgParse(scratch, &m)) {
-      // m == stop, quit, rise, drop, status, buoy
-      // tbd TBD check if lastSend matches?
-      mdm.on = false;
-      mdm.recv[m] += 1;
-      timStop(winch_tim);
-      // winch motor
-      if (m==rise_msg || m==drop_msg) 
-        ngk.on = true;
-      if (m==stop_msg || m==quit_msg) 
-        ngk.on = false;
-    } else {
-      // parse fail. already logged by msgParse. wait for timeout? resend?
-      // ngkSend( mdm.lastSend );
-    }
-  } else if (timExp(winch_tim)) {
-    // no response and timeout
-    mdm.on = false;
-    mdm.timeout[lastSend] += 1;
-    m = timeout_msg;
-  }
-  *msg = m;
-  return m;
-} // ngkRecv
-
-/*
- * void amodemInit(bool)
- */
-void ngkInit(Serial &port) {
-  short mdmRX, mdmTX;
-  Serial p;
-  DBG0("mdmInit()");
-
-  mdmRX = TPUChanFromPin(MDM_RX);
-  mdmTX = TPUChanFromPin(MDM_TX);
-  // Power up the DC-DC for the Acoustic Modem Port
-  PIOClear(MDM_PWR);
-  Delayms(250);
-  PIOSet(MDM_PWR); 
-  p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
-  if (p == 0)
-    flogf("\n\t|Bad ngk TUPort\n");
-  else {
-    TUTxFlush(p);
-    TURxFlush(p);
-  }
-  *port = p;
-} // ngkInit

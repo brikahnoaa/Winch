@@ -2,57 +2,58 @@
 #include <utils.h>
 
 // allow up to .05 second between chars, normally chars take .001-.016
-#define CHARDELAY 50
+#define CHAR_DELAY 50
 
 char scratch[BUFSZ];
 
 /*
- * put string to serial
+ * put string to serial; queue, don't block, it should all buffer
  */
-void serWrite(Serial port, char *out) {
-  while (*out) { TUTxPutByte(port, *out++, true); }
+int serWrite(Serial port, char *out) {
+  int len = strlen(out);
+  int sent;
+  sent = (int) TUTxPutBlock(port, *out, (long)len, (short)CHAR_DELAY);
+  if (len!=sent) {
+    flogf("\nERR\t| serWrite(%s) sent %d of %d", out, sent, len);
+  return sent;
 }
 
 /*
  * read all the chars on the port, with a normal delay
  */
 int serRead(Serial port, char *in) {
-  int len;
-  if (TURxGetQueue(port)>0) {
+  int len = 0;
+  if (TURxQueuedCount(port)>0) {
+    // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
     for (len=0; len<BUFSZ; len++) {
-      in[len] = TURxGetByteWithTimeout(port, CHARDELAY);
+      in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
       if (in[len]<0) {
-        // expect timeout to end
+        // normal exit
         break;
       }
     }
-    in[len]=0;
-  } // if queued
+  }
+  in[len]=0;        // string
   return len;
 }
 
 
 /*
  *  delay up to wait seconds for first char, null terminate
- *  return length
+ *  assumes full string arrives promptly after a delay of several seconds
+ *  return: length
  */
 int serReadWait(Serial port, char *in, int wait) {
-  int len;
+  int len = 0;
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   TickleSWSR(); // could have been a long wait
   if (in[0]<=0) {
-    DBG1("\t|getStringWait() timeout")
+    // first char
     in[0]=0;
-    return (-1);
-  }
-  for (len=1; len<BUFSZ; len++) {
-    in[len] = TURxGetByteWithTimeout(port, CHARDELAY);
-    if (in[len]<0) {
-      // expect timeout to end
-      break;
-    }
-  }
-  in[len]=0;
+  } else
+    // rest of input
+    delayms(CHAR_DELAY);
+    len = serRead(port, in+1) + 1;
   return len;
 }
 
@@ -60,7 +61,7 @@ int serReadWait(Serial port, char *in, int wait) {
  * format non-printable string; null terminate
  * modifies out[] and returns *out, can be used in DBG1()
  */
-char *printSafe (char *out, *in) {
+char *unsprint (char *out, *in) {
   char ch, *ptr = out;
   // walk thru input until 0
   while (ch = *in++) {
@@ -78,3 +79,4 @@ char *printSafe (char *out, *in) {
 } // printsafe
 
 
+void delayms(int x) { RTCDelayMicroSeconds((long)x*1000); }

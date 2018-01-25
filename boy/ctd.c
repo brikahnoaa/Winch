@@ -116,7 +116,7 @@ void ctdSyncmode(void) {
   ctdPrompt();
   serWrite(ctd.port, "QS\r");
   ctd.syncmode = true;
-  Delayms(100);
+  delayms(100);
   TURxFlush(ctd.port);
 } 
 

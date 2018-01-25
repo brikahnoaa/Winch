@@ -37,16 +37,16 @@ void DATAPower(bool power) {
   if (power) {
     flogf("\n%s|DATA: ON", Time(NULL));
     PIOSet(DATA_PWR_ON);
-    Delayms(10);
+    delayms(10);
     PIOClear(DATA_PWR_ON);
     data.on = true;
   } else {
     flogf("\n%s|DATA: OFF", Time(NULL));
     PIOSet(DATA_PWR_OFF);
-    Delayms(10);
+    delayms(10);
     PIOClear(DATA_PWR_OFF);
     data.on = false;
-    Delayms(1000);        //??
+    delayms(1000);        //??
   }
 } // DATAInit
 
@@ -141,7 +141,7 @@ short DATA_Data(void) {
 
     if (!SendDATAGPS) {
       DATAGPS(124.5, 45);
-      Delayms(150);
+      delayms(150);
       TUTxFlush(PAMPort);
       TURxFlush(PAMPort);
       DATAGain(-1);
@@ -162,7 +162,7 @@ short DATA_Data(void) {
 
     DBG1("\t|DTX file: %s", DTXFilename)
     DATAFile = open(DTXFilename, O_APPEND | O_RDWR | O_CREAT);
-    Delayms(25);
+    delayms(25);
     if (DATAFile <= 0)
       flogf("\nERROR  |DATA_Data() %s open errno: %d", DTXFilename, errno);
     DBG(else flogf("\n\t|DATA_Data() %s opened", DTXFilename);)
@@ -219,7 +219,7 @@ short DATA_Data(void) {
   else if (strncmp(DataString, "$NGN", 4) == 0) {
     if (!SendDATAGPS) {
       DATAGPS();
-      Delayms(50);
+      delayms(50);
     }
 
     DATAGain(-1);
@@ -229,7 +229,7 @@ short DATA_Data(void) {
 
   else if (strncmp(DataString, "$FIN", 4) == 0) {
     flogf(": Found Exit");
-    Delayms(2000);     // Gives a little bit of time to DATA to umount /mnt
+    delayms(2000);     // Gives a little bit of time to DATA to umount /mnt
     DATAPower(false); // Powers off Data
     return 6;
   } else if (strcmp(DataString, NULL) == 0) {
@@ -257,13 +257,13 @@ void DATADet(int dtx) {
 
   dtxrqst = dtx;
 
-  Delayms(10);
+  delayms(10);
   TUTxFlush(PAMPort);
   TURxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$DX?,%d*\n", dtx);
   TUTxWaitCompletion(PAMPort);
 
-  Delayms(500);
+  delayms(500);
 
 } // DATADet
 /*
@@ -316,7 +316,7 @@ void DATAGain(short c) {
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$NGN,%d*\n", c);
   TUTxWaitCompletion(PAMPort);
-  Delayms(2);
+  delayms(2);
 
 } // DATAGain
 /*
@@ -329,7 +329,7 @@ void DATADFP(void) {
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$DFP*\n");
   TUTxWaitCompletion(PAMPort);
-  Delayms(250);
+  delayms(250);
 
 } // DATADFP
 /*
@@ -342,7 +342,7 @@ void DATATFP(void) {
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$TFP*\n");
   TUTxWaitCompletion(PAMPort);
-  Delayms(250);
+  delayms(250);
 
 } // DATADFP
 /*
@@ -356,7 +356,7 @@ bool DATAExit(void) {
   TURxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$EXI*\n");
   TUTxWaitCompletion(PAMPort);
-  Delay_AD_Log(150);  Delayms(200);
+  Delay_AD_Log(150);  delayms(200);
 
   DATA_Data();
 
@@ -468,7 +468,7 @@ void ChangeDATA(short wnum) {
   }
 
   dataInit(false);
-  Delayms(100);
+  delayms(100);
   DATA.NUM = wnum;
   dataInit(true);
   DATAPower(true);
@@ -636,7 +636,7 @@ void create_dtx_file(long fnum) {
 
   sprintf(&SourceFileName[2], "%08ld.dtx", fnum);
   filehandle = creat(SourceFileName, 0);
-  Delayms(500);
+  delayms(500);
   if (filehandle < 0) {
     flogf("\nERROR  |Create_DTX_File() errno: %d", errno);
   }
@@ -647,7 +647,7 @@ void create_dtx_file(long fnum) {
           errno);
   DBG(else flogf("\n\t|create_dtx_file(): %s closed", SourceFileName);)
 
-  Delayms(10);
+  delayms(10);
 }
 /*
  * GatherDATAFreeSpace()
@@ -664,7 +664,7 @@ void GatherDATAFreeSpace(void) {
 
   if (DATA_On) {
     DATAExit();
-    Delayms(2500);
+    delayms(2500);
   }
   DATAPower(true);
 
@@ -692,7 +692,7 @@ void GatherDATAFreeSpace(void) {
         if (gain || count == 2) {
           DBG1("\t|GWFS: DFP2")
           DATADFP();
-          Delayms(150);
+          delayms(150);
           if (DATA_Data() == 2)
             dfp = true;
         }
@@ -701,14 +701,14 @@ void GatherDATAFreeSpace(void) {
       if (tgetq(PAMPort)) {
         wret = DATA_Data();
         if (wret == 1) {
-          Delayms(150);
+          delayms(150);
           wret = DATA_Data();
           if (wret == 5) {
             gain = true;
-            Delayms(150);
+            delayms(150);
             DBG1("\t|GWFS: DFP1")
             DATADFP();
-            Delayms(150);
+            delayms(150);
             if (DATA_Data() == 2)
               dfp = true;
           }
@@ -742,7 +742,7 @@ void GatherDATAFreeSpace(void) {
   }
 
   dataInit(false);
-  Delayms(100);
+  delayms(100);
   DATA.NUM = wnum;
   VEEStoreShort(DATANUM_NAME, DATA.NUM);
 
@@ -763,9 +763,9 @@ void UpdateDATAFRS(void) {
   long filesize;
 
   flogf("\n%s|Update %s ", Time(NULL), datafile);
-  Delayms(10);
+  delayms(10);
   // sprintf(&datafile[2], "DATAFRS.DAT");
-  Delayms(20);
+  delayms(20);
   if (stat(datafile, &fileinfo) != 0) {
     flogf("%s file does not exist. making file...", datafile);
     GatherDATAFreeSpace();
@@ -776,7 +776,7 @@ void UpdateDATAFRS(void) {
   DBG1("\t|File size: %ld", filesize)
 
   datafilehandle = open(datafile, O_RDWR);
-  Delayms(25);
+  delayms(25);
   if (datafilehandle <= 0)
     flogf("\nERROR  |UpdateDATAFRS(): file open errno: %d", errno);
   DBG(else flogf("\n\t|UpdateDATAFRS() %s opened", datafile);)
@@ -829,7 +829,7 @@ void dataInit(bool on) {
     TUTxFlush(PAMPort);
     TURxFlush(PAMPort);
     TUClose(PAMPort);
-    Delayms(1000);
+    delayms(1000);
   }
 
   PIOClear(DATA_PWR_ON);
@@ -885,7 +885,7 @@ void dataInit(bool on) {
     flogf("\n\t|Wrong PAM Port...");
     TUClose(PAMPort);
   }
-  Delayms(100);
+  delayms(100);
 }
 /*
  * bool DATAExpectedReturn(short)

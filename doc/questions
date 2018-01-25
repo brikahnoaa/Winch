@@ -18,3 +18,7 @@ Mon, Jan 08, 2018  5:16:48 PM
 .. what is timing and crlf in winch response
 .. what if new command and response collide?
 .. does init need a \n to set up?
+Wed, Jan 24, 2018  2:16:42 PM
+. cf2
+TURxGetBlock(chardelay) is total time, or max delay per char?
+~/NewportAcoustic/links/Winch.c: OpenTUPort_NIGK() ... PIORead(48);   why?

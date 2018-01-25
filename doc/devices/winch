@@ -1,0 +1,12 @@
+#R,01,00 surf_msg
+if not docked, drop to dock
+rise and send rise response
+if rope length, stop and brake
+if slack, stop and no brake and send stop command
+if stop command, stop and no brake and send stop response
+if timeout, drop (send any?)
+
+#R,01,03 rise_msg
+rise and send rise response
+if rope len or slack, stop and brake and and send stop command
+if stop command, stop and brake and and send stop response

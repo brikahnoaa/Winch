@@ -623,7 +623,7 @@ void Console(char in) {
   short c;
 
   DBG1("Incoming Char: %c", in)
-  Delayms(2);
+  delayms(2);
   switch (boy.phase) {
   case 1:
     switch (in) {
@@ -782,7 +782,7 @@ void Sleep(void) {
   PutInSleepMode = false;
   //
   // DBG2(".")
-  Delayms(10);
+  delayms(10);
 } // Sleep
 
 
@@ -911,7 +911,7 @@ ulong WriteFile(ulong TotalSeconds) {
     //*** Ngk Info   ***//
     // blk 
     Ngk_Monitor(filehandle);
-    Delayms(50);
+    delayms(50);
     memset(WriteBuffer, 0, BUFSZ);
 
     //*** Ngk Status ***//
@@ -922,25 +922,25 @@ ulong WriteFile(ulong TotalSeconds) {
   // Else, coming from reboot. Name the PowerLogging File.
   else {
     ADSFileName(MPC.FILENUM);
-    Delayms(50);
+    delayms(50);
   }
 
   //*** Power Monitoring Upload ***//
   Power_Monitor(TotalSeconds, filehandle, &LoggingTime);
-  Delayms(50);
+  delayms(50);
   Setup_ADS(true, MPC.FILENUM + 1, BITSHIFT);
   DOS_Com("del", MPC.FILENUM, "PWR", NULL);
-  Delayms(500);
+  delayms(500);
 
   //*** WISPR File Upload ***//
   WISPRWriteFile(filehandle);
-  Delayms(50);
+  delayms(50);
 
 //*** CTD File Upload ***
 #ifdef CTDSENSOR
   if (ctd.UPLOAD || TotalSeconds == 0) {
     sprintf(&detfname[2], "%08ld.ctd", MPC.FILENUM);
-    Delayms(50);
+    delayms(50);
     DBG1("\t|WriteFile:%ld ctd file: %s", MPC.FILENUM, detfname)
     stat(detfname, &info);
     if (info.st_size > (long)(IRID.MAXUPL - 1000))
@@ -951,7 +951,7 @@ ulong WriteFile(ulong TotalSeconds) {
   }
   // Despite being upload, move CTD file to archive
   DOS_Com("move", MPC.FILENUM, "CTD", "CTD");
-  Delayms(50);
+  delayms(50);
 #endif
   //*** MPC.LOGFILE upload ***// Note: occurring only after reboot.
   if (TotalSeconds == 0) { //||MPC.UPLOAD==1)
@@ -963,14 +963,14 @@ ulong WriteFile(ulong TotalSeconds) {
     else
       maxupload = 0;
     Append_Files(filehandle, logfile, false, maxupload);
-    Delayms(50);
+    delayms(50);
   }
-  Delayms(50);
+  delayms(50);
   DOS_Com("move", MPC.FILENUM, "LOG", "LOG");
 
   // Close File
   close(filehandle);
-  Delayms(25);
+  delayms(25);
 
   // Return number of seconds of time on
   if (TotalSeconds == 0)
@@ -993,7 +993,7 @@ char *PrintSystemStatus(void) {
           boy.dockDepth, boy.depth, boy.TOPDEPTH, boy.TDEPTH, boy.AVGVEL,
           boy.CTDSAMPLES);
   flogf("\n%s", stringout);
-  Delayms(100);
+  delayms(100);
 
   return stringout;
 }

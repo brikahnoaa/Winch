@@ -5,19 +5,17 @@ typedef TUPort *Serial;
 // global extern
 extern char scratch[];
 
-int serStr(Serial port, char *in);     // get available serial data 
+char *unsprint (char *out, *in);        // format unprintable string
+int serRead(Serial port, char *in);
+int serReadWait(Serial port, char *in, int wait);
+int serWrite(Serial port, char *out);
 void delayms(int x);
-void serWrite(Serial port, char *out);
-int serRead(Serial port, char *in, int wait);
-char *unprintf (char *out, *in);        // format unprintable string
 
 #define PLATFORM LARA
 #define PROG_VERSION 4.0
 
 #define BUFSZ 1024
 #define CRLF "\r\n"
-
-
 
 // #define DEBUGx enables a macro named DBGx()
 // see also DBGLVL below

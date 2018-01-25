@@ -137,7 +137,7 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
   } else {
     PITSet100usPeriod(PITOff); // Stop sampling
     PITRemoveChore(0);
-    Delayms(10);
+    delayms(10);
     power.sampleReady = true;
     power.counter = 0;
   }
@@ -150,7 +150,7 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
 void powOpenLog(long counter) {
 
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
-  Delayms(25);
+  delayms(25);
   ADSFileHandle = creat(ADAvgFileName, 0);
   if (ADSFileHandle <= 0) {
     flogf("\nCouldn't Open %s file, errno%d", ADAvgFileName, errno);
@@ -159,7 +159,7 @@ void powOpenLog(long counter) {
   if (close(ADSFileHandle) != 0)
     flogf("\nERROR  |powOpenLog() %s Close error: %d", ADAvgFileName, errno);
 
-  Delayms(10);
+  delayms(10);
 
 } // void OpenAvgFile
 
@@ -176,7 +176,7 @@ void Setup_Acquisition(ushort bitshift) {
   PITSet51msPeriod(PITOff); // Assert Both PIT Timers off at this point.
   PITSet100usPeriod(PITOff);
 
-  Delayms(20);
+  delayms(20);
 
   powerSum[0] = 0L;
   powerSum[1] = 0L;
@@ -202,7 +202,7 @@ void Setup_Acquisition(ushort bitshift) {
   power.interval = (10 * intervalSamples * (PITRATE * PITPERIOD));
 
   DBG1("\t|Writing every %4.1fSeconds", power.interval / 10.0)
-  Delayms(1);
+  delayms(1);
 
   // Set the Rate and start the PIT
   PITSet51msPeriod(PITRATE);
@@ -269,7 +269,7 @@ void powerWrite(ushort *AveragedEnergy) {
   CLK(start_clock = clock();)
 
   write(power.filehdl, AveragedEnergy, 3 * sizeof(ushort));
-  Delayms(25);
+  delayms(25);
   CLK(stop_clock = clock();
       print_clock_cycle_count(start_clock, stop_clock, "powerWrite: write");)
 
@@ -279,7 +279,7 @@ void powerWrite(ushort *AveragedEnergy) {
     flogf("\nERROR  |powerWrite() %s Close error: %d", ADAvgFileName, errno);
   // DBG(   else      flogf("\n\t|powerWrite() %s Closed", ADAvgFileName);)
  
-  Delayms(10);
+  delayms(10);
 
 } // powerWrite
 /*
@@ -361,16 +361,16 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
     DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
 
-    Delayms(25);
+    delayms(25);
     if (DataCount != 0) {
       energy[0] = (ushort)(TotalAmp / DataCount);
       energy[1] = (ushort)(TotalVolts / DataCount);
     }
 
     amps = CFxADRawToVolts(ad, energy[0], VREF, true);
-    Delayms(10);
+    delayms(10);
     voltage = CFxADRawToVolts(ad, energy[1], VREF, true) * 100;
-    Delayms(10);
+    delayms(10);
     TotalTime = TotalTime / 10;
     kjoules = (amps * voltage * TotalTime) / 1000.0;
   }
@@ -403,7 +403,7 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   if (filehandle > 0)
     byteswritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
 
-  Delayms(150);
+  delayms(150);
 
   return floater;
 
@@ -455,10 +455,10 @@ void powDelay(short Sec) {
   for (i = 0; i < last; i++) {
 
     powCheck();
-    Delayms(5000);
+    delayms(5000);
   }
   powCheck();
-  Delayms(rem * 1000);
+  delayms(rem * 1000);
   TickleSWSR();                         // another reprieve
 
 } //powDelay()

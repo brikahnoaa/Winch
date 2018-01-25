@@ -57,7 +57,7 @@ void Make_Directory(char *path) {
   putflush();
   CIOdrain();
   execstr(DOSCommand);
-  Delayms(1000);
+  delayms(1000);
 }
 /*
  * MakeDirectory()
@@ -111,7 +111,7 @@ void DOS_Com(char *command, long filenum, char *ext, char *extt) {
   putflush();
   CIOdrain();
   execstr(Com);
-  Delayms(250);
+  delayms(250);
 }
 
 /*
@@ -288,7 +288,7 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
   int byteswritten;
   // char filename[]="c:00000000.xxx";
 
-  Delayms(50);
+  delayms(50);
 
   stat(SourceFileName, &fileinfo);
   if (fileinfo.st_size <= 0) {
