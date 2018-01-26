@@ -6,7 +6,8 @@ typedef TUPort *Serial;
 extern char scratch[];
 
 void clockTime(char *out);
-char *unsprint (char *out, *in);        // format unprintable string
+void clockTimeDate(char *out);
+char *sprintfun (char *out, *in);        // format unprintable string
 int serRead(Serial port, char *in);
 int serReadWait(Serial port, char *in, int wait);
 int serWrite(Serial port, char *out);

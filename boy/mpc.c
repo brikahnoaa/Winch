@@ -59,6 +59,7 @@ void Make_Directory(char *path) {
   execstr(DOSCommand);
   delayms(1000);
 }
+
 /*
  * MakeDirectory()
  * Setup directories for files not needing to be access anymore.
@@ -114,102 +115,6 @@ void DOS_Com(char *command, long filenum, char *ext, char *extt) {
   delayms(250);
 }
 
-/*
- * Time String
- * push the RTC seconds into (*seconds) and return HH:MM:SS global *time_chr
- */
-char *Time(ulong *seconds) {
-  // global scratch[]
-  RTCtm *rtc_time;
-  ulong secs = NULL;
-
-  ushort ticks;
-
-  RTCGetTime(&secs, &ticks);
-  rtc_time = RTClocaltime(&secs);
-  *seconds = secs;
-  sprintf(scratch, "%02d:%02d:%02d", 
-          rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
-  return scratch;
-
-} // Time
-/*
- * Time & Date String
- * Get the RTC time seconds since 1970 and convert it 
- */
-char *TimeDate(ulong *seconds) {
-
-  RTCtm *rtc_time;
-  ulong secs = NULL;
-
-  ushort ticks;
-
-  RTCGetTime(&secs, &ticks);
-  rtc_time = RTClocaltime(&secs);
-  *seconds = secs;
-  sprintf(time_chr, "%02d/%02d/%04d %02d:%02d:%02d", rtc_time->tm_mon + 1,
-          rtc_time->tm_mday, rtc_time->tm_year + 1900, rtc_time->tm_hour,
-          rtc_time->tm_min, rtc_time->tm_sec);
-  return time_chr;
-
-} // TimeDate
-
-/*
- * Check the input values from cmdfile() and makes sure  they are divisible by
-SysTimeInt. If not, rounds them up.
- * PLI: Power Log Interval
- */
-float Check_Timers(ushort PLI) {
-  DBG0("Check_Timers()")
-  float callrate;
-  ulong rawtime;
-  struct tm *info;
-  int minutes, hours, hour;
-  // PLI = adstime = 1044
-
-  // Rounding of our Detection Timer with the Power Logging Cycle "SysTimeInt"
-  // ??
-  DetectionInt = (((long)(MPC.DETINT * 600L) + (int)(PLI - 1)) / PLI);
-  callrate = DetectionInt * (PLI / 600.0);
-
-  flogf("\n\t|Recording Interval: %4.2f minutes", callrate);
-  DBG1("\t|Detection Int: %d", DetectionInt)
-
-  if (IRID.CALLMODE == 0 || NIGK.RECOVERY) {
-    DataInterval = (MPC.DATAXINT + (MPC.DETINT - 1)) / MPC.DETINT;
-    callrate = callrate * DataInterval;
-    if (NIGK.RECOVERY)
-      flogf("\n\t|RECOVERY MODE");
-    flogf("\n\t|Data Interval %4.2f minutes", callrate);
-    DBG1("\t|DataInterval: %d", DataInterval)
-  } else if (IRID.CALLMODE == 1) {
-    time(&rawtime);
-    info = gmtime(&rawtime);
-    flogf("\n\t|CallTime: %d, Hour Now; %d", IRID.CALLHOUR, info->tm_hour);
-    if ((int)IRID.CALLHOUR <= info->tm_hour) {
-      hour = IRID.CALLHOUR + 23;
-      hours = hour - info->tm_hour;
-    } else {
-      hour = info->tm_hour;
-      hours = IRID.CALLHOUR - hour - 1;
-    }
-    flogf("\n\t|Hours: %d", hours);
-    minutes = 60 - info->tm_min;
-    flogf("Minutes: %d", minutes);
-    minutes = minutes + (60 * hours);
-    flogf("\n\t|Time until call: %d minutes", minutes);
-  }
-
-
-  // Calculate Duty Cycle
-  DutyCycleTicks = (int)(DetectionInt * ((float)(WISP.DUTYCYCL / 100.0)));
-  flogf("\n\t|WISPR Duty Cycle: %d\%", WISP.DUTYCYCL);
-  DBG1("\t|DutyCycleTicks: %d", DutyCycleTicks)
-  // If some kind of Duty Cycle, keep Wispr Off until duty cycle begins
-  // Reset SystemTimer by zeroing out ADCounter
-  resetPowerCounter();
-  return callrate;
-} // Check_Timers
 
 /*
  * Check_Vitals
@@ -228,51 +133,41 @@ float Check_Timers(ushort PLI) {
  * return 5 if No CF2 Free Space
  */
 short Check_Vitals(void) {
-
   short returnvalue = 0;
-
   float currentvoltage;
   float minvolt;
 
   minvolt = atof(ADS.MINVOLT); // Grab User defined minimum voltage.
-
   currentvoltage = Get_Voltage(); // Current Voltage
 
   if (currentvoltage == 0.00)
     returnvalue = 0;
-
   else if (currentvoltage <= minvolt) {
-
     flogf("\n%s|Check_Vitals():", Time(NULL));
     flogf("\n\t|Voltage: %4.2f", currentvoltage);
-
     if (currentvoltage <= MIN_BATTERY_VOLTAGE) {
       flogf("below absolute min.");
       returnvalue = 1; // System Shutdown
       return returnvalue;
     }
-
     else if (currentvoltage <= atof(ADS.MINVOLT)) {
       flogf("below user set min.");
       returnvalue = 2; // Hibernate? Stop WISPR?
     }
   }
-
   // Free_Disk_Space() somewhere else
   if (SystemFreeSpace < 100) {
     flogf("\nCheck_Vitals(): CF2 Free Space: %ldkB", SystemFreeSpace);
     returnvalue = 5; // Delete Files? Hibernate?
   }
-
   if (MPC.STARTUPS >= MPC.STARTMAX) {
     flogf("\n%s|Check_Vitals():", Time(NULL));
     flogf("\n\t|Startups surpassed maximum: %d", MPC.STARTUPS);
     returnvalue = 3; // System Shutdown.
   }
-
   return returnvalue;
-
 } // Check_Vitals
+
 /*
  * void AppendFile
  */
@@ -370,34 +265,17 @@ long Free_Disk_Space(void) {
  * VEEStoreShort(char*)
  */
 void VEEStoreShort(char *veename, short value) {
-
   char string[sizeof "00000"];
-
   memset(string, 0, 5);
   sprintf(string, "%d", value);
   VEEStoreStr(veename, string);
-
 } // VEEStoreShort
 
 void print_clock_cycle_count(clock_t start, clock_t stop, char *label) {
-
   flogf("\n%f seconds for %s",
         ((double)(stop - start)) / (double)CLOCKS_PER_SEC, label);
 }
 
-/*
- * sets: mpc.device
- */
-void mpcDevSwitch(SerialDevType dev) {
-  DBG0("mpcDevSwitch()")
-  // do we need to close/reopen com port?
-  // TUOpen(COM1RX, COM1TX, COM1BAUD, 0);
-  if (dev==ctd_dev)
-    PIOClear(COM1SELECT);
-  else
-    PIOSet(COM1SELECT);
-  mpc.device = dev;
-}
 
 /*
  * "Only pin should not be mirrored is pin 20. It is connected to the

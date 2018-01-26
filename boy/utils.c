@@ -6,6 +6,10 @@
 
 char scratch[BUFSZ];
 
+
+void delayms(int x) { RTCDelayMicroSeconds((long)x*1000); }
+
+
 /*
  * put string to serial; queue, don't block, it should all buffer
  */
@@ -57,6 +61,7 @@ int serReadWait(Serial port, char *in, int wait) {
   return len;
 }
 
+// check out __DATE__, __TIME__
 /*
  * HH:MM:SS now
  * sets: (&out)
@@ -72,11 +77,31 @@ void clockTime(char *out) {
           rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
 } // clockTime
 
+/*
+ * Time & Date String
+ * MM/DD/YYYY HH:MM:SS now
+ * sets: (&out)
+ */
+void clockTimeDate(char *out) {
+  RTCtm *rtc_time;
+  ulong secs;
+  ushort ticks;
+  
+  RTCGetTime(&secs, &ticks);
+  rtc_time = RTClocaltime(&secs);
+  *seconds = secs;
+  sprintf(out, "%02d/%02d/%04d %02d:%02d:%02d", rtc_time->tm_mon + 1,
+          rtc_time->tm_mday, rtc_time->tm_year + 1900, rtc_time->tm_hour,
+          rtc_time->tm_min, rtc_time->tm_sec);
+  return;
+} // clockTimeDate
+
+
 /* 
  * format non-printable string; null terminate
  * modifies out[] and returns *out, can be used in DBG1()
  */
-char *unsprint (char *out, *in) {
+char *sprintfun (char *out, *in) {
   char ch, *ptr = out;
   // walk thru input until 0
   while (ch = *in++) {
@@ -93,5 +118,3 @@ char *unsprint (char *out, *in) {
   return (out);
 } // printsafe
 
-
-void delayms(int x) { RTCDelayMicroSeconds((long)x*1000); }
