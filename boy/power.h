@@ -1,7 +1,8 @@
 // power.h
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
-#include <ADExamples.h>
+
+// #include <ADExamples.h>
 
 #define FCHAN 0   // first channel
 #define NCHAN 2   // number of channels, just accumulating current in buffers.

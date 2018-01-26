@@ -19,6 +19,8 @@
 #define WISPR_PWR_ON 37
 #define WISPR_PWR_OFF 42
 
+typedef enum { ant_ser, ctd_ser } SerialDevType;
+
 typedef struct MpcData {
   float joules;
   float volts;

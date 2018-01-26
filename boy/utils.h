@@ -7,7 +7,7 @@ extern char scratch[];
 
 void clockTime(char *out);
 void clockTimeDate(char *out);
-char *sprintfun (char *out, *in);        // format unprintable string
+char *sprintfun (char *out, char *in);        // format unprintable string
 int serRead(Serial port, char *in);
 int serReadWait(Serial port, char *in, int wait);
 int serWrite(Serial port, char *out);

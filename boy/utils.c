@@ -101,7 +101,7 @@ void clockTimeDate(char *out) {
  * format non-printable string; null terminate
  * modifies out[] and returns *out, can be used in DBG1()
  */
-char *sprintfun (char *out, *in) {
+char *sprintfun (char *out, char *in) {
   char ch, *ptr = out;
   // walk thru input until 0
   while (ch = *in++) {

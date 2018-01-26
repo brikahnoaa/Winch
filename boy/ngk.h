@@ -9,7 +9,7 @@ typedef enum {
   null_msg=0,
   buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,
   statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, surfRsp_msg,
-  sizeof_msg,
+  sizeof_msg
 } MsgType;
 
 typedef struct NgkInfo {

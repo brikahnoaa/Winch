@@ -14,7 +14,7 @@ typedef enum {
   midwayCurrent_ala, 
   ice_ala,
   ngkTimeout_ala,
-  sizeof_ala,
+  sizeof_ala
 } AlarmType;
 
 typedef enum {
@@ -25,7 +25,7 @@ typedef enum {
   call_pha,
   drop_pha,
   trouble_pha,
-  sizeof_pha,
+  sizeof_pha
 } PhaseType;
 
 // boy

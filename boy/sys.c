@@ -112,9 +112,6 @@ void Make_Directory(char *path) {
 }
 
 /*
- * MakeDirectory()
- * Setup directories for files not needing to be access anymore.
- * AT 7/13/2015
  */
 void DOS_Com(char *command, long filenum, char *ext, char *extt) {
   char Com[64];
