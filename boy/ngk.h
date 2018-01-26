@@ -2,21 +2,13 @@
 // AModemPort and WISPR Transmission
 
 #define MDM_BAUD 4800L
-#define BUOY_ID "00"
-#define WINCH_ID "01"
-// 00 or 03? 00 slacks at surface, 03 brakes underwater
-#define RISE_CMD "#R," WINCH_ID ",03"
-#define SURF_CMD "#R," WINCH_ID ",00"
-#define DROP_CMD "#F," WINCH_ID ",00"
-#define STOP_CMD "#S," WINCH_ID ",00"
-#define STAT_CMD "#W," WINCH_ID ",00"
-#define QUIT_RSP "%S," WINCH_ID ",00"
+#define BUOY_ID '0'
+#define WINCH_ID '1'
 
 typedef enum {
   null_msg=0,
   buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,
   statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, surfRsp_msg,
-  timeout_msg,
   sizeof_msg,
 } MsgType;
 
@@ -47,6 +39,6 @@ typedef struct MdmInfo {
 extern MdmInfo mdm;
 
 MsgType ngkRecv(MsgType *msg);
-bool msgParse(char *str, MsgType *msg);
+bool ngkTimeout(void);
 void ngkInit(void);
 void ngkSend(MsgType msg);
