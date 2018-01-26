@@ -57,6 +57,21 @@ int serReadWait(Serial port, char *in, int wait) {
   return len;
 }
 
+/*
+ * HH:MM:SS now
+ * sets: (&out)
+ */
+void clockTime(char *out) {
+  RTCtm *rtc_time;
+  ulong secs;
+  ushort ticks;
+
+  RTCGetTime(&secs, &ticks);
+  rtc_time = RTClocaltime(&secs);
+  sprintf(out, "%02d:%02d:%02d",
+          rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
+} // clockTime
+
 /* 
  * format non-printable string; null terminate
  * modifies out[] and returns *out, can be used in DBG1()

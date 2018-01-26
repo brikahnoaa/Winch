@@ -2,7 +2,16 @@
 #include <ngk.h>
 
 NgkInfo ngk;
-MdmInfo mdm;
+MdmInfo mdm = {
+  { "",
+    // %B and %W are shorter, last two digits are status
+    "#B,01,00", "%B,01,", "#F,01,00", "%F,01,00", "#R,01,00", "%R,01,00",
+    "#W,01,00", "%W,01,", "#S,01,00", "%S,01,00", "#R,01,03", "%R,01,00",
+    "",
+    "",
+  },
+  7
+} // remainder of struct is 0 filled
 
 /*
  * send message to winch via amodem
@@ -10,42 +19,20 @@ MdmInfo mdm;
  * sets: mdm.on .send[] .lastSend 
  * uses: mdm.delay
  */
-void ngkSend(MsgType cmd) {
+void ngkSend(MsgType msg) {
   DBG0("ngkSend()")
   TUTxWaitCompletion(mdm.port);
-  switch (cmd) {
-  case rise_msg:
-    TUTxPrintf(mdm.port, RISE_CMD);
-    break;
-  case surf_msg:
-    TUTxPrintf(mdm.port, SURF_CMD);
-    break;
-  case drop_msg:
-    TUTxPrintf(mdm.port, DROP_CMD);
-    break;
-  case stat_msg:
-    TUTxPrintf(mdm.port, STAT_CMD);
-    break;
-  case stop_msg:
-    TUTxPrintf(mdm.port, STOP_CMD);
-    break;
-  case quit_msg:
-    TUTxPrintf(mdm.port, QUIT_RSP);
-    break;
-  default:
-    flogf("\nERR\t|ngkSend bad msg %d", cmd);
-    return;
-  } // switch
-  mdm.send[cmd] += 1;
-  if (cmd!=quit_msg)
+  serWrite(mdm.port, mdm.message[msg]);
+  mdm.send[msg]++;
+  if (msg!=quit_msg)
     mdm.on = true;            // expect response
-  mdm.lastSend = cmd;         // used by timeout
+  mdm.lastSend = msg;         // used by timeout
   timStart(winch_tim, mdm.delay*2+2);
 } // ngkSend
 
 /*
  * get winch message if available and parse it, check timeout
- * sets: ngk.on mdm.on .recv[] .timeout[] scratch (*msg)
+ * sets: ngk.on mdm.expected .lastRecv .recv[] .timeout[] scratch (*msg)
  */
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
@@ -54,7 +41,7 @@ MsgType ngkRecv(MsgType *msg) {
       // m == stop, quit, rise, drop, status, buoy
       // tbd TBD check if lastSend matches?
       mdm.on = false;
-      mdm.recv[m] += 1;
+      mdm.recv[m]++;
       timStop(winch_tim);
       // winch motor
       if (m==rise_msg || m==drop_msg) 
@@ -68,7 +55,7 @@ MsgType ngkRecv(MsgType *msg) {
   } else if (timExp(winch_tim)) {
     // no response and timeout
     mdm.on = false;
-    mdm.timeout[lastSend] += 1;
+    mdm.timeout[lastSend]++;
     m = timeout_msg;
   }
   *msg = m;
@@ -76,77 +63,44 @@ MsgType ngkRecv(MsgType *msg) {
 } // ngkRecv
 
 /*
- * void ngkInit(bool)
+ * power on amodem, initialize strings
+ * sets: mdm.port
  */
-void ngkInit(Serial &port) {
+void ngkInit(void) {
   short mdmRX, mdmTX;
   Serial p;
-  DBG0("mdmInit()");
+  DBG0("ngkInit()");
 
-  mdmRX = TPUChanFromPin(MDM_RX);
-  mdmTX = TPUChanFromPin(MDM_TX);
   // Power up the DC-DC for the Acoustic Modem Port
   PIOClear(MDM_PWR);
-  delayms(250);
+  delayms(100);
   PIOSet(MDM_PWR); 
+  delayms(100);
+  mdmRX = TPUChanFromPin(MDM_RX);
+  mdmTX = TPUChanFromPin(MDM_TX);
   p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
   if (p == 0)
-    flogf("\n\t|Bad ngk TUPort\n");
+    flogf("\nERR\t|ngkInit() Bad ngk serial port");
   else {
     TUTxFlush(p);
     TURxFlush(p);
   }
-  *port = p;
+  mdm.port = p;
 } // ngkInit
 
 /*
- * validate - count \r and % chars, one of each; length 10
- * parse - based on %R %S %F
- * status - save response values "%W,00,XYcrlf"
- * sets: ngk.statMotor .statRope (*msg)
+ * match against mdm.message[] strings
+ * sets: (*msg)
  */
 bool msgParse(char *str, MsgType *msg) {
-  MsgType m = null_msg;                // change this if successful
-  // validate: len10 ',00,' crlf
-  if (strlen(str)==10 
-      && memcmp(str+2, "," BUOYID ",", 4)==0 
-      && strcmp(str+8, CRLF)==0
-      ) {
-    if (str[0]=='#') {
-      // command
-      switch (str[1]) {
-      case 'S':
-        m = quit_msg;
-        ngkSend( quit_msg );
-        break;
-      } // switch
-    } else if (str[0]=='%') {
-      // response
-      switch str[1] {
-      case 'R':
-        m = rise_msg; break;
-      case 'F':
-        m = drop_msg; break;
-      case 'S':
-        m = stop_msg; break;
-      case 'W': // winch status
-        m = stat_msg;
-        // response values - convert ascii digits to integer
-        ngk.statMotor=(int)(str[6]-'0');
-        ngk.statRope=(int)(str[7]-'0');
-        break;
-      case 'B': // buoy status
-        ngkSend( buoy_msg );
-        m = buoy_msg;
-        break;
-      } // switch
-    } // if % response
-    mdm.lastRecv = m;
-  } // if well formed
+  MsgType m;
+  // count down to null_msg, that means not found
+  for (m=timeout_msg-1; m>null_msg; m--) 
+    if (strstr(str, mdm.message[m]!=NULL) 
+      break;
   *msg = m;
   if (m==null_msg) {             // no match or invalid
-    flogf("\nERR\t| msgParse() fail, '%s', len=%d cr#=%d %%#=%d", 
-      str, len, cr, percent);
+    flogf("\nERR\t| msgParse() fail, '%s', len=%d", str, strlen(str));
     return false
   } else
     return true;

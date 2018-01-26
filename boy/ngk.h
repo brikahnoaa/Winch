@@ -14,13 +14,8 @@
 
 typedef enum {
   null_msg=0,
-  rise_msg,           // rise and brake on stop
-  surf_msg,           // rise to surface, no brake
-  drop_msg,
-  stop_msg,           // tell winch to stop
-  quit_msg,           // winch stops itself
-  stat_msg,           // winch status
-  buoy_msg,           // buoy status (from deck unit, via winch)
+  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,
+  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, surfRsp_msg,
   timeout_msg,
   sizeof_msg,
 } MsgType;
@@ -32,25 +27,26 @@ typedef struct NgkInfo {
   float lastRise;     // Velocity meters/min of the most recent rise 
   float firstDrop;    // Velocity meters/min of the first drop (descent)
   float lastDrop;     // Velocity meters/min of the most recent drop 
-  int statMotor;      // status response X in %W,00,XY
-  int statRope;       // status response X in %W,00,XY
+  // int statMotor;      // winch status response X in %W,00,XY
+  // int statRope;       // winch status response X in %W,00,XY
 } NgkInfo;
 extern NgkInfo ngk;
 
 // Tracking number of calls
 typedef struct MdmInfo {
-  bool on;            // expect response 
-  int recv[sizeof_msg];
-  int send[sizeof_msg];
-  int timeout[sizeof_msg];
+  char * message[sizeof_msg];   // msg string
+  int delay;                    // # seconds for amodem to transmit msg (7s)
+  int recv[sizeof_msg];         // count
+  int send[sizeof_msg];         // count
+  int timeout[sizeof_msg];      // count
+  MsgType expected;             // response expected
   MsgType lastRecv;
   MsgType lastSend;
   Serial port;
-  short delay;        // time to transmit msg (7s)
 } MdmInfo;
 extern MdmInfo mdm;
 
 MsgType ngkRecv(MsgType *msg);
 bool msgParse(char *str, MsgType *msg);
-void ngkInit(Serial *port);
-void ngkSend(MsgType cmd);
+void ngkInit(void);
+void ngkSend(MsgType msg);
