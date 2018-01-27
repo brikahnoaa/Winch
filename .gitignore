@@ -1,5 +1,6 @@
 # general
 *.exe
+a.out
 # codewar
 codewar/
 *.AHX

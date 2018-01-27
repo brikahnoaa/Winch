@@ -1,4 +1,4 @@
-// pow.h
+// pwr.h
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
 
@@ -22,14 +22,13 @@
 typedef struct PwrInfo {
   bool on;             // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
-  float minBatCharge;   // minimum system capacity to run
-  float minBatVolt;     // minimum system voltage to run
-  int counter;          // power monitor count
-  int filehdl;          // log file
+  float chargeMin;   // minimum system capacity to run
+  float charge;   // minimum system capacity to run
+  float voltsMin;     // minimum system voltage to run
+  float volts;     // minimum system voltage to run
+  int log;          // log file
   long batCap;          // for lithium
   short interval;       // deciSecs for PIT timer interrupt
-  ushort currentMax;
-  ushort voltsMin;
 } PwrInfo;
 extern PwrInfo pwr;
 
@@ -39,7 +38,7 @@ void pwrLogWrite(ushort *);
 bool pwrCheck(void);
 ushort pwrInit(bool, long, ushort);
 float pwrMonitor(ulong, int, ulong *);
-float pwrVoltage(void);
+float pwrVolts(void);
 void pwrOpenLog(long);
 void pwrFileName(long);
 

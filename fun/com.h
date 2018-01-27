@@ -10,6 +10,8 @@ typedef enum {false=0, true=1} bool;
 #define BUFSZ 1024
 #define CRLF "\r\n"
 
+#define flogf(...) printf(__VA_ARGS__)
+
 // DBG() blocks of code, as is
 // DBG0() print func names
 // DBG1() print more interesting things
@@ -52,3 +54,5 @@ typedef enum {false=0, true=1} bool;
 #else
 #define DBG2(...)
 #endif
+
+

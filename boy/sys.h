@@ -12,6 +12,7 @@ typedef struct systemData {
 extern systemData sys;
 
 static void preRun(int delay);
-static void sysInit(void);
-static void sysStarts(void);
+static void dirSetup(void);
+static void restartCheck(void);
 void main(void);
+void sysInit(void);

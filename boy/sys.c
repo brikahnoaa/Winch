@@ -4,11 +4,11 @@
 
 #include <ant.h>
 #include <boy.h>
+#include <cfg.h>
 #include <ctd.h>
-#include <dat.h>
+#include <wsp.h>
 #include <mpc.h>
 #include <ngk.h>
-#include <set.h>
 
 systemData sys = {
   "c:sys.log", "LR01", "LARA", "QUEH",
@@ -24,8 +24,8 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
  */
 void main(void) {
   preRun(10);
-  sysStarts();
-  setConfFile(&ant, &boy, &ctd, &dat, &mpc, &ngk, &sys);
+  restartCheck();
+  cfgConfFile(&ant, &boy, &ctd, &dat, &mpc, &ngk, &sys);
   // sysInit(&boy.com1, &wis.com2, &wis.com3, &ngk.com4);
   sysInit();
   mpcInit();
@@ -78,29 +78,29 @@ void sysInit() {
     SleepUntilWoken();
     BIOSReset();
   }
-} // sysInit()
+} // sysInit
 
 /*
  * check STARTS>STARTSMAX to see if we are rebooting wildly
  * these two settings are in veeprom to allow check before *Init()
  * sets: sys.starts .startsMax
  */
-void sysStarts(void) {
+void restartCheck(void) {
   sys.starts = (int)VEEFetchLong("STARTS", 0L)+1;
-  sys.startsMax = (int)VEEFetchLong("STARTSMAX", 0L);
+  sys.startsMax = (int)VEEFetchLong("STARTSMAX", 50L);
   VEEStoreLong("STARTS", (long)sys.starts);
   if (sys.starts>sys.startsMax) {
     // log file is not open yet, but still works as printf
     flogf("\nsysStarts(): startups>startmax, shutdown...\n");
     shutdown();
   }
-} // sysStarts
+} // restartCheck
 
 
 /*
  * Setup directories for files not needing to be access anymore.
  */
-void Make_Directory(char *path) {
+void dirSetup(void) {
   char DOSCommand[64];
   memset(DOSCommand, 0, 64);
   strncpy(DOSCommand, "mkdir ", 6);
@@ -111,11 +111,11 @@ void Make_Directory(char *path) {
   CIOdrain();
   execstr(DOSCommand);
   delayms(1000);
-}
+} // sysDirSetup
 
 /*
  */
-void DOS_Com(char *command, long filenum, char *ext, char *extt) {
+int sysOsCmd(char *command, long filenum, char *ext, char *extt) {
   char Com[64];
   static char fname[] = "c:00000000.";
   memset(Com, 0, 64);
@@ -163,7 +163,7 @@ void DOS_Com(char *command, long filenum, char *ext, char *extt) {
   CIOdrain();
   execstr(Com);
   delayms(250);
-}
+} // sysOsCmd
 
 
 /*
@@ -182,40 +182,8 @@ void DOS_Com(char *command, long filenum, char *ext, char *extt) {
  * return 4 if MIN WISPR FREE Space
  * return 5 if No CF2 Free Space
  */
-short Check_Vitals(void) {
-  short returnvalue = 0;
-  float currentvoltage;
-  float minvolt;
-
-  minvolt = atof(ADS.MINVOLT); // Grab User defined minimum voltage.
-  currentvoltage = Get_Voltage(); // Current Voltage
-
-  if (currentvoltage == 0.00)
-    returnvalue = 0;
-  else if (currentvoltage <= minvolt) {
-    flogf("\n%s|Check_Vitals():", Time(NULL));
-    flogf("\n\t|Voltage: %4.2f", currentvoltage);
-    if (currentvoltage <= MIN_BATTERY_VOLTAGE) {
-      flogf("below absolute min.");
-      returnvalue = 1; // System Shutdown
-      return returnvalue;
-    }
-    else if (currentvoltage <= atof(ADS.MINVOLT)) {
-      flogf("below user set min.");
-      returnvalue = 2; // Hibernate? Stop WISPR?
-    }
-  }
-  // Free_Disk_Space() somewhere else
-  if (SystemFreeSpace < 100) {
-    flogf("\nCheck_Vitals(): CF2 Free Space: %ldkB", SystemFreeSpace);
-    returnvalue = 5; // Delete Files? Hibernate?
-  }
-  if (MPC.STARTUPS >= MPC.STARTMAX) {
-    flogf("\n%s|Check_Vitals():", Time(NULL));
-    flogf("\n\t|Startups surpassed maximum: %d", MPC.STARTUPS);
-    returnvalue = 3; // System Shutdown.
-  }
-  return returnvalue;
+int Check_Vitals(void) {
+  return 0;
 } // Check_Vitals
 
 /*
