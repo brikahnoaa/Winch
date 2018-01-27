@@ -1,5 +1,5 @@
-// MPC.c - hardware, mpc specific
-#include <common.h>
+// mpc.c - hardware, mpc specific
+#include <com.h>
 #include <mpc.h>
 
 MpcData mpc = {

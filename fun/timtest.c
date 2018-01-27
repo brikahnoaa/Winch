@@ -1,26 +1,25 @@
-#include <timer.c>
+#include <../boy/tmr.c>
 
 int main(){
   time_t now=time(NULL);
-  time_t then=now+2;
 
   printf("now %ld\n", now);
   
   printf("start data ctd \n");
-  timStart(data_tim, 3);
-  timStart(ctd_tim, 2);
-  printf("timer ctd_tim %d at timQuery %ld\n", ctd_tim, timQuery(ctd_tim));
-  printf("timer data_tim %d at timQuery %ld\n", data_tim, timQuery(data_tim));
-  printf("timer wispr_tim %d at timQuery %ld\n", wispr_tim, timQuery(wispr_tim));
+  tmrStart(data_tmr, 3);
+  tmrStart(ctd_tmr, 2);
+  printf("timer ctd_tmr %d at tmrQuery %d\n", ctd_tmr, tmrQuery(ctd_tmr));
+  printf("timer data_tmr %d at tmrQuery %d\n", data_tmr, tmrQuery(data_tmr));
+  printf("timer wispr_tmr %d at tmrQuery %d\n", wispr_tmr, tmrQuery(wispr_tmr));
   printf("stop ctd\n");
-  timStop(ctd_tim);
-  printf("timer ctd_tim %d at timQuery %ld\n", ctd_tim, timQuery(ctd_tim));
-  printf("timer data_tim %d at timQuery %ld\n", data_tim, timQuery(data_tim));
-  printf("timer wispr_tim %d at timQuery %ld\n", wispr_tim, timQuery(wispr_tim));
-  printf("timCheck() loop...\n");
-  TimerType i = null_tim;
-  while (i==null_tim)
-    i = timAnyExp();
+  tmrStop(ctd_tmr);
+  printf("timer ctd_tmr %d at tmrQuery %d\n", ctd_tmr, tmrQuery(ctd_tmr));
+  printf("timer data_tmr %d at tmrQuery %d\n", data_tmr, tmrQuery(data_tmr));
+  printf("timer wispr_tmr %d at tmrQuery %d\n", wispr_tmr, tmrQuery(wispr_tmr));
+  printf("tmrCheck() loop...\n");
+  TmrType i = null_tmr;
+  while (i==null_tmr)
+    i = tmrAnyExp();
   printf("timer %d at %ld\n", i, time(0));
-  printf("timer data_tim %d at timQuery %ld\n", data_tim, timQuery(data_tim));
+  printf("timer data_tmr %d at tmrQuery %d\n", data_tmr, tmrQuery(data_tmr));
 }

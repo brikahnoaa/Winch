@@ -1,6 +1,6 @@
-// data.c
-#include <common.h>
-#include <data.h>
+// dat.c
+#include <com.h>
+#include <dat.h>
 
 // gain num detMax detNum dutycycl port
 DataInfo data = {

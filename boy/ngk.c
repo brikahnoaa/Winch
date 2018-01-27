@@ -1,4 +1,5 @@
-#include <common.h>
+// ngk.c
+#include <com.h>
 #include <ngk.h>
 
 bool msgParse(char *str, MsgType *msg);

@@ -1,4 +1,4 @@
-// settings.h
+// set.h
 typedef struct setVar {
   char *shortName;
   char *longName;

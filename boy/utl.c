@@ -1,5 +1,5 @@
-// utils.c - utility stuff
-#include <utils.h>
+// utl.c - utility stuff
+#include <utl.h>
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50

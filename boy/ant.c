@@ -1,5 +1,5 @@
 // ant.c - for working with antenna module
-#include <common.h>
+#include <com.h>
 #include <ant.h>
 
 // on surfaced ctdPos depth gpsLong[20] gpsLat[20] 

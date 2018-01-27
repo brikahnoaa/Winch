@@ -2,9 +2,10 @@
 
 typedef struct systemData {
   char logfile[12];
-  char platformID[6];   // rudicsland
+  char platform[6];   // rudicsland
   char programName[20]; // added HM
   char projectID[6];    // rudicsland
+  int filenum;
   int starts;
   int startsMax;
 } systemData;

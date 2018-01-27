@@ -1,6 +1,5 @@
 // ctd.h
 
-// ctd
 typedef struct CtdInfo {
   bool on;        // initialized, syncmode
   bool pending;   // request pending, expect response

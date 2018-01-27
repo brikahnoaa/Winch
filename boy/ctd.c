@@ -1,10 +1,11 @@
+// ctd.c sbe16
 /* 
  * ctd.c
  * handling CTD in buoy, seabird SBE 16plus
  * general note: ctd wants \r only for input
  * Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
  */
-#include <common.h>
+#include <com.h>
 #include <ctd.h>
 
 // syncMode pending delay port

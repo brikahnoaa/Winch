@@ -1,12 +1,11 @@
-// settings.c
-
-#include <common.h>
-#include <settings.h>
+// set.c
+#include <com.h>
+#include <set.h>
 
 #include <ant.h>
 #include <boy.h>
 #include <ctd.h>
-#include <data.h>
+#include <dat.h>
 #include <mpc.h>
 #include <ngk.h>
 #include <sys.h>
@@ -19,14 +18,13 @@
  * try to use first,last char for shortname
  * use variable name for longname
  * &ptr can be any extern var or struct component
- * type := bool char* int float long short
+ * type := bcifls bool char* int float long short
  */
 static setVar settings[] = {
-  { "pD", "boy.platformID", &boy.platformID, 'c'},
-  { "fm", "boy.filenum", &boy.filenum, 'f'},
-  { "ms", "boy.maxStarts", &boy.maxStarts, 's'},
-  { "on", "boy.on", &boy.on, 'b'},
-  { "pD", "boy.projID", &boy.projID, 'c'},
+  { "pfm", "sys.platform", &sys.platform, 'c'},
+  { "fno", "sys.filenum", &sys.filenum, 'i'},
+  { "sMx", "sys.startsMax", &sys.startsMax, 'i'},
+  { "pID", "sys.projectID", &sys.projectID, 'c'},
   { "", "", NULL, 0},
 };
 

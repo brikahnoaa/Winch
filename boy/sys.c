@@ -1,5 +1,5 @@
 // sys.c
-#include <common.h>
+#include <com.h>
 #include <sys.h>
 
 #include <ant.h>
@@ -8,12 +8,12 @@
 #include <dat.h>
 #include <mpc.h>
 #include <ngk.h>
+#include <set.h>
 
 systemData sys = {
-  true,
-  "c:0000.log", "LR01", "LARA", "QUEH",
-  0, 50,
-}
+  "c:sys.log", "LR01", "LARA", "QUEH",
+  0, 0, 50,
+};
 
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
@@ -32,7 +32,6 @@ void main(void) {
   ctdInit();
   ngkInit();
   datInit();
-
   boyMain(sys.starts);
 } // main
 

@@ -1,3 +1,4 @@
+// com.h  common to all
 #include <cfxpico.h> // Persistor PicoDOS Definitions
 
 #include <assert.h>

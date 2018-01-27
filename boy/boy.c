@@ -1,7 +1,7 @@
 // boy.c
 // Acoustic Real-Time Sensor ARTS, aka LARA
 
-#include <common.h>
+#include <com.h>
 #include <boy.h> 
 
 #include <ant.h> 

@@ -1,6 +1,6 @@
-// power.c
-#include <common.h>
-#include <power.h>
+// pow.c
+#include <com.h>
+#include <pow.h>
 
 /*
  * 12.2.2015 - Received many errno=0 when fopen return NULL. 

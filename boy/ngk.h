@@ -1,5 +1,4 @@
 // ngk.h
-// AModemPort and WISPR Transmission
 
 #define MDM_BAUD 4800L
 #define BUOY_ID '0'

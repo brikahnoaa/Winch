@@ -1,4 +1,4 @@
-// utils.h - utility and shared stuff
+// utl.h - utility and shared stuff
 
 typedef TUPort *Serial;
 

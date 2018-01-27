@@ -1,4 +1,4 @@
-// power.h
+// pow.h
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
 
