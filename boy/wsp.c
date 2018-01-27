@@ -1,6 +1,6 @@
 // wsp.c
 #include <com.h>
-#include <dat.h>
+#include <wsp.h>
 
 // gain num detMax detNum dutycycl port
 WspInfo wsp = {

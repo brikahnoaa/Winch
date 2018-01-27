@@ -4,11 +4,11 @@
 
 #include <ant.h>
 #include <boy.h>
+#include <cfg.h>
 #include <ctd.h>
-#include <dat.h>
+#include <wsp.h>
 #include <mpc.h>
 #include <ngk.h>
-#include <set.h>
 
 systemData sys = {
   "c:sys.log", "LR01", "LARA", "QUEH",
