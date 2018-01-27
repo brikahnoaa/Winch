@@ -24,6 +24,7 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
  */
 void main(void) {
   preRun(10);
+  sysStarts();
   setConfFile(&ant, &boy, &ctd, &dat, &mpc, &ngk, &sys);
   // sysInit(&boy.com1, &wis.com2, &wis.com3, &ngk.com4);
   sysInit();
@@ -62,8 +63,8 @@ void sysInit() {
   sysStarts(&sys.starts);
 
   flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
-        MPC.PROGNAME, MPC.PROJID, MPC.PLTFRMID, MPC.STARTUPS);
-  flogf("\nProgram Start time: %s", TimeDate(NULL));
+    sys.programName, sys.projectID, sys.platform, sys.starts);
+  flogf("\nStart time: %s", TimeDate(NULL));
 
   PZCacheSetup('C' - 'A', calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
@@ -80,17 +81,19 @@ void sysInit() {
 } // sysInit()
 
 /*
- * check STARTS_VEE>STARTSMAX_VEE to see if we are rebooting wildly
- * these two settings are in veeprom to allow check before startup
+ * check STARTS>STARTSMAX to see if we are rebooting wildly
+ * these two settings are in veeprom to allow check before *Init()
+ * sets: sys.starts .startsMax
  */
-void sysStarts(long *starts, long *startsMax) {
-  starts = VEEFetchLong(STARTS_VEE, 0L);
-  startsMax = VEEFetchLong(STARTSMAX_VEE, 0L);
-  if (starts>startsMax) {
-    flogf("\nsysStarts(): startups>startmax");
+void sysStarts(void) {
+  sys.starts = (int)VEEFetchLong("STARTS", 0L)+1;
+  sys.startsMax = (int)VEEFetchLong("STARTSMAX", 0L);
+  VEEStoreLong("STARTS", (long)sys.starts);
+  if (sys.starts>sys.startsMax) {
+    // log file is not open yet, but still works as printf
+    flogf("\nsysStarts(): startups>startmax, shutdown...\n");
     shutdown();
   }
-  VEEStoreLong(STARTS_VEE, starts+1L);
 } // sysStarts
 
 

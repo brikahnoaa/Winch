@@ -19,3 +19,4 @@ static void ctdSetDate(void);
 void ctdSample(void);   // ctd .pending
 void ctdSyncmode(void); 
 void ctdBreak(void);
+void ctdInit(void);

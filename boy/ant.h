@@ -13,3 +13,4 @@ extern AntennaData ant;
 void antOpen();
 void antClose();
 float antDepth();
+void antInit();

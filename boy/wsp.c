@@ -1,58 +1,58 @@
-// dat.c
+// wsp.c
 #include <com.h>
 #include <dat.h>
 
 // gain num detMax detNum dutycycl port
-DataInfo data = {
+WspInfo wsp = {
   2, 4, 10, 0, 360, NULL
 };
 
-bool SendDATAGPS = false;
-static int DATAGPSSends;
-bool DATA_On;
-float DATAFreeSpace = 0.0;
+bool SendwspGPS = false;
+static int wspGPSSends;
+bool wspOn;
+float wspFreeSpace = 0.0;
 int TotalDetections;
 int dtxrqst;
 
-// char* DATAString;
-// short DATAStringLength=64;
+// char* wspString;
+// short wspStringLength=64;
 // PAM TUPORT Setup
 Serial PAMPort;
 short PAM_RX, PAM_TX;
 
-char *GetDATAInput(float *);
+char *GetwspInput(float *);
 void AppendDetections(char *, int);
 
-static char datafile[] = "c:DATAFRS.DAT";
-static char DataString[64];
+static char wspfile[] = "c:wspFRS.DAT";
+static char WspString[64];
 
-bool DATA_Status(void) { return DATA_On; }
+bool wspStatus(void) { return wspOn; }
 
 /*
- * Power is applied to the data boards
+ * Power is applied to the wsp boards
  */
-void DATAPower(bool power) {
-  DBG0("DATAPower()")
-  // must call dataInit first
+void wspPower(bool power) {
+  DBG0("wspPower()")
+  // must call wspInit first
   if (power) {
-    flogf("\n%s|DATA: ON", Time(NULL));
-    PIOSet(DATA_PWR_ON);
+    flogf("\n%s|wsp: ON", Time(NULL));
+    PIOSet(wspPWR_ON);
     delayms(10);
-    PIOClear(DATA_PWR_ON);
-    data.on = true;
+    PIOClear(wspPWR_ON);
+    wsp.on = true;
   } else {
-    flogf("\n%s|DATA: OFF", Time(NULL));
-    PIOSet(DATA_PWR_OFF);
+    flogf("\n%s|wsp: OFF", Time(NULL));
+    PIOSet(wspPWR_OFF);
     delayms(10);
-    PIOClear(DATA_PWR_OFF);
-    data.on = false;
+    PIOClear(wspPWR_OFF);
+    wsp.on = false;
     delayms(1000);        //??
   }
-} // DATAInit
+} // wspInit
 
 /*
- * void DATA_Data()
- * Incoming DATA ASCII Communication. Looks for certain commands starting with
+ * void wspData()
+ * Incoming wsp ASCII Communication. Looks for certain commands starting with
  * '$' and ending with '*'
  * Return values:
  * 1: GPS
@@ -65,29 +65,29 @@ void DATAPower(bool power) {
  * -1: No Match
  * -2: <MIN FREE SPACE
  */
-short DATA_Data(void) {
+short wspData(void) {
   float returndouble;
   int i;
-  int DATAFile;
+  int wspFile;
   short returnvalue = 0;
   char DTXFilename[] = "c:00000000.DTX";
 
-  // memset(DATAString, 0, DATAStringLength*(sizeof DATAString[0]));
+  // memset(wspString, 0, wspStringLength*(sizeof wspString[0]));
 
   // DataString =
-  GetDATAInput(
+  GetwspInput(
       &returndouble); // changed to 1.25 second wait time to receive the '$'
 
   if (strncmp(DataString, "$GPS", 4) == 0) {
-    DATAGPS(124.5, 45);
+    wspGPS(124.5, 45);
     return 1;
   }
   /*   else if(strncmp(DataString, "$TFP", 4)==0){
 
-        flogf("\n\t|DATA%d: %0.2f%% Total Space", DATA.NUM, returndouble);
+        flogf("\n\t|wsp%d: %0.2f%% Total Space", wsp.NUM, returndouble);
         if(returndouble ==0.0){
            DBG1("\t|Bad TFP return... tryaing again")
-           DATATFP();
+           wspTFP();
            return -3;
            }
         //Calculate what minimum free space should be for given detint.
@@ -95,42 +95,42 @@ short DATA_Data(void) {
  */
   else if (strncmp(DataString, "$DFP", 4) == 0) {
 
-    flogf("\n\t|DATA%d: %.2f%% Free Space", DATA.NUM, returndouble);
+    flogf("\n\t|wsp%d: %.2f%% Free Space", wsp.NUM, returndouble);
 
     if (returndouble == 0.0) {
       DBG1("\t|Bad DFP return...trying again")
-      DATADFP();
+      wspDFP();
       return -2;
     }
 
-    DATAFreeSpace = returndouble;
+    wspFreeSpace = returndouble;
 
 #ifndef SEAGLIDER
-    UpdateDATAFRS();
+    UpdatewspFRS();
 #endif
 
     if (returndouble < MIN_FREESPACE) {
 
-      flogf("\n\t|DATA%d FreeSpace below Minimum", DATA.NUM);
-      if (DATA.NUM < DATANUMBER) {
-        flogf("\n\t|Incrementing DATANumber");
-        ChangeDATA(DATA.NUM + 1);
-        // Only location when to permanently increment data number: When free
+      flogf("\n\t|wsp%d FreeSpace below Minimum", wsp.NUM);
+      if (wsp.NUM < wspNUMBER) {
+        flogf("\n\t|Incrementing wspNumber");
+        Changewsp(wsp.NUM + 1);
+        // Only location when to permanently increment wsp number: When free
         // space runs out. or from start script.
-        VEEStoreShort(DATANUM_NAME, DATA.NUM);
+        VEEStoreShort(wspNUM_NAME, wsp.NUM);
       }
 
       else {
-        flogf("\n\t|Exceeded DATANumber");
-        DATA.DUTYCYCL = 0;
+        flogf("\n\t|Exceeded wspNumber");
+        wsp.DUTYCYCL = 0;
         VEEStoreShort(DUTYCYCLE_NAME, 0);
-        flogf("\n\t|DATA Shutdown");
-        // DATASafeShutdown(); //This creates a never ending loop.
-        if (!DATAExit())
-          if (!DATAExit()) {
+        flogf("\n\t|wsp Shutdown");
+        // wspSafeShutdown(); //This creates a never ending loop.
+        if (!wspExit())
+          if (!wspExit()) {
             flogf(": Forcing Off");
             // ?? fetch storm warning
-            DATAPower(false);
+            wspPower(false);
           }
         Check_Timers(Return_ADSTIME());
         return 2;
@@ -139,12 +139,12 @@ short DATA_Data(void) {
       return 2;
     }
 
-    if (!SendDATAGPS) {
-      DATAGPS(124.5, 45);
+    if (!SendwspGPS) {
+      wspGPS(124.5, 45);
       delayms(150);
       TUTxFlush(PAMPort);
       TURxFlush(PAMPort);
-      DATAGain(-1);
+      wspGain(-1);
     }
 
     return 2;
@@ -161,14 +161,14 @@ short DATA_Data(void) {
 #endif
 
     DBG1("\t|DTX file: %s", DTXFilename)
-    DATAFile = open(DTXFilename, O_APPEND | O_RDWR | O_CREAT);
+    wspFile = open(DTXFilename, O_APPEND | O_RDWR | O_CREAT);
     delayms(25);
-    if (DATAFile <= 0)
-      flogf("\nERROR  |DATA_Data() %s open errno: %d", DTXFilename, errno);
-    DBG(else flogf("\n\t|DATA_Data() %s opened", DTXFilename);)
+    if (wspFile <= 0)
+      flogf("\nERROR  |wspData() %s open errno: %d", DTXFilename, errno);
+    DBG(else flogf("\n\t|wspData() %s opened", DTXFilename);)
 
-    if (DATAFile <= 0) {
-      flogf("\nERROR|DATA_Data() open errno: %d", errno);
+    if (wspFile <= 0) {
+      flogf("\nERROR|wspData() open errno: %d", errno);
       return -3;
     }
 
@@ -176,37 +176,37 @@ short DATA_Data(void) {
       dtxrqst = (int)returndouble;
     if ((int)returndouble == 0) {
       flogf("\n\t|Writing %d detections to %s", dtxrqst, DTXFilename);
-      if (close(DATAFile) < 0)
-        flogf("\nERROR |DATA_Data() %s close errno %d", DTXFilename, errno);
-      DBG(else flogf("\n\t|DATA_Data() %s closed", DTXFilename);)
+      if (close(wspFile) < 0)
+        flogf("\nERROR |wspData() %s close errno %d", DTXFilename, errno);
+      DBG(else flogf("\n\t|wspData() %s closed", DTXFilename);)
       return 3;
     }
 
     else if (dtxrqst > 0) {
       DBG1("%s", DataString)
-      AppendDetections(DataString, DATAFile);
+      AppendDetections(DataString, wspFile);
       if (dtxrqst > 0) {
         for (i = 0; i < dtxrqst; i++) {
           TickleSWSR();
           // memset(DataString, 0, 64*(sizeof DataString[0]));
-          GetDATAInput(&returndouble);
+          GetwspInput(&returndouble);
           if ((int)returndouble == -1) {
-            flogf("\nERROR|Bad Return from GetDATAInput()");
+            flogf("\nERROR|Bad Return from GetwspInput()");
             break;
           }
-          AppendDetections(DataString, DATAFile);
+          AppendDetections(DataString, wspFile);
         }
         TURxFlush(PAMPort);
 #ifdef ACOUSTICMODEM // This if defined statement should be based on whether an
                      // AMODEM is implemented but rather a real-time detection
                      // turn around.
-        if (DATA.DETNUM > 0)
-          if (returndouble >= DATA.DETNUM)
+        if (wsp.DETNUM > 0)
+          if (returndouble >= wsp.DETNUM)
             flogf("\n\t|Detection Number surpassed");
 #endif
       }
     }
-    close(DATAFile);
+    close(wspFile);
 
     return 3;
   }
@@ -217,20 +217,20 @@ short DATA_Data(void) {
   }
 
   else if (strncmp(DataString, "$NGN", 4) == 0) {
-    if (!SendDATAGPS) {
-      DATAGPS();
+    if (!SendwspGPS) {
+      wspGPS();
       delayms(50);
     }
 
-    DATAGain(-1);
+    wspGain(-1);
 
     return 5;
   }
 
   else if (strncmp(DataString, "$FIN", 4) == 0) {
     flogf(": Found Exit");
-    delayms(2000);     // Gives a little bit of time to DATA to umount /mnt
-    DATAPower(false); // Powers off Data
+    delayms(2000);     // Gives a little bit of time to wsp to umount /mnt
+    wspPower(false); // Powers off Data
     return 6;
   } else if (strcmp(DataString, NULL) == 0) {
     return 0;
@@ -239,21 +239,21 @@ short DATA_Data(void) {
 
   return 0;
 
-} // DATA_Data
+} // wspData
 /*
- * int DATADet()
+ * int wspDet()
 This is where we inquire about the total number of detections every so often.
-This function will call to the data board with max_detections. It first
+This function will call to the wsp board with max_detections. It first
 repsonds with a $DXN...* com line then lists each actual detection
 afterward with a $DTX...* com line. Each are up to ~60 bytes per line
 
  */
-void DATADet(int dtx) {
+void wspDet(int dtx) {
 
   if (dtx < 0)
     return;                   // if negative number then don't call detections
-  else if (dtx > DATA.DETMAX) // if received dtx reqeust > Maximum user set.
-    dtx = DATA.DETMAX;
+  else if (dtx > wsp.DETMAX) // if received dtx reqeust > Maximum user set.
+    dtx = wsp.DETMAX;
 
   dtxrqst = dtx;
 
@@ -265,12 +265,12 @@ void DATADet(int dtx) {
 
   delayms(500);
 
-} // DATADet
+} // wspDet
 /*
- * int DATAGPS()
-This is where we send the GPS Time and Location to DATA Board at startup
+ * int wspGPS()
+This is where we send the GPS Time and Location to wsp Board at startup
  */
-void DATAGPS(void) {
+void wspGPS(void) {
 
   float minutes;
   float decimal;
@@ -278,7 +278,7 @@ void DATAGPS(void) {
   char LATITUDE[17];
   char LONGITUDE[17];
 
-  flogf("\n%s|DATAGPS(%d):", Time(NULL), DATA.NUM);
+  flogf("\n%s|wspGPS(%d):", Time(NULL), wsp.NUM);
   strcpy(LATITUDE, MPC.LAT);
   strcpy(LONGITUDE, MPC.LONG);
   flogf("\n\t|LAT: %s, LONG: %s", LATITUDE, LONGITUDE);
@@ -297,20 +297,20 @@ void DATAGPS(void) {
              LAT);
   TUTxWaitCompletion(PAMPort);
 
-  SendDATAGPS = true;
+  SendwspGPS = true;
 
-} // DATAGPS
+} // wspGPS
 /*
- * int DATAGain()
-We can update the gain parameters for the DATA Board.
-Might want to do this at the start up of DATA Program when DATA Requests
+ * int wspGain()
+We can update the gain parameters for the wsp Board.
+Might want to do this at the start up of wsp Program when wsp Requests
 for gain values.
 
  */
-void DATAGain(short c) {
+void wspGain(short c) {
 
   if (c < 0 || c > 3)
-    c = DATA.GAIN;
+    c = wsp.GAIN;
 
   flogf(" & Gain: %d", c);
   TUTxFlush(PAMPort);
@@ -318,39 +318,39 @@ void DATAGain(short c) {
   TUTxWaitCompletion(PAMPort);
   delayms(2);
 
-} // DATAGain
+} // wspGain
 /*
- * int DATADFP()
+ * int wspDFP()
  */
-void DATADFP(void) {
+void wspDFP(void) {
 
-  DBG0("\t|DATADFP(%d)", DATA.NUM)
+  DBG0("\t|wspDFP(%d)", wsp.NUM)
   TURxFlush(PAMPort);
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$DFP*\n");
   TUTxWaitCompletion(PAMPort);
   delayms(250);
 
-} // DATADFP
+} // wspDFP
 /*
- * int DATATFP()
+ * int wspTFP()
  */
-void DATATFP(void) {
+void wspTFP(void) {
 
-  DBG0("\t|DATATFP(%d)", DATA.NUM)
+  DBG0("\t|wspTFP(%d)", wsp.NUM)
   TURxFlush(PAMPort);
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$TFP*\n");
   TUTxWaitCompletion(PAMPort);
   delayms(250);
 
-} // DATADFP
+} // wspDFP
 /*
- * int DATAExit()
+ * int wspExit()
  */
-bool DATAExit(void) {
+bool wspExit(void) {
 
-  flogf("\n\t|DATAExit()");
+  flogf("\n\t|wspExit()");
 
   TUTxFlush(PAMPort);
   TURxFlush(PAMPort);
@@ -358,27 +358,27 @@ bool DATAExit(void) {
   TUTxWaitCompletion(PAMPort);
   Delay_AD_Log(150);  delayms(200);
 
-  DATA_Data();
+  wspData();
 
-  if (!DATA_On) {
+  if (!wspOn) {
 
     return true;
   } else
     return false;
 
-} // DATAExit
+} // wspExit
 /*
- * char* GetDATAInput()
+ * char* GetwspInput()
 1. Gets incoming serial data from ActivePAM on MPC
 2. If it is -1 it breaks and exits, once it sees a '*' it stops taking serial
-3. Look for the appropriate DATA Command (DFP, EXI, DXN, DTX)
+3. Look for the appropriate wsp Command (DFP, EXI, DXN, DTX)
 4. returns numchars if we are looking for DFP
 5. will return number of detections if we get DXN. for which we will run a for
 loop to get each detection in this same function
 6. Should return char* of DTX if we need to get each detection.
 
  */
-char *GetDATAInput(float *numchars) {
+char *GetwspInput(float *numchars) {
   // global DataString;
   const char *asterisk;
   int stringlength;
@@ -413,7 +413,7 @@ char *GetDATAInput(float *numchars) {
     if (in == '*') {
       r[i] = in; // TURxFlush(PAMPort);
       break;
-    } // if we see an * we call that the last of this DATA Input
+    } // if we see an * we call that the last of this wsp Input
     else if (in == -1) {
       TURxFlush(PAMPort);
       return NULL;
@@ -421,7 +421,7 @@ char *GetDATAInput(float *numchars) {
       r[i] = in;
   }
 
-  // Looks for end of DATAInput, gets length, appends to returnline
+  // Looks for end of wspInput, gets length, appends to returnline
   asterisk = strchr(r, '*');
   if (asterisk == NULL) {
     *numchars = -1;
@@ -455,144 +455,144 @@ char *GetDATAInput(float *numchars) {
 
 } // GetIRIDInput
 /*
- ** void ChangeDATA()
+ ** void Changewsp()
  */
-void ChangeDATA(short wnum) {
+void Changewsp(short wnum) {
 
-  // Shut off DATA
-  if (!DATAExit()) {
-    if (!DATAExit()) {
+  // Shut off wsp
+  if (!wspExit()) {
+    if (!wspExit()) {
       flogf(": Forcing Off");
-      DATAPower(false);
+      wspPower(false);
     }
   }
 
-  dataInit(false);
+  wspInit(false);
   delayms(100);
-  DATA.NUM = wnum;
-  dataInit(true);
-  DATAPower(true);
+  wsp.NUM = wnum;
+  wspInit(true);
+  wspPower(true);
 }
 /*
- * void GetDATASettings()
+ * void GetwspSettings()
  */
-void GetDATASettings(void) {
+void GetwspSettings(void) {
   char *p;
   p = VEEFetchData(DETECTIONMAX_NAME).str;
-  DATA.DETMAX = atoi(p ? p : DETECTIONMAX_DEFAULT);
-  DBG1("DETMAX=%u (%s)", DATA.DETMAX, p ? "vee" : "def")
-  if (DATA.DETMAX > MAX_DETECTIONS) {
-    DATA.DETMAX = MAX_DETECTIONS;
-    VEEStoreShort(DETECTIONMAX_NAME, DATA.DETMAX);
+  wsp.DETMAX = atoi(p ? p : DETECTIONMAX_DEFAULT);
+  DBG1("DETMAX=%u (%s)", wsp.DETMAX, p ? "vee" : "def")
+  if (wsp.DETMAX > MAX_DETECTIONS) {
+    wsp.DETMAX = MAX_DETECTIONS;
+    VEEStoreShort(DETECTIONMAX_NAME, wsp.DETMAX);
   }
 
   //"g" 0-3 gain values
-  p = VEEFetchData(DATAGAIN_NAME).str;
-  DATA.GAIN = atoi(p ? p : DATAGAIN_DEFAULT);
-  DBG1("DATAGAIN=%u (%s)", DATA.GAIN, p ? "vee" : "def")
-  if (DATA.GAIN > 3) {
-    DATA.GAIN = 3;
-    VEEStoreShort(DATAGAIN_NAME, DATA.GAIN);
-  } else if (DATA.GAIN < 0) {
-    DATA.GAIN = 0;
-    VEEStoreShort(DATAGAIN_NAME, DATA.GAIN);
+  p = VEEFetchData(wspGAIN_NAME).str;
+  wsp.GAIN = atoi(p ? p : wspGAIN_DEFAULT);
+  DBG1("wspGAIN=%u (%s)", wsp.GAIN, p ? "vee" : "def")
+  if (wsp.GAIN > 3) {
+    wsp.GAIN = 3;
+    VEEStoreShort(wspGAIN_NAME, wsp.GAIN);
+  } else if (wsp.GAIN < 0) {
+    wsp.GAIN = 0;
+    VEEStoreShort(wspGAIN_NAME, wsp.GAIN);
   }
 
   // "N" Number of detections per DETINT to trigger AModem
   p = VEEFetchData(DETECTIONNUM_NAME).str;
-  DATA.DETNUM = atoi(p ? p : DETECTIONNUM_DEFAULT);
-  DBG1("DETECTNUM=%u (%s)", DATA.DETNUM, p ? "vee" : "def")
+  wsp.DETNUM = atoi(p ? p : DETECTIONNUM_DEFAULT);
+  DBG1("DETECTNUM=%u (%s)", wsp.DETNUM, p ? "vee" : "def")
 
   //"C" dutycycle
   p = VEEFetchData(DUTYCYCLE_NAME).str;
-  DATA.DUTYCYCL = atoi(p ? p : DUTYCYCLE_DEFAULT);
-  DBG1("DUTYCYCLE=%d (%s)", DATA.DUTYCYCL, p ? "vee" : "def")
-  if (DATA.DUTYCYCL > MAX_DUTYCYCLE) {
-    DATA.DUTYCYCL = MAX_DUTYCYCLE;
-    VEEStoreShort(DUTYCYCLE_NAME, DATA.DUTYCYCL);
-  } else if (DATA.DUTYCYCL < MIN_DUTYCYCLE) {
-    DATA.DUTYCYCL = MIN_DUTYCYCLE;
-    VEEStoreShort(DUTYCYCLE_NAME, DATA.DUTYCYCL);
+  wsp.DUTYCYCL = atoi(p ? p : DUTYCYCLE_DEFAULT);
+  DBG1("DUTYCYCLE=%d (%s)", wsp.DUTYCYCL, p ? "vee" : "def")
+  if (wsp.DUTYCYCL > MAX_DUTYCYCLE) {
+    wsp.DUTYCYCL = MAX_DUTYCYCLE;
+    VEEStoreShort(DUTYCYCLE_NAME, wsp.DUTYCYCL);
+  } else if (wsp.DUTYCYCL < MIN_DUTYCYCLE) {
+    wsp.DUTYCYCL = MIN_DUTYCYCLE;
+    VEEStoreShort(DUTYCYCLE_NAME, wsp.DUTYCYCL);
   }
 
-  // "x" datanum
-  p = VEEFetchData(DATANUM_NAME).str;
-  DATA.NUM = atoi(p ? p : DATANUM_DEFAULT);
-  DBG1("DATANUM=%d (%s)", DATA.NUM, p ? "vee" : "def")
-  if (DATA.NUM < 1) {
-    DATA.NUM = 1;
-    VEEStoreShort(DATANUM_NAME, DATA.NUM);
-  } else if (DATA.NUM > DATANUMBER) {
-    DATA.NUM = DATANUMBER;
-    VEEStoreShort(DATANUM_NAME, DATA.NUM);
+  // "x" wspnum
+  p = VEEFetchData(wspNUM_NAME).str;
+  wsp.NUM = atoi(p ? p : wspNUM_DEFAULT);
+  DBG1("wspNUM=%d (%s)", wsp.NUM, p ? "vee" : "def")
+  if (wsp.NUM < 1) {
+    wsp.NUM = 1;
+    VEEStoreShort(wspNUM_NAME, wsp.NUM);
+  } else if (wsp.NUM > wspNUMBER) {
+    wsp.NUM = wspNUMBER;
+    VEEStoreShort(wspNUM_NAME, wsp.NUM);
   }
 
-} // GetDATASettings
+} // GetwspSettings
 /*
- * void DATASafeShutdown()
+ * void wspSafeShutdown()
  */
-void DATASafeShutdown(void) {
+void wspSafeShutdown(void) {
 
   int i;
 
-  if (DATA_On) {
-    DATADFP();
-    i = DATA_Data();
+  if (wspOn) {
+    wspDFP();
+    i = wspData();
     if (i != 2) {
-      DATADFP();
-      i = DATA_Data();
+      wspDFP();
+      i = wspData();
     }
 
-    // Shut off DATA for Data Transmission
-    if (!DATAExit()) {
-      if (!DATAExit()) {
+    // Shut off wsp for Data Transmission
+    if (!wspExit()) {
+      if (!wspExit()) {
         flogf(": Forcing Off");
-        DATAPower(false);
+        wspPower(false);
       }
     }
 
   } else
     return;
 
-} // DATASafeShutdown
+} // wspSafeShutdown
 /*
- * Void DATAWriteFile()
+ * Void wspWriteFile()
  */
-void DATAWriteFile(int uploadfilehandle) {
+void wspWriteFile(int uploadfilehandle) {
   char detfname[] = "c:00000000.dtx";
   int byteswritten;
 
   memset(WriteBuffer, 0, BUFSZ);
 
-  flogf("\n\t|DATAWriteFile()");
+  flogf("\n\t|wspWriteFile()");
 
-  if (DATA.DUTYCYCL > 0) {
-    sprintf(WriteBuffer, "\n---DATA%d---\nGPS Sends: %d\nGain:%d\nFree "
+  if (wsp.DUTYCYCL > 0) {
+    sprintf(WriteBuffer, "\n---wsp%d---\nGPS Sends: %d\nGain:%d\nFree "
                          "Space:%4.2f%%\nDuty Cycle:%d%%\nMax "
                          "Detections:%02d\nTotal Detections:%d\n\0",
-            DATA.NUM, DATAGPSSends, DATA.GAIN, DATAFreeSpace, DATA.DUTYCYCL,
-            DATA.DETMAX, TotalDetections);
+            wsp.NUM, wspGPSSends, wsp.GAIN, wspFreeSpace, wsp.DUTYCYCL,
+            wsp.DETMAX, TotalDetections);
 
     DBG1("%s", WriteBuffer)
     /*
             #ifdef REALTIME
-               if(DATA.DETNUM>0){
-               sprintf(stringadd, "\nCall upon %04d Detections\n", DATA.DETNUM);
+               if(wsp.DETNUM>0){
+               sprintf(stringadd, "\nCall upon %04d Detections\n", wsp.DETNUM);
                strncat(buf, stringadd, 27*sizeof(char));
                }
             #endif
  */
 
   } else {
-    sprintf(WriteBuffer, "\nDATA-OFF\n\0");
+    sprintf(WriteBuffer, "\nwsp-OFF\n\0");
   }
 
   byteswritten = write(uploadfilehandle, WriteBuffer, strlen(WriteBuffer));
-  DBG1("DATAWrite File: Number of Bytes written: %d", byteswritten)
+  DBG1("wspWrite File: Number of Bytes written: %d", byteswritten)
 
-  // If more than one data, add total free space of all DATAs to Write File.
-  if (DATANUMBER > 1)
-    Append_Files(uploadfilehandle, "C:DATAFRS.DAT", false, 0);
+  // If more than one wsp, add total free space of all wsps to Write File.
+  if (wspNUMBER > 1)
+    Append_Files(uploadfilehandle, "C:wspFRS.DAT", false, 0);
   if (TotalDetections > 0) {
 #ifdef SEAGLIDER
     sprintf(&detfname[2], "%08d.dtx", SEAG.DIVENUM);
@@ -611,17 +611,17 @@ void DATAWriteFile(int uploadfilehandle) {
 
   TotalDetections = 0;
 
-} // DATAWriteFile
+} // wspWriteFile
 /*
- * float GetDATAFreeSpace
- * Read "datafs.bat" file. return free space of current DATA? ||  return free
-space of last data
+ * float GetwspFreeSpace
+ * Read "wspfs.bat" file. return free space of current wsp? ||  return free
+space of last wsp
  */
-float GetDATAFreeSpace(void) {
+float GetwspFreeSpace(void) {
 
-  return DATAFreeSpace;
+  return wspFreeSpace;
 
-} // GetDATAFreeSpace
+} // GetwspFreeSpace
 
 void AppendDetections(char *DTXString, int FileDescriptor) {
   int i;
@@ -650,39 +650,39 @@ void create_dtx_file(long fnum) {
   delayms(10);
 }
 /*
- * GatherDATAFreeSpace()
- * Only should come here upon MPC.STARTUPS==0 && DATANUMBER>1
+ * GatherwspFreeSpace()
+ * Only should come here upon MPC.STARTUPS==0 && wspNUMBER>1
  */
-void GatherDATAFreeSpace(void) {
+void GatherwspFreeSpace(void) {
   short wret = 0, i, count = 0, wnum = 1;
   int byteswritten = 0;
   int writenum = 0;
   bool gain = false, dfp = false;
-  int datafilehandle;
-  char databuff[16];
-  static char *filename = "C:DATAFRS.DAT";
+  int wspfilehandle;
+  char wspbuff[16];
+  static char *filename = "C:wspFRS.DAT";
 
-  if (DATA_On) {
-    DATAExit();
+  if (wspOn) {
+    wspExit();
     delayms(2500);
   }
-  DATAPower(true);
+  wspPower(true);
 
-  datafilehandle = open(filename, O_CREAT | O_TRUNC | O_RDWR);
-  if (datafilehandle <= 0) {
-    flogf("file handle: %d", datafilehandle);
+  wspfilehandle = open(filename, O_CREAT | O_TRUNC | O_RDWR);
+  if (wspfilehandle <= 0) {
+    flogf("file handle: %d", wspfilehandle);
     flogf("errno: %d", errno);
     return;
   }
-  for (i = 1; i <= DATANUMBER; i++) {
-    sprintf(databuff, "W%d:00.00%,", i); // sprintf adds trailing \0
+  for (i = 1; i <= wspNUMBER; i++) {
+    sprintf(wspbuff, "W%d:00.00%,", i); // sprintf adds trailing \0
     byteswritten =
-        write(datafilehandle, databuff, strlen(databuff) * sizeof(char));
+        write(wspfilehandle, wspbuff, strlen(wspbuff) * sizeof(char));
     flogf("\n\t|Bytes written: %d", byteswritten);
   }
-  close(datafilehandle);
+  close(wspfilehandle);
 
-  while (wnum <= DATANUMBER) {
+  while (wnum <= wspNUMBER) {
     while (!dfp && count <= 3) {
 
       Sleep();
@@ -691,25 +691,25 @@ void GatherDATAFreeSpace(void) {
         count++;
         if (gain || count == 2) {
           DBG1("\t|GWFS: DFP2")
-          DATADFP();
+          wspDFP();
           delayms(150);
-          if (DATA_Data() == 2)
+          if (wspData() == 2)
             dfp = true;
         }
       }
 
       if (tgetq(PAMPort)) {
-        wret = DATA_Data();
+        wret = wspData();
         if (wret == 1) {
           delayms(150);
-          wret = DATA_Data();
+          wret = wspData();
           if (wret == 5) {
             gain = true;
             delayms(150);
             DBG1("\t|GWFS: DFP1")
-            DATADFP();
+            wspDFP();
             delayms(150);
-            if (DATA_Data() == 2)
+            if (wspData() == 2)
               dfp = true;
           }
         }
@@ -719,112 +719,112 @@ void GatherDATAFreeSpace(void) {
     TURxFlush(PAMPort);
     TUTxFlush(PAMPort);
     if (!dfp)
-      DATAFreeSpace = 00.00;
+      wspFreeSpace = 00.00;
 
     dfp = false;
     gain = false;
     count = 0;
     wnum++;
-    if (wnum > DATANUMBER)
+    if (wnum > wspNUMBER)
       break;
-    //      if(DATAFreeSpace>=MIN_FREESPACE)
-    ChangeDATA(wnum);
+    //      if(wspFreeSpace>=MIN_FREESPACE)
+    Changewsp(wnum);
   }
-  DBG1("\t|wnum: %d, DATA.NUM: %d", wnum, DATA.NUM)
+  DBG1("\t|wnum: %d, wsp.NUM: %d", wnum, wsp.NUM)
   wnum = 1;
 
-  // Shut off DATA && Close TUPort
-  if (!DATAExit()) {
-    if (!DATAExit()) {
+  // Shut off wsp && Close TUPort
+  if (!wspExit()) {
+    if (!wspExit()) {
       flogf(": Forcing Off");
-      DATAPower(false);
+      wspPower(false);
     }
   }
 
-  dataInit(false);
+  wspInit(false);
   delayms(100);
-  DATA.NUM = wnum;
-  VEEStoreShort(DATANUM_NAME, DATA.NUM);
+  wsp.NUM = wnum;
+  VEEStoreShort(wspNUM_NAME, wsp.NUM);
 
-} //GatherDATAFreeSpace
+} //GatherwspFreeSpace
 /*
- * void UpdateDATAFRS()
+ * void UpdatewspFRS()
  * 
- * Write to file: DATAFRS.DAT with the current data's free space
+ * Write to file: wspFRS.DAT with the current wsp's free space
  */
-void UpdateDATAFRS(void) {
+void UpdatewspFRS(void) {
   // global *DataString;
-  int datafilehandle;
+  int wspfilehandle;
   struct stat fileinfo;
-  char *datanum = "W0:";
+  char *wspnum = "W0:";
   char *p;
   int length;
   int bytes;
   long filesize;
 
-  flogf("\n%s|Update %s ", Time(NULL), datafile);
+  flogf("\n%s|Update %s ", Time(NULL), wspfile);
   delayms(10);
-  // sprintf(&datafile[2], "DATAFRS.DAT");
+  // sprintf(&wspfile[2], "wspFRS.DAT");
   delayms(20);
-  if (stat(datafile, &fileinfo) != 0) {
-    flogf("%s file does not exist. making file...", datafile);
-    GatherDATAFreeSpace();
-    stat(datafile, &fileinfo);
+  if (stat(wspfile, &fileinfo) != 0) {
+    flogf("%s file does not exist. making file...", wspfile);
+    GatherwspFreeSpace();
+    stat(wspfile, &fileinfo);
   }
   filesize = fileinfo.st_size;
 
   DBG1("\t|File size: %ld", filesize)
 
-  datafilehandle = open(datafile, O_RDWR);
+  wspfilehandle = open(wspfile, O_RDWR);
   delayms(25);
-  if (datafilehandle <= 0)
-    flogf("\nERROR  |UpdateDATAFRS(): file open errno: %d", errno);
-  DBG(else flogf("\n\t|UpdateDATAFRS() %s opened", datafile);)
+  if (wspfilehandle <= 0)
+    flogf("\nERROR  |UpdatewspFRS(): file open errno: %d", errno);
+  DBG(else flogf("\n\t|UpdatewspFRS() %s opened", wspfile);)
 
-  read(datafilehandle, DataString, fileinfo.st_size);
+  read(wspfilehandle, DataString, fileinfo.st_size);
   // flogf("\n\t|%s", DataString);
-  if (DATA.NUM > DATANUMBER)
-    DATA.NUM = DATANUMBER;
-  sprintf(datanum, "W%d:", DATA.NUM);
+  if (wsp.NUM > wspNUMBER)
+    wsp.NUM = wspNUMBER;
+  sprintf(wspnum, "W%d:", wsp.NUM);
 
-  p = strstr(DataString, datanum);
+  p = strstr(DataString, wspnum);
   if (p == NULL)
-    flogf("\nERROR  |No String search found for: %s", datanum);
+    flogf("\nERROR  |No String search found for: %s", wspnum);
   length = p - DataString;
   if (length > 30) {
-    flogf("\nERROR |Returning due to bad filde position for %s", datafile);
-    close(datafilehandle);
+    flogf("\nERROR |Returning due to bad filde position for %s", wspfile);
+    close(wspfilehandle);
     return;
   }
 
   p = strtok(p + 3, ",");
 
-  DBG1("Updating DATAFRS at position %d from %5.2f to %5.2f", length, atof(p), DATAFreeSpace)
+  DBG1("Updating wspFRS at position %d from %5.2f to %5.2f", length, atof(p), wspFreeSpace)
 
-  sprintf(datanum, "%5.2f", DATAFreeSpace);
-  lseek(datafilehandle, length + 3, SEEK_SET);
-  bytes = write(datafilehandle, datanum, 5);
+  sprintf(wspnum, "%5.2f", wspFreeSpace);
+  lseek(wspfilehandle, length + 3, SEEK_SET);
+  bytes = write(wspfilehandle, wspnum, 5);
   DBG1("Bytes written: %d", bytes)
-  lseek(datafilehandle, 0, SEEK_SET);
-  read(datafilehandle, DataString, fileinfo.st_size);
+  lseek(wspfilehandle, 0, SEEK_SET);
+  read(wspfilehandle, DataString, fileinfo.st_size);
   flogf("%s", DataString);
 
-  close(datafilehandle);
+  close(wspfilehandle);
 
-} // UpdateDATAFRS
+} // UpdatewspFRS
 /*
- * void dataInit()
+ * void wspInit()
  */
-void dataInit(bool on) {
+void wspInit(bool on) {
   // global DataStr
   int DataNum;
 
-  DataNum = DATA.NUM;
-  flogf("\n\t|%s DATA%d TUPort", on ? "Open" : "Close", DataNum);
+  DataNum = wsp.NUM;
+  flogf("\n\t|%s wsp%d TUPort", on ? "Open" : "Close", DataNum);
   if (on) {
     PAM_RX = TPUChanFromPin(28);
     PAM_TX = TPUChanFromPin(27);
-    PAMPort = TUOpen(PAM_RX, PAM_TX, DATABAUD, 0);
+    PAMPort = TUOpen(PAM_RX, PAM_TX, wspBAUD, 0);
   } else if (!on) {
     TUTxFlush(PAMPort);
     TURxFlush(PAMPort);
@@ -832,51 +832,51 @@ void dataInit(bool on) {
     delayms(1000);
   }
 
-  PIOClear(DATA_PWR_ON);
-  PIOClear(DATA_PWR_OFF);
+  PIOClear(wspPWR_ON);
+  PIOClear(wspPWR_OFF);
 
   // PAM 1
   if (DataNum == 1) {
     if (on) {
-      PIOSet(DATAONE);
-      PIOClear(DATATWO);
+      PIOSet(wspONE);
+      PIOClear(wspTWO);
     } else {
-      PIOClear(DATAONE);
-      PIOClear(DATATWO);
+      PIOClear(wspONE);
+      PIOClear(wspTWO);
     }
   }
   // PAM 2
   else if (DataNum == 2) {
     if (on) {
-      PIOSet(DATAONE);
-      PIOSet(DATATWO);
+      PIOSet(wspONE);
+      PIOSet(wspTWO);
     } else {
-      PIOClear(DATAONE);
-      PIOClear(DATATWO);
+      PIOClear(wspONE);
+      PIOClear(wspTWO);
     }
   }
   // PAM 3
   else if (DataNum == 3) {
     if (on) {
-      PIOSet(DATATHREE);
-      PIOClear(DATAFOUR);
+      PIOSet(wspTHREE);
+      PIOClear(wspFOUR);
     } else {
-      PIOClear(DATATHREE);
-      PIOClear(DATAFOUR);
+      PIOClear(wspTHREE);
+      PIOClear(wspFOUR);
     }
 
   }
   // PAM 4
   else if (DataNum == 4) {
     if (on) {
-      PIOSet(DATATHREE);
-      PIOSet(DATAFOUR);
+      PIOSet(wspTHREE);
+      PIOSet(wspFOUR);
     } else {
-      PIOClear(DATATHREE);
-      PIOClear(DATAFOUR);
+      PIOClear(wspTHREE);
+      PIOClear(wspFOUR);
     }
   } else if (DataNum == 0) {
-    flogf("\n\t|DATA Zero. Run out of space?");
+    flogf("\n\t|wsp Zero. Run out of space?");
   }
   // Bad PAM
   else {
@@ -888,37 +888,37 @@ void dataInit(bool on) {
   delayms(100);
 }
 /*
- * bool DATAExpectedReturn(short)
+ * bool wspExpectedReturn(short)
  */
-bool DATAExpectedReturn(short expected, bool reboot) {
+bool wspExpectedReturn(short expected, bool reboot) {
 
-  if (DATA_Data() != expected) {
-    dataInit(false);
+  if (wspData() != expected) {
+    wspInit(false);
     Delay_AD_Log(2);
-    dataInit(true);
+    wspInit(true);
     Delay_AD_Log(1);
     switch (expected) {
     case 1:
-      DATAGPS();
+      wspGPS();
       break;
     case 2:
-      DATADFP();
+      wspDFP();
       break;
     case 3:
-      DATADet(DATA.DETMAX);
+      wspDet(wsp.DETMAX);
       break;
     case 6:
-      DATAExit();
+      wspExit();
       break;
     }
-    if (DATA_Data() != expected)
+    if (wspData() != expected)
       if (reboot) {
-        DATASafeShutdown();
+        wspSafeShutdown();
         Delay_AD_Log(2);
-        DATAPower(true);
+        wspPower(true);
       }
     return false;
   } else
     return true;
 
-} // DATAExpectedReturn //
+} // wspExpectedReturn //

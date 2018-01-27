@@ -19,7 +19,7 @@
 // 104 second power cycle
 #define BITSHIFT 11
 
-typedef struct PowerInfo {
+typedef struct PwrInfo {
   bool on;             // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
   float minBatCharge;   // minimum system capacity to run
@@ -30,18 +30,18 @@ typedef struct PowerInfo {
   short interval;       // deciSecs for PIT timer interrupt
   ushort currentMax;
   ushort voltsMin;
-} PowerInfo;
-extern PowerInfo power;
+} PwrInfo;
+extern PwrInfo pwr;
 
-void powLog(void);
-void powDelay(short sec);
-void powLogWrite(ushort *);
-bool powCheck(void);
-ushort powInit(bool, long, ushort);
-float powMonitor(ulong, int, ulong *);
-float powVoltage(void);
-void powOpenLog(long);
-void powFileName(long);
+void pwrLog(void);
+void pwrDelay(short sec);
+void pwrLogWrite(ushort *);
+bool pwrCheck(void);
+ushort pwrInit(bool, long, ushort);
+float pwrMonitor(ulong, int, ulong *);
+float pwrVoltage(void);
+void pwrOpenLog(long);
+void pwrFileName(long);
 
 /*
  * orig by alex - seems to be off, should be double. 1<<1==2^1

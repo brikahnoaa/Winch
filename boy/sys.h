@@ -11,6 +11,7 @@ typedef struct systemData {
 } systemData;
 extern systemData sys;
 
-void preRun(int delay);
-void sysStarts(void);
-
+static void preRun(int delay);
+static void sysInit(void);
+static void sysStarts(void);
+void main(void);

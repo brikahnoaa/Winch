@@ -6,5 +6,5 @@ typedef struct setVar {
   char typeCode;                // b, c, f, i, l, s
 } setVar;
 
-bool settingString(char *str);
+bool setString(char *str);
 

@@ -50,6 +50,7 @@ int boyAlarm(AlarmType alarm);
 void boyShut(void);
 void boyInit(void);
 void boyStatus(char *buffer);
+void boyMain(int starts);
 static int incomingData(void);
 static ulong writeFile(ulong);
 static void sleepUntilWoken(void);
