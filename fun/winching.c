@@ -6,29 +6,35 @@
 #define CTRL_C 3
 
 void winchingHelp() {
-  printf("\n b=buoy status, f=fall, r=rise, s=stop, u=up(00), w=winch status"
-         "\n lower case (r) is command, upper case (R) is response");
+  cprintf("\n b=buoy status, f=fall, r=rise, s=stop, u=up(00), w=winch status"
+         "\n lower case (r) is command, upper case (R) is response"
+         "\n ?=help q=quit ^C=quit"
+         "\n");
 }
 
 void winchingMain(void){
   char c;
   MsgType msg;
+  winchingHelp();
   while (true) { // command
     ciflush();
-    printf("\nCommand: ");
+    cprintf("\nCommand: ");
+    cdrain();
 
     while (true) { // input
       // amodem
       if (ngkRecv(&msg)!=null_msg) {
-        printf("\n winch>> '%s' @ %s", mdm.message[msg], clockTime(scratch));
+        cprintf("\n winch>> '%s' @ %s", mdm.message[msg], clockTime(scratch));
         break; // while input
       } 
       // keyboard
       if (cgetq()) {
         c = cgetc();
         cputc(c);
+        cputc('\n');
         switch (c) {
         case CTRL_C: BIOSResetToPicoDOS();
+        case 'q': BIOSResetToPicoDOS();
         case '?': winchingHelp(); break;
         case 'B': ngkSend(buoyRsp_msg); break;
         case 'F': ngkSend(dropRsp_msg); break;
@@ -42,7 +48,7 @@ void winchingMain(void){
         case 's': ngkSend(stopCmd_msg); break;
         case 'u': ngkSend(surfCmd_msg); break;
         case 'w': ngkSend(statCmd_msg); break;
-        default: printf("??");
+        default: cprintf("??");
         } // switch
         break; // while input
       } // if key

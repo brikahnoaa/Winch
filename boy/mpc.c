@@ -124,7 +124,7 @@ void mpcSleep(void) {
 } // mpcSleep
 
 float mpcVoltage(float *volts) {
-  float v = 0.0;
+  float v = 12.0;
   *volts = v;
   return v;
 }
