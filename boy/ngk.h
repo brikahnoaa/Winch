@@ -40,6 +40,8 @@ typedef struct MdmInfo {
 } MdmInfo;
 extern MdmInfo mdm;
 
+static bool msgParse(char *str, MsgType *msg);
+
 MsgType ngkRecv(MsgType *msg);
 bool ngkTimeout(void);
 void ngkInit(void);

@@ -1,38 +1,35 @@
 // winching.c - move winch
-#include <common.h>
+#include <com.h>
+#include <winching.h>
 #include <ngk.h>
-#include <timer.h>
 
 #define CTRL_C 3
 
-void printHelp() {
+void winchingHelp() {
   printf("\n b=buoy status, f=fall, r=rise, s=stop, u=up(00), w=winch status"
          "\n lower case (r) is command, upper case (R) is response");
 }
 
-void main(void){
+void winchingMain(void){
   char c;
-  mpcInit();
-  ngkInit();
-  while (true) {
+  MsgType msg;
+  while (true) { // command
     ciflush();
     printf("\nCommand: ");
 
-    while (true) {
+    while (true) { // input
       // amodem
-      if (TURxQueuedCount(ngk.port)) {
-        ngkRecv(&msg);
-        clockTime(scratch);
-        printf("\n winch>> '%s' @ %s", mdm.message[msg], scratch);
-        break; // while
-      } // if mdm
+      if (ngkRecv(&msg)!=null_msg) {
+        printf("\n winch>> '%s' @ %s", mdm.message[msg], clockTime(scratch));
+        break; // while input
+      } 
       // keyboard
       if (cgetq()) {
         c = cgetc();
         cputc(c);
         switch (c) {
         case CTRL_C: BIOSResetToPicoDOS();
-        case '?': printHelp(); break;
+        case '?': winchingHelp(); break;
         case 'B': ngkSend(buoyRsp_msg); break;
         case 'F': ngkSend(dropRsp_msg); break;
         case 'R': ngkSend(riseRsp_msg); break;
@@ -47,8 +44,8 @@ void main(void){
         case 'w': ngkSend(statCmd_msg); break;
         default: printf("??");
         } // switch
-        break; // while
+        break; // while input
       } // if key
-    } // while
-  } // while
+    } // while input
+  } // while command
 }

@@ -3,8 +3,6 @@
 #include <ngk.h>
 #include <tmr.h>
 
-bool msgParse(char *str, MsgType *msg);
-
 // mdm.message[] strings, as if sent to buoy; change ID before sending to winch
 MdmInfo mdm = {
   { "null",
