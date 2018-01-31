@@ -1,6 +1,5 @@
 // ant.h
 
-// ant
 typedef struct AntennaData {
   bool on;
   float depth;

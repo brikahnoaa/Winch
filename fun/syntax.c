@@ -1,3 +1,6 @@
+#include <cfxpico.h>
+
+typedef TUPort * ptr;
 typedef struct ab {
   int i;
   float f;

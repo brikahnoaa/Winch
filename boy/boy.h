@@ -38,6 +38,8 @@ typedef struct BuoyData {
   int callHour;         // 0-23 (midnight-11pm) hour to call home 
   int callFreq;         // number of times per day to call (1)
   int fileNum;          // current number for filename ####.dat ####.log
+  long diskFree;
+  long diskSize;
   PhaseType phase;      // 0=deploy, 1=WISPR, 2=Ascent, 3=Surface, 4=Descent
   PhaseType startPhase; // start in this phase (0=deploy)
   Serial port;          // sbe16 / ant mod
@@ -53,15 +55,12 @@ void boyStatus(char *buffer);
 void boyMain(int starts);
 static int incomingData(void);
 static ulong writeFile(ulong);
-static void sleepUntilWoken(void);
 static void deployPhase(void);
 static void dataPhase(void);
 static void risePhase(void);
 static void callPhase(void);
 static void dropPhase(void);
-static void reboot(int *phase);
-static void restartCheck(long *starts);
-static void Console(char);
+static void boyConsole(char);
 static void IRQ2_ISR(void);
 static void IRQ3_ISR(void);
 static void IRQ4_ISR(void);

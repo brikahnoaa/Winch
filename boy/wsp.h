@@ -33,5 +33,5 @@ bool wspStatus(void);
 void gatherWspFreeSpace(void);
 void upwspeWspFRS(void);
 void wspGPS(void);
-void wspInit(bool);
+void wspInit(int board);
 bool wspExpectedReturn(short, bool);

@@ -48,7 +48,7 @@ void wspPower(bool power) {
     wsp.on = false;
     delayms(1000);        //??
   }
-} // wspInit
+} // wspPower
 
 /*
  * void wspData()
@@ -812,10 +812,15 @@ void UpdatewspFRS(void) {
   close(wspfilehandle);
 
 } // UpdatewspFRS
+
 /*
- * void wspInit()
+ * WISPR BOARD
+ * TPU 6    27 PAM1 WISPR TX
+ * TPU 7    28 PAM1 WISPR RX
+ * TPU 8    29 1= turns on MAX3222
+ * TPU 9    30 0= enables MAX3222
  */
-void wspInit(bool on) {
+void wspInit(int board) {
   // global DataStr
   int DataNum;
 

@@ -1,4 +1,5 @@
 // cfg.h
+
 typedef struct CfgParam {
   char *id;
   char *var;

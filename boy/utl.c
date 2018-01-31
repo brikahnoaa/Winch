@@ -1,5 +1,6 @@
 // utl.c - utility stuff
-#include <utl.h>
+// note: utl.h included from com.h
+#include <com.h>
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
@@ -16,8 +17,9 @@ void delayms(int x) { RTCDelayMicroSeconds((long)x*1000); }
 int serWrite(Serial port, char *out) {
   int len = strlen(out);
   int sent;
-  sent = (int) TUTxPutBlock(port, *out, (long)len, (short)CHAR_DELAY);
-  if (len!=sent) {
+  short delay = (short)CHAR_DELAY + TUBlockDuration(port, len);
+  sent = (int) TUTxPutBlock(port, out, (long)len, delay);
+  if (len!=sent) 
     flogf("\nERR\t| serWrite(%s) sent %d of %d", out, sent, len);
   return sent;
 }
@@ -64,9 +66,10 @@ int serReadWait(Serial port, char *in, int wait) {
 // check out __DATE__, __TIME__
 /*
  * HH:MM:SS now
- * sets: (&out)
+ * sets: (*out)
+ * returns: out
  */
-void clockTime(char *out) {
+char * clockTime(char *out) {
   RTCtm *rtc_time;
   ulong secs;
   ushort ticks;
@@ -75,25 +78,26 @@ void clockTime(char *out) {
   rtc_time = RTClocaltime(&secs);
   sprintf(out, "%02d:%02d:%02d",
           rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
+  return out;
 } // clockTime
 
 /*
  * Time & Date String
  * MM/DD/YYYY HH:MM:SS now
- * sets: (&out)
+ * sets: (*out)
+ * returns: out
  */
-void clockTimeDate(char *out) {
+char * clockTimeDate(char *out) {
   RTCtm *rtc_time;
   ulong secs;
   ushort ticks;
   
   RTCGetTime(&secs, &ticks);
   rtc_time = RTClocaltime(&secs);
-  *seconds = secs;
   sprintf(out, "%02d/%02d/%04d %02d:%02d:%02d", rtc_time->tm_mon + 1,
           rtc_time->tm_mday, rtc_time->tm_year + 1900, rtc_time->tm_hour,
           rtc_time->tm_min, rtc_time->tm_sec);
-  return;
+  return out;
 } // clockTimeDate
 
 
@@ -104,7 +108,7 @@ void clockTimeDate(char *out) {
 char *sprintfun (char *out, char *in) {
   char ch, *ptr = out;
   // walk thru input until 0
-  while (ch = *in++) {
+  while ((ch = *in++)!=0) {
     if ((ch<32)||(ch>126)) {
       // non printing char
       sprintf(ptr, " x%02X ", ch);
@@ -117,4 +121,3 @@ char *sprintfun (char *out, char *in) {
   *ptr = 0;
   return (out);
 } // printsafe
-

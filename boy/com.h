@@ -24,13 +24,7 @@
 #include <time.h>
 #include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 
-#include <utils.h> // shared procs, SW
-
-#define PLATFORM LARA
-#define PROG_VERSION 4.0
-
-#define BUFSZ 1024
-#define CRLF "\r\n"
+#include <utl.h> // shared procs, SW
 
 // DBG() blocks of code, as is
 // DBG0() print func names

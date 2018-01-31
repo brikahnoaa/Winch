@@ -1,10 +1,20 @@
 // mpc.c - hardware, mpc specific
 #include <com.h>
 #include <mpc.h>
+#include <sys.h>
+
+/*
+ * Interrupts:
+ *
+ * IRQ2 Wakes up from the sleep mode while waiting for ASC string from COM2
+ * IRQ3
+ * IRQ5 Interrupt to stop the program
+ */
+
 
 MpcData mpc = {
-  1500.0, 15.0, 12.5,
-  NULL, ctd_dev,
+  1500.0, 15.0, 11.0,
+  NULL, ctd_ser
 };
 
 // Enable watch dog  HM 3/6/2014
@@ -12,6 +22,7 @@ short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 
 /*
  * Set IO pins, set SYSCLK
+ * ?? walk thru to verify all actions
  */
 void mpcInit(void) {
   short waitsFlash, waitsRAM, waitsCF;
@@ -22,37 +33,98 @@ void mpcInit(void) {
   uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
   PIOMirrorList(mirrorpins);
 
-  CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
   TMGSetSpeed(SYSCLK);
-
-  flogf("\n----------------------------------------------------------------");
-  flogf("\nProgram: %s,  Version: %3.2f,  Build: %s %s", __FILE__, PROG_VERSION,
-        __DATE__, __TIME__);
+  CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
   CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
-  flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
-        BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
-        BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
   CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
-  cprintf(
+  flogf(
       "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
       TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
       waitsCF, *(uchar *)0xFFFFFA21);
-  fflush(NULL);
-  TickleSWSR();
-  cdrain();
-  ciflush();
-  coflush();
+    mpcVoltage( &mpc.volts );
+  flogf("\n\t|Check Startup Voltage: %5.2fV", mpc.volts);
+
+  // Safety Check. Minimum Voltage
+  if (mpc.volts < mpc.voltMin) {
+    flogf("\n\t|Battery Voltage Below Minimum. Activate Hibernation Mode");
+    sysSleepUntilWoken();
+    BIOSReset();
+  }
 } // mpcInit
-  
 
 /*
- * VEEStoreShort(char*)
+ * capture interrupt, used to wake up
  */
-void VEEStoreShort(char *veename, short value) {
-  char string[sizeof "00000"];
-  memset(string, 0, 5);
-  sprintf(string, "%d", value);
-  VEEStoreStr(veename, string);
-} // VEEStoreShort
+static void IRQ4_ISR(void) {
+  PIORead(IRQ4RXD);     // console
+  RTE();
+} // IRQ4_ISR
+static void IRQ5_ISR(void) {
+  PIORead(IRQ5);        // pam ??
+  RTE();
+} // IRQ5_ISR
 
+/*
+ * spurious interrupt, ignore
+ */
+static void spur_ISR(void) {
+  RTE();
+} // spur_ISR
 
+/*
+ * Sleep until keypress or wispr
+ */
+void mpcSleep(void) {
+  ciflush(); // flush any junk
+  clockTimeDate(scratch);
+  flogf("\nmpcSleep() at %s", scratch);
+
+  // Install the interrupt handlers that will break us out by "break signal"
+  // ?? this should be a one time action, we toggle pins int|I/O
+  IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector);
+  IEVInsertAsmFunct(IRQ5_ISR, level5InterruptAutovector); // PAMPort ??
+  IEVInsertAsmFunct(spur_ISR, spuriousInterrupt);
+
+  PITSet51msPeriod(PITOff); // disable timer (drops power)
+  CTMRun(false);            // turn off CTM6 module
+  SCITxWaitCompletion();    // let any pending UART data finish
+  EIAForceOff(true);        // turn off the RS232 driver
+  QSMStop();                // shut down the QSM
+  CFEnable(false);          // turn off the CompactFlash card
+
+  // make it an interrupt pin
+  PinBus(IRQ4RXD);          // console
+  PinBus(IRQ5);             // wispr
+
+  TickleSWSR();      // another reprieve
+  TMGSetSpeed(1600);
+  while (PinTestIsItBus(IRQ4RXD) && PinTestIsItBus(IRQ5)) {
+    // we loop here on spurious interrupt
+    //*HM050613 added to reduce current when Silicon System CF card is used
+    //*(ushort *)0xffffe00c=0xF000; //force CF card into Card-1 active mode
+
+    LPStopCSE(FullStop); // we will be here until interrupted
+    TickleSWSR();        // by break
+  }
+
+  CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
+  TMGSetSpeed(SYSCLK);
+
+  // make it an I/O pin
+  PIORead(IRQ4RXD);
+  PIORead(IRQ5);
+
+  EIAForceOff(false); // turn on the RS232 driver
+  QSMRun();           // bring back the QSM
+  CFEnable(true);     // turn on the CompactFlash card
+  ciflush();          // discard any garbage characters
+  clockTime(scratch);
+  flogf(", wakeup at %s", scratch);
+  putflush(); 
+} // mpcSleep
+
+float mpcVoltage(float *volts) {
+  float v = 0.0;
+  *volts = v;
+  return v;
+}

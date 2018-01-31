@@ -6,12 +6,21 @@
 #include <boy.h>
 #include <cfg.h>
 #include <ctd.h>
-#include <wsp.h>
 #include <mpc.h>
 #include <ngk.h>
 
+/*
+ * Before deploying, set CF2 time and SM2 time, format SD cards,
+ * replace SM2 and CF2 clock batteries
+ * erase activity.log, set status=0, set startups=0,
+ * verify boottime is correct, verify pwrondepth and pwroffdepth are correct,
+ * make sure you have the correct mA multiplier set in the mAh calculation in
+ * status 5 for the SM2 settings that you are using (compression, kHz, etc.)
+ * as power consumption varies between those settings
+ */
+
 systemData sys = {
-  "c:sys.log", "LR01", "LARA", "QUEH",
+  "c:sys.log", "LR01", "LARA", "QUEH", "4.0",
   0, 0, 50,
 };
 
@@ -25,15 +34,13 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 void main(void) {
   preRun(10);
   restartCheck();
-  cfgConfFile(&ant, &boy, &ctd, &dat, &mpc, &ngk, &sys);
-  // sysInit(&boy.com1, &wis.com2, &wis.com3, &ngk.com4);
   sysInit();
+
   mpcInit();
-  boyInit();
-  ctdInit();
+  //?? boyInit();
+  //?? ctdInit();
   ngkInit();
-  datInit();
-  boyMain(sys.starts);
+  //?? boyMain(sys.starts);
 } // main
 
 void preRun(int delay) {
@@ -53,32 +60,54 @@ void preRun(int delay) {
   }
 } // preRun
 
+void logInit() {
+  Initflog(sys.logfile, true);
+  flogf("\n----------------------------------------------------------------");
+  flogf("\nProgram: %s,  Version: %3.2f,  Build: %s %s", __FILE__, sys.version,
+        __DATE__, __TIME__);
+  flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
+        BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
+        BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
+  fflush(NULL);
+  TickleSWSR();
+  cdrain();
+  ciflush();
+  coflush();
+}
+
 /*
  * init files, basic checks
  */
 void sysInit() {
-  // global boy .port .device
-  logInit(sys.logfile);
-  Initflog(sys.logfile, true);
-  sysStarts(&sys.starts);
-
-  flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
-    sys.programName, sys.projectID, sys.platform, sys.starts);
-  flogf("\nStart time: %s", TimeDate(NULL));
-
   PZCacheSetup('C' - 'A', calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
 
-  mpcVoltage( &mpc.volts );
-  flogf("\n\t|Check Startup Voltage: %5.2fV", mpc.volts);
+  logInit();
+  flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
+    sys.program, sys.project, sys.platform, sys.starts);
+  clockTimeDate(scratch);
+  flogf("\nStart time: %s", scratch);
 
-  // Safety Check. Minimum Voltage
-  if (mpc.volts < mpc.voltMin) {
-    flogf("\n\t|Battery Voltage Below Minimum. Activate Hibernation Mode");
-    SleepUntilWoken();
-    BIOSReset();
-  }
+  configFile();
 } // sysInit
+
+/*
+ * close files ??, Sleep until keypress
+ * 2nd release 6/24/2002 by HM -Changed to use ADS8344/45
+ */
+void sysSleepUntilWoken(void) {
+  ciflush(); // flush any junk
+  mpcSleep();
+} // sysSleepUntilWoken
+
+/*
+ * close files, turn off devices, power off
+ */
+void sysShutdown(void) {
+} // sysShutdown
+
+void configFile(void) {
+} // configFile
 
 /*
  * check STARTS>STARTSMAX to see if we are rebooting wildly
@@ -86,13 +115,13 @@ void sysInit() {
  * sets: sys.starts .startsMax
  */
 void restartCheck(void) {
-  sys.starts = (int)VEEFetchLong("STARTS", 0L)+1;
-  sys.startsMax = (int)VEEFetchLong("STARTSMAX", 50L);
-  VEEStoreLong("STARTS", (long)sys.starts);
+  sys.starts = VEEFetchLong("STARTS", SYS_STARTS)+1;
+  sys.startsMax = VEEFetchLong("STARTSMAX", SYS_STARTS_MAX);
+  VEEStoreLong("STARTS", sys.starts);
   if (sys.starts>sys.startsMax) {
     // log file is not open yet, but still works as printf
-    flogf("\nsysStarts(): startups>startmax, shutdown...\n");
-    shutdown();
+    flogf("\nrestartCheck(): startups>startmax, shutdown...\n");
+    sysShutdown();
   }
 } // restartCheck
 
@@ -100,13 +129,13 @@ void restartCheck(void) {
 /*
  * Setup directories for files not needing to be access anymore.
  */
-void dirSetup(void) {
+void dirSetup(char *path) {
   char DOSCommand[64];
   memset(DOSCommand, 0, 64);
   strncpy(DOSCommand, "mkdir ", 6);
   strncat(DOSCommand, path, 3);
 
-  flogf("\n%s|MakeDirectory() %s", Time(NULL), DOSCommand);
+  flogf("\n\t|MakeDirectory() %s", DOSCommand);
   putflush();
   CIOdrain();
   execstr(DOSCommand);
@@ -115,8 +144,9 @@ void dirSetup(void) {
 
 /*
  */
-int sysOsCmd(char *command, long filenum, char *ext, char *extt) {
+int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
   char Com[64];
+  int r = 0;
   static char fname[] = "c:00000000.";
   memset(Com, 0, 64);
 
@@ -153,21 +183,21 @@ int sysOsCmd(char *command, long filenum, char *ext, char *extt) {
 
   else if (strstr(command, "move") != NULL) {
 
-    DOS_Com("copy", filenum, ext, extt);
-    DOS_Com("del", filenum, ext, NULL);
-    return;
+    sysOSCmd("copy", filenum, ext, extt);
+    sysOSCmd("del", filenum, ext, NULL);
+    return r;
   }
 
-  flogf("\n%s|COMDos() %s", Time(NULL), Com);
+  flogf("\n%s|COMDos() %s", clockTime(scratch), Com);
   putflush();
   CIOdrain();
   execstr(Com);
   delayms(250);
-} // sysOsCmd
+  return r;
+} // sysOSCmd
 
 
 /*
- * Check_Vitals
  * //Voltage: checking the average
  * 1- Check Absolute MIN volts
  * 2- Check User min volts
@@ -182,16 +212,16 @@ int sysOsCmd(char *command, long filenum, char *ext, char *extt) {
  * return 4 if MIN WISPR FREE Space
  * return 5 if No CF2 Free Space
  */
-int Check_Vitals(void) {
+int checkVitals(void) {
   return 0;
-} // Check_Vitals
+} // checkVitals
 
 /*
  * void AppendFile
  */
+  /*
 bool Append_Files(int Dest, const char *SourceFileName, bool erase,
                   long maxBytes) {
-
   int Source;
   int i;
   struct stat fileinfo;
@@ -262,19 +292,5 @@ bool Append_Files(int Dest, const char *SourceFileName, bool erase,
   return true;
 
 } // AppendFiles
+  */ //??
 
-/*
- * Free_Disk_Space *   Returns the free space in kBytes
- */
-long Free_Disk_Space(void) {
-  long freeSpacekB;
-  long freeSectors;
-  long totalSectors;
-
-  freeSectors = DSDFreeSectors('C' - 'A');
-  totalSectors = DSDDataSectors('C' - 'A');
-  freeSpacekB = freeSectors / 2;
-  flogf("\n\t|FreeDiskSpace %ldkB", freeSpacekB);
-
-  return freeSpacekB;
-} 

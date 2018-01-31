@@ -1,5 +1,8 @@
 // ngk.h
 
+#define MDM_PWR 21
+#define MDM_RX 33
+#define MDM_TX 35
 #define MDM_BAUD 4800L
 #define BUOY_ID '0'
 #define WINCH_ID '1'
@@ -30,7 +33,7 @@ typedef struct MdmInfo {
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
   int timeout[sizeof_msg];      // count
-  MsgType expected;             // response expected
+  MsgType expect;               // response expected
   MsgType lastRecv;
   MsgType lastSend;
   Serial port;

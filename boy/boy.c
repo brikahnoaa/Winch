@@ -27,8 +27,8 @@ void boyMain(int starts) {
   // normal case is last
   boy.phase = boy.startPhase;
   if (starts>1) {
-    // post-deploy restart
-    reboot(&boy.phase);
+    // post-deploy reboot
+    boyReboot(&boy.phase);
   } else if (boy.phase!=deploy_pha) {
     // testing, skip ahead to startPhase
     flogf("\nboyMain(): testing, start phase %d", boy.phase);
@@ -68,7 +68,7 @@ void boyInit(Serial *port) {
 /*
  * figure out whats happening, continue as possible
  */
-void sysReboot(int *phase) {
+void boyReboot(int *phase) {
   // load info from saved previous phase
   // check STARTSVEE - was saved state really the last boot?
   // match hardware to saved state
@@ -787,58 +787,6 @@ void Sleep(void) {
 
 
 /*
- * SleepUntilWoken		Sleep until IRQ4 is interrupted
- * 
- * 1-st release 9/14/99
- * 2nd release 6/24/2002 by HM -Changed to use ADS8344/45
- */
-void SleepUntilWoken(void) {
-
-  ciflush(); // flush any junk
-  flogf("\n%s|SleepUntilWoken()", Time(NULL));
-  flogf("\nLow-power sleep mode until keyboard input is received...");
-
-  // Install the interrupt handlers that will break us out by "break signal"
-  // from RS232 COM input.
-  IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector);
-  IEVInsertAsmFunct(IRQ4_ISR, spuriousInterrupt);
-
-  PITSet51msPeriod(PITOff); // disable timer (drops power)
-  CTMRun(false);            // turn off CTM6 module
-  SCITxWaitCompletion();    // let any pending UART data finish
-  EIAForceOff(true);        // turn off the RS232 driver
-  QSMStop();                // shut down the QSM
-  CFEnable(false);          // turn off the CompactFlash card
-
-  PinBus(IRQ4RXD); // make it an interrupt pin
-
-  TickleSWSR();      // another reprieve
-  TMGSetSpeed(1600); // Changed July 2015
-  while (PinTestIsItBus(IRQ4RXD)) {
-    //*HM050613 added to reduce current when Silicon System CF card is used
-    //*(ushort *)0xffffe00c=0xF000; //force CF card into Card-1 active mode
-
-    LPStopCSE(FullStop); // we will be here until interrupted
-    TickleSWSR();        // by break
-  }
-
-  CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
-  TMGSetSpeed(SYSCLK);
-
-  // CONCLUDE
-  PinIO(IRQ4RXD);
-
-  EIAForceOff(false); // turn on the RS232 driver
-  QSMRun();           // bring back the QSM
-  CFEnable(true);     // turn on the CompactFlash card
-  PIORead(IRQ4RXD);   // disable interrupt by IRQ4
-  ciflush();          // discard any garbage characters
-  flogf("\n%s|Aquisition ended!", Time(NULL));
-  putflush(); // tell 'em we're back
-              //			BIOSResetToPicoDOS();
-              //}
-} // SleepUntilWoken
-/*
  * static void Irq3ISR(void)
  */
 static void IRQ3_ISR(void) {
@@ -1032,36 +980,25 @@ bool boyOceanCurrentCheck() {
 }
 
 /*
+ * boyDiskSpace Returns the free space in kBytes
+ */
+long boyDiskFree(void) {
+  long freeSpacekB;
+  long freeSectors;
+  long totalSectors;
+  //
+  boy.diskFree = DSDFreeSectors('C' - 'A');
+  boy.diskSize = DSDDataSectors('C' - 'A');
+  return boy.diskFree/2;
+} // boyDiskFree
+
+/*
  * shutdown buoy, sleep, reset
  */
 void boyShutdown(void) {
   WISPRSafeShutdown();
   PIOClear(ANTENNAPWR); 
   PIOClear(AMODEMPWR); 
-  SleepUntilWoken();
+  sysSleepUntilWoken();
   BIOSReset();
 }
-
-/*
- *WISPR BOARD
- * * TPU 6    27 PAM1 WISPR TX
- * * TPU 7    28 PAM1 WISPR RX
- * * TPU 8    29 1= turns on MAX3222
- * * TPU 9    30 0= enables MAX3222
- *
- *Interrupts:
- * 
- * IRQ2 Wakes up from the sleep mode while waiting for ASC string from COM2
- * IRQ3
- * IRQ5 Interrupt to stop the program
- * 
- * ***************************************************************************
- * Before deploying, set CF2 time and SM2 time, format SD cards, 
- * replace SM2 and CF2 clock batteries
- * erase activity.log, set status=0, set startups=0,
- * verify boottime is correct, verify pwrondepth and pwroffdepth are correct,
- * make sure you have the correct mA multiplier set in the mAh calculation in
- * status 5 for the SM2 settings that you are using (compression, kHz, etc.)
- * as power consumption varies between those settings
- * 
- */

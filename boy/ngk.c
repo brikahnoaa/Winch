@@ -1,6 +1,7 @@
 // ngk.c
 #include <com.h>
 #include <ngk.h>
+#include <tmr.h>
 
 bool msgParse(char *str, MsgType *msg);
 
@@ -10,10 +11,9 @@ MdmInfo mdm = {
     // %B and %W are shorter, last two digits are status
     "#B,00,00", "%B,00,", "#F,00,00", "%F,00,00", "#R,00,00", "%R,00,00",
     "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,03", "surfRsp",
-    "sizeof",
   },
   7
-} // remainder of struct is 0 filled
+}; // remainder of struct is 0 filled
 NgkInfo ngk;
 
 /*
@@ -44,46 +44,65 @@ void ngkInit(void) {
 
 /*
  * send message to winch via amodem
- * starts timer, does not set ngk.on
- * sets: mdm.on .send[] .lastSend 
+ * starts winch_tmr, does not set ngk.on (see ngkRecv)
+ * sets: mdm.expect .send[] .lastSend 
  * uses: mdm.delay
  */
 void ngkSend(MsgType msg) {
-  char m[12];
+  char str[12];
   DBG0("ngkSend(%d)",msg)
-  strcpy(m, mdm.message[msg]);
-  strcat(m, "\n");
-  // set id "#R,0X,00"
-  m[4]=WINCH_ID;
+  strcpy(str, mdm.message[msg]);
+  strcat(str, "\n");
+  // set winch id "#R,0X,00"
+  str[4]=WINCH_ID;
   TUTxWaitCompletion(mdm.port);
-  serWrite(mdm.port, m);
+  serWrite(mdm.port, str);
   mdm.send[msg]++;
-  if (msg!=quit_msg)
-    mdm.on = true;            // expect response
   mdm.lastSend = msg;         // used by timeout
-  timStart(winch_tim, mdm.delay*2+2);
+  switch (msg) {
+  case dropCmd_msg:
+    mdm.expect = dropRsp_msg;
+  case riseCmd_msg:
+    mdm.expect = riseRsp_msg;
+  case statCmd_msg:
+    mdm.expect = statRsp_msg;
+  case stopCmd_msg:
+    mdm.expect = stopRsp_msg;
+  case surfCmd_msg:
+    mdm.expect = surfRsp_msg;
+  default:
+    mdm.expect = null_msg;
+  }
+  if (mdm.expect!=null_msg)
+    tmrStart(winch_tmr, mdm.delay*2+2);
 } // ngkSend
 
 /*
  * get winch message if available and parse it
- * sets: ngk.on mdm.expected .lastRecv .recv[] scratch (*msg)
+ * ?? respond to stopcmd buoycmd
+ * sets: ngk.on mdm.expect .lastRecv .recv[] scratch (*msg)
  */
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
   if (serRead(mdm.port, scratch)) {
+    flogf("\n\t| ngkRecv()->%s", scratch);
     if (msgParse(scratch, &m)) {
-      // m == stop, quit, rise, drop, status, buoy
+      flogf(" msg=%d", m);
       // tbd TBD check if lastSend matches?
-      mdm.on = false;
+      if (mdm.expect!=m) {
+        flogf(" (expect %d)", mdm.expect);
+      }
+      mdm.expect = null_msg;
       mdm.recv[m]++;
-      timStop(winch_tim);
+      tmrStop(winch_tmr);
       // winch motor
-      if (m==rise_msg || m==drop_msg) 
+      if (m==riseRsp_msg || m==dropRsp_msg) 
         ngk.on = true;
-      if (m==stop_msg || m==quit_msg) 
+      if (m==stopCmd_msg || m==stopRsp_msg) 
         ngk.on = false;
     } else {
       // parse fail. already logged by msgParse. wait for timeout? resend?
+      // ??
       // ngkSend( mdm.lastSend );
     }
   }
@@ -92,9 +111,9 @@ MsgType ngkRecv(MsgType *msg) {
 } // ngkRecv
 
 bool ngkTimeout(void) {
-  if (mdm.expected && timExp(winch_tim)) {
-    mdm.expected = null_msg;
-    mdm.timeout[mdm.expected]++;
+  if (mdm.expect!=null_msg && tmrExp(winch_tmr)) {
+    mdm.expect = null_msg;
+    mdm.timeout[mdm.expect]++;
     return true;
   } else
     return false;
@@ -108,14 +127,14 @@ bool msgParse(char *str, MsgType *msg) {
   MsgType m;
   // search down until null_msg, that means not found
   for (m=null_msg+1; m<sizeof_msg; m++) 
-    if (strstr(str, mdm.message[m]!=NULL) 
+    if (strstr(str, mdm.message[m])!=NULL) 
       break;
   if (m==sizeof_msg) 
     m = null_msg;
   *msg = m;
   if (m==null_msg) {             // no match or invalid
     flogf("\nERR\t| msgParse() fail, '%s', len=%d", str, strlen(str));
-    return false
+    return false;
   } else
     return true;
 } // msgParse
