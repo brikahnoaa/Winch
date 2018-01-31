@@ -26,6 +26,7 @@ int serWrite(Serial port, char *out) {
 
 /*
  * read all the chars on the port, with a normal delay
+ * returns: length
  */
 int serRead(Serial port, char *in) {
   int len = 0;

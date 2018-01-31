@@ -86,9 +86,19 @@ void ngkSend(MsgType msg) {
  */
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
-  if (serRead(mdm.port, scratch)) {
-    flogf("\n\t| ngkRecv(%s)", scratch);
-    if (msgParse(scratch, &m)) {
+  char msgStr[BUFSZ], *ptr;
+  int len = 0;
+  if (serRead(mdm.port, msgStr)) {
+    if (len==10)
+      // strip anything past CRLF
+      if ((ptr = strpbrk(msgStr, "\r\n"))!=NULL) 
+        *ptr = 0;
+      else
+        flogf("\nERR\t|ngkRecv() no CRLF");
+    else
+      flogf("\nERR\t|ngkRecv() wrong msg length = %d", len);
+    flogf("\n\t|ngkRecv(%s)", msgStr);
+    if (msgParse(msgStr, &m)) {
       flogf("->%s at %s", mdm.name[m], clockTime(scratch));
       // tbd TBD check if lastSend matches?
       if (mdm.expect!=m) {
