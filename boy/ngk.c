@@ -5,10 +5,14 @@
 
 // mdm.message[] strings, as if sent to buoy; change ID before sending to winch
 MdmInfo mdm = {
-  { "null",
     // %B and %W are shorter, last two digits are status
+  { "null",
     "#B,00,00", "%B,00,", "#F,00,00", "%F,00,00", "#R,00,00", "%R,00,00",
     "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,03", "surfRsp",
+  },
+  { "null",
+    "buoyCmd", "buoyRsp", "dropCmd", "dropRsp", "riseCmd", "riseRsp",
+    "statCmd", "statRsp", "stopCmd", "stopRsp", "surfCmd", "surfRsp"
   },
   7
 }; // remainder of struct is 0 filled
@@ -47,9 +51,8 @@ void ngkInit(void) {
  * uses: mdm.delay
  */
 void ngkSend(MsgType msg) {
-  char str[12];
-  DBG0("ngkSend(%d)",msg)
-  strcpy(str, mdm.message[msg]);
+  char str[12] = mdm.message[msg];
+  flogf("\nngkSend(%s) at %s", mdm.name[msg], clockTime(scratch))
   strcat(str, "\n");
   // set winch id "#R,0X,00"
   str[4]=WINCH_ID;
@@ -83,12 +86,12 @@ void ngkSend(MsgType msg) {
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
   if (serRead(mdm.port, scratch)) {
-    flogf("\n\t| ngkRecv()->%s", scratch);
+    flogf("\n\t| ngkRecv(%s)", scratch);
     if (msgParse(scratch, &m)) {
-      flogf(" msg=%d", m);
+      flogf("->%s at %s", mdm.name[m], clockTime(scratch));
       // tbd TBD check if lastSend matches?
       if (mdm.expect!=m) {
-        flogf(" (expect %d)", mdm.expect);
+        flogf("\nERR\t| (expecting %s)", mdm.name[mdm.expect]);
       }
       mdm.expect = null_msg;
       mdm.recv[m]++;

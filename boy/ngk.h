@@ -29,6 +29,7 @@ extern NgkInfo ngk;
 // Tracking number of calls
 typedef struct MdmInfo {
   char * message[sizeof_msg];   // msg string
+  char * name[sizeof_msg];
   int delay;                    // # seconds for amodem to transmit msg (7s)
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
