@@ -51,8 +51,9 @@ void ngkInit(void) {
  * uses: mdm.delay
  */
 void ngkSend(MsgType msg) {
-  char str[12] = mdm.message[msg];
-  flogf("\nngkSend(%s) at %s", mdm.name[msg], clockTime(scratch))
+  char str[12];
+  flogf("\nngkSend(%s) at %s", mdm.name[msg], clockTime(scratch));
+  strcpy(str, mdm.message[msg]);
   strcat(str, "\n");
   // set winch id "#R,0X,00"
   str[4]=WINCH_ID;
