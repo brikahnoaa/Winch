@@ -3,30 +3,29 @@
 #include <ngk.h>
 #include <tmr.h>
 
-// mdm.message[] strings, as if sent to buoy; change ID before sending to winch
 MdmInfo mdm = {
+  { "null", 
+    // mdm.msgStr[] as if sent to buoy; change ID before sending to winch
     // %B and %W are shorter, last two digits are status
-  { "null",
     "#B,00,00", "%B,00,", "#F,00,00", "%F,00,00", "#R,00,00", "%R,00,00",
-    "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,03", "surfRsp",
+    "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,03", "mangled",
   },
   { "null",
     "buoyCmd", "buoyRsp", "dropCmd", "dropRsp", "riseCmd", "riseRsp",
-    "statCmd", "statRsp", "stopCmd", "stopRsp", "surfCmd", "surfRsp"
+    "statCmd", "statRsp", "stopCmd", "stopRsp", "surfCmd", "mangled",
   },
-  7
+  7 // delay
 }; // remainder of struct is 0 filled
 NgkInfo ngk;
 
 /*
- * power on amodem, initialize strings
+ * power on amodem
  * sets: mdm.port
  */
 void ngkInit(void) {
   short mdmRX, mdmTX;
   Serial p;
   DBG0("ngkInit()");
-
   // Power up the DC-DC for the Acoustic Modem Port
   PIOClear(MDM_PWR);
   delayms(100);
@@ -52,9 +51,9 @@ void ngkInit(void) {
  */
 void ngkSend(MsgType msg) {
   char str[12];
-  flogf("\nngkSend(%s) at %s", mdm.name[msg], clockTime(scratch));
-  strcpy(str, mdm.message[msg]);
-  strcat(str, "\n");
+  flogf("\nngkSend(%s) at %s", mdm.msgName[msg], clockTime(scratch));
+  strcpy(str, mdm.msgStr[msg]);
+  strcat(str, "\r\n");
   // set winch id "#R,0X,00"
   str[4]=WINCH_ID;
   TUTxWaitCompletion(mdm.port);
@@ -83,41 +82,42 @@ void ngkSend(MsgType msg) {
  * get winch message if available and parse it
  * ?? respond to stopcmd buoycmd
  * sets: ngk.on mdm.expect .lastRecv .recv[] scratch (*msg)
+ * returns: false if no message
  */
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
-  char msgStr[BUFSZ], *ptr;
-  int len = 0;
+  char msgStr[BUFSZ];
   if (serRead(mdm.port, msgStr)) {
-    if (len==10)
-      // strip anything past CRLF
-      if ((ptr = strpbrk(msgStr, "\r\n"))!=NULL) 
-        *ptr = 0;
-      else
-        flogf("\nERR\t|ngkRecv() no CRLF");
-    else
-      flogf("\nERR\t|ngkRecv() wrong msg length = %d", len);
-    flogf("\n\t|ngkRecv(%s)", msgStr);
-    if (msgParse(msgStr, &m)) {
-      flogf("->%s at %s", mdm.name[m], clockTime(scratch));
-      // tbd TBD check if lastSend matches?
-      if (mdm.expect!=m) {
-        flogf("\nERR\t| (expecting %s)", mdm.name[mdm.expect]);
-      }
-      mdm.expect = null_msg;
+    if (msgParse(msgStr, &m)!=mangled_msg) {
+      flogf("\n\t|ngkRecv(%s) at %s", mdm.msgName[m], clockTime(scratch));
       mdm.recv[m]++;
-      tmrStop(winch_tmr);
+      if (m==stopCmd_msg) {
+        // surfaced or jammed
+        tmrStop(winch_tmr);
+        mdm.expect = 0;
+      }
+      if (mdm.expect) {
+        if (mdm.expect==m) {
+          tmrStop(winch_tmr);
+          mdm.expect = null_msg;
+        } else {
+          // unexpected
+            
+          flogf(" (expecting %s)", mdm.msgName[mdm.expect]);
+        }
+      } // expecting
       // winch motor
       if (m==riseRsp_msg || m==dropRsp_msg) 
         ngk.on = true;
       if (m==stopCmd_msg || m==stopRsp_msg) 
         ngk.on = false;
+    // parsed
     } else {
-      // parse fail. already logged by msgParse. wait for timeout? resend?
-      // ??
-      // ngkSend( mdm.lastSend );
+      // mangled, already logged by msgParse, resend last ??
+      // if (mdm.expect!=null_msg) 
+      //   ngkSend( mdm.lastSend );
     }
-  }
+  } // serRead
   *msg = m;
   return m;
 } // ngkRecv
@@ -132,22 +132,29 @@ bool ngkTimeout(void) {
 } // ngkTimeout
 
 /*
- * match against mdm.message[] strings
+ * match against mdm.msgStr[]
  * sets: (*msg)
+ * returns: msg
  */
-bool msgParse(char *str, MsgType *msg) {
-  MsgType m;
-  // search down until null_msg, that means not found
-  for (m=null_msg+1; m<sizeof_msg; m++) 
-    if (strstr(str, mdm.message[m])!=NULL) 
-      break;
-  if (m==sizeof_msg) 
-    m = null_msg;
+MsgType msgParse(char *str, MsgType *msg) {
+  MsgType m = mangled_msg;
+  char c;
+  int len;
+  len = strlen(str);
+  // trim off crlf at end for logging (check twice)
+  c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;                   
+  c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;                   
+  if (len!=8)
+    flogf("\nERR\t|msgParse() wrong msg length = %d", len);
+  } else {
+    // size ok
+    for (m=null_msg+1; m<mangled_msg; m++)
+      if (strstr(str, mdm.msgStr[m])!=NULL) 
+        break;
+  } 
+  if (m==mangled_msg)             // no match or invalid
+    flogf("\nERR\t|msgParse(%s) fail", str);
   *msg = m;
-  if (m==null_msg) {             // no match or invalid
-    flogf("\nERR\t| msgParse() fail, '%s', len=%d", str, strlen(str));
-    return false;
-  } else
-    return true;
+  return m;
 } // msgParse
 

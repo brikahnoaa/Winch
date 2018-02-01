@@ -10,7 +10,7 @@
 typedef enum {
   null_msg=0,
   buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,
-  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, surfRsp_msg,
+  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,
   sizeof_msg
 } MsgType;
 
@@ -28,8 +28,8 @@ extern NgkInfo ngk;
 
 // Tracking number of calls
 typedef struct MdmInfo {
-  char * message[sizeof_msg];   // msg string
-  char * name[sizeof_msg];
+  char * msgStr[sizeof_msg];    // msg string as if sent to buoy
+  char * msgName[sizeof_msg];
   int delay;                    // # seconds for amodem to transmit msg (7s)
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
@@ -41,9 +41,9 @@ typedef struct MdmInfo {
 } MdmInfo;
 extern MdmInfo mdm;
 
-static bool msgParse(char *str, MsgType *msg);
+static MsgType msgParse(char *str, MsgType *msg);
 
-MsgType ngkRecv(MsgType *msg);
 bool ngkTimeout(void);
+MsgType ngkRecv(MsgType *msg);
 void ngkInit(void);
 void ngkSend(MsgType msg);

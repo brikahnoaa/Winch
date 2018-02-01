@@ -87,21 +87,27 @@ def serThread():
         stop()
     if ser.is_open: ser.close()
 
+# #R,01,03
+surfCmd = "#R,%s,00" % winchID
+riseCmd = "#R,%s,03" % winchID
+fallCmd = "#F,%s,00" % winchID
+quitRsp = "%%S,%s,00" % winchID
+stopCmd = "#S,%s,00" % winchID
+buoyRsp = "%%S,%s,00" % winchID
+
+riseRsp = "%%R,%s,00" % buoyID
+fallRsp = "%%F,%s,00" % buoyID
+quitCmd = "#S,%s,00" % buoyID
+stopRsp = "%%S,%s,00" % buoyID
+buoyCmd = "#S,%s,00" % buoyID
 
 def amodInput():
     "process input at serial, sleeps to simulate amodDelay"
-    # #R,01,03
-    riseCmd = "#R,%s,03" % winchID
-    riseRsp = "%%R,%s,00" % buoyID
-    stopCmd = "#S,%s,00" % winchID
-    stopRsp = "%%S,%s,00" % buoyID
-    fallCmd = "#F,%s,00" % winchID
-    fallRsp = "%%F,%s,00" % buoyID
-    buoyAck = "%%S,%s,00" % winchID
     l = ser.getline()
     if not l: return
     ser.log( "hearing %s" % l )
-    if len(l) > 6: sleep(amodDelay)
+    if len(l) > 6: 
+        sleep(amodDelay)
     # rise
     if riseCmd in l:
         motor('up')
@@ -117,9 +123,11 @@ def amodInput():
         motor('down')
         sleep(amodDelay)
         ser.putline(fallRsp)
+    elif quitRsp in l:
+        ser.log( "buoy stop response %s" % l )
     # buoy responds to stop after dock or slack
-    elif buoyAck in l:
-        ser.log( "buoy response %s" % l )
+    elif buoyRsp in l:
+        ser.log( "buoy stat response %s" % l )
     # something strange
     elif l:
         ser.log("amod: unexpected %r" % l)
@@ -172,7 +180,7 @@ def motorThread():
             if slack():
                 ser.log( "surfaced" )
                 motor('off')
-                amodPut("#S,%s,00%s" % (buoyID, ser.eol))
+                amodPut(quitCmd + ser.eol)
         # down
         if motorRunState=='down':
             cableLen -= (time() - motorLastTime) * .2
@@ -180,7 +188,7 @@ def motorThread():
                 ser.log( "docked" )
                 cableLen=0
                 motor('off')
-                amodPut("#S,%s,00%s" % (buoyID, ser.eol))
+                amodPut(quitCmd + ser.eol)
 
 def slack():
     "determine if the cableLen is slack"
