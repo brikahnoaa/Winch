@@ -63,14 +63,19 @@ void ngkSend(MsgType msg) {
   switch (msg) {
   case dropCmd_msg:
     mdm.expect = dropRsp_msg;
+    break;
   case riseCmd_msg:
     mdm.expect = riseRsp_msg;
+    break;
   case statCmd_msg:
     mdm.expect = statRsp_msg;
+    break;
   case stopCmd_msg:
     mdm.expect = stopRsp_msg;
+    break;
   case surfCmd_msg:
     mdm.expect = surfRsp_msg;
+    break;
   default:
     mdm.expect = null_msg;
   }

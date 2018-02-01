@@ -15,6 +15,7 @@ void delayms(int x) { RTCDelayMicroSeconds((long)x*1000); }
  * put string to serial; queue, don't block, it should all buffer
  */
 int serWrite(Serial port, char *out) {
+  DBG0("serWrite(%s)", out)
   int len = strlen(out);
   int sent;
   short delay = (short)CHAR_DELAY + TUBlockDuration(port, len);
@@ -31,6 +32,7 @@ int serWrite(Serial port, char *out) {
 int serRead(Serial port, char *in) {
   int len = 0;
   if (TURxQueuedCount(port)>0) {
+    DBG0("serRead()")
     // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
     for (len=0; len<BUFSZ; len++) {
       in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
@@ -41,6 +43,7 @@ int serRead(Serial port, char *in) {
     }
   }
   in[len]=0;        // string
+  DBG1("->'%s'", in)
   return len;
 }
 
@@ -52,15 +55,18 @@ int serRead(Serial port, char *in) {
  */
 int serReadWait(Serial port, char *in, int wait) {
   int len = 0;
+  DBG0("serReadWait(%d)")
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   TickleSWSR(); // could have been a long wait
   if (in[0]<=0) {
-    // first char
+    // timeout
     in[0]=0;
-  } else
-    // rest of input
+  } else {
+    // rest of input, note serRead exits if nothing queued
     delayms(CHAR_DELAY);
     len = serRead(port, in+1) + 1;
+    DBG1("->'%s'", in)
+  }
   return len;
 }
 

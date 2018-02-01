@@ -58,13 +58,13 @@
 #endif
 
 #ifdef DEBUG1
-#define DBG1(...) flogf("\n" __VA_ARGS__);
+#define DBG1(...) flogf(" " __VA_ARGS__);
 #else
 #define DBG1(...)
 #endif
 
 #ifdef DEBUG2
-#define DBG2(...) flogf("\n" __VA_ARGS__);
+#define DBG2(...) flogf(" " __VA_ARGS__);
 #else
 #define DBG2(...)
 #endif
