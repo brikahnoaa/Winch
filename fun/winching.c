@@ -24,7 +24,7 @@ void winchingMain(void){
     while (true) { // input
       // amodem
       if (ngkRecv(&msg)!=null_msg) {
-        cprintf("\n winch>> '%s' @ %s", mdm.message[msg], clockTime(scratch));
+        cprintf("\n winch>> '%s' @ %s", mdm.msgName[msg], clockTime(scratch));
         break; // while input
       } 
       // keyboard
@@ -40,7 +40,6 @@ void winchingMain(void){
         case 'F': ngkSend(dropRsp_msg); break;
         case 'R': ngkSend(riseRsp_msg); break;
         case 'S': ngkSend(stopRsp_msg); break;
-        case 'U': ngkSend(surfRsp_msg); break;
         case 'W': ngkSend(statRsp_msg); break;
         case 'b': ngkSend(buoyCmd_msg); break;
         case 'f': ngkSend(dropCmd_msg); break;

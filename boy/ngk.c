@@ -74,7 +74,7 @@ void ngkSend(MsgType msg) {
     mdm.expect = stopRsp_msg;
     break;
   case surfCmd_msg:
-    mdm.expect = surfRsp_msg;
+    mdm.expect = riseRsp_msg;
     break;
   default:
     mdm.expect = null_msg;
@@ -149,14 +149,11 @@ MsgType msgParse(char *str, MsgType *msg) {
   // trim off crlf at end for logging (check twice)
   c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;                   
   c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;                   
-  if (len!=8)
+  if (len!=8) 
     flogf("\nERR\t|msgParse() wrong msg length = %d", len);
-  } else {
-    // size ok
-    for (m=null_msg+1; m<mangled_msg; m++)
-      if (strstr(str, mdm.msgStr[m])!=NULL) 
-        break;
-  } 
+  for (m=null_msg+1; m<mangled_msg; m++)
+    if (strstr(str, mdm.msgStr[m])!=NULL) 
+      break;
   if (m==mangled_msg)             // no match or invalid
     flogf("\nERR\t|msgParse(%s) fail", str);
   *msg = m;

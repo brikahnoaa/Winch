@@ -202,6 +202,5 @@ If your new temp branch looks good, you may want to update (e.g.) master to poin
  $ git push --all # push all tracking branches
  $ git pull –rebase
  $ git fetch origin; git rebase −p origin/develop  # better than pull
- $ git update-index --assume-unchanged codewar/lara/lara.mcp
  $ git update-index --skip-worktree codewar/lara/
 
