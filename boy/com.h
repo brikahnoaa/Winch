@@ -26,6 +26,8 @@
 
 #include <utl.h> // shared procs, SW
 
+#define DBG_LVL 1
+
 // DBG() blocks of code, as is
 // DBG0() print func names
 // DBG1() print more interesting things
