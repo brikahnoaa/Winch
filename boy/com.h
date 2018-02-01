@@ -27,6 +27,8 @@
 #include <utl.h> // shared procs, SW
 
 #define DBG_LVL 1
+#define DEBUG0
+#define DEBUG1
 
 // DBG() blocks of code, as is
 // DBG0() print func names
@@ -54,7 +56,7 @@
 #endif
 
 #ifdef DEBUG0
-#define DBG0(...) flogf(" " __VA_ARGS__);
+#define DBG0(...) flogf("\n" __VA_ARGS__);
 #else
 #define DBG0(...)
 #endif

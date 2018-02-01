@@ -64,13 +64,14 @@ void preRun(int delay) {
 } // preRun
 
 void logInit() {
-  Initflog(sys.logfile, true);
+  strcpy(sys.log, VEEFetchStr( "SYS_LOG", SYS_LOG ));
+  Initflog(sys.log, true);
   flogf("\n----------------------------------------------------------------");
-  flogf("\nProgram: %s,  Version: %3.2f,  Build: %s %s", __FILE__, sys.version,
-        __DATE__, __TIME__);
+  flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
         BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
+  flogf("\n----------------------------------------------------------------");
   fflush(NULL);
   TickleSWSR();
   cdrain();
@@ -78,20 +79,14 @@ void logInit() {
   coflush();
 }
 
-/*
- * init files, basic checks
- */
 void sysInit() {
+  logInit();
+  configFile();
   PZCacheSetup('C' - 'A', calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
-
-  logInit();
-  flogf("\nProgram: %s  Project ID: %s   Platform ID: %s  Boot ups: %d",
-    sys.program, sys.project, sys.platform, sys.starts);
-  clockTimeDate(scratch);
-  flogf("\nStart time: %s", scratch);
-
-  configFile();
+  flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
+    sys.program, sys.version, sys.project, sys.platform, sys.starts);
+  flogf("\nStart at: %s", clockTimeDate(scratch));
 } // sysInit
 
 /*
@@ -109,6 +104,9 @@ void sysSleepUntilWoken(void) {
 void sysShutdown(void) {
 } // sysShutdown
 
+/*
+ * read config from CONFIG_FILE
+ */
 void configFile(void) {
 } // configFile
 
@@ -118,14 +116,15 @@ void configFile(void) {
  * sets: sys.starts .startsMax
  */
 void restartCheck(void) {
-  sys.starts = VEEFetchLong("STARTS", SYS_STARTS)+1;
-  sys.startsMax = VEEFetchLong("STARTSMAX", SYS_STARTS_MAX);
-  VEEStoreLong("STARTS", sys.starts);
+  sys.starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
+  sys.startsMax = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
   if (sys.starts>sys.startsMax) {
     // log file is not open yet, but still works as printf
-    flogf("\nrestartCheck(): startups>startmax, shutdown...\n");
+    flogf("\nrestartCheck(): startups>startmax, so shutdown...\n");
     sysShutdown();
   }
+  csprintf(scratch, "%d", sys.starts);
+  VEEStoreStr("STARTS", scratch);
 } // restartCheck
 
 

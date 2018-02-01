@@ -12,17 +12,31 @@ void delayms(int x) {
 }
 
 /*
+ * sets: (*str)
+ */
+int crlfTrim(char *str) {
+  char c;
+  int len = strlen(str);
+  // trim off crlf at end 
+  c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;
+  c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;
+  return len;
+}
+
+/*
  * put string to serial; queue, don't block, it should all buffer
  * returns: charsSent
  */
 int serWrite(Serial port, char *out) {
   int len, delay, sent;
-  DBG0("serWrite(%s)", out)
+  DBG0("serWrite()")
   len = strlen(out);
-  delay = CHAR_DELAY + TUBlockDuration(port, len);
-  sent = (int) TUTxPutBlock(port, out, (long)len, (short)delay);
+  delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
+  sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
+  DBG1("sent %d of %d", sent, len)
+  DBG2("'%s'", out)
   if (len!=sent) 
-    flogf("\nERR\t| serWrite(%s) sent %d of %d", out, sent, len);
+    flogf("\nERR\t|serWrite(%s) sent %d of %d", out, sent, len);
   return sent;
 }
 

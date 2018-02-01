@@ -1,13 +1,16 @@
 // sys.h
-#define SYS_STARTS 0L
-#define SYS_STARTS_MAX 50L
+#define STARTS "0"
+#define STARTS_MAX "50"
+#define SYS_LOG "C:SYS.LOG"
+#define SYS_CFG "C:SYS.CFG"
 
 typedef struct systemData {
-  char logfile[12];
-  char platform[6];   // rudicsland
-  char program[12]; // added HM
-  char project[6];    // rudicsland
-  char version[12];
+  char cfg[16];
+  char log[16];
+  char platform[16];   // rudicsland
+  char program[16];
+  char project[16];    // rudicsland
+  char version[16];
   int filenum;
   long starts;
   long startsMax;

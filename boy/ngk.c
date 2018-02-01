@@ -28,9 +28,11 @@ void ngkInit(void) {
   DBG0("ngkInit()");
   // Power up the DC-DC for the Acoustic Modem Port
   PIOClear(MDM_PWR);
-  delayms(100);
+  delayms(250);
   PIOSet(MDM_PWR); 
-  delayms(100);
+  delayms(250);
+  PIORead(MDM_RX_TTL);              // tpu->rs232 is pin 33->48->47
+  PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
   mdmRX = TPUChanFromPin(MDM_RX);
   mdmTX = TPUChanFromPin(MDM_TX);
   p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
@@ -39,6 +41,7 @@ void ngkInit(void) {
   else {
     TUTxFlush(p);
     TURxFlush(p);
+    serWrite(p, "\n");      // ??
   }
   mdm.port = p;
 } // ngkInit
@@ -143,12 +146,8 @@ bool ngkTimeout(void) {
  */
 MsgType msgParse(char *str, MsgType *msg) {
   MsgType m = mangled_msg;
-  char c;
   int len;
-  len = strlen(str);
-  // trim off crlf at end for logging (check twice)
-  c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;                   
-  c = str[len-1]; if (c=='\r' || c=='\n') str[--len] = 0;                   
+  len = crlfTrim(str);
   if (len!=8) 
     flogf("\nERR\t|msgParse() wrong msg length = %d", len);
   for (m=null_msg+1; m<mangled_msg; m++)

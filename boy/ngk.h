@@ -3,6 +3,8 @@
 #define MDM_PWR 21
 #define MDM_RX 33
 #define MDM_TX 35
+#define MDM_RX_TTL 48
+#define MDM_TX_TTL 50
 #define MDM_BAUD 4800L
 #define BUOY_ID '0'
 #define WINCH_ID '1'
