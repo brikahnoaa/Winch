@@ -30,6 +30,8 @@ typedef struct MpcData {
   float joules;
   float volts;
   float voltMin;
+  long diskFree;
+  long diskSize;
   Serial com1;
   SerialDevType device;
 } MpcData;

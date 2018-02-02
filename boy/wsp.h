@@ -16,22 +16,5 @@ typedef struct WspInfo {
 } WspInfo;
 extern WspInfo wsp;
 
-short wspData(void);
-void wspPower(bool);
-bool wspExit(void);
-void wspGain(short);
-float wspFreeSpace(void);
-void wspDFP(void);
-void wspTFP(void);
-void wspDet(int);
-void wspSafeShutdown(void);
-void wspChangeCard(short);
-void wspSettings(void);
-void wspWriteFile(int);
-void createDtxFile(void);
-bool wspStatus(void);
-void gatherWspFreeSpace(void);
-void upwspeWspFRS(void);
-void wspGPS(void);
 void wspInit(int board);
-bool wspExpectedReturn(short, bool);
+void wspStop(void);

@@ -8,8 +8,6 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <ngk.h>
-// ??
-#include <winching.h>
 
 /*
  * Before deploying, set CF2 time and SM2 time, format SD cards,

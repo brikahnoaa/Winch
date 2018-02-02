@@ -2,35 +2,23 @@
 #include <com.h>
 #include <wsp.h>
 
-// gain num detMax detNum dutycycl port
-WspInfo wsp = {
-  2, 4, 10, 0, 360, NULL
-};
-
-bool SendwspGPS = false;
-static int wspGPSSends;
-bool wspOn;
-float wspFreeSpace = 0.0;
-int TotalDetections;
-int dtxrqst;
-
-// char* wspString;
-// short wspStringLength=64;
-// PAM TUPORT Setup
-Serial PAMPort;
-short PAM_RX, PAM_TX;
-
-char *GetwspInput(float *);
-void AppendDetections(char *, int);
-
-static char wspfile[] = "c:wspFRS.DAT";
-static char WspString[64];
-
-bool wspStatus(void) { return wspOn; }
+/*
+ * Incoming wsp ASCII Communication. Looks for certain commands starting with
+ * '$' and ending with '*'
+ * Return values:
+ * 1: GPS
+ * 2: DFP
+ * 3: DXN
+ * 4: DTX
+ * 5: NGN
+ * 6: FIN
+ * 0: NULL
+ * -1: No Match
+ * -2: <MIN FREE SPACE
+ */
 
 /*
- * Power is applied to the wsp boards
- */
+ // all comments
 void wspPower(bool power) {
   DBG0("wspPower()")
   // must call wspInit first
@@ -50,21 +38,6 @@ void wspPower(bool power) {
   }
 } // wspPower
 
-/*
- * void wspData()
- * Incoming wsp ASCII Communication. Looks for certain commands starting with
- * '$' and ending with '*'
- * Return values:
- * 1: GPS
- * 2: DFP
- * 3: DXN
- * 4: DTX
- * 5: NGN
- * 6: FIN
- * 0: NULL
- * -1: No Match
- * -2: <MIN FREE SPACE
- */
 short wspData(void) {
   float returndouble;
   int i;
@@ -82,7 +55,7 @@ short wspData(void) {
     wspGPS(124.5, 45);
     return 1;
   }
-  /*   else if(strncmp(DataString, "$TFP", 4)==0){
+  else if(strncmp(DataString, "$TFP", 4)==0){
 
         flogf("\n\t|wsp%d: %0.2f%% Total Space", wsp.NUM, returndouble);
         if(returndouble ==0.0){
@@ -92,7 +65,7 @@ short wspData(void) {
            }
         //Calculate what minimum free space should be for given detint.
         }
- */
+ 
   else if (strncmp(DataString, "$DFP", 4) == 0) {
 
     flogf("\n\t|wsp%d: %.2f%% Free Space", wsp.NUM, returndouble);
@@ -240,14 +213,12 @@ short wspData(void) {
   return 0;
 
 } // wspData
-/*
- * int wspDet()
-This is where we inquire about the total number of detections every so often.
-This function will call to the wsp board with max_detections. It first
-repsonds with a $DXN...* com line then lists each actual detection
-afterward with a $DTX...* com line. Each are up to ~60 bytes per line
 
- */
+// This is where we inquire about the total number of detections every so often.
+// This function will call to the wsp board with max_detections. It first
+// repsonds with a $DXN...* com line then lists each actual detection
+// afterward with a $DTX...* com line. Each are up to ~60 bytes per line
+
 void wspDet(int dtx) {
 
   if (dtx < 0)
@@ -266,10 +237,7 @@ void wspDet(int dtx) {
   delayms(500);
 
 } // wspDet
-/*
- * int wspGPS()
-This is where we send the GPS Time and Location to wsp Board at startup
- */
+// This is where we send the GPS Time and Location to wsp Board at startup
 void wspGPS(void) {
 
   float minutes;
@@ -300,13 +268,9 @@ void wspGPS(void) {
   SendwspGPS = true;
 
 } // wspGPS
-/*
- * int wspGain()
-We can update the gain parameters for the wsp Board.
-Might want to do this at the start up of wsp Program when wsp Requests
-for gain values.
-
- */
+// We can update the gain parameters for the wsp Board.
+// Might want to do this at the start up of wsp Program when wsp Requests
+// for gain values.
 void wspGain(short c) {
 
   if (c < 0 || c > 3)
@@ -319,9 +283,6 @@ void wspGain(short c) {
   delayms(2);
 
 } // wspGain
-/*
- * int wspDFP()
- */
 void wspDFP(void) {
 
   DBG0("\t|wspDFP(%d)", wsp.NUM)
@@ -332,9 +293,6 @@ void wspDFP(void) {
   delayms(250);
 
 } // wspDFP
-/*
- * int wspTFP()
- */
 void wspTFP(void) {
 
   DBG0("\t|wspTFP(%d)", wsp.NUM)
@@ -345,9 +303,6 @@ void wspTFP(void) {
   delayms(250);
 
 } // wspDFP
-/*
- * int wspExit()
- */
 bool wspExit(void) {
 
   flogf("\n\t|wspExit()");
@@ -367,17 +322,14 @@ bool wspExit(void) {
     return false;
 
 } // wspExit
-/*
- * char* GetwspInput()
-1. Gets incoming serial data from ActivePAM on MPC
-2. If it is -1 it breaks and exits, once it sees a '*' it stops taking serial
-3. Look for the appropriate wsp Command (DFP, EXI, DXN, DTX)
-4. returns numchars if we are looking for DFP
-5. will return number of detections if we get DXN. for which we will run a for
-loop to get each detection in this same function
-6. Should return char* of DTX if we need to get each detection.
+// 1. Gets incoming serial data from ActivePAM on MPC
+// 2. If it is -1 it breaks and exits, once it sees a '*' it stops taking serial
+// 3. Look for the appropriate wsp Command (DFP, EXI, DXN, DTX)
+// 4. returns numchars if we are looking for DFP
+// 5. will return number of detections if we get DXN. for which we will run a for
+// loop to get each detection in this same function
+// 6. Should return char* of DTX if we need to get each detection.
 
- */
 char *GetwspInput(float *numchars) {
   // global DataString;
   const char *asterisk;
@@ -444,19 +396,14 @@ char *GetwspInput(float *numchars) {
     *numchars = atof(strtok(DataString + 5, "*"));
     // if(numchars==0.00) return false?
   }
-  /*
   else if(strncmp("TFP", r+1, 3)==0){
      *numchars = atof(strtok(DataString+5, "*"));
 
      }
- */
 
   return DataString;
 
 } // GetIRIDInput
-/*
- ** void Changewsp()
- */
 void Changewsp(short wnum) {
 
   // Shut off wsp
@@ -473,9 +420,6 @@ void Changewsp(short wnum) {
   wspInit(true);
   wspPower(true);
 }
-/*
- * void GetwspSettings()
- */
 void GetwspSettings(void) {
   char *p;
   p = VEEFetchData(DETECTIONMAX_NAME).str;
@@ -528,9 +472,6 @@ void GetwspSettings(void) {
   }
 
 } // GetwspSettings
-/*
- * void wspSafeShutdown()
- */
 void wspSafeShutdown(void) {
 
   int i;
@@ -555,9 +496,6 @@ void wspSafeShutdown(void) {
     return;
 
 } // wspSafeShutdown
-/*
- * Void wspWriteFile()
- */
 void wspWriteFile(int uploadfilehandle) {
   char detfname[] = "c:00000000.dtx";
   int byteswritten;
@@ -574,14 +512,12 @@ void wspWriteFile(int uploadfilehandle) {
             wsp.DETMAX, TotalDetections);
 
     DBG1("%s", WriteBuffer)
-    /*
             #ifdef REALTIME
                if(wsp.DETNUM>0){
                sprintf(stringadd, "\nCall upon %04d Detections\n", wsp.DETNUM);
                strncat(buf, stringadd, 27*sizeof(char));
                }
             #endif
- */
 
   } else {
     sprintf(WriteBuffer, "\nwsp-OFF\n\0");
@@ -612,11 +548,6 @@ void wspWriteFile(int uploadfilehandle) {
   TotalDetections = 0;
 
 } // wspWriteFile
-/*
- * float GetwspFreeSpace
- * Read "wspfs.bat" file. return free space of current wsp? ||  return free
-space of last wsp
- */
 float GetwspFreeSpace(void) {
 
   return wspFreeSpace;
@@ -649,10 +580,6 @@ void create_dtx_file(long fnum) {
 
   delayms(10);
 }
-/*
- * GatherwspFreeSpace()
- * Only should come here upon MPC.STARTUPS==0 && wspNUMBER>1
- */
 void GatherwspFreeSpace(void) {
   short wret = 0, i, count = 0, wnum = 1;
   int byteswritten = 0;
@@ -747,11 +674,7 @@ void GatherwspFreeSpace(void) {
   VEEStoreShort(wspNUM_NAME, wsp.NUM);
 
 } //GatherwspFreeSpace
-/*
- * void UpdatewspFRS()
- * 
- * Write to file: wspFRS.DAT with the current wsp's free space
- */
+// * Write to file: wspFRS.DAT with the current wsp's free space
 void UpdatewspFRS(void) {
   // global *DataString;
   int wspfilehandle;
@@ -813,13 +736,11 @@ void UpdatewspFRS(void) {
 
 } // UpdatewspFRS
 
-/*
- * WISPR BOARD
- * TPU 6    27 PAM1 WISPR TX
- * TPU 7    28 PAM1 WISPR RX
- * TPU 8    29 1= turns on MAX3222
- * TPU 9    30 0= enables MAX3222
- */
+// * WISPR BOARD
+ //* TPU 6    27 PAM1 WISPR TX
+ //* TPU 7    28 PAM1 WISPR RX
+ //* TPU 8    29 1= turns on MAX3222
+ //* TPU 9    30 0= enables MAX3222
 void wspInit(int board) {
   // global DataStr
   int DataNum;
@@ -892,9 +813,6 @@ void wspInit(int board) {
   }
   delayms(100);
 }
-/*
- * bool wspExpectedReturn(short)
- */
 bool wspExpectedReturn(short expected, bool reboot) {
 
   if (wspData() != expected) {
@@ -927,3 +845,6 @@ bool wspExpectedReturn(short expected, bool reboot) {
     return true;
 
 } // wspExpectedReturn //
+
+ // all comments
+*/ 

@@ -8,15 +8,9 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <ngk.h>
+#include <pwr.h>
 #include <sys.h>
-#include <wispr.h>
-
-BuoyData boy = {
-  true, "QUEH", "LARA", "LR01", 
-  3.0, 60.0, 8.0, 
-  1, 1, 100, 0, 0, 0, 50, 
-  (time_t)0, (time_t)0,
-};
+#include <wsp.h>
 
 /*
  * deploy or reboot, loop over phase 1-4
@@ -60,56 +54,43 @@ void boyMain(int starts) {
 } // boyMain() 
 
 /*
- * set up ctd, serial port
+ * 
  */
-void boyInit(Serial *port) {
+void boyInit() {
 } // boyInit
 
 /*
  * figure out whats happening, continue as possible
+ * load info from saved previous phase
+ * ask antmod for our velocity
+ * sets: boy.phase
  */
-void boyReboot(int *phase) {
-  // load info from saved previous phase
-  // check STARTSVEE - was saved state really the last boot?
-  // match hardware to saved state
-  // ask antmod for our velocity
+void boyReboot() {
 } // reboot()
 
 /*
  * wispr recording and detecting, buoy is docked to ngk
+ * data is gathered for about 24hours (data_tmr)
+ * wsp powers down for % of each hour (wispr_tmr)
+ * sets: boy.phaseStartT 
+ * uses: data_tmr duty_tmr
  */
 void dataPhase(void) {
-  flogf("\n\t|phase ONE");
-  boy.phaseStartT=time(0);
-
-  // Initialize System Timers
-  Check_Timers(power.interval);
-
-  // Stay here until system_timer says it's time to send data, user input for
-  // different phase, NIGK R
-  while (!boy.DATA && boy.phase == 1) {
-    // sleep needs a lot of optimizing to be worth the trouble
-    // Sleep();
-    Incoming_Data();
-    if (System_Timer() == 2)
-      boy.DATA = true;
-  }
-  if (WISPR_Status()) { // moved here from p3
-    WISPRSafeShutdown();
-  }
-
+  flogf("\n\t|dataPhase()");
+  boy.phaseT=time(0);
+  // sleep needs a lot of optimizing to be worth the trouble
+  // Sleep();
+  wspStop();
 } // dataPhase
 
 /*
  * turn on ant, ascend. check angle, go up midway, check angle, surface.
  * sideways is caused by ocean current pushing the buoy 
- * uses: ctd.delay .sideMax
- * sets: boy.phaseStartT .phase ant.depth ctd.depth
- * sets: sys.alarm[] 
+ * sets: boy.phaseT .phase .alarm[]
  */
 void risePhase(void) {
-  flogf("\n\t| risePhase()");
-  time_t riseStartT=(time_t)0;
+  flogf("\n\t|risePhase()");
+  boy.phaseT=time(0);
   float depth, depthStart, sideways, target, velocity;
   RespondType rsp;
   //
