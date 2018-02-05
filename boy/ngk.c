@@ -18,10 +18,10 @@ MdmInfo mdm = {
 }; // remainder of struct is 0 filled
 NgkInfo ngk;
 
-/*
- * power on amodem
- * sets: mdm.port
- */
+//
+// power on amodem
+// sets: mdm.port
+///
 void ngkInit(void) {
   short mdmRX, mdmTX;
   Serial p;
@@ -46,12 +46,12 @@ void ngkInit(void) {
   mdm.port = p;
 } // ngkInit
 
-/*
- * send message to winch via amodem
- * starts winch_tmr, does not set ngk.on (see ngkRecv)
- * sets: mdm.expect .send[] .lastSend 
- * uses: mdm.delay
- */
+//
+// send message to winch via amodem
+// starts winch_tmr, does not set ngk.on (see ngkRecv)
+// sets: mdm.expect .send[] .lastSend 
+// uses: mdm.delay
+///
 void ngkSend(MsgType msg) {
   char str[12];
   flogf("\nngkSend(%s) at %s", mdm.msgName[msg], clockTime(scratch));
@@ -86,12 +86,12 @@ void ngkSend(MsgType msg) {
     tmrStart(winch_tmr, mdm.delay*2+2);
 } // ngkSend
 
-/*
- * get winch message if available and parse it
- * ?? respond to stopcmd buoycmd
- * sets: ngk.on mdm.expect .lastRecv .recv[] scratch (*msg)
- * returns: false if no message
- */
+//
+// get winch message if available and parse it
+// ?? respond to stopcmd buoycmd
+// sets: ngk.on mdm.expect .lastRecv .recv[] scratch (*msg)
+// returns: false if no message
+///
 MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;                // change this if successful
   char msgStr[BUFSZ];
@@ -139,11 +139,11 @@ bool ngkTimeout(void) {
     return false;
 } // ngkTimeout
 
-/*
- * match against mdm.msgStr[]
- * sets: (*msg)
- * returns: msg
- */
+//
+// match against mdm.msgStr[]
+// sets: (*msg)
+// returns: msg
+///
 MsgType msgParse(char *str, MsgType *msg) {
   MsgType m = mangled_msg;
   int len;

@@ -12,11 +12,11 @@
 #include <sys.h>
 #include <wsp.h>
 
-/*
- * deploy or reboot, loop over phase 1-4
- * uses: .startPhase
- * sets: .dockDepth .phase  
- */
+//
+// deploy or reboot, loop over phase 1-4
+// uses: .startPhase
+// sets: .dockDepth .phase  
+///
 void boyMain(int starts) {
   // normal case is last
   boy.phase = boy.startPhase;
@@ -32,6 +32,7 @@ void boyMain(int starts) {
   }
     
   while (true) {
+    boy.phaseT=time(0);
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
       dataPhase();
@@ -53,44 +54,42 @@ void boyMain(int starts) {
   } // while true
 } // boyMain() 
 
-/*
- * 
- */
+//
+// 
+///
 void boyInit() {
 } // boyInit
 
-/*
- * figure out whats happening, continue as possible
- * load info from saved previous phase
- * ask antmod for our velocity
- * sets: boy.phase
- */
+//
+// figure out whats happening, continue as possible
+// load info from saved previous phase
+// ask antmod for our velocity
+// sets: boy.phase
+///
 void boyReboot() {
 } // reboot()
 
-/*
- * wispr recording and detecting, buoy is docked to ngk
- * data is gathered for about 24hours (data_tmr)
- * wsp powers down for % of each hour (wispr_tmr)
- * sets: boy.phaseStartT 
- * uses: data_tmr duty_tmr
- */
+//
+// wispr recording and detecting, buoy is docked to ngk
+// data is gathered for about 24hours (data_tmr)
+// wsp powers down for % of each hour (wispr_tmr)
+// sets: boy.phaseStartT 
+// uses: data_tmr duty_tmr
+///
 void dataPhase(void) {
   flogf("\n\t|dataPhase()");
-  boy.phaseT=time(0);
   // sleep needs a lot of optimizing to be worth the trouble
   // Sleep();
   wspStop();
 } // dataPhase
 
-/*
- * turn on ant, ascend. check angle, go up midway, check angle, surface.
- * sideways is caused by ocean current pushing the buoy 
- * sets: boy.phaseT .phase .alarm[]
- */
+//
+// turn on ant, ascend. check angle, go up midway, check angle, surface.
+// sideways is caused by ocean current pushing the buoy 
+// sets: boy.phaseT .phase .alarm[]
+///
 void risePhase(void) {
   flogf("\n\t|risePhase()");
-  boy.phaseT=time(0);
   float depth, depthStart, sideways, target, velocity;
   RespondType rsp;
   //
@@ -104,7 +103,7 @@ void risePhase(void) {
     return;
   }
   // target = depth/2.0;
-  target = 10.0;
+  target = boy.halfway;
   riseStartT = time(0);
   ngkSend( rise_msg );
   while ((depth = antDepth()) > target) {
@@ -207,24 +206,24 @@ void risePhase(void) {
   
 } // risePhase
 
-/*
- * turn off sbe, on irid/gps (takes 30 sec). data files from boy to ant.
- * read gps date, loc. 
- */
+//
+// turn off sbe, on irid/gps (takes 30 sec). data files from boy to ant.
+// read gps date, loc. 
+///
 void callPhase(void) {
 }
 
-/*
- * sets: boy.alarm[]
- */
+//
+// sets: boy.alarm[]
+///
 int boyAlarm(AlarmType alarm) { boy.alarm[alarm] += 1; }
 
-/*
- * phase Three
- * Testing iridium/gps connection. 
- * If failed, release ngk cable another meter or two.
- * repeat to minimum CTD depth.
- */
+//
+// phase Three
+// Testing iridium/gps connection. 
+// If failed, release ngk cable another meter or two.
+// repeat to minimum CTD depth.
+///
 void phase3(void) {
   // global: static char uploadfile[] = "c:00000000.dat
   // global ulong PwrOff PwrOn
@@ -327,9 +326,9 @@ void phase3(void) {
   boy.DATA = false;
 
 } // phase3 //
-/*
- * phase4
- */
+//
+// phase4
+///
 void phase4(void) {
 
   float depthChange = 0.0;
@@ -373,7 +372,7 @@ void phase4(void) {
   of AModem Response: then check CTD Average depth and make sure Velocity>0.25
   (descending.)
   If not, then call Winc_Descend Again. After 10, wait for an hour
- */
+///
 
   prevDepth = boy.depth;
 
@@ -429,11 +428,11 @@ void phase4(void) {
   boy.DATA = false;
 } // phase_Four
 
-/*
- * phase0 deploy buoy sequence
- * on ship, sinking, at bottom wait boy.settleTime, gather info, phase2
- * set: boy.dockDepth
- */
+//
+// phase0 deploy buoy sequence
+// on ship, sinking, at bottom wait boy.settleTime, gather info, phase2
+// set: boy.dockDepth
+///
 void phase0(void) {
   DBG0("phase0()")
   // global ctd.depth, boy.runStart
@@ -476,11 +475,11 @@ void phase0(void) {
   boy.phase=2;
 } // phase0()
 
-/*
- * int Incoming_Data()
- * ?? very fragile, caution
- * called by phase1,2,3,4
- */
+//
+// int Incoming_Data()
+// ?? very fragile, caution
+// called by phase1,2,3,4
+///
 int Incoming_Data(void) {
   bool incoming = true;
   static int count = 0;
@@ -594,10 +593,10 @@ int Incoming_Data(void) {
   return value;
 
 } // Incoming_Data
-/*
- * void Console
- * Platform Specific Console Communication
- */
+//
+// void Console
+// Platform Specific Console Communication
+///
 void Console(char in) {
   // are there side effects from any subroutines?
   // shutdown from here
@@ -710,9 +709,9 @@ void Console(char in) {
   return;
 }
 
-/*
- * ExtFinishPulseRuptHandler		IRQ5 logging stop request interrupt
- */
+//
+// ExtFinishPulseRuptHandler		IRQ5 logging stop request interrupt
+///
 IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 #pragma unused(ievstack) // implied (IEVStack *ievstack:a0) parameter
 
@@ -722,13 +721,13 @@ IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 
 } // ExtFinishPulseRuptHandler
 
-/*
- * !! this routine is run for every PIT interrupt!
- ** plus other stuff in the loop that calls Sleep(), in phase1()
- * Usually sleeps until power interrupt PIT (20Hz), 
- * but can also break on serial ints irq4 (cons), irq5 (pam), or spurious
- * note, spurious could occur on other pins 
- */
+//
+// !! this routine is run for every PIT interrupt!
+//* plus other stuff in the loop that calls Sleep(), in phase1()
+// Usually sleeps until power interrupt PIT (20Hz), 
+// but can also break on serial ints irq4 (cons), irq5 (pam), or spurious
+// note, spurious could occur on other pins 
+///
 void Sleep(void) {
   // these handlers just set the pin to I/O mode; wakeup, destroys data
   IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector); // Console Interrupt
@@ -767,40 +766,40 @@ void Sleep(void) {
 } // Sleep
 
 
-/*
- * static void Irq3ISR(void)
- */
+//
+// static void Irq3ISR(void)
+///
 static void IRQ3_ISR(void) {
   PinIO(IRQ3RXX);
   RTE();
 } // Irq3ISR //
-/*
- * static void Irq2RxISR(void) CTD/Seaglider/ IRIDIUM
- */
+//
+// static void Irq2RxISR(void) CTD/Seaglider/ IRIDIUM
+///
 static void IRQ2_ISR(void) {
   PinIO(IRQ2);
   RTE();
 } // Irq2RxISR //
-/*
- * static void IRQ4_ISR(void) CONSOLE
- */
+//
+// static void IRQ4_ISR(void) CONSOLE
+///
 static void IRQ4_ISR(void) {
   PinIO(IRQ4RXD);
   RTE();
 } // Irq2ISR
-/*
- * static void IRQ5_ISR(void) WISPR
- */
+//
+// static void IRQ5_ISR(void) WISPR
+///
 static void IRQ5_ISR(void) {
   PinIO(IRQ5);
   RTE();
 } // Irq5ISR
-/*
- * WriteFile      The Data File For Lara
+//
+// WriteFile      The Data File For Lara
 1) Initially upload MPC parameters
 2) Ngk Info
 3) Ngk Status
- */
+///
 ulong WriteFile(ulong TotalSeconds) {
   // global uploadfile, WriteBuffer
   long BlkLength = BUFSZ;
@@ -909,9 +908,9 @@ ulong WriteFile(ulong TotalSeconds) {
 
 } // WriteFile
 
-/*
- * PrintSystemStatus()
- */
+//
+// PrintSystemStatus()
+///
 char *PrintSystemStatus(void) {
   // global stringout
   sprintf(stringout, "boy: "
@@ -927,10 +926,10 @@ char *PrintSystemStatus(void) {
   return stringout;
 }
 
-/*
- * uses: ngk.boy2ant
- * sets: ant.on
- */
+//
+// uses: ngk.boy2ant
+// sets: ant.on
+///
 float boyOceanCurrent() {
   float aD, cD, a, b, c;
   // usually called while antMod is on
@@ -946,9 +945,9 @@ float boyOceanCurrent() {
   return b;
 }
 
-/*
- * uses: ant.depth boy.sidewaysMax
- */
+//
+// uses: ant.depth boy.sidewaysMax
+///
 bool boyOceanCurrentCheck() {
   flogf("\n\t| ocean current ");
   sideways = boyOceanCurrent();
@@ -960,9 +959,9 @@ bool boyOceanCurrentCheck() {
   return false;
 }
 
-/*
- * boyDiskSpace Returns the free space in kBytes
- */
+//
+// boyDiskSpace Returns the free space in kBytes
+///
 long boyDiskFree(void) {
   long freeSpacekB;
   long freeSectors;
@@ -973,9 +972,9 @@ long boyDiskFree(void) {
   return boy.diskFree/2;
 } // boyDiskFree
 
-/*
- * shutdown buoy, sleep, reset
- */
+//
+// shutdown buoy, sleep, reset
+///
 void boyShutdown(void) {
   WISPRSafeShutdown();
   PIOClear(ANTENNAPWR); 

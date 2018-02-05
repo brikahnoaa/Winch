@@ -1,11 +1,14 @@
 v4
-after power up  := OK\r
-<--> commands, response is OK
-call on|off     := call and transfer data
-file name size  := load file to antmod
-gps             := query location and time
-irid on|off     := turn iridium modem on/off
-sbe on|off      := continuous poll for depth, temp
+ == in td mode, ant mod queries sbe39 continuously, sends values ==
+    => 123.1, -0.1\r
+ == all commands except depth, temp followed by OK\n ==
+mode td|gps|call|idle|shut  => OK\n (when mode is ready)
+file name size              => OK\n <data> xxx good|timeout OK\n
+gps                         => lat #.# long #.# time #:#:# date #/#/# OK\n
+call                        => signal # (...)
+                               call # ...
+                               file name size ... good|err
+                               xxx good|err OK\n
 
 set string      := set setting, same format as irid download
 status          := #/# # (sent # of # files, # bytes)

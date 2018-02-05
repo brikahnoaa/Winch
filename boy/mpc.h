@@ -2,7 +2,7 @@
 
 #define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
-/*
+//
 #define BUOY_ID '0'
 #define WINCH_ID '1'
 #define COM1BAUD 9600L

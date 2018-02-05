@@ -2,27 +2,27 @@
 #include <com.h>
 #include <pow.h>
 
-/*
- * 12.2.2015 - Received many errno=0 when fopen return NULL. 
- * No idea why. waiting to hear back from JG 
- *
- * Summing "shorts" for giving sampling interval which lasts
- * #seconds=(2^#bits*PITRATE*PITINT)
- * Here we can average a large number of samples at a quick rate due to
- * bit shift division. At the end of every average, we write the three
- * different "ushort" values (current, voltage, and time of sampling)
- * to the power file.  Only when power monitor is called does the power
- * file sum its "ushort" values and divided again ( non-bit shifted
- * integer division) before it is converted to a floating point value with
- * "CFxADRawToVolts(...)"  This makes for a very fast and efficient power
- * logging process.
- * 
- * 1) BITSHIFT of 10 results in 25.6 secon buffers, 11: 51.2, 12: 102.4 etc.
- * len(short)=2B, len(int)=4B, so room for at least 2^15 += short
- * 16? Too big? only if unsigned short and signed int
- * 
- * 2) power.interval will be saved as a "ushort" in decisecs
- */
+//
+// 12.2.2015 - Received many errno=0 when fopen return NULL. 
+// No idea why. waiting to hear back from JG 
+//
+// Summing "shorts" for giving sampling interval which lasts
+// #seconds=(2^#bits*PITRATE*PITINT)
+// Here we can average a large number of samples at a quick rate due to
+// bit shift division. At the end of every average, we write the three
+// different "ushort" values (current, voltage, and time of sampling)
+// to the power file.  Only when power monitor is called does the power
+// file sum its "ushort" values and divided again ( non-bit shifted
+// integer division) before it is converted to a floating point value with
+// "CFxADRawToVolts(...)"  This makes for a very fast and efficient power
+// logging process.
+// 
+// 1) BITSHIFT of 10 results in 25.6 secon buffers, 11: 51.2, 12: 102.4 etc.
+// len(short)=2B, len(int)=4B, so room for at least 2^15 += short
+// 16? Too big? only if unsigned short and signed int
+// 
+// 2) power.interval will be saved as a "ushort" in decisecs
+///
 
 IEV_C_PROTO(ADTimingRuptHandler);
 IEV_C_PROTO(ADSamplingRuptHandler); // ??
@@ -64,10 +64,10 @@ void resetPowerCounter(void) { power.counter = 0; }
 float getVoltage(void) { return voltage; } 
 void ADSFileName(long id) { sprintf(&ADAvgFileName[2], "%08ld.pwr", id); }
 
-/*
- * ADTimingRuptHandler Chore		Initiate conversion
- * Makes sure QSM is running and repeats previous synchronization
- */
+//
+// ADTimingRuptHandler Chore		Initiate conversion
+// Makes sure QSM is running and repeats previous synchronization
+///
 IEV_C_FUNCT(ADTimingRuptHandler) {
 // implied (IEVStack *ievstack:__a0) parameter
 #pragma unused(ievstack)
@@ -100,9 +100,9 @@ IEV_C_FUNCT(ADTimingRuptHandler) {
   }
 } // ADTimingRuptHandler
 
-/*
- * Move raw QPSI data to main buffer
- */
+//
+// Move raw QPSI data to main buffer
+///
 IEV_C_FUNCT(ADSamplingRuptHandler) {
 // implied (IEVStack *ievstack:__a0) parameter
 #pragma unused(ievstack)
@@ -120,11 +120,11 @@ bool powCheck(void) {
     return false;
 }
 
-/*
- * Set up AD to sample voltage and current usage.
- * Name the file name with 8-digit numeral as a counter
- * No need to calculate current upon Power off
- */
+//
+// Set up AD to sample voltage and current usage.
+// Name the file name with 8-digit numeral as a counter
+// No need to calculate current upon Power off
+///
 ushort powerInit(bool ads_on, long filecounter, ushort val) {
   // global power
   power.off = !ads_on;
@@ -144,9 +144,9 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
   return power.interval;
 } // void SetUpADS
   
-/*
- * Void OpenAvgFile()
- */
+//
+// Void OpenAvgFile()
+///
 void powOpenLog(long counter) {
 
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
@@ -163,9 +163,9 @@ void powOpenLog(long counter) {
 
 } // void OpenAvgFile
 
-/*
- * Setup Acquisition
- */
+//
+// Setup Acquisition
+///
 void Setup_Acquisition(ushort bitshift) {
   // global ADSample ad 
   double vref = VREF;
@@ -209,11 +209,11 @@ void Setup_Acquisition(ushort bitshift) {
   power.sampleReady = false;
 } // SetupAcquistion
 
-/*
- * 1) Comes here when power.sampleReady == true
- * 2) writes correct side of AD Buffer to file 
- * sets: power.sampleReady=false
- */
+//
+// 1) Comes here when power.sampleReady == true
+// 2) writes correct side of AD Buffer to file 
+// sets: power.sampleReady=false
+///
 void powLog(void) {
 
   ushort AveragedEnergy[2] = {0, 0};
@@ -232,9 +232,9 @@ void powLog(void) {
   powerWrite(AveragedEnergy);
 } // ADLog
 
-/*
- * Voltage Now()
- */
+//
+// Voltage Now()
+///
 float Voltage_Now(void) {
   float volts = 0.0;
 
@@ -246,13 +246,13 @@ float Voltage_Now(void) {
   return volts;
 } // Voltage_Now
 
-/*
- * AD Write
- * Open file of Current averages, go to end of file and grab last averaged
+//
+// AD Write
+// Open file of Current averages, go to end of file and grab last averaged
 reading.
- * This function will increment the variable power.counter==FWT ~5minutes
- * 
- */
+// This function will increment the variable power.counter==FWT ~5minutes
+// 
+///
 void powerWrite(ushort *AveragedEnergy) {
   DBG0("powerWrite")
   // global
@@ -282,12 +282,12 @@ void powerWrite(ushort *AveragedEnergy) {
   delayms(10);
 
 } // powerWrite
-/*
- * PowerMonitor
- * This function is called when the WriteInterval (WRTINT) is met.
- * With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
+//
+// PowerMonitor
+// This function is called when the WriteInterval (WRTINT) is met.
+// With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
 minutes)
- */
+///
 float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   struct stat fileinfo;
   ulong DataCount = 0;
@@ -410,9 +410,9 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
 } // PowerMonitor
 
 
-/*
- * 
- */
+//
+// 
+///
 void GetPowerSettings(void) {
 
   char *p;
@@ -437,12 +437,12 @@ void GetPowerSettings(void) {
   DBG1("BATLOG=%u (%s)", ADS.BATLOG, p ? "vee" : "def")
 }
 
-/*
- * powDelay()
- * AD function with time delay.  Do powLog at 5 sec incrment.
- * number of seconds for delay while watching Power
- * Logging & Tickling Watch Dog Timer
- */
+//
+// powDelay()
+// AD function with time delay.  Do powLog at 5 sec incrment.
+// number of seconds for delay while watching Power
+// Logging & Tickling Watch Dog Timer
+///
 void powDelay(short Sec) {
   short i;
   long last, rem;

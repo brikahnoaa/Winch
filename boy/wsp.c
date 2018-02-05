@@ -2,22 +2,22 @@
 #include <com.h>
 #include <wsp.h>
 
-/*
- * Incoming wsp ASCII Communication. Looks for certain commands starting with
- * '$' and ending with '*'
- * Return values:
- * 1: GPS
- * 2: DFP
- * 3: DXN
- * 4: DTX
- * 5: NGN
- * 6: FIN
- * 0: NULL
- * -1: No Match
- * -2: <MIN FREE SPACE
- */
+//
+// Incoming wsp ASCII Communication. Looks for certain commands starting with
+// '$' and ending with '*'
+// Return values:
+// 1: GPS
+// 2: DFP
+// 3: DXN
+// 4: DTX
+// 5: NGN
+// 6: FIN
+// 0: NULL
+// -1: No Match
+// -2: <MIN FREE SPACE
+///
 
-/*
+//
  // all comments
 void wspPower(bool power) {
   DBG0("wspPower()")

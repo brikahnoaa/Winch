@@ -1,10 +1,10 @@
 // ctd.c sbe16
-/* 
- * ctd.c
- * handling CTD in buoy, seabird SBE 16plus
- * general note: ctd wants \r only for input
- * Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
- */
+// 
+// ctd.c
+// handling CTD in buoy, seabird SBE 16plus
+// general note: ctd wants \r only for input
+// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
+///
 #include <com.h>
 #include <ctd.h>
 
@@ -13,11 +13,11 @@ CtdInfo ctd = {
   0, 0, 3.5, NULL
 };
 
-/*
- * buoy sbe16 set date, sync mode
- * pre: mpcInit sets up serial
- * sets: ctd.on
- */
+//
+// buoy sbe16 set date, sync mode
+// pre: mpcInit sets up serial
+// sets: ctd.on
+///
 bool ctdInit(void) {
   DBG0("ctdInit()")
   if (!ctd.on) 
@@ -40,9 +40,9 @@ bool ctdInit(void) {
   return true;
 } // ctdOpen
 
-/*
- * date, time for ctd. also some params.
- */
+//
+// date, time for ctd. also some params.
+///
 void ctdSetDate(void) {
   DBG0("ctdSetDate()")
   // global ctd .port
@@ -73,9 +73,9 @@ void ctdSetDate(void) {
 // wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
 // pause between ts\r\n and result, 4.32s
 
-/*
- * ctdPrompt - poke buoy CTD, look for prompt
- */
+//
+// ctdPrompt - poke buoy CTD, look for prompt
+///
 bool ctdPrompt(void) {
   static char str[32];
   TURxFlush(ctd.port);
@@ -86,10 +86,10 @@ bool ctdPrompt(void) {
   else return false;
 }
 
-/*
- * poke ctd to get sample, set interval timer
- * set: ctd.pending, it
- */
+//
+// poke ctd to get sample, set interval timer
+// set: ctd.pending, it
+///
 void ctdSample(void) {
   DBG0("ctdSample()")
   // global ctd .pending
@@ -108,8 +108,8 @@ void ctdSample(void) {
   itAdd( Ctd_it, 6 );
 } // ctdSample
 
-/*
- */
+//
+///
 void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
   // global ctd .port .syncmode
@@ -121,8 +121,8 @@ void ctdSyncmode(void) {
   TURxFlush(ctd.port);
 } 
 
-/*
- */
+//
+///
 void ctdBreak(void) {
   DBG0("ctdBreak()")
   // global ctd .port
@@ -130,11 +130,11 @@ void ctdBreak(void) {
 }
 
 
-/*
- * sbe16 response is just over 3sec in sync, well over 4sec in command
- * data is reformatted to save a little space, written to ctd.filehandle
- * returns depth
- */
+//
+// sbe16 response is just over 3sec in sync, well over 4sec in command
+// data is reformatted to save a little space, written to ctd.filehandle
+// returns depth
+///
 float ctdData(char *stringout) {
   DBG0("ctdData()")
   // global scratch, ctd .depth .pending .filehandle, boy .port
