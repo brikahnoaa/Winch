@@ -4,16 +4,16 @@ v4
  == all commands except depth, temp followed by OK\n ==
 mode td|gps|call|idle|shut  => OK\n (when mode is ready)
 file name size              => OK\n <data> xxx good|timeout OK\n
-gps                         => lat #.# long #.# time #:#:# date #/#/# OK\n
+gps                         => lat #.# long #.# time #:#:# date #/#/# OK
 call                        => signal # (...)
                                call # ...
                                file name size ... good|err
-                               xxx good|err OK\n
+                               xxx good|err OK
 
 set string      := set setting, same format as irid download
 status          := #/# # (sent # of # files, # bytes)
 
-pico x x        := response from dos, then "pico"
+pico x x        := response from dos, OK
 
 <-- async alerts, not in direct response to query
 gps #:#:#.#     := acquired GPS time
