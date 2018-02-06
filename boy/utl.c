@@ -13,7 +13,7 @@ void delayms(int x) {
 
 //
 // sets: (*str)
-///
+//
 int crlfTrim(char *str) {
   char c;
   int len = strlen(str);
@@ -26,7 +26,7 @@ int crlfTrim(char *str) {
 //
 // put string to serial; queue, don't block, it should all buffer
 // returns: charsSent
-///
+//
 int serWrite(Serial port, char *out) {
   int len, delay, sent;
   DBG0("serWrite()")
@@ -43,7 +43,7 @@ int serWrite(Serial port, char *out) {
 //
 // read all the chars on the port, with a normal delay
 // returns: length
-///
+//
 int serRead(Serial port, char *in) {
   int len;
   if (TURxQueuedCount(port)<1) return 0;
@@ -65,7 +65,7 @@ int serRead(Serial port, char *in) {
 //  delay up to wait seconds for first char, null terminate
 //  assumes full string arrives promptly after a delay of several seconds
 //  return: length
-///
+//
 int serReadWait(Serial port, char *in, int wait) {
   int len = 0;
   DBG0("serReadWait(%d)")
@@ -88,7 +88,7 @@ int serReadWait(Serial port, char *in, int wait) {
 // HH:MM:SS now
 // sets: (*out)
 // returns: out
-///
+//
 char * clockTime(char *out) {
   RTCtm *rtc_time;
   ulong secs;
@@ -106,7 +106,7 @@ char * clockTime(char *out) {
 // MM/DD/YYYY HH:MM:SS now
 // sets: (*out)
 // returns: out
-///
+//
 char * clockTimeDate(char *out) {
   RTCtm *rtc_time;
   ulong secs;
@@ -124,7 +124,7 @@ char * clockTimeDate(char *out) {
 // 
 // format non-printable string; null terminate
 // modifies out[] and returns *out, can be used in DBG1()
-///
+//
 char *sprintfun (char *out, char *in) {
   char ch, *ptr = out;
   // walk thru input until 0

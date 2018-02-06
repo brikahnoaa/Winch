@@ -22,7 +22,7 @@
 // 16? Too big? only if unsigned short and signed int
 // 
 // 2) power.interval will be saved as a "ushort" in decisecs
-///
+//
 
 IEV_C_PROTO(ADTimingRuptHandler);
 IEV_C_PROTO(ADSamplingRuptHandler); // ??
@@ -67,7 +67,7 @@ void ADSFileName(long id) { sprintf(&ADAvgFileName[2], "%08ld.pwr", id); }
 //
 // ADTimingRuptHandler Chore		Initiate conversion
 // Makes sure QSM is running and repeats previous synchronization
-///
+//
 IEV_C_FUNCT(ADTimingRuptHandler) {
 // implied (IEVStack *ievstack:__a0) parameter
 #pragma unused(ievstack)
@@ -102,7 +102,7 @@ IEV_C_FUNCT(ADTimingRuptHandler) {
 
 //
 // Move raw QPSI data to main buffer
-///
+//
 IEV_C_FUNCT(ADSamplingRuptHandler) {
 // implied (IEVStack *ievstack:__a0) parameter
 #pragma unused(ievstack)
@@ -124,7 +124,7 @@ bool powCheck(void) {
 // Set up AD to sample voltage and current usage.
 // Name the file name with 8-digit numeral as a counter
 // No need to calculate current upon Power off
-///
+//
 ushort powerInit(bool ads_on, long filecounter, ushort val) {
   // global power
   power.off = !ads_on;
@@ -146,7 +146,7 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
   
 //
 // Void OpenAvgFile()
-///
+//
 void powOpenLog(long counter) {
 
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
@@ -165,7 +165,7 @@ void powOpenLog(long counter) {
 
 //
 // Setup Acquisition
-///
+//
 void Setup_Acquisition(ushort bitshift) {
   // global ADSample ad 
   double vref = VREF;
@@ -213,7 +213,7 @@ void Setup_Acquisition(ushort bitshift) {
 // 1) Comes here when power.sampleReady == true
 // 2) writes correct side of AD Buffer to file 
 // sets: power.sampleReady=false
-///
+//
 void powLog(void) {
 
   ushort AveragedEnergy[2] = {0, 0};
@@ -234,7 +234,7 @@ void powLog(void) {
 
 //
 // Voltage Now()
-///
+//
 float Voltage_Now(void) {
   float volts = 0.0;
 
@@ -252,7 +252,7 @@ float Voltage_Now(void) {
 reading.
 // This function will increment the variable power.counter==FWT ~5minutes
 // 
-///
+//
 void powerWrite(ushort *AveragedEnergy) {
   DBG0("powerWrite")
   // global
@@ -287,7 +287,7 @@ void powerWrite(ushort *AveragedEnergy) {
 // This function is called when the WriteInterval (WRTINT) is met.
 // With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
 minutes)
-///
+//
 float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   struct stat fileinfo;
   ulong DataCount = 0;
@@ -412,7 +412,7 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
 
 //
 // 
-///
+//
 void GetPowerSettings(void) {
 
   char *p;
@@ -442,7 +442,7 @@ void GetPowerSettings(void) {
 // AD function with time delay.  Do powLog at 5 sec incrment.
 // number of seconds for delay while watching Power
 // Logging & Tickling Watch Dog Timer
-///
+//
 void powDelay(short Sec) {
   short i;
   long last, rem;

@@ -10,7 +10,7 @@ static struct {
   
 //
 // sets: tmr.on .timer[]
-///
+//
 void tmrStart(TmrType tim, int secs) {
   DBG0("tmrStart()")
   tmr.on[tim] = true;
@@ -25,7 +25,7 @@ void tmrStop(TmrType tim) {
 //
 // is timer expired? turn it off
 // timer==now is not expired, so now+1 runs at least 1 sec 
-///
+//
 bool tmrExp(TmrType tim) {
   if (tmr.on[tim] && (tmr.timer[tim] < time(0))) {
     // on and expired
@@ -39,7 +39,7 @@ bool tmrExp(TmrType tim) {
 
 //
 // how long until a timer expires (else 0=off, neg=expired)
-///
+//
 int tmrQuery(TmrType tim) {
   if (tmr.on[tim]) 
     return (int)(tmr.timer[tim]-time(0))+1;
@@ -49,7 +49,7 @@ int tmrQuery(TmrType tim) {
 
 //
 // check if any timer is expired
-///
+//
 TmrType tmrAnyExp(void) {
   TmrType t;
   for(t = null_tmr+1; t<sizeof_tmr; t++)

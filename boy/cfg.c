@@ -17,7 +17,7 @@
 //
 // &ptr can be any extern var or struct component
 // type := bcifls bool char* int float long short
-///
+//
 static CfgParam cfg[] = {
   { "pfm", "sys.platform", &sys.platform, 'c'},
   { "fno", "sys.filenum", &sys.filenum, 'i'},
@@ -30,7 +30,7 @@ static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
 // input line is short or long name, =, value
 // find setVar with id or name, call cfgSet()
 // uses: cfg cfgLen
-///
+//
 bool cfgString(char *str){
   char *ref, *val;
   char s[80];
@@ -51,7 +51,7 @@ bool cfgString(char *str){
 
 //
 // convert *val to type and poke into *ptr
-///
+//
 static void cfgSet( void *ptr, char type, char *val ) {
   flogf("\ncfgSet(%c, %s)", type, val);
   switch (type) {

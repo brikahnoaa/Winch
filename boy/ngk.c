@@ -21,7 +21,7 @@ NgkInfo ngk;
 //
 // power on amodem
 // sets: mdm.port
-///
+//
 void ngkInit(void) {
   short mdmRX, mdmTX;
   Serial p;
@@ -51,7 +51,7 @@ void ngkInit(void) {
 // starts winch_tmr, does not set ngk.on (see ngkRecv)
 // sets: mdm.expect .send[] .lastSend 
 // uses: mdm.delay
-///
+//
 void ngkSend(MsgType msg) {
   char str[12];
   flogf("\nngkSend(%s) at %s", mdm.msgName[msg], clockTime(scratch));
@@ -80,7 +80,7 @@ void ngkSend(MsgType msg) {
     mdm.expect = riseRsp_msg;
     break;
   default:
-    mdm.expect = null_msg;
+    mdm.expect = 0;
   }
   if (mdm.expect!=null_msg)
     tmrStart(winch_tmr, mdm.delay*2+2);
@@ -91,47 +91,43 @@ void ngkSend(MsgType msg) {
 // ?? respond to stopcmd buoycmd
 // sets: ngk.on mdm.expect .lastRecv .recv[] scratch (*msg)
 // returns: false if no message
-///
+//
 MsgType ngkRecv(MsgType *msg) {
-  MsgType m = null_msg;                // change this if successful
+  MsgType m = null_msg;
   char msgStr[BUFSZ];
-  if (serRead(mdm.port, msgStr)) {
-    if (msgParse(msgStr, &m)!=mangled_msg) {
-      flogf("\n\t|ngkRecv(%s) at %s", mdm.msgName[m], clockTime(scratch));
-      mdm.recv[m]++;
-      if (m==stopCmd_msg) {
-        // surfaced or jammed
-        tmrStop(winch_tmr);
-        mdm.expect = 0;
-      }
-      if (mdm.expect) {
-        if (mdm.expect==m) {
-          tmrStop(winch_tmr);
-          mdm.expect = null_msg;
-        } else {
-          // unexpected
-            
-          flogf(" (expecting %s)", mdm.msgName[mdm.expect]);
-        }
-      } // expecting
-      // winch motor
-      if (m==riseRsp_msg || m==dropRsp_msg) 
-        ngk.on = true;
-      if (m==stopCmd_msg || m==stopRsp_msg) 
-        ngk.on = false;
-    // parsed
-    } else {
-      // mangled, already logged by msgParse, resend last ??
-      // if (mdm.expect!=null_msg) 
-      //   ngkSend( mdm.lastSend );
+  if (serRead(mdm.port, msgStr)==0) 
+    return null_msg;
+  if (msgParse(msgStr, &m)==mangled_msg) 
+    return mangled_msg;
+  flogf("\n\t|ngkRecv(%s) at %s", mdm.msgName[m], clockTime(scratch));
+  mdm.recv[m]++;
+  if (m!=buoyCmd_msg) {                // buoyCmd could happen anytime
+    ngkSend(buoyRsp_msg);
+    return null_msg;
+  }
+  if (m==stopCmd_msg) {
+    // surfaced or jammed
+    ngkSend(stopRsp_msg);
+  }
+  if (mdm.expect) { // expecting a msg
+    if (mdm.expect!=m)
+      flogf(" (expecting %s)", mdm.msgName[mdm.expect]);
+    mdm.expect = 0;
+    tmrStop(winch_tmr);
     }
-  } // serRead
+  } // expecting
+  // winch motor
+  if (m==riseRsp_msg || m==dropRsp_msg) 
+    ngk.motorOn = true;
+  if (m==stopCmd_msg || m==stopRsp_msg) 
+    ngk.motorOn = false;
+  // 
   *msg = m;
   return m;
 } // ngkRecv
 
 bool ngkTimeout(void) {
-  if (mdm.expect!=null_msg && tmrExp(winch_tmr)) {
+  if (mdm.expect && tmrExp(winch_tmr)) {
     mdm.expect = null_msg;
     mdm.timeout[mdm.expect]++;
     return true;
@@ -143,7 +139,7 @@ bool ngkTimeout(void) {
 // match against mdm.msgStr[]
 // sets: (*msg)
 // returns: msg
-///
+//
 MsgType msgParse(char *str, MsgType *msg) {
   MsgType m = mangled_msg;
   int len;

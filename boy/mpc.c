@@ -9,7 +9,7 @@
 // IRQ2 Wakes up from the sleep mode while waiting for ASC string from COM2
 // IRQ3
 // IRQ5 Interrupt to stop the program
-///
+//
 
 
 MpcData mpc = {
@@ -23,7 +23,7 @@ short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 //
 // Set IO pins, set SYSCLK
 // ?? walk thru to verify all actions
-///
+//
 void mpcInit(void) {
   short waitsFlash, waitsRAM, waitsCF;
   ushort nsRAM, nsFlash, nsCF;
@@ -54,7 +54,7 @@ void mpcInit(void) {
 
 //
 // capture interrupt, used to wake up
-///
+//
 static void IRQ4_ISR(void) {
   PIORead(IRQ4RXD);     // console
   RTE();
@@ -66,14 +66,14 @@ static void IRQ5_ISR(void) {
 
 //
 // spurious interrupt, ignore
-///
+//
 static void spur_ISR(void) {
   RTE();
 } // spur_ISR
 
 //
 // Sleep until keypress or wispr
-///
+//
 void mpcSleep(void) {
   ciflush(); // flush any junk
   clockTimeDate(scratch);

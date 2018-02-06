@@ -17,14 +17,14 @@ typedef enum {
 } MsgType;
 
 typedef struct NgkInfo {
-  bool on;            // ngk motor running
-  float boy2ant;      // meters from buoy ctd to ant ctd under still water
-  float firstRise;    // Velocity meters/min of the first rise (ascent)
-  float lastRise;     // Velocity meters/min of the most recent rise 
-  float firstDrop;    // Velocity meters/min of the first drop (descent)
-  float lastDrop;     // Velocity meters/min of the most recent drop 
-  // int statMotor;      // winch status response X in %W,00,XY
-  // int statRope;       // winch status response X in %W,00,XY
+  bool motorOn;         // ngk motor running
+  float boy2ant;        // meters from buoy ctd to ant ctd under still water
+  float firstRiseV;     // Velocity meters/min of the first rise (ascent)
+  float lastRiseV;      // Velocity meters/min of the most recent rise 
+  float firstDropV;     // Velocity meters/min of the first drop (descent)
+  float lastDropV;      // Velocity meters/min of the most recent drop 
+  // int statMotor;     // winch status response X in %W,00,XY
+  // int statRope;      // winch status response X in %W,00,XY
 } NgkInfo;
 extern NgkInfo ngk;
 

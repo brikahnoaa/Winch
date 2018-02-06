@@ -4,7 +4,7 @@
 // handling CTD in buoy, seabird SBE 16plus
 // general note: ctd wants \r only for input
 // Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
-///
+//
 #include <com.h>
 #include <ctd.h>
 
@@ -17,7 +17,7 @@ CtdInfo ctd = {
 // buoy sbe16 set date, sync mode
 // pre: mpcInit sets up serial
 // sets: ctd.on
-///
+//
 bool ctdInit(void) {
   DBG0("ctdInit()")
   if (!ctd.on) 
@@ -42,7 +42,7 @@ bool ctdInit(void) {
 
 //
 // date, time for ctd. also some params.
-///
+//
 void ctdSetDate(void) {
   DBG0("ctdSetDate()")
   // global ctd .port
@@ -75,7 +75,7 @@ void ctdSetDate(void) {
 
 //
 // ctdPrompt - poke buoy CTD, look for prompt
-///
+//
 bool ctdPrompt(void) {
   static char str[32];
   TURxFlush(ctd.port);
@@ -89,7 +89,7 @@ bool ctdPrompt(void) {
 //
 // poke ctd to get sample, set interval timer
 // set: ctd.pending, it
-///
+//
 void ctdSample(void) {
   DBG0("ctdSample()")
   // global ctd .pending
@@ -109,7 +109,7 @@ void ctdSample(void) {
 } // ctdSample
 
 //
-///
+//
 void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
   // global ctd .port .syncmode
@@ -122,7 +122,7 @@ void ctdSyncmode(void) {
 } 
 
 //
-///
+//
 void ctdBreak(void) {
   DBG0("ctdBreak()")
   // global ctd .port
@@ -134,7 +134,7 @@ void ctdBreak(void) {
 // sbe16 response is just over 3sec in sync, well over 4sec in command
 // data is reformatted to save a little space, written to ctd.filehandle
 // returns depth
-///
+//
 float ctdData(char *stringout) {
   DBG0("ctdData()")
   // global scratch, ctd .depth .pending .filehandle, boy .port

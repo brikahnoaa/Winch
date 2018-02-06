@@ -12,51 +12,42 @@
 #include <sys.h>
 #include <wsp.h>
 
+BuoyInfo boy;
+
 //
-// deploy or reboot, loop over phase 1-4
-// uses: .startPhase
-// sets: .dockDepth .phase  
-///
+// deploy or reboot, then loop over phases data/rise/call/drop
+//
 void boyMain(int starts) {
-  // normal case is last
   boy.phase = boy.startPhase;
-  if (starts>1) {
-    // post-deploy reboot
-    boyReboot(&boy.phase);
-  } else if (boy.phase!=deploy_pha) {
-    // testing, skip ahead to startPhase
-    flogf("\nboyMain(): testing, start phase %d", boy.phase);
-  } else {
-    // normal start
-    deployPhase(&boy.dockDepth);
-  }
+  if (starts>1) 
+    boyReboot();
+  flogf("\nboyMain(): starting with phase %d", boy.phase);
     
   while (true) {
     boy.phaseT=time(0);
     switch (boy.phase) {
+    case deploy_pha:
+      deployPhase();
+      break;
     case data_pha: // data collect by WISPR
       dataPhase();
-      boy.phase=rise_pha;
       break;
     case rise_pha: // Ascend buoy, check for current and ice
       risePhase();
-      boy.phase=call_pha;
       break;
     case call_pha: // Call home via Satellite
       callPhase();
-      boy.phase=drop_pha;
       break;
     case drop_pha: // Descend buoy, science sampling
       dropPhase();
-      boy.phase=data_pha;
       break;
-    }
+    } // switch
   } // while true
 } // boyMain() 
 
 //
 // 
-///
+//
 void boyInit() {
 } // boyInit
 
@@ -65,7 +56,7 @@ void boyInit() {
 // load info from saved previous phase
 // ask antmod for our velocity
 // sets: boy.phase
-///
+//
 void boyReboot() {
 } // reboot()
 
@@ -75,7 +66,7 @@ void boyReboot() {
 // wsp powers down for % of each hour (wispr_tmr)
 // sets: boy.phaseStartT 
 // uses: data_tmr duty_tmr
-///
+//
 void dataPhase(void) {
   flogf("\n\t|dataPhase()");
   // sleep needs a lot of optimizing to be worth the trouble
@@ -84,38 +75,39 @@ void dataPhase(void) {
 } // dataPhase
 
 //
-// turn on ant, ascend. check angle, go up midway, check angle, surface.
-// sideways is caused by ocean current pushing the buoy 
-// sets: boy.phaseT .phase .alarm[]
-///
+// collect and organize data files.
+// turn on ant, free space check, transfer files from buoy to antmod
+// ascend. check angle due to current, up midway, re-check angle, surface.
+// sets: boy.alarm[]
+//
 void risePhase(void) {
   flogf("\n\t|risePhase()");
-  float depth, depthStart, sideways, target, velocity;
-  RespondType rsp;
+  float depth, depthStart, sideways, targetD, velocity;
+  time_t riseT;
+  MsgType rsp;
   //
-  boy.phaseStartT=time(0);
+  dataFiles();
   antInit();
   depthStart = depth = antDepth();
-  // algor: current check. rise midway, checking response
+  // if current is too strong
   if (boyOceanCurrentCheck()) {
-    sys.alarm[dockedCurrent_ala] += 1;
+    sysAlarm(dockedCurrent_alm);
     boy.phase = data_pha;
     return;
   }
-  // target = depth/2.0;
-  target = boy.halfway;
-  riseStartT = time(0);
+  targetD = boy.currCheckD;
+  riseT = time(0);
   ngkSend( riseCmd_msg );
-  while ((depth = antDepth()) > target) {
+  while ((depth = antDepth()) > targetD) {
     // start rise (or retry if ngk timeout)
     // ngk: "going up" or "stopped"
     ngkRecv(&rsp);
     switch (rsp) {
     case null_msg: break;
     case riseRsp_msg: // rise ack
-      timStop(ngk_tmr);
+      tmrStop(ngk_tmr);
       // start velocity measure
-      riseStartT = time(0);
+      riseT = time(0);
       depthStart = antDepth();
       break;
     case dropRsp_msg: // unexpected 
@@ -127,13 +119,13 @@ void risePhase(void) {
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
     case timeRsp_msg: // timeout
-      boyAlarm(ngkTimeout_ala);
+      sysAlarm(ngkTimeout_alm);
       amodem.timeout[riseCmd_msg] += 1;
       if (depthStart-depth < 3) {
         // not rising from dock. log, reset, retry 5 times or abort
         if (retry++ < 5) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry); 
-          riseStartT = time(0);
+          riseT = time(0);
           ngkSend( riseCmd_msg );
         } else { // abort
           flogf("\nERR\t|risePhase() timeout on ngk, %d times, abort", retry); 
@@ -148,27 +140,26 @@ void risePhase(void) {
     } // switch
   } // while (depth>midway)
   // algor: midway. figure velocity, stop
-  ngk.lastRise = (depthStart-depth) / (time(0)-riseStartT);
-  if (ngk.firstRise==0)
-    ngk.firstRise = ngk.lastRise;
+  ngk.lastRiseV = (depthStart-depth) / (time(0)-riseT);
+  if (ngk.firstRiseV==0)
+    ngk.firstRiseV = ngk.lastRiseV;
   ngkSend( stopCmd_msg );
   // algor: current check. rise to surface, checking response
   if (boyOceanCurrentCheck()) {
-    sys.alarm[midwayCurrent_ala] += 1;
+    sysAlarm(midwayCurrent_alm);
     boy.phase = drop_pha;
     return;
   }
   // 
-  // go to surface. same loop but stop expected
+  // go to surface. same loop but stop cmd expected
   // 
-  // tbd
   while ((depth = antDepth()) > (ant.surfaceD+1)) {
     switch (ngkRecv(&r)) {
     case null_msg: break;
     case riseRsp_msg: // rise ack
-      timStop(ngk_tmr);
+      tmrStop(ngk_tmr);
       // start velocity measure
-      riseStartT = time(0);
+      riseT = time(0);
       depthStart = antDepth();
       break;
     case dropRsp_msg: // unexpected
@@ -178,13 +169,13 @@ void risePhase(void) {
     case stopRsp_msg: // slack auto-stop
       continue;
     case timeRsp_msg: // timeout
-      boyAlarm(ngkTimeout_ala);
+      sysAlarm(ngkTimeout_alm);
       amodem.timeout[riseCmd_msg] += 1;
       if (depthStart-depth < 3) {
         // not rising from dock. log, reset, retry 5 times or abort
         if (retry++ < 5) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry);
-          riseStartT = time(0);
+          riseT = time(0);
           ngkSend( riseCmd_msg );
         } else { // abort
           flogf("\nERR\t|risePhase() timeout on ngk, %d times, abort", retry);
@@ -202,28 +193,28 @@ void risePhase(void) {
   // ant mod surfaced
   // expect stop within ant.surfaceWait secs
   // start warming gps, we don't need depth until dropP
-  //
-  
 } // risePhase
 
 //
-// turn off sbe, on irid/gps (takes 30 sec). data files from boy to ant.
+// turn off sbe, on irid/gps (takes 30 sec). 
 // read gps date, loc. 
-///
+//
 void callPhase(void) {
-}
+} // callPhase
 
 //
-// sets: boy.alarm[]
-///
-int boyAlarm(AlarmType alarm) { boy.alarm[alarm] += 1; }
+//
+void dropPhase(void) {
+} // dropPhase
 
+
+  /****
 //
 // phase Three
 // Testing iridium/gps connection. 
 // If failed, release ngk cable another meter or two.
 // repeat to minimum CTD depth.
-///
+//
 void phase3(void) {
   // global: static char uploadfile[] = "c:00000000.dat
   // global ulong PwrOff PwrOn
@@ -328,7 +319,7 @@ void phase3(void) {
 } // phase3 //
 //
 // phase4
-///
+//
 void phase4(void) {
 
   float depthChange = 0.0;
@@ -367,12 +358,11 @@ void phase4(void) {
   } else
     CTD_Sample();
 
-  /****
   ADD IN CHECK HERE. if WaitForWinch returns false because of timeout and lack
   of AModem Response: then check CTD Average depth and make sure Velocity>0.25
   (descending.)
   If not, then call Winc_Descend Again. After 10, wait for an hour
-///
+//
 
   prevDepth = boy.depth;
 
@@ -432,7 +422,7 @@ void phase4(void) {
 // phase0 deploy buoy sequence
 // on ship, sinking, at bottom wait boy.settleTime, gather info, phase2
 // set: boy.dockDepth
-///
+//
 void phase0(void) {
   DBG0("phase0()")
   // global ctd.depth, boy.runStart
@@ -479,7 +469,7 @@ void phase0(void) {
 // int Incoming_Data()
 // ?? very fragile, caution
 // called by phase1,2,3,4
-///
+//
 int Incoming_Data(void) {
   bool incoming = true;
   static int count = 0;
@@ -497,7 +487,7 @@ int Incoming_Data(void) {
         // DBG1("CTD Incoming")
         CTD_Data();
         if ((!boy.SURFACED && boy.phase > 1) || boy.BUOYMODE > 0 ||
-            boy.phase == 0) // if not surfaced (target depth not reached.) and
+            boy.phase == 0) // if not surfaced (targetD depth not reached.) and
                              // ngk is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
@@ -551,7 +541,7 @@ int Incoming_Data(void) {
         DBG1("CTD Incoming")
         CTD_Data();
         if ((!boy.SURFACED && (boy.phase == 2 || boy.phase == 4)) ||
-            boy.BUOYMODE > 0) // if not surfaced (target depth not reached.)
+            boy.BUOYMODE > 0) // if not surfaced (targetD depth not reached.)
                                // and ngk is moving (not stopped)
           CTD_Sample();
       } else if (cgetq()) {
@@ -596,7 +586,7 @@ int Incoming_Data(void) {
 //
 // void Console
 // Platform Specific Console Communication
-///
+//
 void Console(char in) {
   // are there side effects from any subroutines?
   // shutdown from here
@@ -711,7 +701,7 @@ void Console(char in) {
 
 //
 // ExtFinishPulseRuptHandler		IRQ5 logging stop request interrupt
-///
+//
 IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 #pragma unused(ievstack) // implied (IEVStack *ievstack:a0) parameter
 
@@ -727,7 +717,7 @@ IEV_C_FUNCT(ExtFinishPulseRuptHandler) {
 // Usually sleeps until power interrupt PIT (20Hz), 
 // but can also break on serial ints irq4 (cons), irq5 (pam), or spurious
 // note, spurious could occur on other pins 
-///
+//
 void Sleep(void) {
   // these handlers just set the pin to I/O mode; wakeup, destroys data
   IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector); // Console Interrupt
@@ -768,28 +758,28 @@ void Sleep(void) {
 
 //
 // static void Irq3ISR(void)
-///
+//
 static void IRQ3_ISR(void) {
   PinIO(IRQ3RXX);
   RTE();
 } // Irq3ISR //
 //
 // static void Irq2RxISR(void) CTD/Seaglider/ IRIDIUM
-///
+//
 static void IRQ2_ISR(void) {
   PinIO(IRQ2);
   RTE();
 } // Irq2RxISR //
 //
 // static void IRQ4_ISR(void) CONSOLE
-///
+//
 static void IRQ4_ISR(void) {
   PinIO(IRQ4RXD);
   RTE();
 } // Irq2ISR
 //
 // static void IRQ5_ISR(void) WISPR
-///
+//
 static void IRQ5_ISR(void) {
   PinIO(IRQ5);
   RTE();
@@ -799,7 +789,7 @@ static void IRQ5_ISR(void) {
 1) Initially upload MPC parameters
 2) Ngk Info
 3) Ngk Status
-///
+//
 ulong WriteFile(ulong TotalSeconds) {
   // global uploadfile, WriteBuffer
   long BlkLength = BUFSZ;
@@ -910,7 +900,7 @@ ulong WriteFile(ulong TotalSeconds) {
 
 //
 // PrintSystemStatus()
-///
+//
 char *PrintSystemStatus(void) {
   // global stringout
   sprintf(stringout, "boy: "
@@ -929,7 +919,7 @@ char *PrintSystemStatus(void) {
 //
 // uses: ngk.boy2ant
 // sets: ant.on
-///
+//
 float boyOceanCurrent() {
   float aD, cD, a, b, c;
   // usually called while antMod is on
@@ -947,7 +937,7 @@ float boyOceanCurrent() {
 
 //
 // uses: ant.depth boy.sidewaysMax
-///
+//
 bool boyOceanCurrentCheck() {
   flogf("\n\t| ocean current ");
   sideways = boyOceanCurrent();
@@ -961,7 +951,7 @@ bool boyOceanCurrentCheck() {
 
 //
 // boyDiskSpace Returns the free space in kBytes
-///
+//
 long boyDiskFree(void) {
   long freeSpacekB;
   long freeSectors;
@@ -974,7 +964,7 @@ long boyDiskFree(void) {
 
 //
 // shutdown buoy, sleep, reset
-///
+//
 void boyShutdown(void) {
   WISPRSafeShutdown();
   PIOClear(ANTENNAPWR); 

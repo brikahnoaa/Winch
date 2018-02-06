@@ -7,7 +7,7 @@
 // turn on antenna module, wait until ant responds
 // read depth
 // sets: .depth
-///
+//
 void antInit(void){
   DBG0("\nantInit()")
 } // antInit

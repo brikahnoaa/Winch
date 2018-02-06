@@ -17,7 +17,7 @@
 // make sure you have the correct mA multiplier set in the mAh calculation in
 // status 5 for the SM2 settings that you are using (compression, kHz, etc.)
 // as power consumption varies between those settings
-///
+//
 
 systemData sys = {
   "c:sys.log", "LR01", "LARA", "QUEH", "4.0",
@@ -30,7 +30,7 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 //
 // initHW and SW structures. loop over phase 1-4
 // sets: boy.com1 wis.com2 wis.com3 ngk.com4
-///
+//
 void main(void) {
   preRun(10);
   restartCheck();
@@ -90,7 +90,7 @@ void sysInit() {
 //
 // close files ??, Sleep until keypress
 // 2nd release 6/24/2002 by HM -Changed to use ADS8344/45
-///
+//
 void sysSleepUntilWoken(void) {
   ciflush(); // flush any junk
   mpcSleep();
@@ -98,13 +98,13 @@ void sysSleepUntilWoken(void) {
 
 //
 // close files, turn off devices, power off
-///
+//
 void sysShutdown(void) {
 } // sysShutdown
 
 //
 // read config from CONFIG_FILE
-///
+//
 void configFile(void) {
 } // configFile
 
@@ -112,7 +112,7 @@ void configFile(void) {
 // check STARTS>STARTSMAX to see if we are rebooting wildly
 // these two settings are in veeprom to allow check before *Init()
 // sets: sys.starts .startsMax
-///
+//
 void restartCheck(void) {
   sys.starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
   sys.startsMax = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
@@ -128,7 +128,7 @@ void restartCheck(void) {
 
 //
 // Setup directories for files not needing to be access anymore.
-///
+//
 void dirSetup(char *path) {
   char DOSCommand[64];
   memset(DOSCommand, 0, 64);
@@ -143,7 +143,7 @@ void dirSetup(char *path) {
 } // sysDirSetup
 
 //
-///
+//
 int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
   char Com[64];
   int r = 0;
@@ -198,6 +198,12 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
 
 
 //
+//
+void sysAlarm(AlarmType alm) { 
+  sys.alarm[alarm] += 1; 
+}
+
+//
 // //Voltage: checking the average
 // 1- Check Absolute MIN volts
 // 2- Check User min volts
@@ -211,14 +217,14 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
 // return 3 if Min Bat Capacity
 // return 4 if MIN WISPR FREE Space
 // return 5 if No CF2 Free Space
-///
+//
 int checkVitals(void) {
   return 0;
 } // checkVitals
 
 //
 // void AppendFile
-///
+//
   /*
 bool Append_Files(int Dest, const char *SourceFileName, bool erase,
                   long maxBytes) {

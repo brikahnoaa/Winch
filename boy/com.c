@@ -7,4 +7,4 @@
 // avoid globals in general. Prefer to pass &var when practical to void func().
 // except for use of global object struct, which is noted on first line, e.g.
 // // global boy .port .device
-///
+//
