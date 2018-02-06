@@ -19,11 +19,17 @@
 // type := bcifls bool char* int float long short
 //
 static CfgParam cfg[] = {
-  { "pfm", "sys.platform", &sys.platform, 'c'},
-  { "fno", "sys.filenum", &sys.filenum, 'i'},
-  { "sMx", "sys.startsMax", &sys.startsMax, 'i'},
-  { "pID", "sys.projectID", &sys.projectID, 'c'},
+  { "lng", "ant.gpsLong", &ant.gpsLong, 'c'},
+  { "lat", "ant.gpsLat", &ant.gpsLat, 'c'},
+  { "suD", "ant.surfaceD", &ant.surfaceD, 'f'},
+  { "cuD", "boy.currCheckD", &boy.currCheckD, 'f'},
+  { "cuM", "boy.currMax", &boy.currMax, 'f'},
+  { "caF", "boy.callFreq", &boy.callFreq, 'i'},
+  { "caH", "boy.callHour", &boy.callHour, 'i'},
+  { "fiN", "boy.fileNum", &boy.fileNum, 'i'},
+  { "fiP", "boy.firstPhase", &boy.firstPhase, 'i'},
 };
+
 static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
 
 //
