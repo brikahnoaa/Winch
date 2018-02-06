@@ -1,28 +1,28 @@
 // com.h  common to all
+//#include <cfxad.h>
+//#include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
+//#include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
+//#include <fcntl.h> // PicoDOS POSIX-like File Access Definitions
+//#include <stat.h> // PicoDOS POSIX-like File Status Definitions
+//#include <termios.h> // PicoDOS POSIX-like Terminal I/O Definitions
+//#include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 #include <cfxpico.h> // Persistor PicoDOS Definitions
 
 #include <assert.h>
-#include <cfxad.h>
 #include <ctype.h>
-#include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
-#include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
 #include <errno.h>
-#include <fcntl.h> // PicoDOS POSIX-like File Access Definitions
 #include <float.h>
 #include <limits.h>
 #include <locale.h>
 #include <math.h>
 #include <setjmp.h>
 #include <signal.h>
-#include <stat.h> // PicoDOS POSIX-like File Status Definitions
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <termios.h> // PicoDOS POSIX-like Terminal I/O Definitions
 #include <time.h>
-#include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 
 #include <utl.h> // shared procs, SW
 
@@ -72,3 +72,21 @@
 #else
 #define DBG2(...)
 #endif
+
+// PINS
+#define MDM_PWR 21
+#define ANT_PWR 22  // antenna module Power pin (1=ON, 0=OFF)
+#define COM1SELECT 23  // set = antMod, clear = sbe16
+#define WISPR3 24
+#define WISPR4 25
+#define DFRPWR 26   // unused
+#define WISPR1 29
+#define WISPR2 30
+#define COM1_TX 31
+#define COM1_RX 32
+#define MDM_RX 33
+#define MDM_TX 35
+#define WISPR_PWR_ON 37
+#define WISPR_PWR_OFF 42
+#define MDM_RX_TTL 48
+#define MDM_TX_TTL 50

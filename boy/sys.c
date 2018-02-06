@@ -8,6 +8,7 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <ngk.h>
+#include <../fun/winching.h> // ??
 
 //
 // Before deploying, set CF2 time and SM2 time, format SD cards,
@@ -200,7 +201,7 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
 //
 //
 void sysAlarm(AlarmType alm) { 
-  sys.alarm[alarm] += 1; 
+  sys.alarm[alm] += 1; 
 }
 
 //

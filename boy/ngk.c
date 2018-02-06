@@ -114,8 +114,7 @@ MsgType ngkRecv(MsgType *msg) {
       flogf(" (expecting %s)", mdm.msgName[mdm.expect]);
     mdm.expect = 0;
     tmrStop(winch_tmr);
-    }
-  } // expecting
+  }
   // winch motor
   if (m==riseRsp_msg || m==dropRsp_msg) 
     ngk.motorOn = true;
