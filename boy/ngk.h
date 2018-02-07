@@ -13,21 +13,15 @@ typedef enum {
 } MsgType;
 
 typedef struct NgkInfo {
-  bool motorOn;         // ngk motor running
+  bool on;              // ngk motor running
+  char * msgStr[sizeof_msg];    // msg string as if sent to buoy
+  char * msgName[sizeof_msg];   // for logs
   float boy2ant;        // meters from buoy ctd to ant ctd under still water
   float firstRiseV;     // Velocity meters/min of the first rise (ascent)
   float lastRiseV;      // Velocity meters/min of the most recent rise 
   float firstDropV;     // Velocity meters/min of the first drop (descent)
   float lastDropV;      // Velocity meters/min of the most recent drop 
-  // int statMotor;     // winch status response X in %W,00,XY
-  // int statRope;      // winch status response X in %W,00,XY
-} NgkInfo;
-extern NgkInfo ngk;
-
-// Tracking number of calls
-typedef struct MdmInfo {
-  char * msgStr[sizeof_msg];    // msg string as if sent to buoy
-  char * msgName[sizeof_msg];
+  // modem
   int delay;                    // # seconds for amodem to transmit msg (7s)
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
@@ -36,8 +30,8 @@ typedef struct MdmInfo {
   MsgType lastRecv;
   MsgType lastSend;
   Serial port;
-} MdmInfo;
-extern MdmInfo mdm;
+} NgkInfo;
+extern NgkInfo ngk;
 
 static MsgType msgParse(char *str, MsgType *msg);
 

@@ -13,6 +13,7 @@ typedef enum {
 
 // boy
 typedef struct BuoyInfo {
+  char log[16];           // log file
   float currCheckD;       // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch

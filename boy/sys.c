@@ -34,7 +34,7 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 //
 void main(void) {
   preRun(10);
-  restartCheck();
+  startCheck();
   sysInit();
 
   mpcInit();
@@ -63,7 +63,6 @@ void preRun(int delay) {
 } // preRun
 
 void logInit() {
-  strcpy(sys.log, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   Initflog(sys.log, true);
   flogf("\n----------------------------------------------------------------");
   flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
@@ -111,20 +110,22 @@ void configFile(void) {
 
 //
 // check STARTS>STARTSMAX to see if we are rebooting wildly
-// these two settings are in veeprom to allow check before *Init()
-// sets: sys.starts .startsMax
+// sets: sys.cfg .log starts .startsMax
 //
-void restartCheck(void) {
+void startCheck(void) {
   sys.starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
   sys.startsMax = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
   if (sys.starts>sys.startsMax) {
     // log file is not open yet, but still works as printf
-    flogf("\nrestartCheck(): startups>startmax, so shutdown...\n");
-    sysShutdown();
+    cprintf("\nstartCheck(): starts>startmax, so shutdown...\n");
+    sysShutdown("starts>startmax");
   }
+  // load cfg and log file names
+  strcpy(sys.log, VEEFetchStr( "SYS_LOG", SYS_LOG ));
+  strcpy(sys.cfg, VEEFetchStr( "SYS_CFG", SYS_CFG ));
   csprintf(scratch, "%d", sys.starts);
   VEEStoreStr("STARTS", scratch);
-} // restartCheck
+} // startCheck
 
 
 //

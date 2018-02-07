@@ -22,11 +22,11 @@
 typedef struct PwrInfo {
   bool on;             // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
-  float chargeMin;   // minimum system capacity to run
+  char log[16];          // log file
   float charge;   // minimum system capacity to run
-  float voltsMin;     // minimum system voltage to run
+  float chargeMin;   // minimum system capacity to run
   float volts;     // minimum system voltage to run
-  int log;          // log file
+  float voltsMin;     // minimum system voltage to run
   long batCap;          // for lithium
   short interval;       // deciSecs for PIT timer interrupt
 } PwrInfo;

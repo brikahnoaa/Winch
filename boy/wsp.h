@@ -6,12 +6,11 @@
 
 typedef struct WspInfo {
   bool on;
-  short gain; //-g 0-3
-  short num;    // number of DATA Boards installed
-  short detInt;   //-D      //Minutes   //DATA DET INTERVAL
-  short detMax; // Maximum Number of Detections to return
-  short detNum; // Number of detections per one call to initiate #REALTIME call
-  short dutycycl; // Duty cycle of recorder during one detection interval
+  int detInt;   //-D      //Minutes   //DATA DET INTERVAL
+  int detMax;   // Maximum Number of Detections to return
+  int detOff;   // sleep
+  int gain; //-g 0-3
+  int num;    // number of DATA Boards
   Serial port;
 } WspInfo;
 extern WspInfo wsp;

@@ -21,7 +21,6 @@ typedef struct systemData {
   char project[16];    // rudicsland
   char version[16];
   int alarm[sizeof_alm];
-  int filenum;
   long starts;
   long startsMax;
 } systemData;

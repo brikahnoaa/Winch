@@ -8,10 +8,7 @@
 #include <com.h>
 #include <ctd.h>
 
-// syncMode pending delay port
-CtdInfo ctd = {
-  0, 0, 3.5, NULL
-};
+CtdInfo ctd;
 
 //
 // buoy sbe16 set date, sync mode
@@ -34,7 +31,7 @@ bool ctdInit(void) {
     return false;
   }
   ctd.on = true;
-  ctd.pending = false;
+  ctd.expect = false;
   ctdSetDate();
   ctdSyncMode();
   return true;
@@ -88,11 +85,11 @@ bool ctdPrompt(void) {
 
 //
 // poke ctd to get sample, set interval timer
-// set: ctd.pending, it
+// set: ctd.expect, it
 //
 void ctdSample(void) {
   DBG0("ctdSample()")
-  // global ctd .pending
+  // global ctd .expect
   char ch;
   int len;
 
@@ -103,7 +100,7 @@ void ctdSample(void) {
     len = serReadWait(port, char *in, 1);
     if (len<3) flogf("\nERR ctdSample, TS command fail");
   }
-  ctd.pending = true;
+  ctd.expect = true;
   // expect response in 6sec
   itAdd( Ctd_it, 6 );
 } // ctdSample
@@ -137,7 +134,7 @@ void ctdBreak(void) {
 //
 float ctdData(char *stringout) {
   DBG0("ctdData()")
-  // global scratch, ctd .depth .pending .filehandle, boy .port
+  // global scratch, ctd .depth .expect .filehandle, boy .port
   int len;
   float temp, cond, pres, flu, par, sal;
   char *day, *month, *year, *time;

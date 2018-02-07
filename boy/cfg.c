@@ -17,17 +17,37 @@
 //
 // &ptr can be any extern var or struct component
 // type := bcifls bool char* int float long short
-//
+// in order found in *.h typedef struct
 static CfgParam cfg[] = {
-  { "lng", "ant.gpsLong", &ant.gpsLong, 'c'},
-  { "lat", "ant.gpsLat", &ant.gpsLat, 'c'},
-  { "suD", "ant.surfaceD", &ant.surfaceD, 'f'},
-  { "cuD", "boy.currCheckD", &boy.currCheckD, 'f'},
-  { "cuM", "boy.currMax", &boy.currMax, 'f'},
-  { "caF", "boy.callFreq", &boy.callFreq, 'i'},
-  { "caH", "boy.callHour", &boy.callHour, 'i'},
-  { "fiN", "boy.fileNum", &boy.fileNum, 'i'},
-  { "fiP", "boy.firstPhase", &boy.firstPhase, 'i'},
+  {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
+  {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
+  {"asD", "ant.surfaceD",   &ant.surfaceD,    'f'},
+  {"blg", "boy.log",        &boy.log,         'c'},
+  {"bcD", "boy.currCheckD", &boy.currCheckD,  'f'},
+  {"bcX", "boy.currMax",    &boy.currMax,     'f'},
+  {"bcf", "boy.callFreq",   &boy.callFreq,    'i'},
+  {"bch", "boy.callHour",   &boy.callHour,    'i'},
+  {"bfn", "boy.fileNum",    &boy.fileNum,     'i'},
+  {"bfp", "boy.firstPhase", &boy.firstPhase,  'i'},
+  {"cfn", "ctd.log",        &ctd.log,         'c'},
+  {"cdy", "ctd.delay",      &ctd.delay,       'i'},
+  {"mvM", "mpc.voltMin",    &mpc.voltMin,     'f'},
+  {"nba", "ngk.boy2ant",    &ngk.boy2ant,     'f'},
+  {"ndy", "ngk.delay",      &ngk.delay,       'i'},
+  {"pon", "pwr.on",         &pwr.on,          'b'},
+  {"plg", "pwr.log",        &pwr.log,         'c'},
+  {"pch", "pwr.charge",     &pwr.charge,      'f'},
+  {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f'},
+  {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f'},
+  {"spt", "sys.platform",   &sys.platform,    'c'},
+  {"spg", "sys.program",    &sys.program,     'c'},
+  {"spj", "sys.project",    &sys.project,     'c'},
+  {"svs", "sys.version",    &sys.version,     'c'},
+  {"wdi", "wsp.detInt",     &wsp.detInt,      'i'},
+  {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
+  {"wdo", "wsp.detOff",     &wsp.detOff,      'i'},
+  {"wgn", "wsp.gain",       &wsp.gain,        'i'},
+  {"wnm", "wsp.num",        &wsp.num,         'i'},
 };
 
 static int cfgLen = sizeof(cfg) / sizeof(CfgParam);

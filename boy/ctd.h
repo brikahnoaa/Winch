@@ -1,12 +1,12 @@
 // ctd.h
 
 typedef struct CtdInfo {
-  bool on;        // initialized, syncmode
-  bool pending;   // request pending, expect response
-  char *filename;     // 
-  float depth;        // most recent
-  short delay;        // Delay in seconds between polled samples
-  int filehandle;     // log file
+  bool on;              // initialized, syncmode
+  bool expect;          // request pending, expect response
+  char log[16];
+  float depth;          // most recent
+  int delay;            // Delay in seconds between polled samples
+  int filehandle;       // log file
 } CtdInfo;
 extern CtdInfo ctd;
 
