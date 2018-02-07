@@ -116,9 +116,9 @@ MsgType ngkRecv(MsgType *msg) {
   }
   // winch motor
   if (m==riseRsp_msg || m==dropRsp_msg) 
-    ngk.motorOn = true;
+    ngk.on = true;
   if (m==stopCmd_msg || m==stopRsp_msg) 
-    ngk.motorOn = false;
+    ngk.on = false;
   // 
   *msg = m;
   return m;

@@ -24,7 +24,7 @@ void winchingMain(void){
     while (true) { // input
       // amodem
       if (ngkRecv(&msg)!=null_msg) {
-        cprintf("\n winch>> '%s' @ %s", mdm.msgName[msg], clockTime(scratch));
+        cprintf("\n winch>> '%s' @ %s", ngk.msgName[msg], clockTime(scratch));
         break; // while input
       } 
       // keyboard

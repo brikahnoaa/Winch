@@ -99,7 +99,8 @@ void sysSleepUntilWoken(void) {
 //
 // close files, turn off devices, power off
 //
-void sysShutdown(void) {
+void sysShutdown(char *out) {
+  VEEStoreStr("SHUTDOWN", out);
 } // sysShutdown
 
 //
