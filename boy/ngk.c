@@ -101,7 +101,7 @@ MsgType ngkRecv(MsgType *msg) {
     return mangled_msg;
   flogf("\n\t|ngkRecv(%s) at %s", mdm.msgName[m], clockTime(scratch));
   mdm.recv[m]++;
-  if (m!=buoyCmd_msg) {                // buoyCmd could happen anytime
+  if (m==buoyCmd_msg) {                // buoyCmd could happen anytime
     ngkSend(buoyRsp_msg);
     return null_msg;
   }
