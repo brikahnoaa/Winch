@@ -7,8 +7,8 @@ MdmInfo mdm = {
   { "null", 
     // mdm.msgStr[] as if sent to buoy; change ID before sending to winch
     // %B and %W are shorter, last two digits are status
-    "#B,00,00", "%B,00,", "#F,00,00", "%F,00,00", "#R,00,00", "%R,00,00",
-    "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,03", "mangled",
+    "#B,00,00", "%B,00,", "#F,00,00", "%F,00,00", "#R,00,03", "%R,00,00",
+    "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,00", "mangled",
   },
   { "null",
     "buoyCmd", "buoyRsp", "dropCmd", "dropRsp", "riseCmd", "riseRsp",
