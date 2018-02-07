@@ -56,7 +56,7 @@ void ngkSend(MsgType msg) {
   char str[12];
   flogf("\nngkSend(%s) at %s", mdm.msgName[msg], clockTime(scratch));
   strcpy(str, mdm.msgStr[msg]);
-  strcat(str, "\r\n");
+  strcat(str, WINCH_EOL);
   // set winch id "#R,0X,00"
   str[4]=WINCH_ID;
   TUTxWaitCompletion(mdm.port);

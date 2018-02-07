@@ -3,6 +3,7 @@
 #define MDM_BAUD 4800L
 #define BUOY_ID '0'
 #define WINCH_ID '1'
+#define WINCH_EOL "\r\n"
 
 typedef enum {
   null_msg=0,
