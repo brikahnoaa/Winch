@@ -34,7 +34,7 @@ int serWrite(Serial port, char *out) {
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG1("sent %d of %d", sent, len)
-  DBG2("'%s'", out)
+  DBG2("'%s'", unsprintf(scratch, out))
   if (len!=sent) 
     flogf("\nERR\t|serWrite(%s) sent %d of %d", out, sent, len);
   return sent;
@@ -125,7 +125,7 @@ char * clockTimeDate(char *out) {
 // format non-printable string; null terminate
 // modifies out[] and returns *out, can be used in DBG1()
 //
-char *sprintfun (char *out, char *in) {
+char *unsprintf (char *out, char *in) {
   char ch, *ptr = out;
   // walk thru input until 0
   while ((ch = *in++)!=0) {
