@@ -90,8 +90,8 @@ void risePhase(void) {
   antInit();
   depthStart = depth = antDepth();
   // if current is too strong
-  if (boyOceanCurrentCheck()) {
-    sysAlarm(dockedCurrent_alm);
+  if (oceanCurrChk()) {
+    sysAlarm(bottomCurr_alm);
     boy.phase = data_pha;
     return;
   }
@@ -145,15 +145,15 @@ void risePhase(void) {
     ngk.firstRiseV = ngk.lastRiseV;
   ngkSend( stopCmd_msg );
   // algor: current check. rise to surface, checking response
-  if (boyOceanCurrentCheck()) {
-    sysAlarm(midwayCurrent_alm);
+  if (oceanCurrChk()) {
+    sysAlarm(midwayCurr_alm);
     boy.phase = drop_pha;
     return;
   }
   // 
   // go to surface. same loop but stop cmd expected
   // 
-  while ((depth = antDepth()) > (ant.surfaceD+1)) {
+  while (!antSurf()) {
     switch (ngkRecv(&r)) {
     case null_msg: break;
     case riseRsp_msg: // rise ack
@@ -163,7 +163,7 @@ void risePhase(void) {
       depthStart = antDepth();
       break;
     case dropRsp_msg: // unexpected
-      flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", depth);
+      flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", antDepth());
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
     case stopRsp_msg: // slack auto-stop
@@ -171,7 +171,7 @@ void risePhase(void) {
     case timeRsp_msg: // timeout
       sysAlarm(ngkTimeout_alm);
       amodem.timeout[riseCmd_msg] += 1;
-      if (depthStart-depth < 3) {
+      if (depthStart-antDepth() < 3) {
         // not rising from dock. log, reset, retry 5 times or abort
         if (retry++ < 5) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry);
@@ -190,9 +190,10 @@ void risePhase(void) {
     } // switch
   } // while depth>surfaceD
   //
-  // ant mod surfaced
-  // expect stop within ant.surfaceWait secs
+  // ant mod surfaced, floats may be below still
+  // antSurfOp() expects stop within some secs
   // start warming gps, we don't need depth until dropP
+  // were files transfered at end of dataPhase ??
 } // risePhase
 
 //
@@ -917,17 +918,17 @@ char *PrintSystemStatus(void) {
 }
 
 //
+// wait currChkSettle, buoy ctd, ant td, compute
 // uses: ngk.boy2ant
-// sets: ant.on
 //
-float boyOceanCurrent() {
+float oceanCurr() {
   float aD, cD, a, b, c;
   // usually called while antMod is on
-  if (!ant.on) antInit();
-  aD=antDepth();
+  antMode(idle_mod);
   mpcDevSwitch(ctd_dev);
   cD=ctdDepth();
   mpcDevSwitch(ant_dev);
+  aD=antDepth();
   // a^2 + b^2 = c^2
   a=cD-aD;
   c=ngk.boy2ant;
@@ -936,12 +937,12 @@ float boyOceanCurrent() {
 }
 
 //
-// uses: ant.depth boy.sidewaysMax
+// uses: boy.sidewaysMax
 //
-bool boyOceanCurrentCheck() {
+bool oceanCurrChk() {
   flogf("\n\t| ocean current ");
-  sideways = boyOceanCurrent();
-  flogf(" @%.1f=%.1f ", ant.depth, sideways);
+  sideways = oceanCurr();
+  flogf(" @%.1f=%.1f ", antDepth(), sideways);
   if (sideways>boy.sidewaysMax) {
     flogf("too strong, cancel ascent");
     return true;

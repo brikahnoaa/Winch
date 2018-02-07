@@ -14,7 +14,7 @@ typedef enum {
 // boy
 typedef struct BuoyInfo {
   char log[16];           // log file
-  float currCheckD;       // stop at this depth to check ocean current
+  float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch
   int callFreq;           // number of times per day to call (1)
@@ -26,7 +26,6 @@ typedef struct BuoyInfo {
   time_t deployT;         // startup time
   time_t phaseT;          // time this phase started
 } BuoyInfo;
-extern BuoyInfo boy;
 
 static void dataFiles(void);
 static void deployPhase(void);
@@ -34,8 +33,9 @@ static void dataPhase(void);
 static void risePhase(void);
 static void callPhase(void);
 static void dropPhase(void);
+static float oceanCurr(void);
+static bool oceanCurrChk(void);
 
-float boyDepth(void);
 void boyInit(void);
 void boyStat(char *buffer);
 void boyMain(int starts);

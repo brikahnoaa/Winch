@@ -31,7 +31,6 @@ typedef struct NgkInfo {
   MsgType lastSend;
   Serial port;
 } NgkInfo;
-extern NgkInfo ngk;
 
 static MsgType msgParse(char *str, MsgType *msg);
 

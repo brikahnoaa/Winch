@@ -30,7 +30,6 @@ typedef struct PwrInfo {
   long batCap;          // for lithium
   short interval;       // deciSecs for PIT timer interrupt
 } PwrInfo;
-extern PwrInfo pwr;
 
 void pwrLog(void);
 void pwrDelay(short sec);

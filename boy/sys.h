@@ -6,8 +6,8 @@
 
 typedef enum {
   null_alm=0,
-  bottomCurrent_alm,
-  midwayCurrent_alm,
+  bottomCurr_alm,
+  midwayCurr_alm,
   ice_alm,
   ngkTimeout_alm,
   sizeof_alm
@@ -24,7 +24,6 @@ typedef struct systemData {
   long starts;
   long startsMax;
 } systemData;
-extern systemData sys;
 
 static int checkVitals(void);
 static void configFile(void);

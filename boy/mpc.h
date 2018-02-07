@@ -14,7 +14,6 @@ typedef struct MpcData {
   Serial com1;
   SerialDevType device;
 } MpcData;
-extern MpcData mpc;
 
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);

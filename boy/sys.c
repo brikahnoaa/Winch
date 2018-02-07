@@ -10,6 +10,8 @@
 #include <ngk.h>
 #include <../fun/winching.h> // ??
 
+systemData sys;
+
 //
 // Before deploying, set CF2 time and SM2 time, format SD cards,
 // replace SM2 and CF2 clock batteries
@@ -20,17 +22,11 @@
 // as power consumption varies between those settings
 //
 
-systemData sys = {
-  "c:sys.log", "LR01", "LARA", "QUEH", "4.0",
-  0, 0, 50,
-};
-
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
 
 //
-// initHW and SW structures. loop over phase 1-4
-// sets: boy.com1 wis.com2 wis.com3 ngk.com4
+// initHW and SW structures. call boyMain()
 //
 void main(void) {
   preRun(10);

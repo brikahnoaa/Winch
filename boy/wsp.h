@@ -1,6 +1,6 @@
 // wsp.h
 
-#define DATABAUD 9600L
+#define WSP_BAUD 9600L
 // This baud rate works with only the new wspa_053116 killerwhale file at the
 // moment. 060116- AT
 
@@ -13,7 +13,6 @@ typedef struct WspInfo {
   int num;    // number of DATA Boards
   Serial port;
 } WspInfo;
-extern WspInfo wsp;
 
 void wspInit(int board);
 void wspStop(void);

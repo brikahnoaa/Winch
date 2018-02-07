@@ -4,6 +4,7 @@
 #include <ngk.h>
 
 #define CTRL_C 3
+extern NgkInfo ngk;
 
 void winchingHelp() {
   cprintf("\n b=buoy status, f=fall, r=rise, s=stop, u=up(00), w=winch status"

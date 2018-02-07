@@ -10,6 +10,15 @@
 #include <sys.h>
 #include <wsp.h>
 
+extern AntennaData ant;
+extern BuoyInfo boy;
+extern CtdInfo ctd;
+extern MpcData mpc;
+extern NgkInfo ngk;
+extern PwrInfo pwr;
+extern systemData sys;
+extern WspInfo wsp;
+
 // 
 // static CfgParam cfg[] = array of {id, var, ptr, type}
 // scan it for name when updating a cfg
@@ -23,7 +32,7 @@ static CfgParam cfg[] = {
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
   {"asD", "ant.surfaceD",   &ant.surfaceD,    'f'},
   {"blg", "boy.log",        &boy.log,         'c'},
-  {"bcD", "boy.currCheckD", &boy.currCheckD,  'f'},
+  {"bcD", "boy.currChkD",   &boy.currChkD,    'f'},
   {"bcX", "boy.currMax",    &boy.currMax,     'f'},
   {"bcf", "boy.callFreq",   &boy.callFreq,    'i'},
   {"bch", "boy.callHour",   &boy.callHour,    'i'},

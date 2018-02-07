@@ -8,7 +8,6 @@ typedef struct CtdInfo {
   int delay;            // Delay in seconds between polled samples
   int filehandle;       // log file
 } CtdInfo;
-extern CtdInfo ctd;
 
 float ctdDepth();               // query, wait for response
 float ctdData(char *out);

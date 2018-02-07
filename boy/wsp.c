@@ -750,7 +750,7 @@ void wspInit(int board) {
   if (on) {
     PAM_RX = TPUChanFromPin(28);
     PAM_TX = TPUChanFromPin(27);
-    PAMPort = TUOpen(PAM_RX, PAM_TX, wspBAUD, 0);
+    PAMPort = TUOpen(PAM_RX, PAM_TX, WSP_BAUD, 0);
   } else if (!on) {
     TUTxFlush(PAMPort);
     TURxFlush(PAMPort);
