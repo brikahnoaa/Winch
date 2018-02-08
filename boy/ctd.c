@@ -17,21 +17,23 @@ CtdInfo ctd;
 //
 bool ctdInit(void) {
   DBG0("ctdInit()")
-  if (!ctd.on) 
+  int errno;
+  if (!ctd.on) {
     mpcDevSelect(ctd_dev);
-  ctdBreak(mpc.com1);
+    ctd.on = true;
+    ctd.expect = false;
+  }
+  ctdBreak();
   if (!(ctdPrompt() || ctdPrompt())) {   // fails twice 
-    flogf( "\nERR ctdInit(): no prompt" );
+    flogf( "\nERR\t|ctdInit(): no prompt" );
     return false;
   }
-  
-  ctd.filehandle = open(ctd.filename, OAPPEND | OCREAT | ORDWR);
-  if (ctd.filehandle <= 0) {
-    flogf("\nERR %s open errno: %d", ctd.filename, errno);
+  if (ctd.log==0)
+    ctd.log = open(ctd.logFile, OAPPEND | OCREAT | ORDWR);
+  if (ctd.log <= 0) {
+    flogf("\nERR %s open errno: %d", ctd.logFile, errno);
     return false;
   }
-  ctd.on = true;
-  ctd.expect = false;
   ctdSetDate();
   ctdSyncMode();
   return true;

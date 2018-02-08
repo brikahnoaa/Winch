@@ -113,7 +113,7 @@ IEV_C_FUNCT(ADSamplingRuptHandler) {
 
 bool powCheck(void) {
   if (power.sampleReady == true && !power.off) {
-    TickleSWSR();
+    pet();
     powLog();
     return true;
   } else
@@ -451,7 +451,7 @@ void powDelay(short Sec) {
   last = Sec / 5;
   rem = Sec - last * 5;
 
-  TickleSWSR(); // another reprieve
+  pet(); // another reprieve
   for (i = 0; i < last; i++) {
 
     powCheck();
@@ -459,7 +459,7 @@ void powDelay(short Sec) {
   }
   powCheck();
   delayms(rem * 1000);
-  TickleSWSR();                         // another reprieve
+  pet();                         // another reprieve
 
 } //powDelay()
 

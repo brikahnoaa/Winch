@@ -27,9 +27,9 @@ void ngkInit(void) {
   DBG0("ngkInit()");
   // Power up the DC-DC for the Acoustic Modem Port
   PIOClear(MDM_PWR);
-  delayms(250);
+  delayms(RS232_SETTLE);
   PIOSet(MDM_PWR); 
-  delayms(250);
+  delayms(RS232_SETTLE);
   PIORead(MDM_RX_TTL);              // tpu->rs232 is pin 33->48->47
   PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
   mdmRX = TPUChanFromPin(MDM_RX);

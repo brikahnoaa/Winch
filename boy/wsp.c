@@ -160,7 +160,7 @@ short wspData(void) {
       AppendDetections(DataString, wspFile);
       if (dtxrqst > 0) {
         for (i = 0; i < dtxrqst; i++) {
-          TickleSWSR();
+          pet();
           // memset(DataString, 0, 64*(sizeof DataString[0]));
           GetwspInput(&returndouble);
           if ((int)returndouble == -1) {

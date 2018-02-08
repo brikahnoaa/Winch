@@ -13,13 +13,14 @@ typedef enum {
 
 // boy
 typedef struct BuoyInfo {
-  char log[16];           // log file
+  char logFile[16];       // log file
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch
   int callFreq;           // number of times per day to call (1)
   int callHour;           // 0-23 (midnight-11pm) hour to call home 
   int fileNum;            // current number for filename ####.dat ####.log
+  int log;                // log filehandle
   PhaseType phase;        // deploy, data, rise, call, drop, error
   PhaseType firstPhase;   // start in this phase (deploy)
   Serial port;            // sbe16 or ant mod

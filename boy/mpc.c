@@ -14,7 +14,7 @@
 
 MpcData mpc = {
   1500.0, 15.0, 11.0,
-  NULL, ctd_ser
+  NULL, ctd_dev
 };
 
 // Enable watch dog  HM 3/6/2014
@@ -25,9 +25,9 @@ short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 // ?? walk thru to verify all actions
 //
 void mpcInit(void) {
-  short waitsFlash, waitsRAM, waitsCF;
   ushort nsRAM, nsFlash, nsCF;
-  short nsBusAdj;
+  short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
+  short deviceRX, deviceTX;
 
   // Define unused pins here ?? 1-14 20 27 28 34 38-41 43-50
   uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
@@ -43,9 +43,15 @@ void mpcInit(void) {
       waitsCF, *(uchar *)0xFFFFFA21);
     mpcVoltage( &mpc.volts );
   flogf("\n\t|Check Startup Voltage: %5.2fV", mpc.volts);
-
+  // com1
+  deviceRX = TPUChanFromPin(COM1_RX);
+  deviceTX = TPUChanFromPin(COM1_TX);
+  mpc.com1 = TUOpen(deviceRX, deviceTX, COM1_BAUD, 0);
+  if (mpc.com1==NULL) 
+    sysShutdown("mpcInit() com1 open fail");
+  delayms(RS232_SETTLE); // to settle rs232
   // Safety Check. Minimum Voltage
-  if (mpc.volts < mpc.voltMin) {
+  if (mpc.volts < mpc.voltsMin) {
     flogf("\n\t|Battery Voltage Below Minimum. Activate Hibernation Mode");
     sysSleepUntilWoken();
     BIOSReset();
@@ -96,7 +102,7 @@ void mpcSleep(void) {
   PinBus(IRQ4RXD);          // console
   PinBus(IRQ5);             // wispr
 
-  TickleSWSR();      // another reprieve
+  pet();      // another reprieve
   TMGSetSpeed(1600);
   while (PinTestIsItBus(IRQ4RXD) && PinTestIsItBus(IRQ5)) {
     // we loop here on spurious interrupt
@@ -104,7 +110,7 @@ void mpcSleep(void) {
     //*(ushort *)0xffffe00c=0xF000; //force CF card into Card-1 active mode
 
     LPStopCSE(FullStop); // we will be here until interrupted
-    TickleSWSR();        // by break
+    pet();
   }
 
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
@@ -128,3 +134,22 @@ float mpcVoltage(float *volts) {
   *volts = v;
   return v;
 }
+
+bool mpcDevSelect(DevType dev) {
+  if (dev==mpc.device) return true;
+  if (dev==ant_dev)
+    PIOSet(COM1SELECT);
+  else if (dev==ctd_dev)
+    PIOClear(COM1SELECT);
+  else
+    return false;
+  delayms(10);
+  TUTxFlush(mpc.port);
+  TURxFlush(mpc.port);
+  pet();
+  return true;
+}
+
+DevType mpcCom1Port(void) { return mpc.port; }
+
+Serial mpcCom1Dev(void) { return mpc.device; }

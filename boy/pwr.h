@@ -20,13 +20,14 @@
 #define BITSHIFT 11
 
 typedef struct PwrInfo {
-  bool on;             // track and log battery capacity
+  bool on;              // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
-  char log[16];          // log file
-  float charge;   // minimum system capacity to run
-  float chargeMin;   // minimum system capacity to run
-  float volts;     // minimum system voltage to run
-  float voltsMin;     // minimum system voltage to run
+  char logFile[16];     // log file
+  float charge;         // minimum system capacity to run
+  float chargeMin;      // minimum system capacity to run
+  float volts;          // minimum system voltage to run
+  float voltsMin;       // minimum system voltage to run
+  int log;              // log filehandle
   long batCap;          // for lithium
   short interval;       // deciSecs for PIT timer interrupt
 } PwrInfo;

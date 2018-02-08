@@ -43,7 +43,7 @@ void main(void) {
 
 void preRun(int delay) {
   char c;
-  TickleSWSR();
+  pet();
   ciflush();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
   flogf("You have %d seconds ", delay);
@@ -67,7 +67,7 @@ void logInit() {
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
   flogf("\n----------------------------------------------------------------");
   fflush(NULL);
-  TickleSWSR();
+  pet();
   cdrain();
   ciflush();
   coflush();

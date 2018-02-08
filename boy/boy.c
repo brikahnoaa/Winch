@@ -812,7 +812,6 @@ ulong WriteFile(ulong TotalSeconds) {
   }
   DBG(else flogf("\n\t|WriteFile: %s Opened", uploadfile);)
 
-  //*** boy Write ***//
   // ?? should this have geo loc?
   sprintf(WriteBuffer, "boy Program Ver:%.1f\naa:bb.cccc North ddd:ee.ffff "
                        "West\nFileNumber: %ld\nStarts:%d of "
@@ -827,13 +826,11 @@ ulong WriteFile(ulong TotalSeconds) {
 
   // Only comes here if not rebooted.
   if (TotalSeconds != 0) {
-    //*** Ngk Info   ***//
     // blk 
     Ngk_Monitor(filehandle);
     delayms(50);
     memset(WriteBuffer, 0, BUFSZ);
 
-    //*** Ngk Status ***//
     sprintf(WriteBuffer, "%s\n\0", PrintSystemStatus());
     bytesWritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
     DBG2("BytesWritten: %d", bytesWritten)
@@ -844,14 +841,12 @@ ulong WriteFile(ulong TotalSeconds) {
     delayms(50);
   }
 
-  //*** Power Monitoring Upload ***//
   Power_Monitor(TotalSeconds, filehandle, &LoggingTime);
   delayms(50);
   Setup_ADS(true, MPC.FILENUM + 1, BITSHIFT);
   DOS_Com("del", MPC.FILENUM, "PWR", NULL);
   delayms(500);
 
-  //*** WISPR File Upload ***//
   WISPRWriteFile(filehandle);
   delayms(50);
 
@@ -872,7 +867,6 @@ ulong WriteFile(ulong TotalSeconds) {
   DOS_Com("move", MPC.FILENUM, "CTD", "CTD");
   delayms(50);
 #endif
-  //*** MPC.LOGFILE upload ***// Note: occurring only after reboot.
   if (TotalSeconds == 0) { //||MPC.UPLOAD==1)
     sprintf(logfile, "%08ld.log", MPC.FILENUM);
     DBG1("\t|WriteFile: %ld log file: %s", MPC.FILENUM, logfile)

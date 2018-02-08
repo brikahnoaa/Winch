@@ -70,7 +70,7 @@ int serReadWait(Serial port, char *in, int wait) {
   int len = 0;
   DBG0("serReadWait(%d)")
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
-  TickleSWSR(); // could have been a long wait
+  pet(); // could have been a long wait
   if (in[0]<=0) {
     // timeout
     in[0]=0;
@@ -141,3 +141,5 @@ char *unsprintf (char *out, char *in) {
   *ptr = 0;
   return (out);
 } // printsafe
+
+void pet() { TickleSWSR(); }              // pet the watchdog

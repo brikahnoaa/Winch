@@ -1,6 +1,7 @@
 // utl.h - utility and shared stuff
 
 #define BUFSZ 1024
+#define RS232_SETTLE 100
 
 typedef TUPort * Serial;
 
