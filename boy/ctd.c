@@ -13,16 +13,15 @@ CtdInfo ctd;
 //
 // buoy sbe16 set date, sync mode
 // pre: mpcInit sets up serial
-// sets: ctd.on
+// sets: ctd.port .expect .log
 //
 bool ctdInit(void) {
   DBG0("ctdInit()")
   int errno;
-  if (!ctd.on) {
-    mpcDevSelect(ctd_dev);
-    ctd.on = true;
-    ctd.expect = false;
-  }
+  ctd.port = mpcCom1Port();
+  mpcDevSelect(ctd_dev);
+  ctd.expect = false;
+  // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt())) {   // fails twice 
     flogf( "\nERR\t|ctdInit(): no prompt" );
@@ -30,8 +29,8 @@ bool ctdInit(void) {
   }
   if (ctd.log==0)
     ctd.log = open(ctd.logFile, OAPPEND | OCREAT | ORDWR);
-  if (ctd.log <= 0) {
-    flogf("\nERR %s open errno: %d", ctd.logFile, errno);
+  if (ctd.log<=0) {
+    flogf("\nERR\t| ctdInit() %s open errno: %d", ctd.logFile, errno);
     return false;
   }
   ctdSetDate();
@@ -41,30 +40,29 @@ bool ctdInit(void) {
 
 //
 // date, time for ctd. also some params.
+// uses: ctd.port
 //
 void ctdSetDate(void) {
   DBG0("ctdSetDate()")
-  // global ctd .port
   timet rawtime;
   struct tm *info;
   char buffer[15];
-  
+  //
   time(&rawtime);
   info = gmtime(&rawtime);
   //	strftime(buffer, 15, "%m%d%Y%H%M%S", info);
   sprintf(buffer, "datetime=%02d%02d%04d%02d%02d%02d", 
     info->tmmon+1, info->tmmday, info->tmyear + 1900, 
     info->tmhour, info->tmmin, info->tmsec);
-  flogf("\n\t|ctdSetDate(): %s\n", buffer);
-
+  DBG1("%s", buffer)
+  //
   serWrite(ctd.port, buffer);
   serReadWait(ctd.port, scratch, 1);
   serWrite(ctd.port, "syncwait=0\r");
   serReadWait(ctd.port, scratch, 1);
   serWrite(ctd.port, "DelayBeforeSampling=0\r");
   serReadWait(ctd.port, scratch, 1);
-
-} // ctdSetDate() 
+} // ctdSetDate
 
 // sbe16
 // \r input, echos input.  \r\n before next output.
@@ -94,7 +92,7 @@ void ctdSample(void) {
   // global ctd .expect
   char ch;
   int len;
-
+  if (ctd.expect) return;
   if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
   else {
     serWrite(ctd.port, "TS\r");
@@ -103,15 +101,15 @@ void ctdSample(void) {
     if (len<3) flogf("\nERR ctdSample, TS command fail");
   }
   ctd.expect = true;
-  // expect response in 6sec
-  itAdd( Ctd_it, 6 );
+  // expect response, timeout in 6sec
+  tmrAdd( ctd_tmr, 6 );
 } // ctdSample
 
 //
+// sets: ctd.syncmode
 //
 void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
-  // global ctd .port .syncmode
   serWrite(ctd.port, "Syncmode=y\r");
   ctdPrompt();
   serWrite(ctd.port, "QS\r");
@@ -136,18 +134,13 @@ void ctdBreak(void) {
 //
 float ctdData(char *stringout) {
   DBG0("ctdData()")
-  // global scratch, ctd .depth .expect .filehandle, boy .port
   int len;
   float temp, cond, pres, flu, par, sal;
   char *day, *month, *year, *time;
   char stringin[BUFSZ];
-
-  if (ctd.off) ctdOpen();
-
   // waits up to 8 seconds - best called after tgetq()
-  len = serReadWait(boy.port, 8, stringin);
-  DBG2("ctd-->%s", printSafe(scratch, stringin))
-
+  len = serReadWait(ctd.port, 8, stringin);
+  DBG2("\n\tctd-->%s", printSafe(scratch, stringin))
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: picks up trailing S> prompt if not in syncmode
@@ -163,18 +156,15 @@ float ctdData(char *stringout) {
   month = strtok(NULL, " ");
   year = strtok(NULL, " ");
   time = strtok(NULL, " \r\n");
-
+  // record
   sprintf(stringout, 
     "%.4f,%.5f,%.3f,%.4f,%.4f,%.4f,%s%s,%s", 
     temp, cond, pres, flu, par, sal, month, day, time);
-  flogf("ctd: %s\n", stringout);
-
+  DBG1("\n\tctd: %s", stringout)
   // Log WriteString
   len = strlen(stringout);
-  if (write(ctd.filehandle, stringout, len)<len) {
-    flogf("\nERR ctdData log fail");
-  }
-
+  if (write(ctd.log, stringout, len)<len) 
+    flogf("\nERR\t|ctdData log fail");
   ctd.depth = pres;
   return (pres);
 } // ctdData

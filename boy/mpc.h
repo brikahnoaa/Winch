@@ -24,4 +24,4 @@ float mpcVoltage(float *volts);
 void mpcInit(void);
 void mpcSleep(void);
 Serial mpcCom1Port(void);
-DevType mpcCom1Port(void);
+DevType mpcCom1Dev(void);

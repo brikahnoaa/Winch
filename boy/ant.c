@@ -21,5 +21,5 @@ float antDepth(void) {
 }
 
 bool antSurf(void) {
-  return (antDepth() > ant.surfaceD+1);
+  return (antDepth() > ant.surfD+1);
 }

@@ -30,7 +30,7 @@ extern WspInfo wsp;
 static CfgParam cfg[] = {
   {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
-  {"asD", "ant.surfaceD",   &ant.surfaceD,    'f'},
+  {"asD", "ant.surfD",   &ant.surfD,    'f'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bcD", "boy.currChkD",   &boy.currChkD,    'f'},
   {"bcX", "boy.currMax",    &boy.currMax,     'f'},

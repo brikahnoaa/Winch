@@ -188,7 +188,7 @@ void risePhase(void) {
       } // depth
       break;
     } // switch
-  } // while depth>surfaceD
+  } // while depth>surfD
   //
   // ant mod surfaced, floats may be below still
   // antSurfOp() expects stop within some secs
