@@ -37,4 +37,5 @@ static MsgType msgParse(char *str, MsgType *msg);
 bool ngkTimeout(void);
 MsgType ngkRecv(MsgType *msg);
 void ngkInit(void);
+void ngkStop(void);
 void ngkSend(MsgType msg);

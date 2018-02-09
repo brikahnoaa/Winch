@@ -8,9 +8,9 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <ngk.h>
-#include <../fun/winching.h> // ??
+#include <wsp.h>
 
-systemData sys;
+SysInfo sys;
 
 //
 // Before deploying, set CF2 time and SM2 time, format SD cards,
@@ -34,11 +34,12 @@ void main(void) {
   sysInit();
 
   mpcInit();
-  //?? boyInit();
-  //?? ctdInit();
+  antInit();
+  boyInit();
+  ctdInit();
   ngkInit();
-  //?? boyMain(sys.starts);
-  winchingMain();
+  pwrInit();
+  boyMain(sys.starts);
 } // main
 
 void preRun(int delay) {
@@ -76,7 +77,7 @@ void logInit() {
 void sysInit() {
   logInit();
   configFile();
-  PZCacheSetup('C' - 'A', calloc, free);
+  PZCacheSetup(C_DRIVE, calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
   flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
     sys.program, sys.version, sys.project, sys.platform, sys.starts);
@@ -87,17 +88,23 @@ void sysInit() {
 // close files ??, Sleep until keypress
 // 2nd release 6/24/2002 by HM -Changed to use ADS8344/45
 //
-void sysSleepUntilWoken(void) {
-  ciflush(); // flush any junk
+void sysSleep(void) {
   mpcSleep();
-} // sysSleepUntilWoken
+} // sysSleep
 
 //
 // close files, turn off devices, power off
 //
-void sysShutdown(char *out) {
+void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
-} // sysShutdown
+  antStop();
+  boyStop();
+  ngkStop();
+  pwrStop();
+  wspStop();
+  sysSleep();
+  BIOSReset();
+} // sysStop
 
 //
 // read config from CONFIG_FILE
@@ -115,7 +122,7 @@ void startCheck(void) {
   if (sys.starts>sys.startsMax) {
     // log file is not open yet, but still works as printf
     cprintf("\nstartCheck(): starts>startmax, so shutdown...\n");
-    sysShutdown("starts>startmax");
+    sysStop("starts>startmax");
   }
   // load cfg and log file names
   strcpy(sys.log, VEEFetchStr( "SYS_LOG", SYS_LOG ));
@@ -222,80 +229,12 @@ int checkVitals(void) {
 } // checkVitals
 
 //
-// void AppendFile
+// sysDiskFree Returns the free space in kBytes
 //
-  /*
-bool Append_Files(int Dest, const char *SourceFileName, bool erase,
-                  long maxBytes) {
-  int Source;
-  int i;
-  struct stat fileinfo;
-  long BlockLength = 256;
-  long NumBlks, LastBlkLength;
-  char extension[] = "XXX";
-  int byteswritten;
-  // char filename[]="c:00000000.xxx";
+long sysDiskFree(void) {
+  sys.diskFree = DSDFreeSectors(C_DRIVE);
+  sys.diskSize = DSDDataSectors(C_DRIVE);
+  return sys.diskFree/2;
+} // sysDiskFree
 
-  delayms(50);
-
-  stat(SourceFileName, &fileinfo);
-  if (fileinfo.st_size <= 0) {
-    flogf("\nERROR  |Return upon no file to append");
-    return false;
-  }
-  Source = open(SourceFileName, O_RDONLY);
-  if (Source <= 0) {
-    flogf("\nERROR  |AppendFiles() %s open errno: %d", SourceFileName, errno);
-    return false;
-  }
-  DBG(else flogf("\n\t|Append_Files() %s opened", SourceFileName);)
-
-  lseek(Source, 0, SEEK_SET);
-
-  flogf("\n\t|Append_Files %s Size: %ld Bytes", SourceFileName,
-        fileinfo.st_size);
-
-  if (maxBytes <= 0)
-    NumBlks = fileinfo.st_size / BlockLength;
-  else
-    NumBlks = maxBytes / BlockLength;
-
-  LastBlkLength = fileinfo.st_size % BlockLength;
-
-  for (i = 0; i <= NumBlks; i++) {
-
-    if (i == NumBlks)
-      BlockLength = LastBlkLength;
-    memset(WriteBuffer, 0, 256 * sizeof(char));
-
-    byteswritten = read(Source, WriteBuffer, BlockLength * sizeof(char));
-    DBG1("\t|AppendFiles: bytes read: %d", byteswritten)
-    if (i == NumBlks) {
-      strcat(WriteBuffer, "\n");
-      BlockLength++;
-    }
-    byteswritten = write(Dest, WriteBuffer, BlockLength * sizeof(char));
-    DBG1("\t|AppendFiles: bytes written: %d", byteswritten)
-  }
-
-  if (erase) {
-    if (close(Source) == 0) {
-      DBG1("\t|Append_Files() %s Closed", SourceFileName)
-      sprintf(extension, "%c%c%c", SourceFileName[11], SourceFileName[12],
-              SourceFileName[13]);
-      DOS_Com("del", MPC.FILENUM, extension, NULL);
-    } else
-      flogf("\nERROR  |AppendFiles() %s close errno: %d", SourceFileName,
-            errno);
-  } else {
-    if (close(Source) != 0)
-      flogf("\nERROR  |AppendFiles() %s close errno: %d", SourceFileName,
-            errno);
-    DBG(else flogf("\n\t|AppendFiles() %s Closed", SourceFileName);)
-  }
-
-  return true;
-
-} // AppendFiles
-  */ //??
 

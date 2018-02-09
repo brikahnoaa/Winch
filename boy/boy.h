@@ -1,18 +1,12 @@
 // boy.h
 
 typedef enum {
-  null_pha=0,
-  init_pha,
-  data_pha,
-  rise_pha,
-  call_pha,
-  drop_pha,
-  error_pha,
-  sizeof_pha
+  deploy_pha=0, reboot_pha, error_pha,
+  data_pha, rise_pha, call_pha, drop_pha
 } PhaseType;
 
 // boy
-typedef struct BuoyInfo {
+typedef struct BoyInfo {
   char logFile[16];       // log file
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
@@ -22,21 +16,26 @@ typedef struct BuoyInfo {
   int fileNum;            // current number for filename ####.dat ####.log
   int log;                // log filehandle
   PhaseType phase;        // deploy, data, rise, call, drop, error
-  PhaseType firstPhase;   // start in this phase (deploy)
   Serial port;            // sbe16 or ant mod
   time_t deployT;         // startup time
   time_t phaseT;          // time this phase started
-} BuoyInfo;
+} BoyInfo;
 
-static void dataFiles(void);
-static void deployPhase(void);
-static void dataPhase(void);
-static void risePhase(void);
-static void callPhase(void);
-static void dropPhase(void);
-static float oceanCurr(void);
 static bool oceanCurrChk(void);
+static float oceanCurr(void);
+static void boyStat(char *buffer);
+static void callPhase(void);
+static void callPhase(void);
+static void dataPhase(void);
+static void deployPhase(void);
+static void dropPhase(void);
+static void rebootPhase(void);
+static void risePhase(void);
+static void transferFiles(void);
+static void flushBuffers(void);
+static void errorPhase(void);
+static void flushBuffers(void);
 
 void boyInit(void);
-void boyStat(char *buffer);
 void boyMain(int starts);
+void boyStop(void);

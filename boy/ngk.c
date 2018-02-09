@@ -45,6 +45,8 @@ void ngkInit(void) {
   ngk.port = p;
 } // ngkInit
 
+void ngkStop(void){}
+
 //
 // send message to winch via amodem
 // starts winch_tmr, does not set ngk.on (see ngkRecv)

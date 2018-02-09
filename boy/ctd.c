@@ -36,7 +36,7 @@ bool ctdInit(void) {
   ctdSetDate();
   ctdSyncMode();
   return true;
-} // ctdOpen
+} // ctdInit
 
 //
 // date, time for ctd. also some params.
@@ -169,3 +169,4 @@ float ctdData(char *stringout) {
   return (pres);
 } // ctdData
 
+void ctdStop(void){}

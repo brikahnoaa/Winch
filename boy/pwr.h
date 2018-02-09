@@ -23,6 +23,7 @@ typedef struct PwrInfo {
   bool on;              // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
   char logFile[16];     // log file
+  float amps;
   float charge;         // minimum system capacity to run
   float chargeMin;      // minimum system capacity to run
   float volts;          // minimum system voltage to run
@@ -36,20 +37,10 @@ void pwrLog(void);
 void pwrDelay(short sec);
 void pwrLogWrite(ushort *);
 bool pwrCheck(void);
-ushort pwrInit(bool, long, ushort);
+void pwrInit(void);
+void pwrStop(void);
 float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
 void pwrOpenLog(long);
 void pwrFileName(long);
 
-//
-// orig by alex - seems to be off, should be double. 1<<1==2^1
-// 11:: PITRATE*PITPERIOD*1<<11 = 104.448
-   10: 25.6seconds/file write 843.75 bytes/hour
-   11: 51.2secs/file write    421.875bytes/hr
-   12: 102.4secs/file         201.937bytes/hr
-   13: 204.8secs/file         105.468
-   14: 409.6                  52.734
-   15: 819.2                  26.367
-   16: 1638.4                 13.183
-//

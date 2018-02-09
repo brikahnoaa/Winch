@@ -2,6 +2,10 @@
 #include <com.h>
 #include <wsp.h>
 
+void wspInit(int board){}
+void wspStop(void){}
+
+/*
 //
 // Incoming wsp ASCII Communication. Looks for certain commands starting with
 // '$' and ending with '*'

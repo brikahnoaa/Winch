@@ -2,6 +2,7 @@
 #include <com.h>
 #include <ant.h>
 
+AntInfo ant;
 
 //
 // turn on antenna module, wait until ant responds
@@ -23,3 +24,12 @@ float antDepth(void) {
 bool antSurf(void) {
   return (antDepth() > ant.surfD+1);
 }
+
+//
+//   null_mod, idle_mod, td_mod, gps_mod, call_mod, shut_mod
+//
+ModType antMode(ModType mod) {
+  return mod;
+}
+
+void antStop() {}

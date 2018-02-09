@@ -1,7 +1,14 @@
 // pow.c
 #include <com.h>
-#include <pow.h>
+#include <pwr.h>
 
+PwrInfo pwr;
+
+void pwrInit(void){}
+
+void pwrStop(void){}
+
+/*
 //
 // 12.2.2015 - Received many errno=0 when fopen return NULL. 
 // No idea why. waiting to hear back from JG 
@@ -21,7 +28,7 @@
 // len(short)=2B, len(int)=4B, so room for at least 2^15 += short
 // 16? Too big? only if unsigned short and signed int
 // 
-// 2) power.interval will be saved as a "ushort" in decisecs
+// 2) pwr.interval will be saved as a "ushort" in decisecs
 //
 
 IEV_C_PROTO(ADTimingRuptHandler);
@@ -45,8 +52,8 @@ static long voltsSum = 0L; // Summation of channel 1 from QSPI sampling function
 static long currentSum = 0L; // Summation of channel 0 from QSPI...
 static long sampleCnt = 0L;  // if sampleCnt == intervalSamples, p.sampleReady=true
 
-ushort power.voltsMin = 0;
-ushort power.currentMax = 0;
+ushort pwr.voltsMin = 0;
+ushort pwr.currentMax = 0;
 
 float voltage = 0.0;
 static char ADAvgFileName[] = "c:00000000.pwr";
@@ -60,7 +67,7 @@ PowerInfo power = {
   99, 99,
   }
 
-void resetPowerCounter(void) { power.counter = 0; }
+void resetPowerCounter(void) { pwr.counter = 0; }
 float getVoltage(void) { return voltage; } 
 void ADSFileName(long id) { sprintf(&ADAvgFileName[2], "%08ld.pwr", id); }
 
@@ -85,9 +92,9 @@ IEV_C_FUNCT(ADTimingRuptHandler) {
   voltsSum += (long)(ADSample[1]);
   sampleCnt++;
 
-  if (ADSample[0] > power.currentMax) {
-    power.currentMax = ADSample[0];
-    power.voltsMin = ADSample[1];
+  if (ADSample[0] > pwr.currentMax) {
+    pwr.currentMax = ADSample[0];
+    pwr.voltsMin = ADSample[1];
   }
 
   if (sampleCnt >= intervalSamples) {
@@ -95,7 +102,7 @@ IEV_C_FUNCT(ADTimingRuptHandler) {
     powerSum[1] = voltsSum;
     currentSum = 0;
     voltsSum = 0;
-    power.sampleReady = true;
+    pwr.sampleReady = true;
     sampleCnt = 0;
   }
 } // ADTimingRuptHandler
@@ -112,7 +119,7 @@ IEV_C_FUNCT(ADSamplingRuptHandler) {
 } // ADSamplingRuptHandler
 
 bool powCheck(void) {
-  if (power.sampleReady == true && !power.off) {
+  if (pwr.sampleReady == true && !pwr.off) {
     pet();
     powLog();
     return true;
@@ -125,10 +132,8 @@ bool powCheck(void) {
 // Name the file name with 8-digit numeral as a counter
 // No need to calculate current upon Power off
 //
-ushort powerInit(bool ads_on, long filecounter, ushort val) {
-  // global power
-  power.off = !ads_on;
-  if (!power.off) {
+  pwr.off = !ads_on;
+  if (!pwr.off) {
     bitshift = val;
     powOpenLog(filecounter);
     flogf("\n%s|ADS(%s)", Time(NULL), ADAvgFileName);
@@ -138,10 +143,10 @@ ushort powerInit(bool ads_on, long filecounter, ushort val) {
     PITSet100usPeriod(PITOff); // Stop sampling
     PITRemoveChore(0);
     delayms(10);
-    power.sampleReady = true;
-    power.counter = 0;
+    pwr.sampleReady = true;
+    pwr.counter = 0;
   }
-  return power.interval;
+  return pwr.interval;
 } // void SetUpADS
   
 //
@@ -197,29 +202,29 @@ void Setup_Acquisition(ushort bitshift) {
 
   IEVInsertCFunct(&ADTimingRuptHandler, pitVector); // replacement fast routine
 
-  // Current and voltage samples per power.interval interval
+  // Current and voltage samples per pwr.interval interval
   intervalSamples = (ushort)(1 << bitshift);
-  power.interval = (10 * intervalSamples * (PITRATE * PITPERIOD));
+  pwr.interval = (10 * intervalSamples * (PITRATE * PITPERIOD));
 
-  DBG1("\t|Writing every %4.1fSeconds", power.interval / 10.0)
+  DBG1("\t|Writing every %4.1fSeconds", pwr.interval / 10.0)
   delayms(1);
 
   // Set the Rate and start the PIT
   PITSet51msPeriod(PITRATE);
-  power.sampleReady = false;
+  pwr.sampleReady = false;
 } // SetupAcquistion
 
 //
-// 1) Comes here when power.sampleReady == true
+// 1) Comes here when pwr.sampleReady == true
 // 2) writes correct side of AD Buffer to file 
-// sets: power.sampleReady=false
+// sets: pwr.sampleReady=false
 //
 void powLog(void) {
 
   ushort AveragedEnergy[2] = {0, 0};
   float current = 0.0;
 
-  if (power.sampleReady && !power.off) {
+  if (pwr.sampleReady && !pwr.off) {
     AveragedEnergy[0] = (ushort)(powerSum[0] >> bitshift);
     AveragedEnergy[1] = (ushort)(powerSum[1] >> bitshift);
   }
@@ -228,7 +233,7 @@ void powLog(void) {
   voltage = CFxADRawToVolts(ad, AveragedEnergy[1], VREF, true) * 100;
   flogf("\n\t|POWER: %5.3fA, %5.2fV", current, voltage);
 
-  power.sampleReady = false;
+  pwr.sampleReady = false;
   powerWrite(AveragedEnergy);
 } // ADLog
 
@@ -250,15 +255,15 @@ float Voltage_Now(void) {
 // AD Write
 // Open file of Current averages, go to end of file and grab last averaged
 reading.
-// This function will increment the variable power.counter==FWT ~5minutes
+// This function will increment the variable pwr.counter==FWT ~5minutes
 // 
 //
 void powerWrite(ushort *AveragedEnergy) {
   DBG0("powerWrite")
   // global
   CLK(start_clock = clock();)
-  power.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
-  if (power.filehdl <= 0) {
+  pwr.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
+  if (pwr.filehdl <= 0) {
     flogf("\nERROR|powerWrite() %s open fail. errno: %d", ADAvgFileName, errno);
     return;
   }
@@ -268,14 +273,14 @@ void powerWrite(ushort *AveragedEnergy) {
 
   CLK(start_clock = clock();)
 
-  write(power.filehdl, AveragedEnergy, 3 * sizeof(ushort));
+  write(pwr.filehdl, AveragedEnergy, 3 * sizeof(ushort));
   delayms(25);
   CLK(stop_clock = clock();
       print_clock_cycle_count(start_clock, stop_clock, "powerWrite: write");)
 
-  if (power.off) // SetupAD(false) from power monitor
+  if (pwr.off) // SetupAD(false) from power monitor
     return;
-  if (close(power.filehdl) < 0)
+  if (close(pwr.filehdl) < 0)
     flogf("\nERROR  |powerWrite() %s Close error: %d", ADAvgFileName, errno);
   // DBG(   else      flogf("\n\t|powerWrite() %s Closed", ADAvgFileName);)
  
@@ -306,16 +311,16 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   // Normal enterance to powMonitor
   if (totaltime != 0) {
     powInit(false, NULL, NULL);
-    if (power.interval < 1)
-      power.interval = 1044;
+    if (pwr.interval < 1)
+      pwr.interval = 1044;
     // Last AD Power Buffer size
-    power.interval = ((10 * totaltime) % power.interval); 
+    pwr.interval = ((10 * totaltime) % pwr.interval); 
     powLog();
     // opens adsfh
   }
   // Coming in after reboot // powInit(false), powLog also opens .pwr file
   else {
-    power.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
+    pwr.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
     ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
     if (!CFxADLock(ad)) {
       flogf("\nCouldn't lock and own A-D with QSPI\n");
@@ -336,28 +341,28 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
 
   // if file unwritten to
   if (filelength < 6) {
-    if (close(power.filehdl) < 0)
+    if (close(pwr.filehdl) < 0)
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
     DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
     return 0.0;
   }
 
-  if (power.filehdl > 0) {
+  if (pwr.filehdl > 0) {
     // we maybe just wrote into file, so seek back to start
-    lseek(power.filehdl, 0, SEEK_SET);
+    lseek(pwr.filehdl, 0, SEEK_SET);
     // 6 is the number of bytes for the values of current, voltage, time.
     filelength = filelength / 6; 
 
     // Get the number of times file has been written to
     while (DataCount < filelength) {
-      byteswritten = read(power.filehdl, energy, 3 * sizeof(ushort));
+      byteswritten = read(pwr.filehdl, energy, 3 * sizeof(ushort));
       TotalAmp += energy[0];
       TotalVolts += energy[1];
       TotalTime += (ulong)energy[2];
       DataCount++;
     }
 
-    if (close(power.filehdl) < 0)
+    if (close(pwr.filehdl) < 0)
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
     DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
 
@@ -374,8 +379,8 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
     TotalTime = TotalTime / 10;
     kjoules = (amps * voltage * TotalTime) / 1000.0;
   }
-  MaxCurrent = CFxADRawToVolts(ad, power.currentMax, VREF, true);
-  MinVoltage = CFxADRawToVolts(ad, power.voltsMin, VREF, true) * 100;
+  MaxCurrent = CFxADRawToVolts(ad, pwr.currentMax, VREF, true);
+  MinVoltage = CFxADRawToVolts(ad, pwr.voltsMin, VREF, true) * 100;
   *LoggingTime = TotalTime;
 
   sprintf(WriteBuffer, "\n---POWER---\nTime: %lu\nEnergy:%.2fkJ\nAvg "
@@ -463,4 +468,4 @@ void powDelay(short Sec) {
 
 } //powDelay()
 
-
+*/

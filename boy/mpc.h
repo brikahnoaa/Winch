@@ -5,15 +5,12 @@
 
 typedef enum { ant_dev, ctd_dev } DevType;
 
-typedef struct MpcData {
-  float joules;
-  float volts;
-  float voltsMin;
+typedef struct MpcInfo {
   long diskFree;
   long diskSize;
   Serial port;
   DevType device;
-} MpcData;
+} MpcInfo;
 
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
@@ -23,5 +20,6 @@ bool mpcDevSelect(DevType dev);
 float mpcVoltage(float *volts);
 void mpcInit(void);
 void mpcSleep(void);
+void mpcStop(void);
 Serial mpcCom1Port(void);
 DevType mpcCom1Dev(void);

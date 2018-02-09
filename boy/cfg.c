@@ -10,19 +10,19 @@
 #include <sys.h>
 #include <wsp.h>
 
-extern AntennaData ant;
-extern BuoyInfo boy;
+extern AntInfo ant;
+extern BoyInfo boy;
 extern CtdInfo ctd;
-extern MpcData mpc;
+extern MpcInfo mpc;
 extern NgkInfo ngk;
 extern PwrInfo pwr;
-extern systemData sys;
+extern SysInfo sys;
 extern WspInfo wsp;
 
 // 
 // static CfgParam cfg[] = array of {id, var, ptr, type}
 // scan it for name when updating a cfg
-// { "dh", "boy.depth", &boy.depth, 'f'},
+// { "bdh", "boy.depth", &boy.depth, 'f'},
 //
 // &ptr can be any extern var or struct component
 // type := bcifls bool char* int float long short
@@ -30,24 +30,23 @@ extern WspInfo wsp;
 static CfgParam cfg[] = {
   {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
-  {"asD", "ant.surfD",   &ant.surfD,    'f'},
+  {"asD", "ant.surfD",      &ant.surfD,       'f'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bcD", "boy.currChkD",   &boy.currChkD,    'f'},
   {"bcX", "boy.currMax",    &boy.currMax,     'f'},
   {"bcf", "boy.callFreq",   &boy.callFreq,    'i'},
   {"bch", "boy.callHour",   &boy.callHour,    'i'},
   {"bfn", "boy.fileNum",    &boy.fileNum,     'i'},
-  {"bfp", "boy.firstPhase", &boy.firstPhase,  'i'},
+  {"bph", "boy.phase",      &boy.phase,       'i'},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
   {"cdy", "ctd.delay",      &ctd.delay,       'i'},
-  {"mvM", "mpc.voltMin",    &mpc.voltMin,     'f'},
   {"nba", "ngk.boy2ant",    &ngk.boy2ant,     'f'},
   {"ndy", "ngk.delay",      &ngk.delay,       'i'},
   {"pon", "pwr.on",         &pwr.on,          'b'},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c'},
   {"pch", "pwr.charge",     &pwr.charge,      'f'},
   {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f'},
-  {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f'},
+  {"pvM", "pwr.voltMin",    &pwr.voltMin,     'f'},
   {"spt", "sys.platform",   &sys.platform,    'c'},
   {"spg", "sys.program",    &sys.program,     'c'},
   {"spj", "sys.project",    &sys.project,     'c'},

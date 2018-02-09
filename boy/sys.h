@@ -9,7 +9,7 @@ typedef enum {
   sizeof_alm
 } AlarmType;
 
-typedef struct systemData {
+typedef struct SysInfo {
   char cfgFile[16];
   char logFile[16];
   char platform[16];    // rudicsland
@@ -18,9 +18,11 @@ typedef struct systemData {
   char version[16];
   int alarm[sizeof_alm];
   int log;              // log filehandle
+  long diskFree;
+  long diskSize;
   long starts;
   long startsMax;
-} systemData;
+} SysInfo;
 
 static int checkVitals(void);
 static void configFile(void);
@@ -34,5 +36,6 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt);
 void main(void);
 void sysAlarm(AlarmType alm);
 void sysInfo(char *out);
-void sysShutdown(char *out);
-void sysSleepUntilWoken(void);
+void sysStop(char *out);
+void sysSleep(void);
+long sysDiskFree(void);

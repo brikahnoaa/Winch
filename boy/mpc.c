@@ -3,6 +3,8 @@
 #include <mpc.h>
 #include <sys.h>
 
+MpcInfo mpc;
+
 //
 // Interrupts:
 //
@@ -149,6 +151,8 @@ bool mpcDevSelect(DevType dev) {
   pet();
   return true;
 }
+
+void mpcStop(){}
 
 DevType mpcCom1Port(void) { return mpc.port; }
 
