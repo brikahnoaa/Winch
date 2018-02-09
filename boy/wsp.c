@@ -4,6 +4,7 @@
 
 void wspInit(int board){}
 void wspStop(void){}
+void wspFlush(void){}
 
 /*
 //

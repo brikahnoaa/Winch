@@ -24,29 +24,29 @@ void boyMain(int starts) {
   flogf("\nboyMain(): starting with phase %d", boy.phase);
     
   while (true) {
-    flushBuffers();
+    sysFlush();                    // flush all log file buffers
     boy.phaseT=time(0);
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
-      dataPhase();
+      boy.phase = dataPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
-      risePhase();
+      boy.phase = risePhase();
       break;
     case call_pha: // Call home via Satellite
-      callPhase();
+      boy.phase = callPhase();
       break;
     case drop_pha: // Descend buoy, science sampling
-      dropPhase();
+      boy.phase = dropPhase();
       break;
     case deploy_pha:
-      deployPhase();
+      boy.phase = deployPhase();
       break;
     case reboot_pha:
-      rebootPhase();
+      boy.phase = rebootPhase();
       break;
     case error_pha:
-      errorPhase();
+      boy.phase = errorPhase();
       break;
     } // switch
   } // while true
@@ -71,7 +71,7 @@ void rebootPhase() {
 // wispr recording and detecting, buoy is docked to ngk
 // data is gathered for about 24hours (data_tmr)
 // wsp powers down for % of each hour (wispr_tmr)
-// sets: boy.phaseStartT 
+// organize data files, transfer data to antmod ??
 // uses: data_tmr duty_tmr
 //
 void dataPhase(void) {
@@ -79,38 +79,49 @@ void dataPhase(void) {
   // sleep needs a lot of optimizing to be worth the trouble
   // Sleep();
   wspStop();
+  transferFiles();
 } // dataPhase
 
 //
-// collect and organize data files.
 // turn on ant, free space check, transfer files from buoy to antmod
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
 //
 void risePhase(void) {
-  float depth, startD, sideways, targetD, velocity;
-  int retry = 0;
-  time_t riseT;
-  MsgType rsp;
+  MsgType msg;
   flogf("\n\t|risePhase()");
-  //
-  transferFiles();
-  antInit();
-  startD = depth = antDepth();
+  antMode(td_mod);
   // if current is too strong
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
-    boy.phase = data_pha;
-    return;
+    return data_pha;
   }
-  targetD = boy.currChkD;
+  msg = riseOp(boy.currChkD);
+  if (msg!=stopRsp_msg) {
+    // bad result
+    flogf("\n\t|riseP fails with %s at %03.1f m", ngkMsgName(msg), antDepth());
+    return drop_pha;
+  }
+}
+
+//
+// rise up to targetD, -1 means surfacing 
+// when surfacing, expect stopCmd and don't set velocity 
+// sets: boy.lastRise .firstRise
+// returns: msg from winch
+//
+MsgType riseOp(float targetD) {
+  float depth, startD, sideways;
+  int retry = 0;
+  time_t riseT;
+  DBG0("riseOp(%d)", targetD)
+  antMode(td_mod);
+  startD = depth = antDepth();
   riseT = time(0);
   ngkSend( riseCmd_msg );
   while ((depth = antDepth()) > targetD) {
-    // start rise (or retry if ngk timeout)
-    // ngk: "going up" or "stopped"
-    ngkRecv(&rsp);
-    switch (rsp) {
+    ngkRecv(&msg);
+    switch (msg) {
     case null_msg: break;
     case riseRsp_msg:     // rise ack
       tmrStop(winch_tmr);
@@ -119,8 +130,10 @@ void risePhase(void) {
       startD = antDepth();
       break;
     case stopCmd_msg:     // stopped by winch
+      ngkSend(stopRsp_msg);
+      break;
     default: // unexpected msg
-      flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", depth);
+      flogf("\n\t|riseP unexpected %s at %03.1f m", ngkMsgName(msg), depth);
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
     } // switch
@@ -137,24 +150,23 @@ void risePhase(void) {
           return;
         }
       } else { // depth 
-        // odd, we are rising; log but ignore
+        // odd, we are rising but no response; log but ignore
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
       } // depth
-    } // switch
+    } // timeout
   } // while (depth>midway)
   // algor: midway. figure velocity, stop
   boy.lastRiseV = (startD-depth) / (time(0)-riseT);
   if (boy.firstRiseV==0)
     boy.firstRiseV = boy.lastRiseV;
   ngkSend( stopCmd_msg );
-  // algor: current check. rise to surface, checking response
   if (oceanCurrChk()) {
     sysAlarm(midwayCurr_alm);
     boy.phase = drop_pha;
     return;
   }
   // 
-  // go to surface. same loop but stop cmd expected
+  // go to surface. same loop but stop cmd expected, ice check ??
   // 
   while (!antSurf()) {
     switch (ngkRecv(&r)) {
@@ -207,6 +219,8 @@ void callPhase(void) {
 } // callPhase
 
 //
+// antMod(stop), science(log), startT, dropCmd, science(stop)
+// err if dockD differs
 //
 void dropPhase(void) {
 } // dropPhase

@@ -20,3 +20,4 @@ void ctdSyncmode(void);
 void ctdBreak(void);
 void ctdInit(void);
 void ctdStop(void);
+void ctdFlush(void);

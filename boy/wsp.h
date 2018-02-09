@@ -6,13 +6,17 @@
 
 typedef struct WspInfo {
   bool on;
+  char logFile[16];
   int detInt;   //-D      //Minutes   //DATA DET INTERVAL
   int detMax;   // Maximum Number of Detections to return
   int detOff;   // sleep
   int gain; //-g 0-3
-  int num;    // number of DATA Boards
+  int count;    // number of DATA Boards
+  int board;    // active board
+  int log;
   Serial port;
 } WspInfo;
 
 void wspInit(int board);
 void wspStop(void);
+void wspFlush(void);

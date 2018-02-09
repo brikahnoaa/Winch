@@ -1,7 +1,7 @@
 // ant.h
 
 typedef enum { 
-  null_mod, idle_mod, td_mod, gps_mod, call_mod, shut_mod 
+  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod 
 } ModType;
 
 typedef struct AntInfo {
@@ -13,8 +13,8 @@ typedef struct AntInfo {
   Serial port;          // same as mpc.port, ctd.port
 } AntInfo;
 
-bool antSurf();
+bool antSurf(void);
 ModType antMode(ModType mod);
-float antDepth();
-void antInit();
-void antStop();
+float antDepth(void);
+void antInit(void);
+void antStop(void);

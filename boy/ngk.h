@@ -1,7 +1,7 @@
 // ngk.h
 
 #define MDM_BAUD 4800L
-#define BUOY_ID '0'
+#define BUOY_ID '2'
 #define WINCH_ID '1'
 #define WINCH_EOL "\r\n"
 
@@ -35,4 +35,3 @@ void ngkInit(void);
 void ngkStop(void);
 void ngkSend(MsgType msg);
 void ngkMsgName(char *out, MsgType msg);
-

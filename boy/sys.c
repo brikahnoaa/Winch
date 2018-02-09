@@ -237,4 +237,12 @@ long sysDiskFree(void) {
   return sys.diskFree/2;
 } // sysDiskFree
 
-
+//
+// call flush for each module with logging
+// 
+void sysFlush(void) {
+  boyFlush();
+  ctdFlush();
+  pwrFlush();
+  wspFlush();
+}

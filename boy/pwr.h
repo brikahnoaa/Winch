@@ -43,4 +43,4 @@ float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
 void pwrOpenLog(long);
 void pwrFileName(long);
-
+void pwrFlush(void);

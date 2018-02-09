@@ -39,3 +39,4 @@ void sysInfo(char *out);
 void sysStop(char *out);
 void sysSleep(void);
 long sysDiskFree(void);
+void sysFlush(void);

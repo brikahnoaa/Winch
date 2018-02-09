@@ -26,21 +26,19 @@ typedef struct BoyInfo {
   time_t phaseT;          // time this phase started
 } BoyInfo;
 
+static PhaseType callPhase(void);
+static PhaseType dataPhase(void);
+static PhaseType deployPhase(void);
+static PhaseType dropPhase(void);
+static PhaseType errorPhase(void);
+static PhaseType rebootPhase(void);
+static PhaseType risePhase(void);
 static bool oceanCurrChk(void);
 static float oceanCurr(void);
 static void boyStat(char *buffer);
-static void callPhase(void);
-static void callPhase(void);
-static void dataPhase(void);
-static void deployPhase(void);
-static void dropPhase(void);
-static void rebootPhase(void);
-static void risePhase(void);
 static void transferFiles(void);
-static void flushBuffers(void);
-static void errorPhase(void);
-static void flushBuffers(void);
 
+void boyFlush(void);
 void boyInit(void);
 void boyMain(int starts);
 void boyStop(void);
