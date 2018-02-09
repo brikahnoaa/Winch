@@ -8,9 +8,14 @@ typedef enum {
 // boy
 typedef struct BoyInfo {
   char logFile[16];       // log file
+  float boy2ant;        // meters from buoy ctd to ant ctd under still water
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch
+  float firstDropV;     // Velocity meters/min of the first drop (descent)
+  float firstRiseV;     // Velocity meters/min of the first rise (ascent)
+  float lastDropV;      // Velocity meters/min of the most recent drop 
+  float lastRiseV;      // Velocity meters/min of the most recent rise 
   int callFreq;           // number of times per day to call (1)
   int callHour;           // 0-23 (midnight-11pm) hour to call home 
   int fileNum;            // current number for filename ####.dat ####.log

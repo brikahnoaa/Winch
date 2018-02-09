@@ -89,6 +89,7 @@ void dataPhase(void) {
 //
 void risePhase(void) {
   float depth, startD, sideways, targetD, velocity;
+  int retry = 0;
   time_t riseT;
   MsgType rsp;
   flogf("\n\t|risePhase()");
@@ -111,25 +112,21 @@ void risePhase(void) {
     ngkRecv(&rsp);
     switch (rsp) {
     case null_msg: break;
-    case riseRsp_msg: // rise ack
+    case riseRsp_msg:     // rise ack
       tmrStop(winch_tmr);
       // start velocity measure
       riseT = time(0);
       startD = antDepth();
       break;
-    case dropRsp_msg: // unexpected 
+    case stopCmd_msg:     // stopped by winch
+    default: // unexpected msg
       flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", depth);
       boy.phase = drop_pha;      // go down, try again tomorrow
       return;
-    case stopRsp_msg: // unexpected 
-      flogf("\nERR\t|risePhase(): ngk unexpected stop at %03.1f m", depth);
-      boy.phase = drop_pha;      // go down, try again tomorrow
-      return;
-    case timeRsp_msg: // timeout
-      sysAlarm(ngkTimeout_alm);
-      amodem.timeout[riseCmd_msg] += 1;
+    } // switch
+    if (ngkTimeout()) {
       if (startD-depth < 3) {
-        // not rising from dock. log, reset, retry 5 times or abort
+        // not rising from dock. log, reset, retry 5 times, abort
         if (retry++ < 5) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry); 
           riseT = time(0);
@@ -143,13 +140,12 @@ void risePhase(void) {
         // odd, we are rising; log but ignore
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
       } // depth
-      break;
     } // switch
   } // while (depth>midway)
   // algor: midway. figure velocity, stop
-  ngk.lastRiseV = (startD-depth) / (time(0)-riseT);
-  if (ngk.firstRiseV==0)
-    ngk.firstRiseV = ngk.lastRiseV;
+  boy.lastRiseV = (startD-depth) / (time(0)-riseT);
+  if (boy.firstRiseV==0)
+    boy.firstRiseV = boy.lastRiseV;
   ngkSend( stopCmd_msg );
   // algor: current check. rise to surface, checking response
   if (oceanCurrChk()) {
@@ -218,7 +214,7 @@ void dropPhase(void) {
 
 //
 // wait currChkSettle, buoy ctd, ant td, compute
-// uses: ngk.boy2ant
+// uses: .boy2ant
 //
 float oceanCurr() {
   float aD, cD, a, b, c;
@@ -230,7 +226,7 @@ float oceanCurr() {
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
   a=cD-aD;
-  c=ngk.boy2ant;
+  c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
   return b;
 }

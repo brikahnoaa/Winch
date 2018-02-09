@@ -16,11 +16,6 @@ typedef struct NgkInfo {
   bool on;              // ngk motor running
   char * msgStr[sizeof_msg];    // msg string as if sent to buoy
   char * msgName[sizeof_msg];   // for logs
-  float boy2ant;        // meters from buoy ctd to ant ctd under still water
-  float firstRiseV;     // Velocity meters/min of the first rise (ascent)
-  float lastRiseV;      // Velocity meters/min of the most recent rise 
-  float firstDropV;     // Velocity meters/min of the first drop (descent)
-  float lastDropV;      // Velocity meters/min of the most recent drop 
   // modem
   int delay;                    // # seconds for amodem to transmit msg (7s)
   int recv[sizeof_msg];         // count
@@ -39,3 +34,5 @@ MsgType ngkRecv(MsgType *msg);
 void ngkInit(void);
 void ngkStop(void);
 void ngkSend(MsgType msg);
+void ngkMsgName(char *out, MsgType msg);
+

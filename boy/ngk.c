@@ -128,8 +128,8 @@ MsgType ngkRecv(MsgType *msg) {
 
 bool ngkTimeout(void) {
   if (ngk.expect && tmrExp(winch_tmr)) {
-    ngk.expect = null_msg;
     ngk.timeout[ngk.expect]++;
+    ngk.expect = null_msg;
     return true;
   } else
     return false;
@@ -155,3 +155,7 @@ MsgType msgParse(char *str, MsgType *msg) {
   return m;
 } // msgParse
 
+void ngkMsgName(char *out, MsgType msg) {
+  strcpy(out, ngk.msgName[msg]);
+  return;
+}
