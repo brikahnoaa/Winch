@@ -45,7 +45,9 @@ void ngkInit(void) {
   ngk.port = p;
 } // ngkInit
 
-void ngkStop(void){}
+void ngkStop(void){
+  PIOClear(MDM_PWR);
+}
 
 //
 // send message to winch via amodem
@@ -97,7 +99,10 @@ MsgType ngkRecv(MsgType *msg) {
   MsgType m = null_msg;
   char msgStr[BUFSZ];
   if (serRead(ngk.port, msgStr)==0) 
-    return null_msg;
+    if (ngkTimeout()) {
+      return timeout_msg;
+    else
+      return null_msg;
   if (msgParse(msgStr, &m)==mangled_msg) 
     return mangled_msg;
   flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[m], clockTime(scratch));

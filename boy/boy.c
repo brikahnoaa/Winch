@@ -87,32 +87,44 @@ void dataPhase(void) {
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
 //
-void risePhase(void) {
+PhaseType risePhase(void) {
   MsgType msg;
   flogf("\n\t|risePhase()");
   antMode(td_mod);
-  // if current is too strong
+  // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
-    return data_pha;
+    return drop_pha;
   }
-  msg = riseOp(boy.currChkD);
+  // MsgType riseOp(float targetD, int retry, int delay);
+  riseOp(&msg, boy.currChkD, 5, 1);
   if (msg!=stopRsp_msg) {
     // bad result
     flogf("\n\t|riseP fails with %s at %03.1f m", ngkMsgName(msg), antDepth());
     return drop_pha;
   }
+  // if current is too strong at midway
+  if (oceanCurrChk()) {
+    sysAlarm(midwayCurr_alm);
+    return drop_pha;
+  }
+  msg = riseOp(0, 5, 1);
+  if (msg!=stopCmd_msg) {
+    // bad result
+    flogf("\n\t|riseP fails with %s at %03.1f m", ngkMsgName(msg), antDepth());
+    return drop_pha;
+  }
+  return call_pha;
 }
 
 //
-// rise up to targetD, -1 means surfacing 
+// rise up to targetD, 0 means surfacing 
 // when surfacing, expect stopCmd and don't set velocity 
-// sets: boy.lastRise .firstRise
-// returns: msg from winch
+// sets: boy.lastRise .firstRise, (*msg) 
+// returns: bool
 //
-MsgType riseOp(float targetD) {
+bool riseOp(MsgType *msg, float targetD, int retry, int delay) {
   float depth, startD, sideways;
-  int retry = 0;
   time_t riseT;
   DBG0("riseOp(%d)", targetD)
   antMode(td_mod);
@@ -132,27 +144,29 @@ MsgType riseOp(float targetD) {
     case stopCmd_msg:     // stopped by winch
       ngkSend(stopRsp_msg);
       break;
-    default: // unexpected msg
-      flogf("\n\t|riseP unexpected %s at %03.1f m", ngkMsgName(msg), depth);
-      boy.phase = drop_pha;      // go down, try again tomorrow
-      return;
-    } // switch
-    if (ngkTimeout()) {
+    case timeout_msg:
       if (startD-depth < 3) {
-        // not rising from dock. log, reset, retry 5 times, abort
-        if (retry++ < 5) { // retry
+        // not rising from dock. log, reset, retry times, abort
+        if (--retry>0) { // retry
           flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry); 
+          msdelay(delay*1000);
           riseT = time(0);
           ngkSend( riseCmd_msg );
         } else { // abort
           flogf("\nERR\t|risePhase() timeout on ngk, %d times, abort", retry); 
           boy.phase = drop_pha;
           return;
-        }
+        } // retry
       } else { // depth 
         // odd, we are rising but no response; log but ignore
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
       } // depth
+    default: // unexpected msg
+      flogf("\n\t|riseP unexpected %s at %03.1f m", ngkMsgName(msg), depth);
+      boy.phase = drop_pha;      // go down, try again tomorrow
+      return;
+    } // switch
+    if (ngkTimeout()) {
     } // timeout
   } // while (depth>midway)
   // algor: midway. figure velocity, stop

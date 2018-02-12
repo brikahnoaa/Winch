@@ -34,6 +34,7 @@ static PhaseType errorPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static bool oceanCurrChk(void);
+static bool riseOp(MsgType *msg, float targetD, int retry, int delay);
 static float oceanCurr(void);
 static void boyStat(char *buffer);
 static void transferFiles(void);
