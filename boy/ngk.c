@@ -83,7 +83,7 @@ void ngkSend(MsgType msg) {
     ngk.expect = riseRsp_msg;
     break;
   default:
-    ngk.expect = 0;
+    ngk.expect = null_msg;
   }
   if (ngk.expect!=null_msg)
     tmrStart(winch_tmr, ngk.delay*2+2);
@@ -92,43 +92,50 @@ void ngkSend(MsgType msg) {
 //
 // get winch message if available and parse it
 // ?? respond to stopcmd buoycmd
-// sets: ngk.on ngk.expect .lastRecv .recv[] scratch (*msg)
+// uses: ngk.expect
+// sets: ngk.on ngk.expect .lastRecv scratch (*msg)
 // returns: false if no message
 //
-MsgType ngkRecv(MsgType *msg) {
-  MsgType m = null_msg;
+bool ngkRecv(MsgType *msgP) {
   char msgStr[BUFSZ];
-  if (serRead(ngk.port, msgStr)==0) 
+  MsgType m;
+  if (serRead(ngk.port, msgStr)==0) {
     if (ngkTimeout()) {
-      return timeout_msg;
+      *msgP = timeout_msg;
     else
-      return null_msg;
-  if (msgParse(msgStr, &m)==mangled_msg) 
-    return mangled_msg;
+      *msgP = null_msg;
+    return false;
+  }
+  if (!msgParse(msgP, msgStr))    // mangled
+    return false;
+  m = *msgP;
+  if (m==buoyCmd_msg) {
+    // async, handled special. Does not change .expect
+    ngkBuoyRsp();
+    *msgP = null_msg;
+    return false;
+  }
+  // normal message
   flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[m], clockTime(scratch));
-  ngk.recv[m]++;
-  if (m==buoyCmd_msg) {                // buoyCmd could happen anytime
-    ngkSend(buoyRsp_msg);
-    return null_msg;
-  }
-  if (m==stopCmd_msg) {
-    // surfaced or jammed
+  if (m==stopCmd_msg)             // surfaced or jammed
     ngkSend(stopRsp_msg);
-  }
-  if (ngk.expect) { // expecting a msg
-    if (ngk.expect!=m)
-      flogf(" (expecting %s)", ngk.msgName[ngk.expect]);
-    ngk.expect = 0;
-    tmrStop(winch_tmr);
-  }
   // winch motor
   if (m==riseRsp_msg || m==dropRsp_msg) 
     ngk.on = true;
   if (m==stopCmd_msg || m==stopRsp_msg) 
     ngk.on = false;
-  // 
-  *msg = m;
-  return m;
+  if (ngk.expect==null_msg) 
+    return true;     
+  // we are expecting a msg
+  tmrStop(winch_tmr);
+  if (ngk.expect==m) {
+    ngk.expect = null_msg;
+    return true;
+  } else { 
+    flogf(" (expected %s)", ngk.msgName[ngk.expect]);
+    ngk.expect = null_msg;
+    return false;
+  }
 } // ngkRecv
 
 bool ngkTimeout(void) {
@@ -142,25 +149,32 @@ bool ngkTimeout(void) {
 
 //
 // match against ngk.msgStr[]
-// sets: (*msg)
-// returns: msg
+// sets: (*msgP) ngk.recv[]
+// returns: success
 //
-MsgType msgParse(char *str, MsgType *msg) {
-  MsgType m = mangled_msg;
+bool msgParse(MsgType *msgP, char *str) {
+  MsgType m;
   int len;
   len = crlfTrim(str);
   if (len!=8) 
-    flogf("\nERR\t|msgParse() wrong msg length = %d", len);
+    flogf(" | ERR msgParse() length %d", len);
   for (m=null_msg+1; m<mangled_msg; m++)
     if (strstr(str, ngk.msgStr[m])!=NULL) 
       break;
-  if (m==mangled_msg)             // no match or invalid
-    flogf("\nERR\t|msgParse(%s) fail", str);
-  *msg = m;
-  return m;
+  ngk.recv[m]++;
+  *msgP = m;
+  if (m==mangled_msg) {           // no match or invalid
+    flogf(" | ERR msgParse(%s) fail", str);
+    return false;
+  } else
+    return true;
 } // msgParse
 
 void ngkMsgName(char *out, MsgType msg) {
   strcpy(out, ngk.msgName[msg]);
   return;
+}
+
+void ngkExpect(MsgType msg) {
+  ngk.expect = msg;
 }

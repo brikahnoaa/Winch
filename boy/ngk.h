@@ -28,11 +28,12 @@ typedef struct NgkInfo {
   Serial port;
 } NgkInfo;
 
-static MsgType msgParse(char *str, MsgType *msg);
+static bool msgParse(MsgType *msg, char *str);
 
 bool ngkTimeout(void);
-MsgType ngkRecv(MsgType *msg);
+bool ngkRecv(MsgType *msg);
 void ngkInit(void);
 void ngkStop(void);
 void ngkSend(MsgType msg);
 void ngkMsgName(char *out, MsgType msg);
+void ngkExpect(MsgType msg);
