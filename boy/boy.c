@@ -97,7 +97,7 @@ PhaseType risePhase(void) {
   }
   // MsgType riseOp(float targetD, int retry, int delay);
   if (!riseUp(boy.currChkD, 5, 1)) {
-    flogf(" | fails at %03.1f m", antDepth());
+    flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
   }
   // if current is too strong at midway
@@ -106,7 +106,7 @@ PhaseType risePhase(void) {
     return drop_pha;
   }
   if (!riseSurf(5, 1)) {
-    flogf(" | fails at %03.1f m", antDepth());
+    flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
   }
   // success
@@ -119,11 +119,12 @@ PhaseType risePhase(void) {
 // sets: boy.lastRise .firstRise, (*msg) 
 // returns: bool
 //
-bool riseUp(float targetD, int retry, int delay) {
+bool riseUp(float targetD, int try, int delay) {
   float depth, startD, dangerZone;
+  int retry = try;
   int step = 1;
   time_t riseT;
-  DBG0("riseUp(%d)", targetD)
+  DBG0("riseUp(%dm)", targetD)
   startD = depth = antDepth();
   dangerZone = 5; // ?? sbe16toTip + (velo*stopTime) + 1.0
   // step 1: riseCmd
@@ -139,29 +140,26 @@ bool riseUp(float targetD, int retry, int delay) {
       break;
     case stopCmd_msg:     // stopped by winch
       // ngkSend(stopRsp_msg) in ngkRecv
-      flogf(", ERR stopped by winch at %03.1f", depth);
+      flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
       return false;
-    case timeout_msg:
-      if (startD-depth > 1.0) {
+    default: // unexpected msg
+      flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
+    if (tmrExp(winch_tmr)) {
+      if (antRising()) {
         // odd, we are rising but no response; log but ignore
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
         step = 2;
-        break;
-      }
-      // not rising from dock. log, delay, retry, abort
-      if (--retry<0) { // too many tries
-        flogf(", ERR abort"); 
-        return false;
-      } else { 
+      } else if (--retry>=0) { 
+        // retry
         flogf(", retry"); 
         msdelay(delay*1000);
-        // retry
         ngkSend( riseCmd_msg );
+      } else { 
+        flogf(", ERR abort"); 
+        return false;
       }
-      break;
-    default: // unexpected msg
-      flogf("\n\t|riseP unexpected %s at %03.1f m", ngkMsgName(msg), depth);
-    } // switch
+    } // tmr
     if (depth<=targetD)           // this shouldn't happen in step 1
       step = 3;
   } // while step1
@@ -171,102 +169,51 @@ bool riseUp(float targetD, int retry, int delay) {
     if (depth<=targetD) 
       step = 3;
     if (msg = ngkRecv())          // this shouldn't happen in step 2
-      flogf("\n\t|riseP unexpected %s at %03.1f m", ngkMsgName(msg), depth);
+      flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
   // step 3: stopCmd 
+  retry = try;
   ngkSend( stopCmd_msg );
   while (step==3) {
     depth = antDepth();
-    if (depth<dangerZone)
-      ngkSend( dropCmd_msg );
     switch (msg = ngkRecv()) {
     case null_msg: break;
     case stopRsp_msg:
-      return true;
-    case dropRsp_msg:
-      return false;
+      step = 4;
+      break;
     case stopCmd_msg:     // stopped by winch
       // ngkSend(stopRsp_msg) in ngkRecv
-      // ?? surf check?
-      flogf(", ERR stopped by winch at %03.1f", depth);
+      flogf("\n\t | riseUp() stopped by winch at %3.1fm. Strange not fatal.", 
+        depth);
       return false;
-    case timeout_msg:
-      if (startD-depth > 1.0) {
-        // odd, we are stopped but no response; log but ignore
-        flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
-        step = 2;
-        break;
-      }
-      // not rising from dock. log, delay, retry, abort
-      if (--retry<0) { // too many tries
-        flogf(", ERR abort"); 
-        return false;
-      } else { 
+    default: // unexpected msg
+      flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
+    if (tmrExp(winch_tmr)) {
+      if (!antRising()) {
+        // odd, we are rising but no response; log but ignore
+        flogf("\n\t|riseP stopCmd timeout, but not rising so continue..."); 
+        step = 4;
+      } else if (--retry>=0) { 
+        // retry
         flogf(", retry"); 
         msdelay(delay*1000);
-        // retry
-        ngkSend( riseCmd_msg );
+        ngkSend( stopCmd_msg );
+      } else { 
+        flogf(", ERR abort"); 
+        return false;
       }
-      break;
-    default: // unexpected msg
-      flogf("\n\t|riseP unexpected %s at %03.1f m", ngkMsgName(msg), depth);
-    } // switch
-    // this shouldn't happen
-    if ((depth = antDepth())<=targetD) 
-      step = 3;
+    } // tmr
   } // while step1
-  return true;
-} // riseUp()
-
-  boy.lastRiseV = (startD-depth) / (time(0)-riseT);
-  if (boy.firstRiseV==0)
-    boy.firstRiseV = boy.lastRiseV;
+  // velocity
+  if (retry==try) {
+    // skip if we didn't stop clean
+    boy.lastRiseV = (startD-depth) / (time(0)-riseT);
+    if (boy.firstRiseV==0)
+      boy.firstRiseV = boy.lastRiseV;
   }
-  // 
-  // go to surface. same loop but stop cmd expected, ice check ??
-  // 
-  while (!antSurf()) {
-    switch (ngkRecv(&r)) {
-    case null_msg: break;
-    case riseRsp_msg: // rise ack
-      tmrStop(ngk_tmr);
-      // start velocity measure
-      riseT = time(0);
-      startD = antDepth();
-      break;
-    case dropRsp_msg: // unexpected
-      flogf("\nERR\t|risePhase() ngk unexpected drop at %03.1f m", antDepth());
-      boy.phase = drop_pha;      // go down, try again tomorrow
-      return;
-    case stopRsp_msg: // slack auto-stop
-      continue;
-    case timeRsp_msg: // timeout
-      sysAlarm(ngkTimeout_alm);
-      amodem.timeout[riseCmd_msg] += 1;
-      if (startD-antDepth() < 3) {
-        // not rising from dock. log, reset, retry 5 times or abort
-        if (retry++ < 5) { // retry
-          flogf("\n\t|risePhase() timeout on ngk, retry rise cmd %d", retry);
-          riseT = time(0);
-          ngkSend( riseCmd_msg );
-        } else { // abort
-          flogf("\nERR\t|risePhase() timeout on ngk, %d times, abort", retry);
-          boy.phase = drop_pha;
-          return;
-        }
-      } else { // depth
-        // odd, we are rising; log but ignore
-        flogf("\n\t|risePhase() timeout on ngk, but rising so continue...");
-      } // depth
-      break;
-    } // switch
-  } // while depth>surfD
-  //
-  // ant mod surfaced, floats may be below still
-  // antSurfOp() expects stop within some secs
-  // start warming gps, we don't need depth until dropP
-  // were files transfered at end of dataPhase ??
-} // risePhase
+  return true;
+} // riseUp
 
 //
 // turn off sbe, on irid/gps (takes 30 sec). 

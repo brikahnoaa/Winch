@@ -13,6 +13,7 @@ typedef struct AntInfo {
   Serial port;          // same as mpc.port, ctd.port
 } AntInfo;
 
+bool antRising(void);
 bool antSurf(void);
 ModType antMode(ModType mod);
 float antDepth(void);

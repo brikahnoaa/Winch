@@ -51,9 +51,7 @@ void ngkStop(void){
 
 //
 // send message to winch via amodem
-// starts winch_tmr, does not set ngk.on (see ngkRecv)
-// sets: ngk.expect .send[] .lastSend 
-// uses: ngk.delay
+// sets: .send[] .lastSend 
 //
 void ngkSend(MsgType msg) {
   char str[12];
@@ -65,94 +63,44 @@ void ngkSend(MsgType msg) {
   TUTxWaitCompletion(ngk.port);
   serWrite(ngk.port, str);
   ngk.send[msg]++;
-  ngk.lastSend = msg;         // used by timeout
-  switch (msg) {
-  case dropCmd_msg:
-    ngk.expect = dropRsp_msg;
-    break;
-  case riseCmd_msg:
-    ngk.expect = riseRsp_msg;
-    break;
-  case statCmd_msg:
-    ngk.expect = statRsp_msg;
-    break;
-  case stopCmd_msg:
-    ngk.expect = stopRsp_msg;
-    break;
-  case surfCmd_msg:
-    ngk.expect = riseRsp_msg;
-    break;
-  default:
-    ngk.expect = null_msg;
-  }
-  if (ngk.expect!=null_msg)
-    tmrStart(winch_tmr, ngk.delay*2+2);
+  ngk.lastSend = msg;
+  if (msg==dropCmd_msg || msg==riseCmd_msg 
+   || msg==stopCmd_msg || msg==surfCmd_msg) 
+    tmrStart(winch_tmr, ngkDelay*2+1);
 } // ngkSend
 
 //
 // get winch message if available and parse it
-// ?? respond to stopcmd buoycmd
+// respond immediately to stopcmd buoycmd
 // uses: ngk.expect
-// sets: ngk.on ngk.expect .lastRecv scratch (*msg)
-// returns: false if no message
+// sets: ngk.on ngk.expect .lastRecv scratch 
+// returns: msg
 //
-bool ngkRecv(MsgType *msgP) {
+MsgType ngkRecv() {
   char msgStr[BUFSZ];
-  MsgType m;
-  if (serRead(ngk.port, msgStr)==0) {
-    if (ngkTimeout()) {
-      *msgP = timeout_msg;
-    else
-      *msgP = null_msg;
-    return false;
-  }
-  if (!msgParse(msgP, msgStr))    // mangled
-    return false;
-  m = *msgP;
-  if (m==buoyCmd_msg) {
-    // async, handled special. Does not change .expect
+  MsgType msg;
+  if (serRead(ngk.port, msgStr)==0) 
+    return null_msg;
+  msg = msgParse(msgStr);
+  flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[msg], clockTime(scratch));
+  if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
-    *msgP = null_msg;
-    return false;
+    return null_msg;
   }
-  // normal message
-  flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[m], clockTime(scratch));
-  if (m==stopCmd_msg)             // surfaced or jammed
+  if (msg==dropRsp_msg || msg==riseRsp_msg 
+   || msg==stopRsp_msg || msg==surfRsp_msg) 
+    tmrStop(winch_tmr);
+  if (msg==stopCmd_msg)
     ngkSend(stopRsp_msg);
-  // winch motor
-  if (m==riseRsp_msg || m==dropRsp_msg) 
-    ngk.on = true;
-  if (m==stopCmd_msg || m==stopRsp_msg) 
-    ngk.on = false;
-  if (ngk.expect==null_msg) 
-    return true;     
-  // we are expecting a msg
-  tmrStop(winch_tmr);
-  if (ngk.expect==m) {
-    ngk.expect = null_msg;
-    return true;
-  } else { 
-    flogf(" (expected %s)", ngk.msgName[ngk.expect]);
-    ngk.expect = null_msg;
-    return false;
-  }
+  return msg;
 } // ngkRecv
-
-bool ngkTimeout(void) {
-  if (ngk.expect && tmrExp(winch_tmr)) {
-    ngk.timeout[ngk.expect]++;
-    ngk.expect = null_msg;
-    return true;
-  } else
-    return false;
-} // ngkTimeout
 
 //
 // match against ngk.msgStr[]
 // sets: (*msgP) ngk.recv[]
 // returns: success
 //
-bool msgParse(MsgType *msgP, char *str) {
+MsgType msgParse(char *str) {
   MsgType m;
   int len;
   len = crlfTrim(str);
@@ -162,12 +110,9 @@ bool msgParse(MsgType *msgP, char *str) {
     if (strstr(str, ngk.msgStr[m])!=NULL) 
       break;
   ngk.recv[m]++;
-  *msgP = m;
-  if (m==mangled_msg) {           // no match or invalid
+  if (m==mangled_msg)           // no match or invalid
     flogf(" | ERR msgParse(%s) fail", str);
-    return false;
-  } else
-    return true;
+  return m;
 } // msgParse
 
 void ngkMsgName(char *out, MsgType msg) {
@@ -175,6 +120,8 @@ void ngkMsgName(char *out, MsgType msg) {
   return;
 }
 
-void ngkExpect(MsgType msg) {
-  ngk.expect = msg;
+//
+// construct ?? and send buoy status response
+void ngkBuoyRsp(void) {
+  ngkSend( buoyRsp_msg);
 }
