@@ -7,6 +7,7 @@
 //
 #include <com.h>
 #include <ctd.h>
+#include <mpc.h>
 
 CtdInfo ctd;
 
@@ -15,38 +16,53 @@ CtdInfo ctd;
 // pre: mpcInit sets up serial
 // sets: ctd.port .expect .log
 //
-bool ctdInit(void) {
+void ctdInit(void) {
   DBG0("ctdInit()")
-  int errno;
   ctd.port = mpcCom1Port();
   mpcDevSelect(ctd_dev);
   ctd.expect = false;
   // set up HW
   ctdBreak();
-  if (!(ctdPrompt() || ctdPrompt())) {   // fails twice 
-    flogf( "\nERR\t|ctdInit(): no prompt" );
-    return false;
-  }
+  if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
+    shutdown("\nERR\t|ctdInit(): no prompt from ctd");
   if (ctd.log==0)
-    ctd.log = open(ctd.logFile, OAPPEND | OCREAT | ORDWR);
-  if (ctd.log<=0) {
-    flogf("\nERR\t| ctdInit() %s open errno: %d", ctd.logFile, errno);
-    return false;
-  }
+    ctd.log = open(ctd.logFile, O_APPEND | O_CREAT | O_RDWR);
+  if (ctd.log<=0) 
+    shutdown("\nERR\t| ctdInit(): logfile open fail");
   ctdSetDate();
-  ctdSyncMode();
-  return true;
+  ctdSyncmode();
 } // ctdInit
+
+//
+/*
+float ctdDepth() {
+  return 1.0;
+} // ctdDepth
+
+bool ctdPrompt(void){
+  return true;
+}
+float ctdData(char *out){
+  out[0]=0;
+  return 1.0;
+}
+void ctdBreak(void){}
+void ctdSample(void){}         // ctd .pending
+void ctdSyncmode(void){}
+
+void ctdFlush(void){}
+void ctdStop(void){}
+*/
 
 //
 // date, time for ctd. also some params.
 // uses: ctd.port
 //
 void ctdSetDate(void) {
-  DBG0("ctdSetDate()")
-  timet rawtime;
+  time_t rawtime;
   struct tm *info;
-  char buffer[15];
+  char buffer[16];
+  DBG0("ctdSetDate()")
   //
   time(&rawtime);
   info = gmtime(&rawtime);

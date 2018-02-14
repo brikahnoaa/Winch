@@ -1,12 +1,12 @@
 // com.h  common to all
-//#include <cfxad.h>
-//#include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
-//#include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
-//#include <fcntl.h> // PicoDOS POSIX-like File Access Definitions
-//#include <stat.h> // PicoDOS POSIX-like File Status Definitions
-//#include <termios.h> // PicoDOS POSIX-like Terminal I/O Definitions
-//#include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 #include <cfxpico.h> // Persistor PicoDOS Definitions
+#include <cfxad.h>
+#include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
+#include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
+#include <fcntl.h> // PicoDOS POSIX-like File Access Definitions
+#include <stat.h> // PicoDOS POSIX-like File Status Definitions
+#include <termios.h> // PicoDOS POSIX-like Terminal I/O Definitions
+#include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
 
 #include <assert.h>
 #include <ctype.h>

@@ -33,3 +33,7 @@ ModType antMode(ModType mod) {
 }
 
 void antStop() {}
+
+bool antRising(void) {
+  return true;
+}

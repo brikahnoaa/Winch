@@ -8,6 +8,7 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <ngk.h>
+#include <pwr.h>
 #include <wsp.h>
 
 SysInfo sys;
@@ -60,7 +61,7 @@ void preRun(int delay) {
 } // preRun
 
 void logInit() {
-  Initflog(sys.log, true);
+  Initflog(sys.logFile, true);
   flogf("\n----------------------------------------------------------------");
   flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
@@ -125,8 +126,8 @@ void startCheck(void) {
     sysStop("starts>startmax");
   }
   // load cfg and log file names
-  strcpy(sys.log, VEEFetchStr( "SYS_LOG", SYS_LOG ));
-  strcpy(sys.cfg, VEEFetchStr( "SYS_CFG", SYS_CFG ));
+  strcpy(sys.logFile, VEEFetchStr( "SYS_LOG", SYS_LOG ));
+  strcpy(sys.cfgFile, VEEFetchStr( "SYS_CFG", SYS_CFG ));
   csprintf(scratch, "%d", sys.starts);
   VEEStoreStr("STARTS", scratch);
 } // startCheck

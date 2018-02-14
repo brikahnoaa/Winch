@@ -8,6 +8,8 @@ void pwrInit(void){}
 
 void pwrStop(void){}
 
+void pwrFlush(void){}
+
 /*
 //
 // 12.2.2015 - Received many errno=0 when fopen return NULL. 

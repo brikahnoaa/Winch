@@ -14,11 +14,6 @@ MpcInfo mpc;
 //
 
 
-MpcData mpc = {
-  1500.0, 15.0, 11.0,
-  NULL, ctd_dev
-};
-
 // Enable watch dog  HM 3/6/2014
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 
@@ -43,21 +38,13 @@ void mpcInit(void) {
       "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
       TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
       waitsCF, *(uchar *)0xFFFFFA21);
-    mpcVoltage( &mpc.volts );
-  flogf("\n\t|Check Startup Voltage: %5.2fV", mpc.volts);
-  // com1
+  // port
   deviceRX = TPUChanFromPin(COM1_RX);
   deviceTX = TPUChanFromPin(COM1_TX);
-  mpc.com1 = TUOpen(deviceRX, deviceTX, COM1_BAUD, 0);
-  if (mpc.com1==NULL) 
-    sysShutdown("mpcInit() com1 open fail");
+  mpc.port = TUOpen(deviceRX, deviceTX, COM1_BAUD, 0);
+  if (mpc.port==NULL) 
+    shutdown("mpcInit() com1 open fail");
   delayms(RS232_SETTLE); // to settle rs232
-  // Safety Check. Minimum Voltage
-  if (mpc.volts < mpc.voltsMin) {
-    flogf("\n\t|Battery Voltage Below Minimum. Activate Hibernation Mode");
-    sysSleepUntilWoken();
-    BIOSReset();
-  }
 } // mpcInit
 
 //
@@ -131,12 +118,6 @@ void mpcSleep(void) {
   putflush(); 
 } // mpcSleep
 
-float mpcVoltage(float *volts) {
-  float v = 12.0;
-  *volts = v;
-  return v;
-}
-
 bool mpcDevSelect(DevType dev) {
   if (dev==mpc.device) return true;
   if (dev==ant_dev)
@@ -154,6 +135,6 @@ bool mpcDevSelect(DevType dev) {
 
 void mpcStop(){}
 
-DevType mpcCom1Port(void) { return mpc.port; }
+Serial mpcCom1Port(void) { return mpc.port; }
 
-Serial mpcCom1Dev(void) { return mpc.device; }
+DevType mpcCom1Dev(void) { return mpc.device; }

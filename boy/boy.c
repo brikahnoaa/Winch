@@ -55,7 +55,7 @@ void boyMain(int starts) {
 //
 // 
 //
-void boyInit() {
+void boyInit(void) {
 } // boyInit
 
 //
@@ -64,7 +64,8 @@ void boyInit() {
 // ask antmod for our velocity
 // sets: boy.phase
 //
-void rebootPhase() {
+PhaseType rebootPhase(void) {
+  return drop_pha;
 } // reboot()
 
 //
@@ -74,12 +75,13 @@ void rebootPhase() {
 // organize data files, transfer data to antmod ??
 // uses: data_tmr duty_tmr
 //
-void dataPhase(void) {
+PhaseType dataPhase(void) {
   flogf("\n\t|dataPhase()");
   // sleep needs a lot of optimizing to be worth the trouble
   // Sleep();
   wspStop();
   transferFiles();
+  return rise_pha;
 } // dataPhase
 
 //
@@ -121,6 +123,7 @@ PhaseType risePhase(void) {
 //
 bool riseUp(float targetD, int try, int delay) {
   float depth, startD, dangerZone;
+  MsgType msg;
   int retry = try;
   int step = 1;
   time_t riseT;
@@ -153,7 +156,7 @@ bool riseUp(float targetD, int try, int delay) {
       } else if (--retry>=0) { 
         // retry
         flogf(", retry"); 
-        msdelay(delay*1000);
+        delayms(delay*1000);
         ngkSend( riseCmd_msg );
       } else { 
         flogf(", ERR abort"); 
@@ -168,7 +171,8 @@ bool riseUp(float targetD, int try, int delay) {
     depth = antDepth();
     if (depth<=targetD) 
       step = 3;
-    if (msg = ngkRecv())          // this shouldn't happen in step 2
+    // this shouldn't happen in step 2
+    if ((msg = ngkRecv())!=null_msg)          
       flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
   // step 3: stopCmd 
@@ -197,7 +201,7 @@ bool riseUp(float targetD, int try, int delay) {
       } else if (--retry>=0) { 
         // retry
         flogf(", retry"); 
-        msdelay(delay*1000);
+        delayms(delay*1000);
         ngkSend( stopCmd_msg );
       } else { 
         flogf(", ERR abort"); 
@@ -216,19 +220,38 @@ bool riseUp(float targetD, int try, int delay) {
 } // riseUp
 
 //
+// rise up to targetD, 0 means surfacing
+// when surfacing, expect stopCmd and don't set velocity
+// sets: boy.lastRise .firstRise, (*msg)
+// returns: bool
+//
+bool riseSurf(int try, int delay) {
+  return (try!=delay);
+} // riseSurf
+
+//
 // turn off sbe, on irid/gps (takes 30 sec). 
 // read gps date, loc. 
 //
-void callPhase(void) {
+PhaseType callPhase(void) {
+  return drop_pha;
 } // callPhase
 
 //
 // antMod(stop), science(log), startT, dropCmd, science(stop)
 // err if dockD differs
 //
-void dropPhase(void) {
+PhaseType dropPhase(void) {
+  return data_pha;
 } // dropPhase
 
+PhaseType deployPhase(void) {
+  return data_pha;
+}
+
+PhaseType errorPhase(void) {
+  return drop_pha;
+}
 
 //
 // wait currChkSettle, buoy ctd, ant td, compute
@@ -238,9 +261,9 @@ float oceanCurr() {
   float aD, cD, a, b, c;
   // usually called while antMod is on
   antMode(idle_mod);
-  mpcDevSwitch(ctd_dev);
+  mpcDevSelect(ctd_dev);
   cD=ctdDepth();
-  mpcDevSwitch(ant_dev);
+  mpcDevSelect(ant_dev);
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
   a=cD-aD;
@@ -250,24 +273,25 @@ float oceanCurr() {
 }
 
 //
-// uses: boy.sidewaysMax
+// uses: boy.currMax
 //
 bool oceanCurrChk() {
-  flogf("\n\t| ocean current ");
+  float sideways;
+  flogf("\n\t| oceanCurrChk() ");
   sideways = oceanCurr();
   flogf(" @%.1f=%.1f ", antDepth(), sideways);
-  if (sideways>boy.sidewaysMax) {
+  if (sideways>boy.currMax) {
     flogf("too strong, cancel ascent");
     return true;
   }
   return false;
-}
+} // oceanCurrChk
 
 //
 // shutdown buoy, reflects boyInit
 //
 void boyStop(void) {}
 
-void flushBuffers(void) {}
+void boyFlush(void) {}
 
-void deployPhase(void) {}
+void transferFiles(void) {}

@@ -13,7 +13,7 @@ void winchingHelp() {
          "\n");
 }
 
-void winchingMain(void){
+void boyMain(void){
   char c;
   MsgType msg;
   winchingHelp();
@@ -24,7 +24,8 @@ void winchingMain(void){
 
     while (true) { // input
       // amodem
-      if (ngkRecv(&msg)!=null_msg) {
+      msg = ngkRecv();
+      if (msg!=null_msg) {
         cprintf("\n winch>> '%s' @ %s", ngk.msgName[msg], clockTime(scratch));
         break; // while input
       } 
@@ -55,3 +56,14 @@ void winchingMain(void){
     } // while input
   } // while command
 }
+
+void antStop(void){}
+void boyStop(void){}
+void ctdStop(void){}
+void pwrStop(void){}
+void wspStop(void){}
+void antInit(void){}
+void boyInit(void){}
+void ctdInit(void){}
+void pwrInit(void){}
+void wspInit(void){}

@@ -143,3 +143,7 @@ char *unsprintf (char *out, char *in) {
 } // printsafe
 
 void pet() { TickleSWSR(); }              // pet the watchdog
+
+void shutdown(char *out) {
+  sysStop(out);
+}

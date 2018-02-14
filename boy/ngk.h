@@ -28,8 +28,8 @@ typedef struct NgkInfo {
 static MsgType msgParse(char *str);
 static void ngkBuoyRsp(void);
 
-MsgType ngkRecv(MsgType *msg);
+MsgType ngkRecv(void);
 void ngkInit(void);
-void ngkStop(void);
+char * ngkMsgName(MsgType msg);
 void ngkSend(MsgType msg);
-void ngkMsgName(char *out, MsgType msg);
+void ngkStop(void);

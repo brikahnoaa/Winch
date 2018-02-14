@@ -1,4 +1,4 @@
-      // ctd.h
+// ctd.h
 
 typedef struct CtdInfo {
   bool expect;                // request pending, expect response
@@ -11,13 +11,13 @@ typedef struct CtdInfo {
 } CtdInfo;
 
 static bool ctdPrompt(void);
+static float ctdData(char *out);
+static void ctdBreak(void);
+static void ctdSample(void);
 static void ctdSetDate(void);
+static void ctdSyncmode(void); 
 
-float ctdDepth();             // query, wait for response
-float ctdData(char *out);
-void ctdSample(void);         // ctd .pending
-void ctdSyncmode(void); 
-void ctdBreak(void);
+float ctdDepth(void);
+void ctdFlush(void);
 void ctdInit(void);
 void ctdStop(void);
-void ctdFlush(void);

@@ -1,4 +1,10 @@
 // sys.h
+//
+#define STARTS "0"
+#define STARTS_MAX "50"
+#define SYS_LOG "SYS.LOG"
+#define SYS_CFG "SYS.CFG"
+#define C_DRIVE ('C'-'A')
 
 typedef enum {
   null_alm=0,
@@ -36,6 +42,7 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt);
 void main(void);
 void sysAlarm(AlarmType alm);
 void sysInfo(char *out);
+void sysInit(void);
 void sysStop(char *out);
 void sysSleep(void);
 long sysDiskFree(void);

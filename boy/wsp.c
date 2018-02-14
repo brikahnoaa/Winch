@@ -2,7 +2,9 @@
 #include <com.h>
 #include <wsp.h>
 
-void wspInit(int board){}
+void wspInit(int board) {
+  board++;
+}
 void wspStop(void){}
 void wspFlush(void){}
 

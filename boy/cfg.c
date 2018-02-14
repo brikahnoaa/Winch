@@ -7,6 +7,7 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <ngk.h>
+#include <pwr.h>
 #include <sys.h>
 #include <wsp.h>
 
@@ -32,6 +33,8 @@ static CfgParam cfg[] = {
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
+  {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
+  {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},
   {"bcD", "boy.currChkD",   &boy.currChkD,    'f'},
   {"bcX", "boy.currMax",    &boy.currMax,     'f'},
   {"bcf", "boy.callFreq",   &boy.callFreq,    'i'},
@@ -40,13 +43,12 @@ static CfgParam cfg[] = {
   {"bph", "boy.phase",      &boy.phase,       'i'},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
   {"cdy", "ctd.delay",      &ctd.delay,       'i'},
-  {"nba", "ngk.boy2ant",    &ngk.boy2ant,     'f'},
   {"ndy", "ngk.delay",      &ngk.delay,       'i'},
   {"pon", "pwr.on",         &pwr.on,          'b'},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c'},
   {"pch", "pwr.charge",     &pwr.charge,      'f'},
   {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f'},
-  {"pvM", "pwr.voltMin",    &pwr.voltMin,     'f'},
+  {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f'},
   {"spt", "sys.platform",   &sys.platform,    'c'},
   {"spg", "sys.program",    &sys.program,     'c'},
   {"spj", "sys.project",    &sys.project,     'c'},
@@ -69,13 +71,14 @@ static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
 bool cfgString(char *str){
   char *ref, *val;
   char s[80];
+  int i;
   strcpy(s, str);
   ref=strtok(s, "=");
   if (ref==NULL) return false;
   val=strtok(NULL, "=");     // rest of string
   if (val==NULL) return false;
   // find matching name
-  for (int i=0; i<cfgLen; i++) {
+  for (i=0; i<cfgLen; i++) {
     if (strcmp(ref, cfg[i].id)==0 || strcmp(ref, cfg[i].var)==0) {
       cfgSet(cfg[i].ptr, cfg[i].type, val);
       return true;

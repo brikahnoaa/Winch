@@ -4,7 +4,6 @@
 #include <tmr.h>
 
 NgkInfo ngk = {
-  false,
   { "null",
     // ngk.msgStr[] as if sent to buoy; change ID before sending to winch
     // %B and %W are shorter, last two digits are status
@@ -36,7 +35,7 @@ void ngkInit(void) {
   mdmTX = TPUChanFromPin(MDM_TX);
   p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
   if (p == 0)
-    flogf("\nERR\t|ngkInit() Bad ngk serial port");
+    shutdown("\nERR\t|ngkInit() Bad ngk serial port");
   else {
     TUTxFlush(p);
     TURxFlush(p);
@@ -66,7 +65,7 @@ void ngkSend(MsgType msg) {
   ngk.lastSend = msg;
   if (msg==dropCmd_msg || msg==riseCmd_msg 
    || msg==stopCmd_msg || msg==surfCmd_msg) 
-    tmrStart(winch_tmr, ngkDelay*2+1);
+    tmrStart(winch_tmr, ngk.delay*2+1);
 } // ngkSend
 
 //
@@ -87,8 +86,7 @@ MsgType ngkRecv() {
     ngkBuoyRsp();
     return null_msg;
   }
-  if (msg==dropRsp_msg || msg==riseRsp_msg 
-   || msg==stopRsp_msg || msg==surfRsp_msg) 
+  if (msg==dropRsp_msg || msg==riseRsp_msg || msg==stopRsp_msg) 
     tmrStop(winch_tmr);
   if (msg==stopCmd_msg)
     ngkSend(stopRsp_msg);
@@ -115,9 +113,8 @@ MsgType msgParse(char *str) {
   return m;
 } // msgParse
 
-void ngkMsgName(char *out, MsgType msg) {
-  strcpy(out, ngk.msgName[msg]);
-  return;
+char * ngkMsgName(MsgType msg) {
+  return ngk.msgName[msg];
 }
 
 //

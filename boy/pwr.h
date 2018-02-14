@@ -33,14 +33,14 @@ typedef struct PwrInfo {
   short interval;       // deciSecs for PIT timer interrupt
 } PwrInfo;
 
-void pwrLog(void);
-void pwrDelay(short sec);
-void pwrLogWrite(ushort *);
 bool pwrCheck(void);
 void pwrInit(void);
-void pwrStop(void);
 float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
-void pwrOpenLog(long);
+void pwrDelay(short sec);
 void pwrFileName(long);
 void pwrFlush(void);
+void pwrLog(void);
+void pwrLogWrite(ushort *);
+void pwrOpenLog(long);
+void pwrStop(void);
