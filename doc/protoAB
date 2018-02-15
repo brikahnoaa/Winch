@@ -1,27 +1,40 @@
 v4
- == in td mode, ant mod queries sbe39 continuously, sends values ==
-    => 123.1, -0.1\r
- == all commands except depth, temp followed by OK\n ==
-mode td|gps|call|idle|shut  => OK\n (when mode is ready)
-file name size              => OK\n <data> xxx good|timeout OK\n
-gps                         => lat #.# long #.# time #:#:# date #/#/# OK
-call                        => signal # (...)
-                               call # ...
-                               file name size ... good|err
-                               xxx good|err OK
-
-set string      := set setting, same format as irid download
-status          := #/# # (sent # of # files, # bytes)
-
-pico x x        := response from dos, OK
+ == commands can be abbreviated to one letter, followed by \n
+ == data mode continuously queries TempDepth and computes velocity
+ == in data mode, td responds immediately (with last data)
+ == in idle mode, td has 2sec delay 
+ == all responses end with ok\n or err[0-9]\n
+\n                          =>  ok\n
+echo                        =>  ok
+mode data|idle|shut         =>  ok
+td                          =>  <temp>
+                                <depth>
+                                ok
+velo                        =>  <velo>
+                                ok
+file <name> <size>          =>  ok|err# 
+  <data=sizeB>              =>  ok|err#
+gps                         =>  <lat>
+                                <long>
+                                <time>
+                                <date>
+                                ok
+signal                      =>  <0-5>
+                                ok
+call                        =>  dial
+                                file <name> <size> .... good|err#
+                                file <name> <size> .... good|err#
+                                ok
+status                      =>  files <filesSent>
+                                bytes <bytesSent>
+                                error <errorFail>
+                                avail <bytesFree>
+pico <dos command>          =>  <command response>
+                                ok
 
 <-- async alerts, not in direct response to query
-gps #:#:#.#     := acquired GPS time
-sig #           := csq 5
-data            := sending data
-err string      := tried to connect, giving up
-set string      := settings sent down from irid
-done            := done with surface, due to time or data done
+cfg <string>                :=  cfg settings sent down from irid
+done                        :=  done with surface, due to time or data done
 
 
 v3
