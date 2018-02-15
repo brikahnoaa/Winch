@@ -8,19 +8,20 @@
 #include <com.h>
 #include <ctd.h>
 #include <mpc.h>
+#include <tmr.h>
 
 CtdInfo ctd;
 
 //
 // buoy sbe16 set date, sync mode
 // pre: mpcInit sets up serial
-// sets: ctd.port .expect .log
+// sets: ctd.port .pending .log
 //
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1Port();
   mpcDevSelect(ctd_dev);
-  ctd.expect = false;
+  ctd.pending = false;
   // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
@@ -34,25 +35,13 @@ void ctdInit(void) {
 } // ctdInit
 
 //
-/*
 float ctdDepth() {
-  return 1.0;
+  if (!ctd.pending)
+    ctdSample();
+  return ctdData(scratch);
 } // ctdDepth
 
-bool ctdPrompt(void){
-  return true;
-}
-float ctdData(char *out){
-  out[0]=0;
-  return 1.0;
-}
-void ctdBreak(void){}
-void ctdSample(void){}         // ctd .pending
-void ctdSyncmode(void){}
-
-void ctdFlush(void){}
-void ctdStop(void){}
-*/
+void ctdFlush(void){} // ??
 
 //
 // date, time for ctd. also some params.
@@ -68,8 +57,8 @@ void ctdSetDate(void) {
   info = gmtime(&rawtime);
   //	strftime(buffer, 15, "%m%d%Y%H%M%S", info);
   sprintf(buffer, "datetime=%02d%02d%04d%02d%02d%02d", 
-    info->tmmon+1, info->tmmday, info->tmyear + 1900, 
-    info->tmhour, info->tmmin, info->tmsec);
+    info->tm_mon+1, info->tm_mday, info->tm_year + 1900, 
+    info->tm_hour, info->tm_min, info->tm_sec);
   DBG1("%s", buffer)
   //
   serWrite(ctd.port, buffer);
@@ -80,45 +69,57 @@ void ctdSetDate(void) {
   serReadWait(ctd.port, scratch, 1);
 } // ctdSetDate
 
+
+//
 // sbe16
 // \r input, echos input.  \r\n before next output.
 // pause 0.33s between \rn and s> prompt.
 // wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
-// pause between ts\r\n and result, 4.32s
-
-//
 // ctdPrompt - poke buoy CTD, look for prompt
 //
 bool ctdPrompt(void) {
   static char str[32];
+  if (ctd.syncmode) 
+    ctdBreak();
   TURxFlush(ctd.port);
   TUTxPutByte(ctd.port, '\r', true);
-  getStringWait(ctd.port, 2, str);
+  serReadWait(ctd.port, str, 2);
   // looking for S>
-  if (strstr(str, "S>") != NULL) return true;
-  else return false;
+  if (strstr(str, "S>") == NULL) {
+    // try again after break
+    ctdBreak();
+    TURxFlush(ctd.port);
+    TUTxPutByte(ctd.port, '\r', true);
+    serReadWait(ctd.port, str, 2);
+    // looking for S>
+    if (strstr(str, "S>") == NULL) {
+      flogf("\nERR\t| ctdPrompt fail");
+      return false;
+    }
+  }
+  return true;
 }
 
 //
 // poke ctd to get sample, set interval timer
-// set: ctd.expect, it
+// pause between ts\r\n and result = 4.32s
+// set: ctd.pending, it
 //
 void ctdSample(void) {
-  DBG0("ctdSample()")
-  // global ctd .expect
-  char ch;
   int len;
-  if (ctd.expect) return;
+  DBG0("ctdSample()")
+  if (ctd.pending) return;
   if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
   else {
     serWrite(ctd.port, "TS\r");
     // consume echo
-    len = serReadWait(port, char *in, 1);
-    if (len<3) flogf("\nERR ctdSample, TS command fail");
+    len = serReadWait(ctd.port, scratch, 1);
+    if (len<3) 
+      flogf("\nERR ctdSample, TS command fail");
   }
-  ctd.expect = true;
-  // expect response, timeout in 6sec
-  tmrAdd( ctd_tmr, 6 );
+  ctd.pending = true;
+  // pending response, timeout in 6sec
+  tmrStart( ctd_tmr, 6 );
 } // ctdSample
 
 //
@@ -129,34 +130,36 @@ void ctdSyncmode(void) {
   serWrite(ctd.port, "Syncmode=y\r");
   ctdPrompt();
   serWrite(ctd.port, "QS\r");
-  ctd.syncmode = true;
   delayms(100);
   TURxFlush(ctd.port);
+  ctd.syncmode = true;
 } 
 
 //
 //
 void ctdBreak(void) {
   DBG0("ctdBreak()")
-  // global ctd .port
   TUTxBreak(ctd.port, 5000);
+  ctd.syncmode = false;
 }
 
 
 //
 // sbe16 response is just over 3sec in sync, well over 4sec in command
-// data is reformatted to save a little space, written to ctd.filehandle
+// waits up to max+1 seconds - good to call after tgetq()
+// data is reformatted to save a little space, written to ctd.log
 // returns depth
 //
 float ctdData(char *stringout) {
-  DBG0("ctdData()")
   int len;
   float temp, cond, pres, flu, par, sal;
   char *day, *month, *year, *time;
   char stringin[BUFSZ];
-  // waits up to 8 seconds - best called after tgetq()
-  len = serReadWait(ctd.port, 8, stringin);
-  DBG2("\n\tctd-->%s", printSafe(scratch, stringin))
+  DBG0("ctdData()")
+  // waits up to max+1 seconds - best called after tgetq()
+  len = serReadWait(ctd.port, stringin, ctd.delay+1);
+  DBG2("\n\tctd-->%s", unsprintf(scratch, stringin))
+  tmrStop(ctd_tmr);
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: picks up trailing S> prompt if not in syncmode
