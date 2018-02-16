@@ -188,4 +188,8 @@ float ctdData(char *stringout) {
   return (pres);
 } // ctdData
 
-void ctdStop(void){}
+void ctdStop(void){
+  close(ctd.log);
+  ctd.port = 0;
+  mpcDevSelect(ant_dev);
+}

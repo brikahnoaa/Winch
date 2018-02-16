@@ -220,11 +220,6 @@ bool riseUp(float targetD, int try, int delay) {
 } // riseUp
 
 //
-// rise up to targetD, 0 means surfacing
-// when surfacing, expect stopCmd and don't set velocity
-// sets: boy.lastRise .firstRise, (*msg)
-// returns: bool
-//
 bool riseSurf(int try, int delay) {
   return (try!=delay);
 } // riseSurf
@@ -239,9 +234,81 @@ PhaseType callPhase(void) {
 
 //
 // antMod(stop), science(log), startT, dropCmd, science(stop)
+// steps: 1 dropRsp, 2 stopCmd, 3 dockD, 4 failure
+// fail:=stage of failure 0,1; tryMax[], delay[] change with fail stage
+// if (try>tryMax) fail++ <= failMax
 // err if dockD differs
 //
-PhaseType dropPhase(void) {
+PhaseType dropPhase() {
+  int try = 1, step = 1;
+  int failMode = 0, failMax = 1, tryMax[2] = {5, 10}, delay[2] = {1, 3600};
+  float depth, startD;
+  MsgType msg;
+  time_t dropT;
+  DBG0("dropP()")
+  startD = depth = antDepth();
+  // step 1: dropCmd
+  ngkSend( dropCmd_msg );
+  while (step==1) {
+    depth = antDepth();
+    switch (msg = ngkRecv()) {
+    case null_msg: break;
+    case dropRsp_msg:
+      // start velocity measure
+      dropT = time(0);
+      step = 2;
+      break;
+    default: // unexpected msg
+      flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
+    if (tmrExp(winch_tmr)) {
+      if (antDropping()) {
+        // odd, we are dropping but no response; log but ignore
+        flogf("\n\t|dropP() timeout on ngk, but dropping so continue..."); 
+        step = 2;
+        continue; // while(step 1)
+      } 
+      // delay and retry algorithm
+      if (++try>tryMax[failMode]) { 
+        flogf(", retry"); 
+        pwrDelay(delay[failMode])
+        ngkSend( dropCmd_msg );
+      } else { 
+        flogf(", ERR abort"); 
+        step = 4;
+      }
+    } // tmr
+  } // while step1
+  // step 2: stopCmd or stopped
+  ctdSample();
+  while (step==2) {
+    // got science?
+    if (TURxQueuedCount(boy.port)) {
+      ctdData(scratch);           // logs to file
+      ctdSample();
+    }
+    depth = antDepth();
+    if (antStopped()) {
+      step = 3;
+      continue;
+    }
+    // this shouldn't happen in step 2
+    if ((msg = ngkRecv())!=null_msg)          
+      flogf("\n\t|dropP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+  } // while step2
+  // step 3: docked
+  if (antStopped() && !boyDocked())
+    step = 2;
+  // velocity
+  if (retry==try) {
+    // skip if we didn't stop clean
+    boy.lastRiseV = (startD-depth) / (time(0)-dropT);
+    if (boy.firstRiseV==0)
+      boy.firstRiseV = boy.lastRiseV;
+  }
+  // turn off ant, clear ngk, clear ctd
+  ctdData(scratch);           // logs to file
+  ngkFlush();
   return data_pha;
 } // dropPhase
 
@@ -295,3 +362,7 @@ void boyStop(void) {}
 void boyFlush(void) {}
 
 void transferFiles(void) {}
+
+bool boyDocked(void) {
+  return (abs(antDepth()-boy.dockD)<0.2);
+}
