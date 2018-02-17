@@ -234,20 +234,24 @@ PhaseType callPhase(void) {
 
 //
 // antMod(stop), science(log), startT, dropCmd, science(stop)
-// steps: 1 dropRsp, 2 stopCmd, 3 dockD, 4 failure
-// fail:=stage of failure 0,1; tryMax[], delay[] change with fail stage
-// if (try>tryMax) fail++ <= failMax
-// err if dockD differs
+// steps: 1 dropRsp, 2 docked
+// failMode:=stage of failure 0,1; tryMax[], delay[] indexed by failMode
+// if (err>errMax) failMode++ <= failMax
+// 20 retries: 5@1sec, 5@10min, 10@1hour
+// errMax[failMode], delay[failMode]
 //
 PhaseType dropPhase() {
-  int try = 1, step = 1;
-  int failMode = 0, failMax = 1, tryMax[2] = {5, 10}, delay[2] = {1, 3600};
+  int err = 0, step = 1;
+  int failMode = 0, failMax = 2;
+  int errMax[3] = {5, 10, 20}, delay[3] = {1, 10*60, 60*60};
   float depth, startD;
   MsgType msg;
-  time_t dropT;
+  time_t dropT = (time_t)0;
   DBG0("dropP()")
   startD = depth = antDepth();
-  // step 1: dropCmd
+  /// step 1: dropCmd 
+  // loop until dropRsp or dropping+timeout
+  flogf(" dropCmd");
   ngkSend( dropCmd_msg );
   while (step==1) {
     depth = antDepth();
@@ -255,33 +259,50 @@ PhaseType dropPhase() {
     case null_msg: break;
     case dropRsp_msg:
       // start velocity measure
-      dropT = time(0);
+      if (err==0) // all OK, measure dropTime
+        dropT = time(0);
       step = 2;
-      break;
+      continue; // while
     default: // unexpected msg
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
+      // minor err
       if (antDropping()) {
-        // odd, we are dropping but no response; log but ignore
-        flogf("\n\t|dropP() timeout on ngk, but dropping so continue..."); 
+        // odd, we are dropping but no response; log but allow
+        flogf(" timeout, but dropping ..."); 
+        err++;    // indicate trouble
         step = 2;
         continue; // while(step 1)
       } 
-      // delay and retry algorithm
-      if (++try>tryMax[failMode]) { 
-        flogf(", retry"); 
-        pwrDelay(delay[failMode])
-        ngkSend( dropCmd_msg );
-      } else { 
-        flogf(", ERR abort"); 
-        step = 4;
-      }
-    } // tmr
+      /// err, delay and retry algorithm
+      // failMode ++ as errs exceed errMax
+      if (++err >= errMax[failMode])  
+        if (++failMode >= failMax) 
+          return error_pha;
+      // retry dropCmd
+      pwrDelay(delay[failMode])
+      flogf(" dropCmd"); 
+      ngkSend( dropCmd_msg );
+      } // if dropping
+    } // if timeout
   } // while step1
-  // step 2: stopCmd or stopped
+  /// step 2: dropping 
+  // ctdSample loop until docked
   ctdSample();
   while (step==2) {
+    depth = antDepth();
+    switch (msg = ngkRecv()) {
+    case null_msg: break;
+    case stopCmd_msg:
+      if (boyDocked()) {
+        step = 3;
+        continue; // while
+      }
+      // if not docked, we have a problem; retry dropCmd (rise first?)
+    case default:
+      flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    }
     // got science?
     if (TURxQueuedCount(boy.port)) {
       ctdData(scratch);           // logs to file
@@ -292,7 +313,6 @@ PhaseType dropPhase() {
       step = 3;
       continue;
     }
-    // this shouldn't happen in step 2
     if ((msg = ngkRecv())!=null_msg)          
       flogf("\n\t|dropP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
