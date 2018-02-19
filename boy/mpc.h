@@ -5,7 +5,7 @@
 
 #define COM1_BAUD 9600
 
-typedef enum { ant_dev, ctd_dev } DevType;
+typedef enum { null_dev, ant_dev, ctd_dev } DevType;
 
 typedef struct MpcInfo {
   long diskFree;
@@ -18,7 +18,7 @@ static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
 static void spur_ISR(void);
 
-bool mpcDevSelect(DevType dev);
+void mpcDevSelect(DevType dev);
 void mpcInit(void);
 void mpcSleep(void);
 void mpcStop(void);

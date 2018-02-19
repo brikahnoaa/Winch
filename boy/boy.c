@@ -90,8 +90,8 @@ PhaseType dataPhase(void) {
 // sets: boy.alarm[]
 //
 PhaseType risePhase(void) {
-  flogf("\n\t|risePhase()");
-  antMode(td_mod);
+  flogf("\n\t|risePhase() %s", timeStr());
+  antMode(data_mod);
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
@@ -107,7 +107,8 @@ PhaseType risePhase(void) {
     sysAlarm(midwayCurr_alm);
     return drop_pha;
   }
-  if (!riseSurf(5, 1)) {
+  // surface
+  if (!riseUp(0.0, 5, 1)) {
     flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
   }
@@ -121,16 +122,15 @@ PhaseType risePhase(void) {
 // sets: boy.lastRise .firstRise, (*msg) 
 // returns: bool
 //
-bool riseUp(float targetD, int try, int delay) {
-  float depth, startD, dangerZone;
+bool riseUp(float targetD, int errMax, int delay) {
+  float depth, startD;
   MsgType msg;
-  int retry = try;
-  int step = 1;
+  int err = 0, step = 1;
   time_t riseT;
   DBG0("riseUp(%dm)", targetD)
   startD = depth = antDepth();
-  dangerZone = 5; // ?? sbe16toTip + (velo*stopTime) + 1.0
-  // step 1: riseCmd
+  /// step 1: riseCmd
+  // watch for riseRsp. on timeout, retry or continue if rising
   ngkSend( riseCmd_msg );
   while (step==1) {
     depth = antDepth();
@@ -140,7 +140,7 @@ bool riseUp(float targetD, int try, int delay) {
       // start velocity measure
       riseT = time(0);
       step = 2;
-      break;
+      continue; // while
     case stopCmd_msg:     // stopped by winch
       // ngkSend(stopRsp_msg) in ngkRecv
       flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
@@ -153,7 +153,8 @@ bool riseUp(float targetD, int try, int delay) {
         // odd, we are rising but no response; log but ignore
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
         step = 2;
-      } else if (--retry>=0) { 
+        continue;
+      } else if (++err >= errMax) {
         // retry
         flogf(", retry"); 
         delayms(delay*1000);
@@ -163,10 +164,15 @@ bool riseUp(float targetD, int try, int delay) {
         return false;
       }
     } // tmr
-    if (depth<=targetD)           // this shouldn't happen in step 1
+    // this shouldn't happen in step 1
+    if (depth<=targetD) {          
+      flogf("\nWARN\t| riseP() reached target depth without riseRsp_msg"
       step = 3;
+      continue;
+    }
   } // while step1
-  // step 2: depth
+  /// step 2: depth
+  // watch until target depth
   while (step==2) {
     depth = antDepth();
     if (depth<=targetD) 
@@ -175,8 +181,9 @@ bool riseUp(float targetD, int try, int delay) {
     if ((msg = ngkRecv())!=null_msg)          
       flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
-  // step 3: stopCmd 
-  retry = try;
+  /// step 3: stopCmd 
+  // watch for stopRsp. on timeout, retry or continue if stopped
+  err = 0;
   ngkSend( stopCmd_msg );
   while (step==3) {
     depth = antDepth();
@@ -184,7 +191,7 @@ bool riseUp(float targetD, int try, int delay) {
     case null_msg: break;
     case stopRsp_msg:
       step = 4;
-      break;
+      continue; // while
     case stopCmd_msg:     // stopped by winch
       // ngkSend(stopRsp_msg) in ngkRecv
       flogf("\n\t | riseUp() stopped by winch at %3.1fm. Strange not fatal.", 
@@ -194,11 +201,12 @@ bool riseUp(float targetD, int try, int delay) {
       flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (!antRising()) {
-        // odd, we are rising but no response; log but ignore
-        flogf("\n\t|riseP stopCmd timeout, but not rising so continue..."); 
+      if (antStopped()) {
+        // odd, we are stopped but no response; log but ignore
+        flogf("\n\t|riseP stopCmd timeout, but stopped so continue..."); 
         step = 4;
-      } else if (--retry>=0) { 
+        continue; // while
+      } else if (++err >= errMax) {
         // retry
         flogf(", retry"); 
         delayms(delay*1000);
@@ -209,13 +217,14 @@ bool riseUp(float targetD, int try, int delay) {
       }
     } // tmr
   } // while step1
-  // velocity
-  if (retry==try) {
-    // skip if we didn't stop clean
-    boy.lastRiseV = (startD-depth) / (time(0)-riseT);
-    if (boy.firstRiseV==0)
-      boy.firstRiseV = boy.lastRiseV;
-  }
+  // velocity to target, not to surface
+  if (targetD!=0)
+    // skip if we didn't stop cleanly
+    if (err==0) { 
+      boy.lastRiseV = (startD-depth) / (time(0)-riseT);
+      if (boy.firstRiseV==0)
+        boy.firstRiseV = boy.lastRiseV;
+    }
   return true;
 } // riseUp
 
@@ -247,7 +256,9 @@ PhaseType dropPhase() {
   float depth, startD;
   MsgType msg;
   time_t dropT = (time_t)0;
-  DBG0("dropP()")
+  flogf("\n\tdropP() %s", timeStr());
+  antMode(stop_mod);
+  mpcDevSelect(ctd_dev);
   startD = depth = antDepth();
   /// step 1: dropCmd 
   // loop until dropRsp or dropping+timeout

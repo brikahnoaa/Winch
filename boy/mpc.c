@@ -118,19 +118,19 @@ void mpcSleep(void) {
   putflush(); 
 } // mpcSleep
 
-bool mpcDevSelect(DevType dev) {
-  if (dev==mpc.device) return true;
+void mpcDevSelect(DevType dev) {
+  if (dev==mpc.device) return;
   if (dev==ant_dev)
     PIOSet(COM1SELECT);
   else if (dev==ctd_dev)
     PIOClear(COM1SELECT);
   else
-    return false;
+    return;
   delayms(10);
   TUTxFlush(mpc.port);
   TURxFlush(mpc.port);
   pet();
-  return true;
+  return;
 }
 
 void mpcStop(){}
