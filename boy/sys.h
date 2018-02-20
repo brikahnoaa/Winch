@@ -4,7 +4,6 @@
 #define STARTS_MAX "50"
 #define SYS_LOG "SYS.LOG"
 #define SYS_CFG "SYS.CFG"
-#define C_DRIVE ('C'-'A')
 
 typedef enum {
   null_alm=0,

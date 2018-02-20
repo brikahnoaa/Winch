@@ -78,7 +78,7 @@ void logInit() {
 void sysInit() {
   logInit();
   configFile();
-  PZCacheSetup(C_DRIVE, calloc, free);
+  PZCacheSetup(C_DRV, calloc, free);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
   flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
     sys.program, sys.version, sys.project, sys.platform, sys.starts);
@@ -233,8 +233,8 @@ int checkVitals(void) {
 // sysDiskFree Returns the free space in kBytes
 //
 long sysDiskFree(void) {
-  sys.diskFree = DSDFreeSectors(C_DRIVE);
-  sys.diskSize = DSDDataSectors(C_DRIVE);
+  sys.diskFree = DSDFreeSectors(C_DRV);
+  sys.diskSize = DSDDataSectors(C_DRV);
   return sys.diskFree/2;
 } // sysDiskFree
 

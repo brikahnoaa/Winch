@@ -12,7 +12,7 @@ typedef struct CtdInfo {
 
 static bool ctdPrompt(void);
 static void ctdBreak(void);
-static void ctdData(char *out);
+static void ctdData(void);
 static void ctdSetDate(void);
 static void ctdSyncmode(void); 
 

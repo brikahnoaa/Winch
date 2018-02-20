@@ -34,7 +34,11 @@ void ctdInit(void) {
   ctdSyncmode();
 } // ctdInit
 
-void ctdFlush(void){} // ??
+void ctdFlush(void){
+  if (ctd.pending)
+    ctdData();
+  PZCacheFlush(C_DRV);
+} // ctdFlush
 
 //
 // date, time for ctd. also some params.
@@ -158,7 +162,7 @@ void ctdSample(void) {
 //
 float ctdDepth() {
   ctdSample();
-  ctdData(scratch);
+  ctdData();
   return ctd.depth;
 } // ctdDepth
 
@@ -166,13 +170,14 @@ float ctdDepth() {
 // sbe16 response is just over 3sec in sync, well over 4sec in command
 // waits up to ctd.delay+1 seconds - good to call after tgetq()
 // data is reformatted to save a little space, written to ctd.log
-// sets: ctd.depth .pending (*stringout)
+// logs: reformatted data string
+// sets: ctd.depth .pending 
 //
-void ctdData(char *stringout) {
+void ctdData() {
   int len;
   float temp, cond, pres, flu, par, sal;
   char *day, *month, *year, *time;
-  char stringin[BUFSZ];
+  char stringin[BUFSZ], stringout[BUFSZ];
   DBG0("ctdData()")
   stringout[0] = 0;   // in case of error return
   if (ctd.pending) 

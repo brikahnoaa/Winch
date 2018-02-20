@@ -302,19 +302,29 @@ PhaseType dropPhase() {
   ctdSample();
   while (step==2) {
     // got science?
-    if (ctdReady())
+    if (ctdReady()) {
       lastD = depth;
       depth = ctdDepth();           // logs to file
       // ctd is slow, should drop .6m between samples
-      if (depth - lastD)<0.3) { // not dropping, panic
-        return error_pha;
-      }
+      if ((depth-lastD)<0.2)
+        // NOT DROPPING stopCmd could be pending
+        tmrStart(winch_tmr, 8);
       ctdSample();
+    } // ctd
+    if (tmrExp(winch_tmr)) {
+      // tmr set by NOT DROPPING above
+      lastD = depth;
+      depth = ctdDepth();           
+      // ctd is slow, should drop .6m between samples
+      if ((depth-lastD)<0.2)        // not dropping & timeout, panic
+        return error_pha;
+      else                          // dropping, tmr was a mistake
+        ctdSample();
     }
     switch (msg = ngkRecv()) {
     case null_msg: break;
     case stopCmd_msg:
-      if (boyDocked()) {      // normal and expected
+      if (boyDocked()) {            // normal and expected
         step = 3;
         continue; // while
       } else {
@@ -334,8 +344,9 @@ PhaseType dropPhase() {
       boy.firstRiseV = boy.lastRiseV;
   }
   // turn off ant, clear ngk, clear ctd
-  ctdData(scratch);           // logs to file
-  ngkFlush();
+  ngkStop();
+  ctdStop();
+  antStop();
   return data_pha;
 } // dropPhase
 
@@ -346,9 +357,17 @@ PhaseType dropPhase() {
 PhaseType deployPhase(void) {
   mpcDevice(ant_dev);
   antMode(idle_mod);
-  while (antDepth()<10.0)
+  tmrStart( deploy_tmr, 60*60*2 );
+  // wait until under 10m
+  while (antDepth()<10.0) {
+    if (tmrExp(deploy_tmr) {
+      flogf("\n%s\t|deployP() 2 hour timeout", timeStr(scratch));
+      sysStop("deployP() 2 hour timeout");
+    }
     pwrNap(30);
-  while (!antStopped())
+  // watch until not dropping
+  antMode(data_mod);
+  while (!antStopped()) 
     pwrNap(3);
   pwrNap(30);
   boy.dockD = antDepth();
