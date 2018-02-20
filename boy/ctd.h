@@ -12,10 +12,11 @@ typedef struct CtdInfo {
 
 static bool ctdPrompt(void);
 static void ctdBreak(void);
+static void ctdData(char *out);
 static void ctdSetDate(void);
 static void ctdSyncmode(void); 
 
-float ctdData(char *out);
+bool ctdReady(void);
 float ctdDepth(void);
 void ctdFlush(void);
 void ctdInit(void);

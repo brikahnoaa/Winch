@@ -154,7 +154,7 @@ bool riseUp(float targetD, int errMax, int delay) {
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
         step = 2;
         continue;
-      } else if (++err >= errMax) {
+      } else if (++err <= errMax) {
         // retry
         flogf(", retry"); 
         delayms(delay*1000);
@@ -206,7 +206,7 @@ bool riseUp(float targetD, int errMax, int delay) {
         flogf("\n\t|riseP stopCmd timeout, but stopped so continue..."); 
         step = 4;
         continue; // while
-      } else if (++err >= errMax) {
+      } else if (++err <= errMax) {
         // retry
         flogf(", retry"); 
         delayms(delay*1000);
@@ -258,8 +258,7 @@ PhaseType dropPhase() {
   time_t dropT = (time_t)0;
   flogf("\n\tdropP() %s", timeStr());
   antMode(stop_mod);
-  mpcDevSelect(ctd_dev);
-  startD = depth = antDepth();
+  mpcDevice(ctd_dev);
   /// step 1: dropCmd 
   // loop until dropRsp or dropping+timeout
   flogf(" dropCmd");
@@ -288,11 +287,11 @@ PhaseType dropPhase() {
       } 
       /// err, delay and retry algorithm
       // failMode ++ as errs exceed errMax
-      if (++err >= errMax[failMode])  
-        if (++failMode >= failMax) 
+      if (++err > errMax[failMode])  
+        if (++failMode > failMax) 
           return error_pha;
       // retry dropCmd
-      pwrDelay(delay[failMode])
+      pwrNap(delay[failMode])
       flogf(" dropCmd"); 
       ngkSend( dropCmd_msg );
       } // if dropping
@@ -302,36 +301,33 @@ PhaseType dropPhase() {
   // ctdSample loop until docked
   ctdSample();
   while (step==2) {
-    depth = antDepth();
+    // got science?
+    if (ctdReady())
+      lastD = depth;
+      depth = ctdDepth();           // logs to file
+      // ctd is slow, should drop .6m between samples
+      if (depth - lastD)<0.3) { // not dropping, panic
+        return error_pha;
+      }
+      ctdSample();
+    }
     switch (msg = ngkRecv()) {
     case null_msg: break;
     case stopCmd_msg:
-      if (boyDocked()) {
+      if (boyDocked()) {      // normal and expected
         step = 3;
         continue; // while
+      } else {
+        // if stop but not docked, cable is stuck
+        return error_pha;
       }
-      // if not docked, we have a problem; retry dropCmd (rise first?)
     case default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    }
-    // got science?
-    if (TURxQueuedCount(boy.port)) {
-      ctdData(scratch);           // logs to file
-      ctdSample();
-    }
-    depth = antDepth();
-    if (antStopped()) {
-      step = 3;
-      continue;
-    }
-    if ((msg = ngkRecv())!=null_msg)          
-      flogf("\n\t|dropP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
   } // while step2
-  // step 3: docked
-  if (antStopped() && !boyDocked())
-    step = 2;
-  // velocity
-  if (retry==try) {
+  /// step 3: docked
+  // velocity, finish science
+  if (err==0) {
     // skip if we didn't stop clean
     boy.lastRiseV = (startD-depth) / (time(0)-dropT);
     if (boy.firstRiseV==0)
@@ -343,10 +339,24 @@ PhaseType dropPhase() {
   return data_pha;
 } // dropPhase
 
+//
+// from ship deck to ocean floor
+// wait until under 10m, watch until not dropping, wait 30s, riseP
+//
 PhaseType deployPhase(void) {
-  return data_pha;
+  mpcDevice(ant_dev);
+  antMode(idle_mod);
+  while (antDepth()<10.0)
+    pwrNap(30);
+  while (!antStopped())
+    pwrNap(3);
+  pwrNap(30);
+  boy.dockD = antDepth();
+  return rise_pha;
 }
 
+//
+// 
 PhaseType errorPhase(void) {
   return drop_pha;
 }
@@ -357,11 +367,11 @@ PhaseType errorPhase(void) {
 //
 float oceanCurr() {
   float aD, cD, a, b, c;
-  // usually called while antMod is on
+  // usually called while antMod is data_mod
   antMode(idle_mod);
-  mpcDevSelect(ctd_dev);
+  mpcDevice(ctd_dev);
   cD=ctdDepth();
-  mpcDevSelect(ant_dev);
+  mpcDevice(ant_dev);
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
   a=cD-aD;

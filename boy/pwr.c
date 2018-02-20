@@ -1,4 +1,4 @@
-// pow.c
+// pwr.c
 #include <com.h>
 #include <pwr.h>
 
@@ -9,6 +9,10 @@ void pwrInit(void){}
 void pwrStop(void){}
 
 void pwrFlush(void){}
+
+void pwrNap(int sec) {
+  msDelay(sec*1000);
+}
 
 /*
 //

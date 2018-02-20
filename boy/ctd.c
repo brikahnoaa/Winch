@@ -20,7 +20,7 @@ CtdInfo ctd;
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1Port();
-  mpcDevSelect(ctd_dev);
+  mpcDevice(ctd_dev);
   ctd.pending = false;
   // set up HW
   ctdBreak();
@@ -33,13 +33,6 @@ void ctdInit(void) {
   ctdSetDate();
   ctdSyncmode();
 } // ctdInit
-
-//
-float ctdDepth() {
-  if (!ctd.pending)
-    ctdSample();
-  return ctdData(scratch);
-} // ctdDepth
 
 void ctdFlush(void){} // ??
 
@@ -101,28 +94,6 @@ bool ctdPrompt(void) {
 }
 
 //
-// poke ctd to get sample, set interval timer
-// pause between ts\r\n and result = 4.32s
-// set: ctd.pending, it
-//
-void ctdSample(void) {
-  int len;
-  DBG0("ctdSample()")
-  if (ctd.pending) return;
-  if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
-  else {
-    serWrite(ctd.port, "TS\r");
-    // consume echo
-    len = serReadWait(ctd.port, scratch, 1);
-    if (len<3) 
-      flogf("\nERR ctdSample, TS command fail");
-  }
-  ctd.pending = true;
-  // pending response, timeout in 6sec
-  tmrStart( ctd_tmr, 6 );
-} // ctdSample
-
-//
 // sets: ctd.syncmode
 //
 void ctdSyncmode(void) {
@@ -141,25 +112,80 @@ void ctdBreak(void) {
   DBG0("ctdBreak()")
   TUTxBreak(ctd.port, 5000);
   ctd.syncmode = false;
-}
+} // ctdBreak
 
+//
+// false if not pending, true if Q(), false and retry if timeout
+// sets: ctd.pending
+bool ctdReady() {
+  int q;
+  if (!ctd.pending)
+    return false;
+  if (TURxQueuedCount(boy.port))
+    return true;
+  if (tmrExp(ctd_tmr)) {
+    flogf("\nWARN\t|ctdReady() timeout, retry");
+    ctd.pending = false;
+    ctdSample();
+    return false;
+  }
+} // ctdReady
+
+//
+// poke ctd to get sample, set interval timer
+// pause between ts\r\n and result = 4.32s
+// sets: ctd.pending ctd_tmr
+//
+void ctdSample(void) {
+  int len;
+  DBG0("ctdSample()")
+  if (ctd.pending) return;
+  if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
+  else {
+    serWrite(ctd.port, "TS\r");
+    // consume echo
+    len = serReadWait(ctd.port, scratch, 1);
+    if (len<3) 
+      flogf("\nERR ctdSample, TS command fail");
+  }
+  ctd.pending = true;
+  // pending response, timeout in 5sec, checked by ctdReady()
+  tmrStart( ctd_tmr, ctd.delay );
+} // ctdSample
+
+//
+// sample if not pending, wait for data, return depth
+//
+float ctdDepth() {
+  ctdSample();
+  ctdData(scratch);
+  return ctd.depth;
+} // ctdDepth
 
 //
 // sbe16 response is just over 3sec in sync, well over 4sec in command
-// waits up to max+1 seconds - good to call after tgetq()
+// waits up to ctd.delay+1 seconds - good to call after tgetq()
 // data is reformatted to save a little space, written to ctd.log
-// returns depth
+// sets: ctd.depth .pending (*stringout)
 //
-float ctdData(char *stringout) {
+void ctdData(char *stringout) {
   int len;
   float temp, cond, pres, flu, par, sal;
   char *day, *month, *year, *time;
   char stringin[BUFSZ];
   DBG0("ctdData()")
+  stringout[0] = 0;   // in case of error return
+  if (ctd.pending) 
+    ctd.pending = false;
+  else
+    return;           // error
   // waits up to max+1 seconds - best called after tgetq()
   len = serReadWait(ctd.port, stringin, ctd.delay+1);
+  if (len==0) {       // error
+    ctd.depth = 0;
+    return;
+  }
   DBG2("\n\tctd-->%s", unsprintf(scratch, stringin))
-  tmrStop(ctd_tmr);
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: picks up trailing S> prompt if not in syncmode
@@ -185,11 +211,13 @@ float ctdData(char *stringout) {
   if (write(ctd.log, stringout, len)<len) 
     flogf("\nERR\t|ctdData log fail");
   ctd.depth = pres;
-  return (pres);
+  if (ctd.pending)
+    ctd.pending = false;
+  return;
 } // ctdData
 
 void ctdStop(void){
   close(ctd.log);
-  ctd.port = 0;
-  mpcDevSelect(ant_dev);
+  ctd.pending = false;
+  ctd.depth = 0;
 }

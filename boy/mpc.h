@@ -18,7 +18,7 @@ static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
 static void spur_ISR(void);
 
-void mpcDevSelect(DevType dev);
+void mpcDevice(DevType dev);
 void mpcInit(void);
 void mpcSleep(void);
 void mpcStop(void);

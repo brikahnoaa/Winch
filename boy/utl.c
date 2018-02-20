@@ -67,13 +67,14 @@ int serRead(Serial port, char *in) {
 //  return: length
 //
 int serReadWait(Serial port, char *in, int wait) {
-  int len = 0;
+  int len;
   DBG0("serReadWait(%d)")
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   pet(); // could have been a long wait
   if (in[0]<=0) {
     // timeout
     in[0]=0;
+    len = 0;
   } else {
     // rest of input, note serRead exits if nothing queued
     delayms(CHAR_DELAY);

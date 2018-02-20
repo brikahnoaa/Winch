@@ -37,7 +37,7 @@ bool pwrCheck(void);
 void pwrInit(void);
 float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
-void pwrDelay(short sec);
+void pwrNap(int sec);
 void pwrFileName(long);
 void pwrFlush(void);
 void pwrLog(void);

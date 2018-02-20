@@ -118,7 +118,7 @@ void mpcSleep(void) {
   putflush(); 
 } // mpcSleep
 
-void mpcDevSelect(DevType dev) {
+void mpcDevice(DevType dev) {
   if (dev==mpc.device) return;
   if (dev==ant_dev)
     PIOSet(COM1SELECT);
