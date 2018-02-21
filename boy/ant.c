@@ -21,19 +21,27 @@ float antDepth(void) {
   return ant.depth;
 }
 
-bool antSurf(void) {
-  return (antDepth() > ant.surfD+1);
-}
-
 //
+// ??
 //   null_mod, idle_mod, td_mod, gps_mod, call_mod, shut_mod
 //
 ModType antMode(ModType mod) {
   return mod;
 }
 
+// ??
 void antStop() {}
 
+// ??
 bool antRising(void) {
+  return true;
+} // antRising
+
+// ??
+bool antDropping(void) {
+  return true;
+}
+
+bool antSteady(void) {
   return true;
 }

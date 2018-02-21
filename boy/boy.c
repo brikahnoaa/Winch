@@ -16,8 +16,10 @@ BoyInfo boy;
 
 //
 // deploy or reboot, then loop over phases data/rise/call/drop
+// sets: boy.phase .phasePrev
 //
 void boyMain(int starts) {
+  PhaseType phaseNext;
   // boy.phase set by sys.cfg
   if (starts>1) 
     boy.phase = reboot_pha;
@@ -25,40 +27,43 @@ void boyMain(int starts) {
     
   while (true) {
     sysFlush();                    // flush all log file buffers
-    boy.phaseT=time(0);
+    boy.phaseT = time(0);
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
-      boy.phase = dataPhase();
+      phaseNext = dataPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
-      boy.phase = risePhase();
+      phaseNext = risePhase();
       break;
     case call_pha: // Call home via Satellite
-      boy.phase = callPhase();
+      phaseNext = callPhase();
       break;
     case drop_pha: // Descend buoy, science sampling
-      boy.phase = dropPhase();
+      phaseNext = dropPhase();
       break;
     case deploy_pha:
-      boy.phase = deployPhase();
+      phaseNext = deployPhase();
       break;
     case reboot_pha:
-      boy.phase = rebootPhase();
+      phaseNext = rebootPhase();
       break;
     case error_pha:
-      boy.phase = errorPhase();
+      phaseNext = errorPhase();
       break;
     } // switch
+    boy.phasePrev = boy.phase;
+    boy.phase = phaseNext;
   } // while true
 } // boyMain() 
 
 //
-// 
+// ??
 //
 void boyInit(void) {
 } // boyInit
 
 //
+// ??
 // figure out whats happening, continue as possible
 // load info from saved previous phase
 // ask antmod for our velocity
@@ -69,6 +74,7 @@ PhaseType rebootPhase(void) {
 } // reboot()
 
 //
+// ??
 // wispr recording and detecting, buoy is docked to ngk
 // data is gathered for about 24hours (data_tmr)
 // wsp powers down for % of each hour (wispr_tmr)
@@ -201,7 +207,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antStopped()) {
+      if (antSteady()) {
         // odd, we are stopped but no response; log but ignore
         flogf("\n\t|riseP stopCmd timeout, but stopped so continue..."); 
         step = 4;
@@ -229,11 +235,7 @@ bool riseUp(float targetD, int errMax, int delay) {
 } // riseUp
 
 //
-bool riseSurf(int try, int delay) {
-  return (try!=delay);
-} // riseSurf
-
-//
+// ??
 // turn off sbe, on irid/gps (takes 30 sec). 
 // read gps date, loc. 
 //
@@ -259,7 +261,8 @@ PhaseType dropPhase() {
   flogf("\n\tdropP() %s", timeStr());
   antMode(stop_mod);
   mpcDevice(ctd_dev);
-  /// step 1: dropCmd 
+  /// 
+  // step 1: dropCmd 
   // loop until dropRsp or dropping+timeout
   flogf(" dropCmd");
   ngkSend( dropCmd_msg );
@@ -276,6 +279,7 @@ PhaseType dropPhase() {
     default: // unexpected msg
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
+    //
     if (tmrExp(winch_tmr)) {
       // minor err
       if (antDropping()) {
@@ -285,8 +289,7 @@ PhaseType dropPhase() {
         step = 2;
         continue; // while(step 1)
       } 
-      /// err, delay and retry algorithm
-      // failMode ++ as errs exceed errMax
+      // err, delay and retry algorithm // failMode ++ as errs exceed errMax
       if (++err > errMax[failMode])  
         if (++failMode > failMax) 
           return error_pha;
@@ -297,7 +300,8 @@ PhaseType dropPhase() {
       } // if dropping
     } // if timeout
   } // while step1
-  /// step 2: dropping 
+  ///
+  // step 2: dropping 
   // ctdSample loop until docked
   ctdSample();
   while (step==2) {
@@ -311,6 +315,7 @@ PhaseType dropPhase() {
         tmrStart(winch_tmr, 8);
       ctdSample();
     } // ctd
+    //
     if (tmrExp(winch_tmr)) {
       // tmr set by NOT DROPPING above
       lastD = depth;
@@ -320,7 +325,8 @@ PhaseType dropPhase() {
         return error_pha;
       else                          // dropping, tmr was a mistake
         ctdSample();
-    }
+    } // timeout
+    //
     switch (msg = ngkRecv()) {
     case null_msg: break;
     case stopCmd_msg:
@@ -335,7 +341,8 @@ PhaseType dropPhase() {
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
   } // while step2
-  /// step 3: docked
+  /// 
+  // step 3: docked
   // velocity, finish science
   if (err==0) {
     // skip if we didn't stop clean
@@ -360,21 +367,28 @@ PhaseType deployPhase(void) {
   tmrStart( deploy_tmr, 60*60*2 );
   // wait until under 10m
   while (antDepth()<10.0) {
+    pwrNap(30);
     if (tmrExp(deploy_tmr) {
       flogf("\n%s\t|deployP() 2 hour timeout", timeStr(scratch));
       sysStop("deployP() 2 hour timeout");
     }
-    pwrNap(30);
-  // watch until not dropping
+  }
+  // watch until not stationary
   antMode(data_mod);
-  while (!antStopped()) 
+  while (!antSteady()) 
     pwrNap(3);
   pwrNap(30);
-  boy.dockD = antDepth();
+  mpcDevice(ctd_dev);
+  // use boy ctd for dockD, for later compare at end of drop_pha
+  boy.dockD = ctdDepth();
+  mpcDevice(ant_dev);
   return rise_pha;
 }
 
 //
+// ??
+// cable is stuck. short up, down to dock. 
+// go back to normal if resolved ??
 // 
 PhaseType errorPhase(void) {
   return drop_pha;
@@ -417,12 +431,15 @@ bool oceanCurrChk() {
 //
 // shutdown buoy, reflects boyInit
 //
+// ??
 void boyStop(void) {}
 
+// ??
 void boyFlush(void) {}
 
+// ??
 void transferFiles(void) {}
 
-bool boyDocked(void) {
-  return (abs(antDepth()-boy.dockD)<0.2);
+bool boyDocked(float depth) {
+  return (abs(depth-boy.dockD)<0.2);
 }

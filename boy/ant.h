@@ -14,7 +14,9 @@ typedef struct AntInfo {
 } AntInfo;
 
 void antInit(void);
+bool antDropping(void);
 bool antRising(void);
+bool antSteady(void);
 bool antSurf(void);
 ModType antMode(ModType mod);
 float antDepth(void);

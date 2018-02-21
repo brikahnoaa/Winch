@@ -8,7 +8,7 @@ import winch
 
 # globals set in init(), start()
 
-name = 'antmod'
+name = 'ant'
 portSelect = 1      # select port 0-n of multiport serial
 baudrate = 9600
 
