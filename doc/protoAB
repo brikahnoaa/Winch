@@ -1,35 +1,26 @@
 v4
  == commands can be abbreviated to one letter, followed by \n
- == data mode continuously queries TempDepth and computes velocity
- == in data mode, data responds immediately (with last data)
- == in idle mode, data has 2sec delay 
+ == td takes 2sec == in watch mode, continuously executes td until endwatch
  == all responses end with ok\n or err[0-9]\n
-\n                          =>  ok\n
-echo                        =>  ok
-mode data|idle|shut         =>  ok
-data                        =>  <temp>
-                                <depth>
-                                ok
-velo                        =>  <velo>
-                                ok
+ok                          =>  ok
+watchOn                     =>  ok
+ ...                        =>  <temp> <depth>
+watchOff                    =>  ok
+td                          =>  <temp> <depth> ok
+halt                        =>  ok
 file <name> <size>          =>  ok|err# 
   <data=sizeB>              =>  ok|err#
-gps                         =>  lat <lat>
-                                long <long>
-                                time <time>
-                                date <date>
-                                ok
-signal                      =>  <0-5>
-                                ok
-dial                        =>  dial
+gpstd                       =>  <lat> <long> <time> <date> ok
+level                       =>  <0-5> ok
+iridium                     =>  <phone#> .. good|err#
                                 file <name> <size> .... good|err#
                                 [ file <name> <size> .... good|err# ]
-                                [ cnfg <string> ]
+                                [ config <string> ]
                                 ok
-cnfg                        =>  cnfg <string>
-                                [ cnfg <string> ]
+config                      =>  <string>
+                                [ <string> ]
                                 ok
-stat                        =>  files <filesSent>
+stats                       =>  files <filesSent>
                                 bytes <bytesSent>
                                 error <errorFail>
                                 avail <bytesFree>

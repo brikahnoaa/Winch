@@ -94,33 +94,31 @@ int serReadWait(Serial port, char *in, int wait) {
 // returns: out
 //
 char * clockTime(char *out) {
-  RTCtm *rtc_time;
-  ulong secs;
-  ushort ticks;
+  struct tm *tim;
+  time_t secs;
 
-  RTCGetTime(&secs, &ticks);
-  rtc_time = RTClocaltime(&secs);
+  time(&secs);
+  tim = localtime(&secs);
   sprintf(out, "%02d:%02d:%02d",
-          rtc_time->tm_hour, rtc_time->tm_min, rtc_time->tm_sec);
+          tim->tm_hour, tim->tm_min, tim->tm_sec);
   return out;
 } // clockTime
 
 //
 // Time & Date String
-// MM/DD/YYYY HH:MM:SS now
+// MM/DD/YY HH:MM:SS now
 // sets: (*out)
 // returns: out
 //
 char * clockTimeDate(char *out) {
-  RTCtm *rtc_time;
-  ulong secs;
-  ushort ticks;
+  struct tm *tim;
+  time_t secs;
   
-  RTCGetTime(&secs, &ticks);
-  rtc_time = RTClocaltime(&secs);
-  sprintf(out, "%02d/%02d/%04d %02d:%02d:%02d", rtc_time->tm_mon + 1,
-          rtc_time->tm_mday, rtc_time->tm_year + 1900, rtc_time->tm_hour,
-          rtc_time->tm_min, rtc_time->tm_sec);
+  time(&secs);
+  tim = localtime(&secs);
+  sprintf(out, "%02d/%02d/%02d %02d:%02d:%02d", tim->tm_mon,
+          tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
+          tim->tm_min, tim->tm_sec);
   return out;
 } // clockTimeDate
 

@@ -202,14 +202,14 @@ void ctdData() {
   par = atof( strtok(NULL, ", "));
   sal = atof( strtok(NULL, ", "));
   // rest is date time
-  day = strtok(NULL, ", ");
-  month = strtok(NULL, " ");
-  year = strtok(NULL, " ");
-  time = strtok(NULL, " \r\n");
+  // day = strtok(NULL, ", ");
+  // month = strtok(NULL, " ");
+  // year = strtok(NULL, " ");
+  // time = strtok(NULL, " \r\n");
   // record
   sprintf(stringout, 
-    "%.4f,%.5f,%.3f,%.4f,%.4f,%.4f,%s%s,%s", 
-    temp, cond, pres, flu, par, sal, month, day, time);
+    "%.4f %.5f %.3f %.4f %.4f %.4f %s",
+    temp, cond, pres, flu, par, sal, clockTimeDate(scratch));
   DBG1("\n\tctd: %s", stringout)
   // Log WriteString
   len = strlen(stringout);

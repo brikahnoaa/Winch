@@ -13,3 +13,4 @@ sbe39:
 wakeup is fast. \r wakes, but no output. second \r gets prompt.
 no pause between \rn and "<Executed/>\r\n" prompt.
 pause between ts\r\n and result, 0.52s
+syncmode??

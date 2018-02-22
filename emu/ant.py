@@ -20,14 +20,6 @@ value = {}          # depth/temp
 setting = {}        # algorithm settings
 serThreadObj = None
 
-flagsSet = [
-    (), # p0
-    (), # p1
-    ('surface'), # p2
-    (), # p3
-    ('log'), # p4
-    ]
-
 flagsInit = { 
     'depth': False,
     'ice': False, 
@@ -94,48 +86,35 @@ def serThread():
     global go, ser
     if not ser.is_open: ser.open()
     ser.buff = ''
-    #try:
-    if True:
-        while go.isSet():
-            #if sbe.event.isSet(): 
-            #    sbe.event.clear()
-            #    sbe.process()
-            l = ser.getline()
-            # getline returns None, '', or 'chars\r'
-            if l: buoyProcess(l)
-    #except:
-    #    print "Error, stop()"
-    #    stop()
+    while go.isSet():
+        l = ser.getline()
+        if l: buoyProcess(l)
     if ser.is_open: ser.close()
-#end def serThread():
+#serThread
 
 def buoyProcess(l):
     "process serial input (from buoy)"
-    # 'chars\r'
     global flags, value, phase
     ls = l.split()
     if len(ls)==0: return
-    cmd = ls[0]
-    if 'phase'==cmd:
-        phase = int(ls[1])
-        phaseChange(phase) # reset flags, values
-    elif 'file'==cmd:
-        loadFile(name=ls[1], size=ls[2])
-    elif 'depth'==cmd:
-        flags[cmd] = True
-        sbe.req()
-    elif 'temp'==cmd:    
-        flags[cmd] = True
-        sbe.req()
-    elif 'target'==cmd:
-        value[cmd] = float(ls[1])
-        flags[cmd] = True
-        sbe.req()
-    elif 'velocity'==cmd:
-        velocity( int(ls[1]) )
-        flags[cmd] = True
-        sbe.req()
-#end def buoyProcess(l):
+    cmd = ls[0][0]
+    if 'echo'==cmd || cmd=='e':
+        flags['echo'] = true
+    elif 'mntr'==cmd || cmd=='m':
+        flags['mntr'] = true
+    elif 'quit'==cmd || cmd=='q':
+        exit
+    elif 'data'==cmd || cmd=='d':    
+        print "data: %s %s" % sbeReadWait()
+    elif 'halt'==cmd || cmd=='h':
+    elif 'file'==cmd || cmd=='f':
+    elif 'gpst'==cmd || cmd=='g':
+    elif 'levl'==cmd || cmd=='l':
+    elif 'irid'==cmd || cmd=='i':
+    elif 'cnfg'==cmd || cmd=='c':
+    elif 'stat'==cmd || cmd=='s':
+    elif 'pico'==cmd || cmd=='p':
+#buoyProcess
 
 def velocity(c=0):
     "c>0 start average, c<0 end average, else continue average"
