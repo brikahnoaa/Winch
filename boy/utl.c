@@ -2,9 +2,6 @@
 // note: utl.h included from com.h
 #include <com.h>
 
-// used by *Flush() as   PZCacheFlush(C_DRV);
-#define C_DRV ('C'-'A')
-
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 

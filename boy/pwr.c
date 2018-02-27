@@ -11,7 +11,7 @@ void pwrStop(void){}
 void pwrFlush(void){}
 
 void pwrNap(int sec) {
-  msDelay(sec*1000);
+  delayms(sec*1000);
 }
 
 /*

@@ -118,9 +118,6 @@ void mpcSleep(void) {
   putflush(); 
 } // mpcSleep
 
-//
-// switch between devices on com1, clear pipe
-//
 void mpcDevice(DevType dev) {
   if (dev==mpc.device) return;
   if (dev==ant_dev)

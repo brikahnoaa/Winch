@@ -122,17 +122,16 @@ void ctdBreak(void) {
 // false if not pending, true if Q(), false and retry if timeout
 // sets: ctd.pending
 bool ctdReady() {
-  int q;
   if (!ctd.pending)
     return false;
-  if (TURxQueuedCount(boy.port))
+  if (TURxQueuedCount(ctd.port))
     return true;
   if (tmrExp(ctd_tmr)) {
     flogf("\nWARN\t|ctdReady() timeout, retry");
-    ctd.pending = false;
+    ctd.pending = false;      // ctdSample needs to see pending false
     ctdSample();
-    return false;
   }
+  return false;
 } // ctdReady
 
 //
@@ -176,7 +175,6 @@ float ctdDepth() {
 void ctdData() {
   int len;
   float temp, cond, pres, flu, par, sal;
-  char *day, *month, *year, *time;
   char stringin[BUFSZ], stringout[BUFSZ];
   DBG0("ctdData()")
   stringout[0] = 0;   // in case of error return

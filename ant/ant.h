@@ -43,7 +43,6 @@ static float oceanCurr(void);
 static void boyStat(char *buffer);
 static void transferFiles(void);
 
-bool boyDocked(float depth);
 void boyInit(void);
 void boyFlush(void);
 void boyMain(int starts);

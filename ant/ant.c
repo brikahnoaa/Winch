@@ -1,34 +1,27 @@
-// boy.c
+// ant.c
 
 #include <com.h>
-#include <boy.h> 
+#include <ant.h> 
 
 #include <ant.h> 
 #include <ctd.h>
-#include <mpc.h>
-#include <ngk.h>
-#include <pwr.h>
+#include <ump.h>
 #include <sys.h>
 #include <tmr.h>
-#include <wsp.h>
 
-BoyInfo boy;
+AntInfo ant;
 
 //
 // deploy or reboot, then loop over phases data/rise/call/drop
-// sets: boy.phase .phasePrev
+// sets: ant.phase .phasePrev
 //
-void boyMain(int starts) {
-  PhaseType phaseNext;
-  // boy.phase set by sys.cfg
-  if (starts>1) 
-    boy.phase = reboot_pha;
-  flogf("\nboyMain(): starting with phase %d", boy.phase);
+void antMain(void) {
+  flogf("\nantMain(): starting with mode %d", ant.mode);
     
   while (true) {
     sysFlush();                    // flush all log file buffers
-    boy.phaseT = time(0);
-    switch (boy.phase) {
+    ant.phaseT = time(0);
+    switch (ant.phase) {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       break;
@@ -51,23 +44,23 @@ void boyMain(int starts) {
       phaseNext = errorPhase();
       break;
     } // switch
-    boy.phasePrev = boy.phase;
-    boy.phase = phaseNext;
+    ant.phasePrev = ant.phase;
+    ant.phase = phaseNext;
   } // while true
-} // boyMain() 
+} // antMain() 
 
 //
 // ??
 //
-void boyInit(void) {
-} // boyInit
+void antInit(void) {
+} // antInit
 
 //
 // ??
 // figure out whats happening, continue as possible
 // load info from saved previous phase
 // ask antmod for our velocity
-// sets: boy.phase
+// sets: ant.phase
 //
 PhaseType rebootPhase(void) {
   return drop_pha;
@@ -93,18 +86,18 @@ PhaseType dataPhase(void) {
 //
 // turn on ant, free space check, transfer files from buoy to antmod
 // ascend. check angle due to current, up midway, re-check angle, surface.
-// sets: boy.alarm[]
+// sets: ant.alarm[]
 //
 PhaseType risePhase(void) {
-  flogf("\n\t|risePhase() %s", clockTimeDate(scratch));
-  antMode(td_mod);
+  flogf("\n\t|risePhase() %s", timeStr());
+  antMode(data_mod);
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
     return drop_pha;
   }
   // MsgType riseOp(float targetD, int retry, int delay);
-  if (!riseUp(boy.currChkD, 5, 1)) {
+  if (!riseUp(ant.currChkD, 5, 1)) {
     flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
   }
@@ -125,7 +118,7 @@ PhaseType risePhase(void) {
 //
 // rise up to targetD, 0 means surfacing 
 // when surfacing, expect stopCmd and don't set velocity 
-// sets: boy.lastRise .firstRise, (*msg) 
+// sets: ant.lastRise .firstRise, (*msg) 
 // returns: bool
 //
 bool riseUp(float targetD, int errMax, int delay) {
@@ -172,7 +165,7 @@ bool riseUp(float targetD, int errMax, int delay) {
     } // tmr
     // this shouldn't happen in step 1
     if (depth<=targetD) {          
-      flogf("\nWARN\t| riseP() reached target depth without riseRsp_msg");
+      flogf("\nWARN\t| riseP() reached target depth without riseRsp_msg"
       step = 3;
       continue;
     }
@@ -227,9 +220,9 @@ bool riseUp(float targetD, int errMax, int delay) {
   if (targetD!=0)
     // skip if we didn't stop cleanly
     if (err==0) { 
-      boy.riseVLast = (startD-depth) / (time(0)-riseT);
-      if (boy.riseVFirst==0.0)
-        boy.riseVFirst = boy.riseVLast;
+      ant.lastRiseV = (startD-depth) / (time(0)-riseT);
+      if (ant.firstRiseV==0)
+        ant.firstRiseV = ant.lastRiseV;
     }
   return true;
 } // riseUp
@@ -255,10 +248,12 @@ PhaseType dropPhase() {
   int err = 0, step = 1;
   int failMode = 0, failMax = 2;
   int errMax[3] = {5, 10, 20}, delay[3] = {1, 10*60, 60*60};
-  float depth, startD, lastD;
+  float depth, startD;
   MsgType msg;
   time_t dropT = (time_t)0;
-  flogf("\n\tdropP() %s", clockTimeDate(scratch));
+  flogf("\n\tdropP() %s", timeStr());
+  antMode(stop_mod);
+  mpcDevice(ctd_dev);
   /// 
   // step 1: dropCmd 
   // loop until dropRsp or dropping+timeout
@@ -286,23 +281,21 @@ PhaseType dropPhase() {
         err++;    // indicate trouble
         step = 2;
         continue; // while(step 1)
-      } // if dropping
+      } 
       // err, delay and retry algorithm // failMode ++ as errs exceed errMax
       if (++err > errMax[failMode])  
         if (++failMode > failMax) 
           return error_pha;
       // retry dropCmd
-      pwrNap(delay[failMode]);
+      pwrNap(delay[failMode])
       flogf(" dropCmd"); 
       ngkSend( dropCmd_msg );
+      } // if dropping
     } // if timeout
   } // while step1
   ///
   // step 2: dropping 
   // ctdSample loop until docked
-  antMode(stop_mod);
-  mpcDevice(ctd_dev);
-  startD = ctdDepth();
   ctdSample();
   while (step==2) {
     // got science?
@@ -330,15 +323,14 @@ PhaseType dropPhase() {
     switch (msg = ngkRecv()) {
     case null_msg: break;
     case stopCmd_msg:
-      if (boyDocked(depth)) {       // normal and expected
+      if (antDocked()) {            // normal and expected
         step = 3;
         continue; // while
       } else {
         // if stop but not docked, cable is stuck
         return error_pha;
       }
-      break;
-    default:
+    case default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
   } // while step2
@@ -347,9 +339,9 @@ PhaseType dropPhase() {
   // velocity, finish science
   if (err==0) {
     // skip if we didn't stop clean
-    boy.dropVLast = (startD-depth) / (time(0)-dropT);
-    if (boy.dropVFirst==0)
-      boy.dropVFirst = boy.dropVLast;
+    ant.lastRiseV = (startD-depth) / (time(0)-dropT);
+    if (ant.firstRiseV==0)
+      ant.firstRiseV = ant.lastRiseV;
   }
   // turn off ant, clear ngk, clear ctd
   ngkStop();
@@ -369,19 +361,19 @@ PhaseType deployPhase(void) {
   // wait until under 10m
   while (antDepth()<10.0) {
     pwrNap(30);
-    if (tmrExp(deploy_tmr)) {
-      flogf("\n%s\t|deployP() 2 hour timeout", clockTimeDate(scratch));
+    if (tmrExp(deploy_tmr) {
+      flogf("\n%s\t|deployP() 2 hour timeout", timeStr(scratch));
       sysStop("deployP() 2 hour timeout");
     }
   }
   // watch until not stationary
-  antMode(td_mod);
+  antMode(data_mod);
   while (!antSteady()) 
     pwrNap(3);
   pwrNap(30);
   mpcDevice(ctd_dev);
-  // use boy ctd for dockD, for later compare at end of drop_pha
-  boy.dockD = ctdDepth();
+  // use ant ctd for dockD, for later compare at end of drop_pha
+  ant.dockD = ctdDepth();
   mpcDevice(ant_dev);
   return rise_pha;
 }
@@ -397,11 +389,11 @@ PhaseType errorPhase(void) {
 
 //
 // wait currChkSettle, buoy ctd, ant td, compute
-// uses: .boy2ant
+// uses: .ant2ant
 //
 float oceanCurr() {
   float aD, cD, a, b, c;
-  // usually called while antMod is td_mod
+  // usually called while antMod is data_mod
   antMode(idle_mod);
   mpcDevice(ctd_dev);
   cD=ctdDepth();
@@ -409,20 +401,20 @@ float oceanCurr() {
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
   a=cD-aD;
-  c=boy.boy2ant;
+  c=ant.ant2ant;
   b=sqrt(pow(c,2)-pow(a,2));
   return b;
 }
 
 //
-// uses: boy.currMax
+// uses: ant.currMax
 //
 bool oceanCurrChk() {
   float sideways;
   flogf("\n\t| oceanCurrChk() ");
   sideways = oceanCurr();
   flogf(" @%.1f=%.1f ", antDepth(), sideways);
-  if (sideways>boy.currMax) {
+  if (sideways>ant.currMax) {
     flogf("too strong, cancel ascent");
     return true;
   }
@@ -430,17 +422,17 @@ bool oceanCurrChk() {
 } // oceanCurrChk
 
 //
-// shutdown buoy, reflects boyInit
+// shutdown buoy, reflects antInit
 //
 // ??
-void boyStop(void) {}
+void antStop(void) {}
 
 // ??
-void boyFlush(void) {}
+void antFlush(void) {}
 
 // ??
 void transferFiles(void) {}
 
-bool boyDocked(float depth) {
-  return (abs(depth-boy.dockD)<0.2);
+bool antDocked(float depth) {
+  return (abs(depth-ant.dockD)<0.2);
 }

@@ -20,14 +20,19 @@ extern PwrInfo pwr;
 extern SysInfo sys;
 extern WspInfo wsp;
 
+typedef struct CfgParam {
+  char *id;
+  char *var;
+  void *ptr;
+  char type;                // b, c, f, i, l, s
+} CfgParam;
 // 
 // static CfgParam cfg[] = array of {id, var, ptr, type}
-// scan it for name when updating a cfg
-// { "bdh", "boy.depth", &boy.depth, 'f'},
+// scan for id or var name to set or update configurable data
 //
 // &ptr can be any extern var or struct component
 // type := bcifls bool char* int float long short
-// in order found in *.h typedef struct
+// in order as found in *.h typedef struct
 static CfgParam cfg[] = {
   {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
@@ -66,17 +71,23 @@ static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
 //
 // input line is short or long name, =, value
 // find setVar with id or name, call cfgSet()
-// uses: cfg cfgLen
+// OK to have leading space and #comments
+// uses: cfg[] cfgLen
 //
 bool cfgString(char *str){
-  char *ref, *val;
-  char s[80];
+  char *ptr, *ref, *val;
+  char s[128];
   int i;
   strcpy(s, str);
-  ref=strtok(s, "=");
-  if (ref==NULL) return false;
-  val=strtok(NULL, "=");     // rest of string
-  if (val==NULL) return false;
+  // erase after #, skip leading space, break at '='
+  ptr = strchr(s, '#');
+  if (ptr==NULL) return false;
+  *ptr = 0;
+  ref = s + strspn(s, " \t");
+  ptr = strchr(s, '=');
+  if (ptr==NULL) return false;
+  *ptr = 0;
+  val = ptr+1;
   // find matching name
   for (i=0; i<cfgLen; i++) {
     if (strcmp(ref, cfg[i].id)==0 || strcmp(ref, cfg[i].var)==0) {
@@ -118,3 +129,37 @@ static void cfgSet( void *ptr, char type, char *val ) {
     flogf("\nERR\t| bad type");
   }
 } // cfgSet
+
+//
+// read cfg strings from a file
+// returns: number of cfg lines
+//
+int cfgFRead(char *file) {
+  char fname[32] = "C:";
+  char *buf, *ptr;
+  int r, fd;
+  struct stat finfo;
+  //
+  flogf("\ncfgFRead(%s)", file);
+  strcat(fname, file);
+  if (stat(fname, &finfo) < 0) {
+    flogf("\t|ERR cannot open");
+    return 0;
+  }
+  fd = open(fname, O_RDONLY);
+  // cfg file is not large, read all of it into buf and null terminate
+  buf = (char *)malloc(finfo.st_size+1);
+  read(fd, buf, finfo.st_size);
+  buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
+  // parse cfg strings (dos or linux) and return count r
+  r = 0;
+  ptr = strtok(buf, "\r\n");
+  while (ptr!=NULL) {
+    if (cfgString(ptr))
+      r++;
+    ptr = strtok(NULL, "\r\n");
+  }
+  free(buf);
+  return r;
+}
+
