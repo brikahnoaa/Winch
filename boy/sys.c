@@ -13,7 +13,7 @@
 
 SysInfo sys;
 
-//
+///
 // Before deploying, set CF2 time and SM2 time, format SD cards,
 // replace SM2 and CF2 clock batteries
 // erase activity.log, set status=0, set startups=0,
@@ -26,14 +26,10 @@ SysInfo sys;
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
 
-//
+///
 // initHW and SW structures. call boyMain()
-//
 void main(void) {
-  preRun(10);
-  startCheck();
   sysInit();
-
   mpcInit();
   antInit();
   boyInit();
@@ -43,12 +39,27 @@ void main(void) {
   boyMain(sys.starts);
 } // main
 
+///
+// pre, starts, config, log, pico
+void sysInit() {
+  preRun(10);
+  startCheck();
+  configFile();
+  logInit(sys.logFile);
+  TUInit(calloc, free);  // enable TUAlloc for serial ports
+  flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
+    sys.program, sys.version, sys.project, sys.platform, sys.starts);
+  flogf("\nStart at: %s", clockTimeDate(scratch));
+} // sysInit
+
+///
+// short delay for operator abort
 void preRun(int delay) {
   char c;
   pet();
   ciflush();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
-  flogf("You have %d seconds ", delay);
+  cprintf("You have %d seconds ", delay);
   while(--delay) {
     c = SCIRxGetCharWithTimeout(1000); // 1 second
     if (c == ' ')
@@ -60,8 +71,37 @@ void preRun(int delay) {
   }
 } // preRun
 
-void logInit() {
-  Initflog(sys.logFile, true);
+///
+// check STARTS>STARTSMAX to see if we are rebooting wildly
+// sets: sys.starts
+void startCheck(void) {
+  int max;
+  max = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
+  sys.starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
+  VEEStoreStr("STARTS", scratch);
+  // log file is not open yet
+  cprintf("\nstartCheck(): starts %d, max %d", sys.starts, max);
+  if (sys.starts>max)
+    sysStop("starts>max");
+} // startCheck
+
+///
+// read config from CONFIG_FILE
+void configFile(void) {
+  // load cfg and log file names
+  strcpy(sys.logFile, VEEFetchStr( "SYS_LOG", SYS_LOG ));
+  strcpy(sys.cfgFile, VEEFetchStr( "SYS_CFG", SYS_CFG ));
+  cfgRead(sys.cfgFile);
+  if (sys.cfgWild) {
+    // wildcard match for config files
+    // ??
+  }
+} // configFile
+
+void logInit(char *file) {
+  pet();
+  PZCacheSetup(C_DRV, calloc, free);
+  Initflog(file, true);
   flogf("\n----------------------------------------------------------------");
   flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
@@ -69,33 +109,20 @@ void logInit() {
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
   flogf("\n----------------------------------------------------------------");
   fflush(NULL);
-  pet();
   cdrain();
   ciflush();
   coflush();
-}
+} // logInit
 
-void sysInit() {
-  logInit();
-  configFile();
-  PZCacheSetup(C_DRV, calloc, free);
-  TUInit(calloc, free);  // enable TUAlloc for serial ports
-  flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
-    sys.program, sys.version, sys.project, sys.platform, sys.starts);
-  flogf("\nStart at: %s", clockTimeDate(scratch));
-} // sysInit
-
-//
+///
 // close files ??, Sleep until keypress
 // 2nd release 6/24/2002 by HM -Changed to use ADS8344/45
-//
 void sysSleep(void) {
   mpcSleep();
 } // sysSleep
 
-//
+///
 // close files, turn off devices, power off
-//
 void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
   antStop();
@@ -107,35 +134,9 @@ void sysStop(char *out) {
   BIOSReset();
 } // sysStop
 
-//
-// read config from CONFIG_FILE
-//
-void configFile(void) {
-} // configFile
 
-//
-// check STARTS>STARTSMAX to see if we are rebooting wildly
-// sets: sys.cfg .log starts .startsMax
-//
-void startCheck(void) {
-  sys.starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
-  sys.startsMax = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
-  if (sys.starts>sys.startsMax) {
-    // log file is not open yet, but still works as printf
-    cprintf("\nstartCheck(): starts>startmax, so shutdown...\n");
-    sysStop("starts>startmax");
-  }
-  // load cfg and log file names
-  strcpy(sys.logFile, VEEFetchStr( "SYS_LOG", SYS_LOG ));
-  strcpy(sys.cfgFile, VEEFetchStr( "SYS_CFG", SYS_CFG ));
-  csprintf(scratch, "%d", sys.starts);
-  VEEStoreStr("STARTS", scratch);
-} // startCheck
-
-
-//
+///
 // Setup directories for files not needing to be access anymore.
-//
 void dirSetup(char *path) {
   char DOSCommand[64];
   memset(DOSCommand, 0, 64);
@@ -149,7 +150,7 @@ void dirSetup(char *path) {
   delayms(1000);
 } // sysDirSetup
 
-//
+///
 //
 int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
   char Com[64];
@@ -204,14 +205,14 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
 } // sysOSCmd
 
 
-//
+///
 //
 void sysAlarm(AlarmType alm) { 
   sys.alarm[alm] += 1; 
-}
+} // sysAlarm
 
-//
-// //Voltage: checking the average
+///
+// Voltage: checking the average
 // 1- Check Absolute MIN volts
 // 2- Check User min volts
 // 3- Check Startups
@@ -224,26 +225,23 @@ void sysAlarm(AlarmType alm) {
 // return 3 if Min Bat Capacity
 // return 4 if MIN WISPR FREE Space
 // return 5 if No CF2 Free Space
-//
 int checkVitals(void) {
   return 0;
 } // checkVitals
 
-//
+///
 // sysDiskFree Returns the free space in kBytes
-//
 long sysDiskFree(void) {
   sys.diskFree = DSDFreeSectors(C_DRV);
   sys.diskSize = DSDDataSectors(C_DRV);
   return sys.diskFree/2;
 } // sysDiskFree
 
-//
+///
 // call flush for each module with logging
-// 
 void sysFlush(void) {
   boyFlush();
   ctdFlush();
   pwrFlush();
   wspFlush();
-}
+} // sysFlush

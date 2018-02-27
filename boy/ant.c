@@ -10,7 +10,7 @@ AntInfo ant;
 // sets: .depth
 //
 void antInit(void) {
-  DBG0("\nantInit()")
+  DBG0("antInit()")
 } // antInit
 
 //

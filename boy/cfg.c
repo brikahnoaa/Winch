@@ -54,6 +54,7 @@ static CfgParam cfg[] = {
   {"pch", "pwr.charge",     &pwr.charge,      'f'},
   {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f'},
   {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f'},
+  {"scw", "sys.cfgWild",    &sys.cfgWild,     'c'},
   {"spt", "sys.platform",   &sys.platform,    'c'},
   {"spg", "sys.program",    &sys.program,     'c'},
   {"spj", "sys.project",    &sys.project,     'c'},
@@ -78,6 +79,7 @@ bool cfgString(char *str){
   char *ptr, *ref, *val;
   char s[128];
   int i;
+  DBG0("cfgString()")
   strcpy(s, str);
   // erase after #, skip leading space, break at '='
   ptr = strchr(s, '#');
@@ -91,6 +93,7 @@ bool cfgString(char *str){
   // find matching name
   for (i=0; i<cfgLen; i++) {
     if (strcmp(ref, cfg[i].id)==0 || strcmp(ref, cfg[i].var)==0) {
+      DBG1("%s:=%s", cfg[i].var, val)
       cfgSet(cfg[i].ptr, cfg[i].type, val);
       return true;
     }
@@ -102,7 +105,6 @@ bool cfgString(char *str){
 // convert *val to type and poke into *ptr
 //
 static void cfgSet( void *ptr, char type, char *val ) {
-  flogf("\ncfgSet(%c, %s)", type, val);
   switch (type) {
   case 'b':     // bool is a char
     if (val[0]=='f'||val[0]=='F'||val[0]=='0')
@@ -134,10 +136,10 @@ static void cfgSet( void *ptr, char type, char *val ) {
 // read cfg strings from a file
 // returns: number of cfg lines
 //
-int cfgFRead(char *file) {
+int cfgRead(char *file) {
   char fname[32] = "C:";
   char *buf, *ptr;
-  int r, fd;
+  int r, fh;
   struct stat finfo;
   //
   flogf("\ncfgFRead(%s)", file);
@@ -146,15 +148,16 @@ int cfgFRead(char *file) {
     flogf("\t|ERR cannot open");
     return 0;
   }
-  fd = open(fname, O_RDONLY);
+  fh = open(fname, O_RDONLY);
   // cfg file is not large, read all of it into buf and null terminate
   buf = (char *)malloc(finfo.st_size+1);
-  read(fd, buf, finfo.st_size);
+  read(fh, buf, finfo.st_size);
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
   // parse cfg strings (dos or linux) and return count r
   r = 0;
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
+    DBG2("\n%s", ptr)
     if (cfgString(ptr))
       r++;
     ptr = strtok(NULL, "\r\n");

@@ -26,28 +26,15 @@
 
 #include <utl.h> // shared procs, SW
 
-#define DBG_LVL 1
+#define DEBUG
 #define DEBUG0
 #define DEBUG1
+#define DEBUG2
 
 // DBG() blocks of code, as is
 // DBG0() print func names
 // DBG1() print more interesting things
 // DBG2() print details
-
-// levels of debug
-#ifdef DBG_LVL
-  #if (DBG_LVL<=0)
-    #define DEBUG0
-  #endif
-  #if (DBG_LVL<=1)
-    #define DEBUG1
-  #endif
-  #if (DBG_LVL<=2)
-    #define DEBUG2
-  #endif
-#endif // #ifdef DBG_LVL
-
 
 #ifdef DEBUG
 #define DBG(...) __VA_ARGS__

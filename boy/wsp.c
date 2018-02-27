@@ -2,6 +2,8 @@
 #include <com.h>
 #include <wsp.h>
 
+WspInfo wsp;
+
 void wspInit(int board) {
   board++;
 }
