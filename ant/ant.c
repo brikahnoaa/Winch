@@ -3,9 +3,9 @@
 #include <com.h>
 #include <ant.h> 
 
-#include <ant.h> 
 #include <ctd.h>
-#include <ump.h>
+#include <gps.h>
+#include <mpc.h>
 #include <sys.h>
 #include <tmr.h>
 
