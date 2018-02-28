@@ -1,0 +1,37 @@
+Tue, Feb 27, 2018  6:06:39 PM
+directory has attr: 0
+last dir change is last in the listing
+DIRFindNext returns names in same order as DIR
+
+C:\>dirtest
+name: ., size: 1048576, attr: 0
+name: .., size: 1048576, attr: 0
+name: ANT.PXE, size: 2097152, attr: 26816
+name: SUBDIR, size: 1048576, attr: 0
+name: DIRTEST.PXE, size: 2097152, attr: 5472
+
+C:\>rename test\ant.pxe test\ant2.exe
+
+C:\>dir test
+
+ Volume in drive C has no label
+ Volume Serial Number is 3C30-4314
+ Directory of C:\TEST
+
+.              <DIR>         02-27-18  6:47p
+..             <DIR>         02-27-18  6:47p
+SUBDIR         <DIR>         02-27-18  6:48p
+DIRTEST.PXE           5,472  02-27-18  7:07p
+ANT2.EXE             26,816  02-27-18  6:47p
+
+         2 file(s)          32,288 bytes
+         3 dir(s)      259,715,072 bytes free
+
+C:\>dirtest
+name: ., size: 1048576, attr: 0
+name: .., size: 1048576, attr: 0
+name: SUBDIR, size: 1048576, attr: 0
+name: DIRTEST.PXE, size: 2097152, attr: 5472
+name: ANT2.EXE, size: 2097152, attr: 26816
+
+C:\>

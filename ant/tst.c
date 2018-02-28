@@ -19,6 +19,7 @@ typedef struct dirent
 int main(void) {
   struct dirent de;
   short err;
+  int i=0;
   char *path="c:\\test";
   err = DIRFindFirst(path, &de);
   while (err!=dsdEndOfDir) {
@@ -27,7 +28,9 @@ int main(void) {
       return -1;
     }
     cprintf("name: %s, size: %ld, attr: %d\n", de.d_name, de.d_attr, de.d_size);
-    DIRFindNext(&de);
+    err = DIRFindNext(&de);
+    if (i++ > 10)
+      return -2;
   }
   return 0;
 }
