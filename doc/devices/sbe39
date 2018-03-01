@@ -1,3 +1,13 @@
+Wed, Feb 28, 2018  3:49:08 PM
+see ~/Winch/cod/bench/Timing/sbe39test.out
+ts data <executed> takes 1.2s
+syncmode fast response 1.0s, least is .7s when \r before output complete
+auton is .66s
+auton mode stop took 1s, 2.2s to startnow
+
+
+note: syncmode adds leading #, auton adds lead # and trailing , ##
+
 Fri, Nov 03, 2017  4:00:32 PM
 after sleep, first \r wakes, second gets us a prompt
 
