@@ -200,12 +200,26 @@ If your new temp branch looks good, you may want to update (e.g.) master to poin
 
  ssh-add ~/.ssh/github_id_rsa
 . gitting around 
- $ git branch --unset-upstream # Remove a current tracking relationship 
- $ git branch --set-upstream-to origin/branchname
- $ git push -u origin feature # Link a branch to an upstream branch 
- $ git push --all # push all tracking branches
- $ git pull –rebase
- $ git fetch origin; git rebase −p origin/develop  # better than pull
- $ git update-index --assume-unchanged codewar/lara/lara.mcp
- $ git update-index --skip-worktree codewar/lara/
+ git branch --unset-upstream # Remove a current tracking relationship 
+ git branch --set-upstream-to origin/branchname
+ git push -u origin feature # Link a branch to an upstream branch 
+ git push --all # push all tracking branches
+ git pull –rebase
+ git fetch origin; git rebase −p origin/develop  # better than pull
+.. ignore changes to binary
+ git update-index --skip-worktree cod/war/boy/boy.mcp
+ git ls-files -v | grep -v '^H'
+.. merge 
+... cancel if problems
+ git reset --merge
+ git merge --abort
+... trial merge
+ git checkout master
+ git checkout -b trial_merge
+ git merge topic_branch
+
+ git diff master
+ git checkout master
+ git branch -D trial_merge
+
 

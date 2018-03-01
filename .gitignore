@@ -2,19 +2,7 @@
 *.exe
 a.out
 # codewar
-codewar/
-*.AHX
-*.AMP
-*.APP
-*.MAP
-*.RHX
-*.RMP
-*.RUN
-*.bin
-*.mcp
-Resource.frk
-bin
-*_Data
+cod/war/
 # tmp
 *~
 *.swp
