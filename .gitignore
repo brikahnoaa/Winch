@@ -1,12 +1,11 @@
 # general
 *.exe
 a.out
+*.pyc
 # codewar
 cod/war/
 # tmp
 *~
 *.swp
-*.pyc
 # log or *.log
 *.log
-.tags

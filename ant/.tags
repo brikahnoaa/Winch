@@ -1,0 +1,254 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ANTSW	gps.h	/^  short ANTSW;    \/\/=1: antenna switch; =0: no antenna switch$/;"	m	struct:__anon2
+ANTSWPIN	gps.c	23;"	d	file:
+ANT_PWR	com.h	78;"	d
+AlarmType	sys.h	/^} AlarmType;$/;"	t	typeref:enum:__anon4
+BUFSZ	utl.h	3;"	d
+BlkLength	gps.c	/^int BlkLength = RUDICSBLOCK; $/;"	v
+BoyInfo	ant.h	/^typedef struct BoyInfo {$/;"	s
+BoyInfo	ant.h	/^} BoyInfo;$/;"	t	typeref:struct:BoyInfo
+CALLHOUR	gps.h	/^  short CALLHOUR; \/\/ Hour at which to call$/;"	m	struct:__anon2
+CALLMODE	gps.h	/^  short CALLMODE; \/\/ 0==call on Dataxinterval, 1== call at set hour everyday.$/;"	m	struct:__anon2
+CHAR_DELAY	utl.c	6;"	d	file:
+COM1SELECT	com.h	79;"	d
+COM1_BAUD	mpc.h	6;"	d
+COM1_RX	com.h	86;"	d
+COM1_TX	com.h	85;"	d
+C_DRV	utl.h	5;"	d
+Calc_Crc	gps.c	/^int Calc_Crc(uchar *buf, int cnt) {$/;"	f
+CallStatus	gps.c	/^short CallStatus() {$/;"	f
+Call_Land	gps.c	/^bool Call_Land(void) {$/;"	f
+CheckSignal	gps.c	/^bool CheckSignal() {$/;"	f
+Check_If_Cmds_Done_Or_Resent	gps.c	/^short Check_If_Cmds_Done_Or_Resent(ulong *val0, ulong *val1) {$/;"	f
+CompareCoordinates	gps.c	/^bool CompareCoordinates(char *LAT, char *LONG) {$/;"	f
+Connect_SendFile_RecCmd	gps.c	/^short Connect_SendFile_RecCmd(const char *filename) {$/;"	f
+ConsoleIrid	gps.c	/^void ConsoleIrid() {$/;"	f
+Convert_BitMap_To_CharBuf	gps.c	/^void Convert_BitMap_To_CharBuf(ulong val0, ulong val1, char *bin_str) {$/;"	f
+CtdInfo	ctd.h	/^typedef struct CtdInfo {$/;"	s
+CtdInfo	ctd.h	/^} CtdInfo;$/;"	t	typeref:struct:CtdInfo
+CustomSYPCR	mpc.c	/^short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;$/;"	v
+DBG	com.h	53;"	d
+DBG	com.h	55;"	d
+DBG0	com.h	59;"	d
+DBG0	com.h	61;"	d
+DBG1	com.h	65;"	d
+DBG1	com.h	67;"	d
+DBG2	com.h	71;"	d
+DBG2	com.h	73;"	d
+DBG_LVL	com.h	29;"	d
+DEBUG0	com.h	30;"	d
+DEBUG0	com.h	41;"	d
+DEBUG1	com.h	31;"	d
+DEBUG1	com.h	44;"	d
+DEBUG2	com.h	47;"	d
+DFRPWR	com.h	82;"	d
+DevType	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	t	typeref:enum:__anon3
+ExtFinishPulseRuptHandler	sys.c	/^IEV_C_PROTO(ExtFinishPulseRuptHandler);$/;"	v
+GPSIRID_Init	gps.c	/^int GPSIRID_Init() {$/;"	f
+GPS_TRIES	gps.c	27;"	d	file:
+GPSstartup	gps.c	/^bool GPSstartup() {$/;"	f
+GetGPSInput	gps.c	/^char *GetGPSInput(char *chars, int *numsats) {$/;"	f
+GetGPS_SyncRTC	gps.c	/^bool GetGPS_SyncRTC() {$/;"	f
+GetIRIDIUMSettings	gps.c	/^void GetIRIDIUMSettings() {$/;"	f
+GetIRIDInput	gps.c	/^short GetIRIDInput(char *Template, short num_char_to_reads, uchar *compstring,$/;"	f
+GetUTCSeconds	gps.c	/^bool GetUTCSeconds() {$/;"	f
+HANDSHAKE	gps.c	22;"	d	file:
+HangUp	gps.c	/^bool HangUp(void) {$/;"	f
+IRID	gps.c	/^IridiumParameters IRID;$/;"	v
+IRIDFileHandle	gps.c	/^static int IRIDFileHandle;$/;"	v	file:
+IRIDFilename	gps.c	/^static char IRIDFilename[sizeof "c:00000000.dat"];$/;"	v	file:
+IRIDGPS	gps.c	/^short IRIDGPS() {$/;"	f
+IRIDStatus	gps.c	/^static short IRIDStatus;$/;"	v	file:
+IRIDWarm	gps.c	/^short IRIDWarm = 27;  \/\/ Irid Modem warm-up. 45 IS NORMAL, 1 FOR TESTING \/\/\/$/;"	v
+IRQ4_ISR	mpc.c	/^static void IRQ4_ISR(void) {$/;"	f	file:
+IRQ5_ISR	mpc.c	/^static void IRQ5_ISR(void) {$/;"	f	file:
+IridiumParameters	gps.h	/^} IridiumParameters;$/;"	t	typeref:struct:__anon2
+LOWFIRST	gps.h	/^  bool LOWFIRST;  \/\/ send file with lowest value first$/;"	m	struct:__anon2
+LostConnect	gps.c	/^bool LostConnect = false;$/;"	v
+MAXCALLS	gps.h	/^  short MAXCALLS; \/\/ Maximum Iridium calls per session$/;"	m	struct:__anon2
+MAXUPL	gps.h	/^  short MAXUPL;   \/\/ Max upload try per call$/;"	m	struct:__anon2
+MAX_RESENT	gps.c	26;"	d	file:
+MDM_PWR	com.h	77;"	d
+MDM_RX	com.h	87;"	d
+MDM_RX_TTL	com.h	91;"	d
+MDM_TX	com.h	88;"	d
+MDM_TX_TTL	com.h	92;"	d
+MINSIGQ	gps.h	/^  short MINSIGQ;  \/\/ Min Irid signal quality to proceed$/;"	m	struct:__anon2
+Max_No_SigQ_Chk	gps.c	/^short Max_No_SigQ_Chk = 7;$/;"	v
+MinSQ	gps.c	/^short MinSQ;$/;"	v
+MpcInfo	mpc.h	/^typedef struct MpcInfo {$/;"	s
+MpcInfo	mpc.h	/^} MpcInfo;$/;"	t	typeref:struct:MpcInfo
+NUMCOM	gps.c	25;"	d	file:
+Num_Resent	gps.c	/^short Num_Resent;$/;"	v
+OFFSET	gps.h	/^  short OFFSET;   \/\/ GPS and UTC time offset in sec$/;"	m	struct:__anon2
+OpenSatCom	gps.c	/^void OpenSatCom(bool onoff) {$/;"	f
+PHONE	gps.h	/^  char PHONE[14]; \/\/ Rudics phone number 13 char long$/;"	m	struct:__anon2
+PhaseType	ant.h	/^} PhaseType;$/;"	t	typeref:enum:__anon1
+PhoneNum	gps.c	/^static char PhoneNum[14];$/;"	v	file:
+PhonePin	gps.c	/^short PhonePin(void) {$/;"	f
+PhoneStatus	gps.c	/^int PhoneStatus() {$/;"	f
+PltfrmID	gps.c	/^static char PltfrmID[5];$/;"	v	file:
+ProjID	gps.c	/^static char ProjID[5];$/;"	v	file:
+REST	gps.h	/^  short REST;     \/\/ Rest period for Iridium to call again$/;"	m	struct:__anon2
+RS232_SETTLE	utl.h	4;"	d
+RUDICSBLOCK	gps.c	28;"	d	file:
+RecallTimeout	gps.c	24;"	d	file:
+Receive_Command	gps.c	/^int Receive_Command(int len) {$/;"	f
+RudicsConnect	gps.c	/^bool RudicsConnect(int status) {$/;"	f
+STARTS	sys.h	3;"	d
+STARTS_MAX	sys.h	4;"	d
+SYSCLK	mpc.h	4;"	d
+SYS_CFG	sys.h	6;"	d
+SYS_LOG	sys.h	5;"	d
+SatComOpen	gps.c	/^bool SatComOpen = false;$/;"	v
+SendProjHdr	gps.c	/^bool SendProjHdr() {$/;"	f
+SendString	gps.c	/^void SendString(const char *StringIn) {$/;"	f
+Send_Blocks	gps.c	/^int Send_Blocks(char *bitmap, uchar NumOfBlks, ushort BlockLength,$/;"	f
+Send_File	gps.c	/^short Send_File(bool FileExist, long filelength) {$/;"	f
+Serial	utl.h	/^typedef TUPort * Serial;$/;"	t
+SignalQuality	gps.c	/^short SignalQuality(short *signal_quality) {$/;"	f
+StatusCheck	gps.c	/^void StatusCheck() {$/;"	f
+StringSearch	gps.c	/^short StringSearch(char *inString, char *Template, uchar *compstring) {$/;"	f
+SysInfo	sys.h	/^typedef struct SysInfo {$/;"	s
+SysInfo	sys.h	/^} SysInfo;$/;"	t	typeref:struct:SysInfo
+TX_Success	gps.c	/^short TX_Success = 0;$/;"	v
+TimeExpired	gps.c	/^bool TimeExpired = false;$/;"	v
+TimingDelayCount	gps.c	/^ulong TimingDelayCount;$/;"	v
+TmrType	tmr.h	/^  } TmrType;$/;"	t	typeref:enum:__anon6
+UploadFiles	gps.c	/^short UploadFiles() {$/;"	f
+WARMUP	gps.h	/^  short WARMUP; \/\/ IRID GPS Unit warm up in sec\/\/Does this really need to be in$/;"	m	struct:__anon2
+WISPR1	com.h	83;"	d
+WISPR2	com.h	84;"	d
+WISPR3	com.h	80;"	d
+WISPR4	com.h	81;"	d
+WISPR_PWR_OFF	com.h	90;"	d
+WISPR_PWR_ON	com.h	89;"	d
+WTMODE	mpc.h	3;"	d
+alarm	sys.h	/^  int alarm[sizeof_alm];$/;"	m	struct:SysInfo
+ant	ant.c	/^AntInfo ant;$/;"	v
+ant2tip	ant.h	/^  float ant2tip;          \/\/ meters from antmod ctd to antenna tip$/;"	m	struct:BoyInfo
+antInit	ant.c	/^void antInit(void) {$/;"	f
+antMain	ant.c	/^void antMain(void) {$/;"	f
+ant_dev	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	e	enum:__anon3
+bottomCurr_alm	sys.h	/^  bottomCurr_alm,$/;"	e	enum:__anon4
+boy2ant	ant.h	/^  float boy2ant;          \/\/ meters from buoy ctd to ant ctd under still water$/;"	m	struct:BoyInfo
+callFreq	ant.h	/^  int callFreq;           \/\/ number of times per day to call (1)$/;"	m	struct:BoyInfo
+callHour	ant.h	/^  int callHour;           \/\/ 0-23 (midnight-11pm) hour to call home $/;"	m	struct:BoyInfo
+callPhase	ant.c	/^PhaseType callPhase(void) {$/;"	f
+call_pha	ant.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon1
+cfgFile	sys.h	/^  char cfgFile[32];$/;"	m	struct:SysInfo
+cfgWild	sys.h	/^  char cfgWild[32];$/;"	m	struct:SysInfo
+checkVitals	sys.c	/^int checkVitals(void) {$/;"	f
+clockTime	utl.c	/^char * clockTime(char *out) {$/;"	f
+clockTimeDate	utl.c	/^char * clockTimeDate(char *out) {$/;"	f
+configFile	sys.c	/^void configFile(void) {$/;"	f
+crlfTrim	utl.c	/^int crlfTrim(char *str) {$/;"	f
+ctd	ctd.c	/^CtdInfo ctd = {$/;"	v
+ctdBreak	ctd.c	/^void ctdBreak() {$/;"	f
+ctdData	ctd.c	/^bool ctdData() {$/;"	f
+ctdInit	ctd.c	/^bool ctdInit() {$/;"	f
+ctdPrompt	ctd.c	/^bool ctdPrompt() {$/;"	f
+ctdSample	ctd.c	/^void ctdSample() {$/;"	f
+ctdSetDate	ctd.c	/^void ctdSetDate() {$/;"	f
+ctdSyncmode	ctd.c	/^void ctdSyncmode() {$/;"	f
+ctd_dev	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	e	enum:__anon3
+ctd_tmr	tmr.h	/^  ctd_tmr,          \/\/ ctd.pending waiting for ctd response$/;"	e	enum:__anon6
+currChkD	ant.h	/^  float currChkD;         \/\/ stop at this depth to check ocean current$/;"	m	struct:BoyInfo
+currMax	ant.h	/^  float currMax;          \/\/ too much ocean current$/;"	m	struct:BoyInfo
+dataPhase	ant.c	/^PhaseType dataPhase(void) {$/;"	f
+data_pha	ant.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon1
+data_tmr	tmr.h	/^  data_tmr,         \/\/ rise to surface, send data$/;"	e	enum:__anon6
+delay	ctd.h	/^  short delay;    \/\/ Delay in seconds between polled samples$/;"	m	struct:CtdInfo
+delayms	utl.c	/^void delayms(int x) { $/;"	f
+deployT	ant.h	/^  time_t deployT;         \/\/ startup time$/;"	m	struct:BoyInfo
+deploy_pha	ant.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon1
+deploy_tmr	tmr.h	/^  deploy_tmr,       \/\/ steps during deploy phase0$/;"	e	enum:__anon6
+device	mpc.h	/^  DevType device;$/;"	m	struct:MpcInfo
+diskFree	mpc.h	/^  long diskFree;$/;"	m	struct:MpcInfo
+diskFree	sys.h	/^  long diskFree;$/;"	m	struct:SysInfo
+diskSize	mpc.h	/^  long diskSize;$/;"	m	struct:MpcInfo
+diskSize	sys.h	/^  long diskSize;$/;"	m	struct:SysInfo
+dockD	ant.h	/^  float dockD;            \/\/ Depth when docked in winch$/;"	m	struct:BoyInfo
+dropPhase	ant.c	/^PhaseType dropPhase() {$/;"	f
+dropVFirst	ant.h	/^  float dropVFirst;       \/\/ Velocity meters\/min of the first drop (descent)$/;"	m	struct:BoyInfo
+dropVLast	ant.h	/^  float dropVLast;        \/\/ Velocity meters\/min of the most recent drop $/;"	m	struct:BoyInfo
+drop_pha	ant.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon1
+error_pha	ant.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon1
+fileNum	ant.h	/^  int fileNum;            \/\/ current number for filename ####.dat ####.log$/;"	m	struct:BoyInfo
+ice_alm	sys.h	/^  ice_alm,$/;"	e	enum:__anon4
+log	ant.h	/^  int log;                \/\/ log filehandle$/;"	m	struct:BoyInfo
+log	sys.h	/^  int log;              \/\/ log filehandle$/;"	m	struct:SysInfo
+logFile	ant.h	/^  char logFile[16];       \/\/ log file$/;"	m	struct:BoyInfo
+logFile	sys.h	/^  char logFile[32];$/;"	m	struct:SysInfo
+logInit	sys.c	/^void logInit(char *file) {$/;"	f
+main	sys.c	/^void main(void) {$/;"	f
+main	tst.c	/^int main(void) {$/;"	f
+midwayCurr_alm	sys.h	/^  midwayCurr_alm,$/;"	e	enum:__anon4
+mpc	mpc.c	/^MpcInfo mpc;$/;"	v
+mpcCom1Dev	mpc.c	/^DevType mpcCom1Dev(void) { return mpc.device; }$/;"	f
+mpcCom1Port	mpc.c	/^Serial mpcCom1Port(void) { return mpc.port; }$/;"	f
+mpcDevice	mpc.c	/^void mpcDevice(DevType dev) {$/;"	f
+mpcInit	mpc.c	/^void mpcInit(void) {$/;"	f
+mpcSleep	mpc.c	/^void mpcSleep(void) {$/;"	f
+mpcStop	mpc.c	/^void mpcStop(){}$/;"	f
+ngkTimeout_alm	sys.h	/^  ngkTimeout_alm,$/;"	e	enum:__anon4
+null_alm	sys.h	/^  null_alm=0,$/;"	e	enum:__anon4
+null_dev	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	e	enum:__anon3
+null_tmr	tmr.h	/^  null_tmr=0,$/;"	e	enum:__anon6
+off	ctd.h	/^  bool off;$/;"	m	struct:CtdInfo
+on	tmr.c	/^  bool on[sizeof_tmr];$/;"	m	struct:__anon5	file:
+pending	ctd.h	/^  bool pending;   \/\/ polled request pending$/;"	m	struct:CtdInfo
+pet	utl.c	/^void pet() { TickleSWSR(); }              \/\/ pet the watchdog$/;"	f
+phase	ant.h	/^  PhaseType phase;        \/\/ deploy, data, rise, call, drop, error$/;"	m	struct:BoyInfo
+phasePrev	ant.h	/^  PhaseType phasePrev;    \/\/ deploy, data, rise, call, drop, error$/;"	m	struct:BoyInfo
+phaseT	ant.h	/^  time_t phaseT;          \/\/ time this phase started$/;"	m	struct:BoyInfo
+platform	sys.h	/^  char platform[32];    \/\/ rudicsland$/;"	m	struct:SysInfo
+port	ant.h	/^  Serial port;            \/\/ sbe16 or ant mod$/;"	m	struct:BoyInfo
+port	ctd.h	/^  Serial port;    \/\/ same as ant.port$/;"	m	struct:CtdInfo
+port	mpc.h	/^  Serial port;$/;"	m	struct:MpcInfo
+preRun	sys.c	/^void preRun(int delay) {$/;"	f
+program	sys.h	/^  char program[32];$/;"	m	struct:SysInfo
+project	sys.h	/^  char project[32];     \/\/ rudicsland$/;"	m	struct:SysInfo
+rebootPhase	ant.c	/^PhaseType rebootPhase(void) {$/;"	f
+reboot_pha	ant.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon1
+risePhase	ant.c	/^PhaseType risePhase(void) {$/;"	f
+riseUp	ant.c	/^bool riseUp(float targetD, int errMax, int delay) {$/;"	f
+riseVFirst	ant.h	/^  float riseVFirst;       \/\/ Velocity meters\/min of the first rise (ascent)$/;"	m	struct:BoyInfo
+riseVLast	ant.h	/^  float riseVLast;        \/\/ Velocity meters\/min of the most recent rise $/;"	m	struct:BoyInfo
+rise_pha	ant.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon1
+rudics_tmr	tmr.h	/^  rudics_tmr,       \/\/ max time to spend on the phone$/;"	e	enum:__anon6
+scratch	utl.c	/^char scratch[BUFSZ];$/;"	v
+secs	ctd.c	/^  if (LARA.BUOYMODE != 0) ctdVertVel(secs); \/\/ ??$/;"	v
+serRead	utl.c	/^int serRead(Serial port, char *in) {$/;"	f
+serReadWait	utl.c	/^int serReadWait(Serial port, char *in, int wait) {$/;"	f
+serWrite	utl.c	/^int serWrite(Serial port, char *out) {$/;"	f
+shutdown	utl.c	/^void shutdown(char *out) {$/;"	f
+sizeof_alm	sys.h	/^  sizeof_alm$/;"	e	enum:__anon4
+sizeof_tmr	tmr.h	/^  sizeof_tmr$/;"	e	enum:__anon6
+spur_ISR	mpc.c	/^static void spur_ISR(void) {$/;"	f	file:
+startCheck	sys.c	/^void startCheck(void) {$/;"	f
+starts	sys.h	/^  int starts;$/;"	m	struct:SysInfo
+syncMode	ctd.h	/^  bool syncMode;  \/\/ off = polled$/;"	m	struct:CtdInfo
+sys	sys.c	/^SysInfo sys;$/;"	v
+sysAlarm	sys.c	/^void sysAlarm(AlarmType alm) { $/;"	f
+sysDiskFree	sys.c	/^long sysDiskFree(void) {$/;"	f
+sysFlush	sys.c	/^void sysFlush(void) {$/;"	f
+sysInit	sys.c	/^void sysInit() {$/;"	f
+sysSleep	sys.c	/^void sysSleep(void) {$/;"	f
+sysStop	sys.c	/^void sysStop(char *out) {$/;"	f
+timer	tmr.c	/^  time_t timer[sizeof_tmr];$/;"	m	struct:__anon5	file:
+tmr	tmr.c	/^} tmr;$/;"	v	typeref:struct:__anon5	file:
+tmrAnyExp	tmr.c	/^TmrType tmrAnyExp(void) {$/;"	f
+tmrExp	tmr.c	/^bool tmrExp(TmrType tim) {$/;"	f
+tmrQuery	tmr.c	/^int tmrQuery(TmrType tim) {$/;"	f
+tmrStart	tmr.c	/^void tmrStart(TmrType tim, int secs) {$/;"	f
+tmrStop	tmr.c	/^void tmrStop(TmrType tim) {$/;"	f
+unsprintf	utl.c	/^char *unsprintf (char *out, char *in) {$/;"	f
+version	sys.h	/^  char version[32];$/;"	m	struct:SysInfo
+winch_tmr	tmr.h	/^  winch_tmr,        \/\/ win.pending amodem command response$/;"	e	enum:__anon6
+wispr_tmr	tmr.h	/^  wispr_tmr,        \/\/ wispr duty cycle$/;"	e	enum:__anon6

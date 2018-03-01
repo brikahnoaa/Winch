@@ -207,6 +207,7 @@ If your new temp branch looks good, you may want to update (e.g.) master to poin
  git pull –rebase
  git fetch origin; git rebase −p origin/develop  # better than pull
 .. ignore changes to binary
+this doesn't work well. now including cod/templ.war
  git update-index --skip-worktree cod/war/boy/boy.mcp
  git ls-files -v | grep -v '^H'
 .. merge 
