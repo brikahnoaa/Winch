@@ -1,22 +1,34 @@
-// winching.c - move winch
+// winchTst.c - move winch
 #include <com.h>
-#include <winching.h>
 #include <ngk.h>
 
 #define CTRL_C 3
 extern NgkInfo ngk;
 
-void winchingHelp() {
+void antStop(void);
+void boyStop(void);
+void ctdStop(void);
+void pwrStop(void);
+void wspStop(void);
+void antInit(void);
+void boyInit(void);
+void ctdInit(void);
+void pwrInit(void);
+void wspInit(void);
+void winchTstHelp(void);
+
+void winchTstHelp() {
   cprintf("\n b=buoy status, f=fall, r=rise, s=stop, u=up(00), w=winch status"
          "\n lower case (r) is command, upper case (R) is response"
          "\n ?=help q=quit ^C=quit"
          "\n");
 }
 
-void boyMain(void){
+void main(void){
   char c;
   MsgType msg;
-  winchingHelp();
+  winchTstHelp();
+  ngkInit();
   while (true) { // command
     ciflush();
     cprintf("\nCommand: ");
@@ -37,7 +49,7 @@ void boyMain(void){
         switch (c) {
         case CTRL_C: BIOSResetToPicoDOS();
         case 'q': BIOSResetToPicoDOS();
-        case '?': winchingHelp(); break;
+        case '?': winchTstHelp(); break;
         case 'B': ngkSend(buoyRsp_msg); break;
         case 'F': ngkSend(dropRsp_msg); break;
         case 'R': ngkSend(riseRsp_msg); break;

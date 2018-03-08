@@ -27,29 +27,18 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
 
 ///
-// initHW and SW structures. call boyMain()
-void main(void) {
-  sysInit();
-  mpcInit();
-  antInit();
-  boyInit();
-  ctdInit();
-  ngkInit();
-  pwrInit();
-  boyMain(sys.starts);
-} // main
-
-///
 // pre, starts, config, log, pico
-void sysInit() {
+// uses: sys.starts
+int sysInit(void) {
   preRun(10);
-  startCheck();
+  startCheck(&sys.starts);
   configFile();
   logInit(sys.logFile);
   TUInit(calloc, free);  // enable TUAlloc for serial ports
   flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
     sys.program, sys.version, sys.project, sys.platform, sys.starts);
   flogf("\nStart at: %s", clockTimeDate(scratch));
+  return sys.starts;
 } // sysInit
 
 ///
@@ -74,14 +63,14 @@ void preRun(int delay) {
 ///
 // check STARTS>STARTSMAX to see if we are rebooting wildly
 // sets: sys.starts
-void startCheck(void) {
+void startCheck(int *starts) {
   int max;
   max = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
-  sys.starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
+  *starts = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
   VEEStoreStr("STARTS", scratch);
   // log file is not open yet
-  cprintf("\nstartCheck(): starts %d, max %d", sys.starts, max);
-  if (sys.starts>max)
+  cprintf("\nstartCheck(): starts %d, max %d", *starts, max);
+  if (*starts>max)
     sysStop("starts>max");
 } // startCheck
 

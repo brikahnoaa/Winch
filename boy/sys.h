@@ -34,12 +34,11 @@ static void configFile(void);
 static void dirSetup(char *path);
 static void logInit(char *file);
 static void preRun(int delay);
-static void startCheck(void);
-static void sysInit(void);
+static void startCheck(int *starts);
 static long sysDiskFree(void);
 
+int sysInit(void);
 int sysOSCmd(char *command, long filenum, char *ext, char *extt);
-void main(void);
 void sysAlarm(AlarmType alm);
 void sysInfo(char *out);
 void sysStop(char *out);
