@@ -55,11 +55,13 @@ void ngkStop(void){
 // send message to winch via amodem
 // sets: .send[] .lastSend 
 void ngkSend(MsgType msg) {
-  flogf("\nngkSend(%s) at %s", ngk.msgName[msg], clockTime(scratch));
-  // set winch id "#R,0X,00"
+  char str[12];
+  strcpy(str, ngk.msgStr[msg]);
   str[4]=WINCH_ID;
+  flogf("\nngkSend(%s) at %s", str, clockTime(scratch));
+  // set winch id "#R,0X,00"
   TUTxWaitCompletion(ngk.port);
-  serWrite(ngk.port, ngk.msgStr[msg], EOL);
+  serWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
   if (msg==dropCmd_msg || msg==riseCmd_msg 
