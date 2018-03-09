@@ -114,11 +114,11 @@ void sysSleep(void) {
 // close files, turn off devices, power off
 void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
-  antStop();
-  boyStop();
-  ngkStop();
-  pwrStop();
-  wspStop();
+  // antStop();
+  // boyStop();
+  // ngkStop();
+  // pwrStop();
+  // wspStop();
   sysSleep();
   BIOSReset();
 } // sysStop
