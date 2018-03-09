@@ -11,7 +11,7 @@ import floats
 # amodRate measured about 6.5 sec 
 name = 'winch'
 baudrate = 4800
-eol = '\n'
+eol = '\r\n'
 # select port 0-n of multiport serial
 portSelect = 3
 
@@ -43,7 +43,7 @@ def start(portSel=portSelect):
     try:
         # select port 0-n of multiport serial
         port = comports()[portSel].device
-        ser = Serial(port=port,baudrate=baudrate,name=name)
+        ser = Serial(port=port,baudrate=baudrate,name=name,eol=eol)
         print "serial %s for %s" % (port, name)
     except:
         print "no serial for %s" % name
