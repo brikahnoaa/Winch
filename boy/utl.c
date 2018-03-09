@@ -1,6 +1,6 @@
 // utl.c - utility stuff
-// note: utl.h included from com.h
 #include <com.h>
+// note: utl.h included from com.h
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
@@ -11,9 +11,8 @@ void delayms(int x) {
   RTCDelayMicroSeconds((long)x*1000); 
 }
 
-//
+///
 // sets: (*str)
-//
 int crlfTrim(char *str) {
   char c;
   int len = strlen(str);
@@ -23,27 +22,27 @@ int crlfTrim(char *str) {
   return len;
 }
 
-//
+///
 // put string to serial; queue, don't block, it should all buffer
-// returns: charsSent
-//
-int serWrite(Serial port, char *out) {
+// uses: scratch
+void serWrite(Serial port, char *out, char *eol) {
   int len, delay, sent;
   DBG0("serWrite()")
-  len = strlen(out);
+  strcpy(scratch, out);
+  if (eol!=NULL)
+    strcat(scratch, eol);
+  len = strlen(scratch);
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
-  sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
+  sent = (int)TUTxPutBlock(port, scratch, (long)len, (short)delay);
   DBG1("sent %d of %d", sent, len)
   DBG2("'%s'", unsprintf(scratch, out))
   if (len!=sent) 
     flogf("\nERR\t|serWrite(%s) sent %d of %d", out, sent, len);
-  return sent;
 }
 
-//
+///
 // read all the chars on the port, with a normal delay
 // returns: length
-//
 int serRead(Serial port, char *in) {
   int len;
   if (TURxQueuedCount(port)<1) return 0;
@@ -61,11 +60,10 @@ int serRead(Serial port, char *in) {
   return len;
 }
 
-//
-//  delay up to wait seconds for first char, null terminate
-//  assumes full string arrives promptly after a delay of several seconds
-//  return: length
-//
+///
+// delay up to wait seconds for first char, null terminate
+// assumes full string arrives promptly after a delay of several seconds
+// return: length
 int serReadWait(Serial port, char *in, int wait) {
   int len;
   DBG0("serReadWait(%d)")
@@ -84,12 +82,12 @@ int serReadWait(Serial port, char *in, int wait) {
   return len;
 }
 
-// check out __DATE__, __TIME__
-//
+// ?? check out __DATE__, __TIME__
+
+///
 // HH:MM:SS now
 // sets: (*out)
 // returns: out
-//
 char * clockTime(char *out) {
   struct tm *tim;
   time_t secs;
@@ -101,12 +99,11 @@ char * clockTime(char *out) {
   return out;
 } // clockTime
 
-//
+///
 // Time & Date String
 // MM/DD/YY HH:MM:SS now
 // sets: (*out)
 // returns: out
-//
 char * clockTimeDate(char *out) {
   struct tm *tim;
   time_t secs;
@@ -120,10 +117,9 @@ char * clockTimeDate(char *out) {
 } // clockTimeDate
 
 
-// 
+///
 // format non-printable string; null terminate
 // modifies out[] and returns *out, can be used in DBG1()
-//
 char *unsprintf (char *out, char *in) {
   char ch, *ptr = out;
   // walk thru input until 0

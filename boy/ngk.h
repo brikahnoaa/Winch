@@ -1,10 +1,5 @@
 // ngk.h
 
-#define MDM_BAUD 4800L
-#define BUOY_ID '2'
-#define WINCH_ID '1'
-#define WINCH_EOL "\r\n"
-
 typedef enum {
   null_msg=0,
   buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,

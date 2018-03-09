@@ -3,6 +3,11 @@
 #include <ngk.h>
 #include <tmr.h>
 
+#define MDM_BAUD 4800L
+#define BUOY_ID '2'
+#define WINCH_ID '1'
+#define EOL "\r\n"
+
 NgkInfo ngk = {
   { "null",
     // ngk.msgStr[] as if sent to buoy; change ID before sending to winch
@@ -16,10 +21,9 @@ NgkInfo ngk = {
   }
 }; // remainder of struct is 0 filled
 
-//
+///
 // power on amodem
 // sets: ngk.port
-//
 void ngkInit(void) {
   short mdmRX, mdmTX;
   Serial p;
@@ -39,7 +43,6 @@ void ngkInit(void) {
   else {
     TUTxFlush(p);
     TURxFlush(p);
-    serWrite(p, "\n");      // ??
   }
   ngk.port = p;
 } // ngkInit
@@ -48,19 +51,15 @@ void ngkStop(void){
   PIOClear(MDM_PWR);
 }
 
-//
+///
 // send message to winch via amodem
 // sets: .send[] .lastSend 
-//
 void ngkSend(MsgType msg) {
-  char str[12];
   flogf("\nngkSend(%s) at %s", ngk.msgName[msg], clockTime(scratch));
-  strcpy(str, ngk.msgStr[msg]);
-  strcat(str, WINCH_EOL);
   // set winch id "#R,0X,00"
   str[4]=WINCH_ID;
   TUTxWaitCompletion(ngk.port);
-  serWrite(ngk.port, str);
+  serWrite(ngk.port, ngk.msgStr[msg], EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
   if (msg==dropCmd_msg || msg==riseCmd_msg 
@@ -68,13 +67,12 @@ void ngkSend(MsgType msg) {
     tmrStart(winch_tmr, ngk.delay*2+1);
 } // ngkSend
 
-//
+///
 // get winch message if available and parse it
 // respond immediately to stopcmd buoycmd
 // uses: ngk.expect
 // sets: ngk.on ngk.expect .lastRecv scratch 
 // returns: msg
-//
 MsgType ngkRecv() {
   char msgStr[BUFSZ];
   MsgType msg;
@@ -93,11 +91,11 @@ MsgType ngkRecv() {
   return msg;
 } // ngkRecv
 
-//
+///
+// ?? tbd possible repeated message
 // match against ngk.msgStr[]
 // sets: (*msgP) ngk.recv[]
-// returns: success
-//
+// returns: msgtype
 MsgType msgParse(char *str) {
   MsgType m;
   int len;
@@ -110,6 +108,8 @@ MsgType msgParse(char *str) {
   ngk.recv[m]++;
   if (m==mangled_msg)           // no match or invalid
     flogf(" | ERR msgParse(%s) fail", str);
+  else
+    serWrite(ngk.port, "OK", EOL);
   return m;
 } // msgParse
 
@@ -117,7 +117,7 @@ char * ngkMsgName(MsgType msg) {
   return ngk.msgName[msg];
 }
 
-//
+///
 // construct ?? and send buoy status response
 void ngkBuoyRsp(void) {
   ngkSend( buoyRsp_msg);

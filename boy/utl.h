@@ -18,7 +18,7 @@ char *unsprintf (char *out, char *in);        // format unprintable string
 int crlfTrim(char *str);
 int serRead(Serial port, char *in);
 int serReadWait(Serial port, char *in, int wait);
-int serWrite(Serial port, char *out);
+void serWrite(Serial port, char *out, char *eol);
 void delayms(int x);
 void pet(void);
 void shutdown(char *out);

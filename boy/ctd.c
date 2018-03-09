@@ -10,6 +10,8 @@
 #include <mpc.h>
 #include <tmr.h>
 
+#define EOL "\r"
+
 CtdInfo ctd;
 
 //
@@ -58,11 +60,11 @@ void ctdSetDate(void) {
     info->tm_hour, info->tm_min, info->tm_sec);
   DBG1("%s", buffer)
   //
-  serWrite(ctd.port, buffer);
+  serWrite(ctd.port, buffer, EOL);
   serReadWait(ctd.port, scratch, 1);
-  serWrite(ctd.port, "syncwait=0\r");
+  serWrite(ctd.port, "syncwait=0", EOL);
   serReadWait(ctd.port, scratch, 1);
-  serWrite(ctd.port, "DelayBeforeSampling=0\r");
+  serWrite(ctd.port, "DelayBeforeSampling=0", EOL);
   serReadWait(ctd.port, scratch, 1);
 } // ctdSetDate
 
@@ -102,9 +104,9 @@ bool ctdPrompt(void) {
 //
 void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
-  serWrite(ctd.port, "Syncmode=y\r");
+  serWrite(ctd.port, "Syncmode=y", EOL);
   ctdPrompt();
-  serWrite(ctd.port, "QS\r");
+  serWrite(ctd.port, "QS", EOL);
   delayms(100);
   TURxFlush(ctd.port);
   ctd.syncmode = true;
@@ -145,7 +147,7 @@ void ctdSample(void) {
   if (ctd.pending) return;
   if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
   else {
-    serWrite(ctd.port, "TS\r");
+    serWrite(ctd.port, "TS", EOL);
     // consume echo
     len = serReadWait(ctd.port, scratch, 1);
     if (len<3) 
