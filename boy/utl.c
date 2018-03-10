@@ -56,7 +56,7 @@ int serRead(Serial port, char *in) {
     }
   }
   in[len]=0;        // string
-  DBG1("->'%s'", in)
+  DBG1("%d->'%s'", len, in)
   return len;
 }
 
