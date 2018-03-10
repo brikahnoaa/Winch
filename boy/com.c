@@ -1,4 +1,5 @@
 // com.c
+#include<com.h>
 
 //
 // conventions:
@@ -16,7 +17,7 @@
 // #define DBG0 if (dbg0) flogf(args);
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
 // sets: DBG0, DBG1, DBG2 (global vars)
-extern bool dbg0 = dbg1 = dbg2 = false;
+bool dbg0 = false, dbg1 = false, dbg2 = false;
 void comInit(void) {
 #ifdef DEBUG0
   if (atoi(VEEFetchStr("DBG0", "999"))!=999) dbg0 = true;

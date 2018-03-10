@@ -26,6 +26,8 @@
 
 #include <utl.h> // shared procs, SW
 
+extern bool dbg0, dbg1, dbg2;
+
 #define DEBUG
 #define DEBUG0
 #define DEBUG1
@@ -77,3 +79,5 @@
 #define WISPR_PWR_OFF 42
 #define MDM_RX_TTL 48
 #define MDM_TX_TTL 50
+
+void comInit(void);
