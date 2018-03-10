@@ -1,0 +1,70 @@
+Fri, Jan 13, 2017  9:06:27 AM
+.1 set up account on git-hub https://github.com
+use your noaa email
+.1.1 enable two factor authen (required by pmel)
+set up to send SMS to your phone, keep a copy of the verify codes
+.1.2 email user id to b.k, e.b
+  ask eugene.burger to add you to PMEL and Acoustic groups
+  ask brian.kahn to add you to NewportAcoustic repository
+.2 install git (and ssh) on your PC
+i use git in cygwin, there are loads of clients that work
+.3 setup
+  git config --global user.name "Brian Kahn"
+  git config --global user.email "brian.kahn@noaa.gov"
+.4 ssh. copy .ssh/id_rsa or
+  cd ~/.ssh
+  ssh-keygen -t rsa -f id_rsa_github -b 4096 -C "brian.kahn@noaa.gov"
+  eval $(ssh-agent -s)
+  ssh-add ~/.ssh/id_rsa_github
+# add ssh id to account on github
+https://github.com/NOAA-PMEL and login
+  [profile V], [edit profile], SSH and GPG keys, [new ssh key] :: {Title}
+# copy to clipboard, then paste into ssh key
+  clip < ~/.ssh/id_rsa_github.pub
+  {paste}, [add ssh key]
+# test
+  ssh -T github.com
+Hi brikahnoaa! You've successfully authenticated, but GitHub does not provide shell access.
+  git --version
+git version 2.8.3
+  git remote -v
+# append to ssh config
+ echo 'host github.com
+   HostName github.com
+   IdentityFile ~/.ssh/id_rsa_github
+   User git' >> ~/.ssh/config
+
+.5 clone repository
+  cd {code-dir}
+  git clone git@github.com:NOAA-PMEL/NewportAcoustic.git
+.6 codewarrior preferences
+# dos format is the default, CW works either dos or unix
+Edit -> Preferences... : Editor Settings : Default File Format = Unix
+
+.7 using git
+https://www.kernel.org/pub/software/scm/git/docs/
+https://www.atlassian.com/git/tutorials/using-branches
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+Git is easy to use for daily stuff, but it can be complex when you look at
+all the optional usage. For this reason, it is good to use some of the 
+tutorials and maybe google for specific questions (stackoverflow.com is a
+good source for technical info).
+The workflow is:
+. fetch repository
+. make a new branch
+. checkout branch
+. make some progress coding
+. add some or all files changed to be saved in history
+. commit changes
+. repeat until you have accomplished some goal
+. merge the branch and its changes back in
+You start in branch called "main". You make branches off from main, and maybe
+sub-branches off the branches. I have a branch named "emul" for the emulator,
+i made sub-branches off from emul when working on features named winch, buoy, 
+multi-tasking. Checkout a branch to do work there, this may modify some of the
+files in your directory to match the branch.
+
+.8 gitting around 
+ $ git branch --unset-upstream # Remove a current tracking relationship 
+ $ git push -u origin feature # Link a branch to an upstream branch 
+ $ git push --all # push all tracking branches
