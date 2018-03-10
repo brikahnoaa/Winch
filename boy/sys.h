@@ -2,8 +2,8 @@
 //
 #define STARTS "0"
 #define STARTS_MAX "50"
-#define SYS_LOG "SYS.LOG"
-#define SYS_CFG "SYS.CFG"
+#define SYS_LOG "c:SYS.LOG"
+#define SYS_CFG "c:SYS.CFG"
 
 typedef enum {
   null_alm=0,

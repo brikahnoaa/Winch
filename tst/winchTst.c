@@ -1,32 +1,29 @@
 // winchTst.c - move winch
 #include <com.h>
+#include <mpc.h>
 #include <ngk.h>
+#include <sys.h>
 
 #define CTRL_C 3
-extern NgkInfo ngk;
 
-void antStop(void);
-void boyStop(void);
-void ctdStop(void);
-void pwrStop(void);
-void wspStop(void);
-void antInit(void);
-void boyInit(void);
-void ctdInit(void);
-void pwrInit(void);
-void wspInit(void);
 void winchTstHelp(void);
 
 void winchTstHelp() {
-  cprintf("\n b=buoy status, f=fall, r=rise, s=stop, u=up(00), w=winch status"
-         "\n lower case (r) is command, upper case (R) is response"
-         "\n ?=help q=quit ^C=quit"
-         "\n");
+  cprintf(
+    "? help q quit ^C quit \n"
+    "B buoyRsp F dropRsp R riseRsp S stopRsp W statRsp \n"
+    "b buoyCmd f dropCmd r riseCmd s stopCmd w statCmd u surfCmd \n"
+    );
 }
 
 void main(void){
   char c;
   MsgType msg;
+  sysInit();
+  mpcInit();
+  DBG0("dbg0")
+  DBG1("dbg1")
+  DBG2("dbg2")
   winchTstHelp();
   ngkInit();
   while (true) { // command
@@ -38,7 +35,7 @@ void main(void){
       // amodem
       msg = ngkRecv();
       if (msg!=null_msg) {
-        cprintf("\n winch>> '%s' @ %s", ngk.msgName[msg], clockTime(scratch));
+        cprintf("\n winch>> '%s' @ %s", ngkMsgName(msg), clockTime(scratch));
         break; // while input
       } 
       // keyboard
@@ -69,13 +66,3 @@ void main(void){
   } // while command
 }
 
-void antStop(void){}
-void boyStop(void){}
-void ctdStop(void){}
-void pwrStop(void){}
-void wspStop(void){}
-void antInit(void){}
-void boyInit(void){}
-void ctdInit(void){}
-void pwrInit(void){}
-void wspInit(void){}

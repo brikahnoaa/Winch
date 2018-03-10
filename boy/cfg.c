@@ -142,7 +142,7 @@ int cfgRead(char *file) {
   int r, fh;
   struct stat finfo;
   //
-  flogf("\ncfgFRead(%s)", file);
+  flogf("\ncfgRead(%s)", file);
   strcat(fname, file);
   if (stat(fname, &finfo) < 0) {
     flogf("\t|ERR cannot open");
