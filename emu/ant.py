@@ -98,22 +98,22 @@ def buoyProcess(l):
     ls = l.split()
     if len(ls)==0: return
     cmd = ls[0][0]
-    if 'echo'==cmd || cmd=='e':
+    if 'echo'==cmd or cmd=='e':
         flags['echo'] = true
-    elif 'mntr'==cmd || cmd=='m':
+    elif 'mntr'==cmd or cmd=='m':
         flags['mntr'] = true
-    elif 'quit'==cmd || cmd=='q':
+    elif 'quit'==cmd or cmd=='q':
         exit
-    elif 'data'==cmd || cmd=='d':    
+    elif 'data'==cmd or cmd=='d':    
         print "data: %s %s" % sbeReadWait()
-    elif 'halt'==cmd || cmd=='h':
-    elif 'file'==cmd || cmd=='f':
-    elif 'gpst'==cmd || cmd=='g':
-    elif 'levl'==cmd || cmd=='l':
-    elif 'irid'==cmd || cmd=='i':
-    elif 'cnfg'==cmd || cmd=='c':
-    elif 'stat'==cmd || cmd=='s':
-    elif 'pico'==cmd || cmd=='p':
+    elif 'halt'==cmd or cmd=='h':
+    elif 'file'==cmd or cmd=='f':
+    elif 'gpst'==cmd or cmd=='g':
+    elif 'levl'==cmd or cmd=='l':
+    elif 'irid'==cmd or cmd=='i':
+    elif 'cnfg'==cmd or cmd=='c':
+    elif 'stat'==cmd or cmd=='s':
+    elif 'pico'==cmd or cmd=='p':
 #buoyProcess
 
 def velocity(c=0):

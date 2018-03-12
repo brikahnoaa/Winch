@@ -1,12 +1,13 @@
 # emulator. v3
-import winch, sbe16, sbe39, floats, ant
+# import winch, sbe16, sbe39, floats, ant
+import winch, sbe16, sbe39, floats
 
 def init():
     "init all"
     sbe16.init()
     winch.init()
     sbe39.init()
-    ant.init()
+    # ant.init()
 
 def start():
     "start all"
@@ -19,7 +20,7 @@ def stop():
     sbe16.stop()
     winch.stop()
     sbe39.stop()
-    ant.stop()
+    # ant.stop()
 
 def info():
     "info all"

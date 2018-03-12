@@ -12,13 +12,13 @@ static struct {
 // sets: tmr.on .timer[]
 //
 void tmrStart(TmrType tim, int secs) {
-  DBG0("tmrStart()")
+  DBG2("tmrStart()")
   tmr.on[tim] = true;
   tmr.timer[tim] = time(0)+secs;
 } // tmrStart
 
 void tmrStop(TmrType tim) {
-  DBG0("tmrStop()")
+  DBG2("tmrStop()")
   tmr.on[tim] = false;
 } // tmrStop
 
@@ -30,6 +30,7 @@ bool tmrExp(TmrType tim) {
   if (tmr.on[tim] && (tmr.timer[tim] < time(0))) {
     // on and expired
     tmr.on[tim] = false;
+    DBG2("tmrExp()")
     return true;
   } else {
     // off or still running
