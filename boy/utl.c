@@ -35,7 +35,7 @@ void serWrite(Serial port, char *out, char *eol) {
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, scratch, (long)len, (short)delay);
   DBG1("sent %d of %d", sent, len)
-  DBG2("'%s'", unsprintf(scratch, out))
+  DBG2("'%s'", unsprintf(out))
   if (len!=sent) 
     flogf("\nERR\t|serWrite(%s) sent %d of %d", out, sent, len);
 }
@@ -44,19 +44,16 @@ void serWrite(Serial port, char *out, char *eol) {
 // read all the chars on the port, with a normal delay
 // returns: length
 int serRead(Serial port, char *in) {
-  int len;
+  int len = 0;
   if (TURxQueuedCount(port)<1) return 0;
   DBG0("serRead()")
   // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
-  for (len=0; len<BUFSZ; len++) {
-    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
-    if (in[len]<0) {
-      // normal exit
+  while (len<BUFSZ) {
+    if ((in[len++] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY))<0)
       break;
-    }
   }
-  in[len]=0;        // string
-  DBG1("%d->'%s'", len, in)
+  in[len]=0;            // string
+  DBG1("%d->'%s'", len, unsprintf(in))
   return len;
 }
 
@@ -119,9 +116,12 @@ char * clockTimeDate(char *out) {
 
 ///
 // format non-printable string; null terminate
-// modifies out[] and returns *out, can be used in DBG1()
-char *unsprintf (char *out, char *in) {
+// modifies static local out[] and returns *out, can be used in DBG1()
+char *unsprintf (char *in) {
+  static char out[BUFSZ];
   char ch, *ptr = out;
+  if (strlen(in)>BUFSZ) 
+    return "unsprintf(char *in) is too big";
   // walk thru input until 0
   while ((ch = *in++)!=0) {
     if ((ch<32)||(ch>126)) {

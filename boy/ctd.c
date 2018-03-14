@@ -190,7 +190,7 @@ void ctdData() {
     ctd.depth = 0;
     return;
   }
-  DBG2("\n\tctd-->%s", unsprintf(scratch, stringin))
+  DBG2("\n\tctd-->%s", unsprintf(stringin))
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: picks up trailing S> prompt if not in syncmode

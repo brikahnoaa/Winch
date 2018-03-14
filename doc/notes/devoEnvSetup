@@ -1,13 +1,15 @@
-codewarrior
+:codewarrior:
 install CW9.0 using defaults except: deskFolder CodeWar, skip c++
-run CW9.2 update. Run buildall as directed, ignore errors. (palmOS?)
+run CW9.2 update, +palm +handspring. 
 install persistor. 
 mklink /D "c:\Program Files\Persistor" "c:\Program Files (x86)\Persistor" 
-codewarrior:Edit:Preferences:SourceTrees:ImportPanel=
+reboot
+Run buildall, ignore errors.  open "CW for Palm OS Support\BuildAll"
+ pref menu := codewarrior:Edit:Preferences:SourceTrees:ImportPanel=
 c:\Program Files\Persistor\MotoCross Support\CFX\XMLSettingsPanels\IDE\Source Trees_CF2_IDEGlobalPref.xml
 
 cygwin setup
- /setup-x86_64.exe -qP bind-utils,binutils,clang,ctags,cygcheck-dep,cygrunsrv,cygutils-extra,cygwin-devel,enscript,git,git-clang-format,indent,openssh,perl,publicsuffix-list-dafsa,python2,python2-setuptools,python3,python3-setuptools,rsync,vim,vim-clang-format,vim-common,vim-doc,wget
+  c:\cygwin64\setup-x86_64.exe -qP bind-utils,binutils,ctags,cygcheck-dep,cygutils-extra,cygwin-devel,enscript,git,indent,openssh,perl,python2,python2-setuptools,rsync,vim,vim-common,vim-doc,wget
 
 .. pip install pyserial 
  # easy_install-2[TAB] pip
@@ -28,11 +30,7 @@ while 1:
 ..
 
 Tue, Jun 13, 2017  2:16:54 PM
-persistor
- ln -s "/cygdrive/c/Program Files (x86)/Persistor/MotoCross Support/CFX/Headers/"
-$ kahn@BRUTAL 04:54:59 ~/cf2 $
  ctags -o /home/kahn/cf2/tags.h.cf2 $(find ~/cf2/headers/*/Headers -name '*.h')
-
  vi .vim/vimrc
 set tags+=/home/kahn/cf2/tags.h.cf2
 

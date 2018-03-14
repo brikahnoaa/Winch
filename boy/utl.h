@@ -14,7 +14,7 @@ extern void sysStop(char *out);
 
 char *clockTime(char *out);
 char *clockTimeDate(char *out);
-char *unsprintf (char *out, char *in);        // format unprintable string
+char *unsprintf (char *in);        // format unprintable string
 int crlfTrim(char *str);
 int serRead(Serial port, char *in);
 int serReadWait(Serial port, char *in, int wait);
