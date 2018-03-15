@@ -51,7 +51,7 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
   putflush();
   CIOdrain();
   execstr(Com);
-  delayms(250);
+  utlDelay(250);
   return r;
 } // sysOSCmd
 
@@ -67,7 +67,7 @@ void dirSetup(char *path) {
   putflush();
   CIOdrain();
   execstr(DOSCommand);
-  delayms(1000);
+  utlDelay(1000);
 } // sysDirS
 
 ///

@@ -106,6 +106,7 @@ def amodInput():
     l = ser.getline()
     if not l: return
     ser.log( "hearing %s" % l )
+    ser.putline( "OK" )
     if len(l) > 6: 
         sleep(amodDelay)
     # rise

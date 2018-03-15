@@ -96,7 +96,7 @@ PhaseType dataPhase(void) {
 // sets: boy.alarm[]
 //
 PhaseType risePhase(void) {
-  flogf("\n\t|risePhase() %s", clockTimeDate(scratch));
+  flogf("\n\t|risePhase() %s", utlTimeDate());
   antMode(td_mod);
   // if current is too strong at bottom
   if (oceanCurrChk()) {
@@ -163,7 +163,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       } else if (++err <= errMax) {
         // retry
         flogf(", retry"); 
-        delayms(delay*1000);
+        utlDelay(delay*1000);
         ngkSend( riseCmd_msg );
       } else { 
         flogf(", ERR abort"); 
@@ -215,7 +215,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       } else if (++err <= errMax) {
         // retry
         flogf(", retry"); 
-        delayms(delay*1000);
+        utlDelay(delay*1000);
         ngkSend( stopCmd_msg );
       } else { 
         flogf(", ERR abort"); 
@@ -258,7 +258,7 @@ PhaseType dropPhase() {
   float depth, startD, lastD;
   MsgType msg;
   time_t dropT = (time_t)0;
-  flogf("\n\tdropP() %s", clockTimeDate(scratch));
+  flogf("\n\tdropP() %s", utlTimeDate());
   /// 
   // step 1: dropCmd 
   // loop until dropRsp or dropping+timeout
@@ -370,7 +370,7 @@ PhaseType deployPhase(void) {
   while (antDepth()<10.0) {
     pwrNap(30);
     if (tmrExp(deploy_tmr)) {
-      flogf("\n%s\t|deployP() 2 hour timeout", clockTimeDate(scratch));
+      flogf("\n%s\t|deployP() 2 hour timeout", utlTimeDate());
       sysStop("deployP() 2 hour timeout");
     }
   }

@@ -43,8 +43,8 @@ void mpcInit(void) {
   deviceTX = TPUChanFromPin(COM1_TX);
   mpc.port = TUOpen(deviceRX, deviceTX, COM1_BAUD, 0);
   if (mpc.port==NULL) 
-    shutdown("mpcInit() com1 open fail");
-  delayms(RS232_SETTLE); // to settle rs232
+    utlShutdown("mpcInit() com1 open fail");
+  utlDelay(RS232_SETTLE); // to settle rs232
 } // mpcInit
 
 //
@@ -71,7 +71,7 @@ static void spur_ISR(void) {
 //
 void mpcSleep(void) {
   ciflush(); // flush any junk
-  clockTimeDate(scratch);
+  utlTimeDate();
   flogf("\nmpcSleep() at %s", scratch);
 
   // Install the interrupt handlers that will break us out by "break signal"
@@ -91,7 +91,7 @@ void mpcSleep(void) {
   PinBus(IRQ4RXD);          // console
   PinBus(IRQ5);             // wispr
 
-  pet();      // another reprieve
+  utlPet();      // another reprieve
   TMGSetSpeed(1600);
   while (PinTestIsItBus(IRQ4RXD) && PinTestIsItBus(IRQ5)) {
     // we loop here on spurious interrupt
@@ -99,7 +99,7 @@ void mpcSleep(void) {
     //*(ushort *)0xffffe00c=0xF000; //force CF card into Card-1 active mode
 
     LPStopCSE(FullStop); // we will be here until interrupted
-    pet();
+    utlPet();
   }
 
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
@@ -113,7 +113,7 @@ void mpcSleep(void) {
   QSMRun();           // bring back the QSM
   CFEnable(true);     // turn on the CompactFlash card
   ciflush();          // discard any garbage characters
-  clockTime(scratch);
+  utlTime();
   flogf(", wakeup at %s", scratch);
   putflush(); 
 } // mpcSleep
@@ -129,10 +129,10 @@ void mpcDevice(DevType dev) {
     PIOClear(COM1SELECT);
   else
     return;
-  delayms(10);
+  utlDelay(10);
   TUTxFlush(mpc.port);
   TURxFlush(mpc.port);
-  pet();
+  utlPet();
   return;
 }
 

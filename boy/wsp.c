@@ -34,16 +34,16 @@ void wspPower(bool power) {
   if (power) {
     flogf("\n%s|wsp: ON", Time(NULL));
     PIOSet(wspPWR_ON);
-    delayms(10);
+    utlDelay(10);
     PIOClear(wspPWR_ON);
     wsp.on = true;
   } else {
     flogf("\n%s|wsp: OFF", Time(NULL));
     PIOSet(wspPWR_OFF);
-    delayms(10);
+    utlDelay(10);
     PIOClear(wspPWR_OFF);
     wsp.on = false;
-    delayms(1000);        //??
+    utlDelay(1000);        //??
   }
 } // wspPower
 
@@ -123,7 +123,7 @@ short wspData(void) {
 
     if (!SendwspGPS) {
       wspGPS(124.5, 45);
-      delayms(150);
+      utlDelay(150);
       TUTxFlush(PAMPort);
       TURxFlush(PAMPort);
       wspGain(-1);
@@ -144,7 +144,7 @@ short wspData(void) {
 
     DBG1("\t|DTX file: %s", DTXFilename)
     wspFile = open(DTXFilename, O_APPEND | O_RDWR | O_CREAT);
-    delayms(25);
+    utlDelay(25);
     if (wspFile <= 0)
       flogf("\nERROR  |wspData() %s open errno: %d", DTXFilename, errno);
     DBG(else flogf("\n\t|wspData() %s opened", DTXFilename);)
@@ -169,7 +169,7 @@ short wspData(void) {
       AppendDetections(DataString, wspFile);
       if (dtxrqst > 0) {
         for (i = 0; i < dtxrqst; i++) {
-          pet();
+          utlPet();
           // memset(DataString, 0, 64*(sizeof DataString[0]));
           GetwspInput(&returndouble);
           if ((int)returndouble == -1) {
@@ -201,7 +201,7 @@ short wspData(void) {
   else if (strncmp(DataString, "$NGN", 4) == 0) {
     if (!SendwspGPS) {
       wspGPS();
-      delayms(50);
+      utlDelay(50);
     }
 
     wspGain(-1);
@@ -211,7 +211,7 @@ short wspData(void) {
 
   else if (strncmp(DataString, "$FIN", 4) == 0) {
     flogf(": Found Exit");
-    delayms(2000);     // Gives a little bit of time to wsp to umount /mnt
+    utlDelay(2000);     // Gives a little bit of time to wsp to umount /mnt
     wspPower(false); // Powers off Data
     return 6;
   } else if (strcmp(DataString, NULL) == 0) {
@@ -237,13 +237,13 @@ void wspDet(int dtx) {
 
   dtxrqst = dtx;
 
-  delayms(10);
+  utlDelay(10);
   TUTxFlush(PAMPort);
   TURxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$DX?,%d*\n", dtx);
   TUTxWaitCompletion(PAMPort);
 
-  delayms(500);
+  utlDelay(500);
 
 } // wspDet
 // This is where we send the GPS Time and Location to wsp Board at startup
@@ -289,7 +289,7 @@ void wspGain(short c) {
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$NGN,%d*\n", c);
   TUTxWaitCompletion(PAMPort);
-  delayms(2);
+  utlDelay(2);
 
 } // wspGain
 void wspDFP(void) {
@@ -299,7 +299,7 @@ void wspDFP(void) {
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$DFP*\n");
   TUTxWaitCompletion(PAMPort);
-  delayms(250);
+  utlDelay(250);
 
 } // wspDFP
 void wspTFP(void) {
@@ -309,7 +309,7 @@ void wspTFP(void) {
   TUTxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$TFP*\n");
   TUTxWaitCompletion(PAMPort);
-  delayms(250);
+  utlDelay(250);
 
 } // wspDFP
 bool wspExit(void) {
@@ -320,7 +320,7 @@ bool wspExit(void) {
   TURxFlush(PAMPort);
   TUTxPrintf(PAMPort, "$EXI*\n");
   TUTxWaitCompletion(PAMPort);
-  Delay_AD_Log(150);  delayms(200);
+  Delay_AD_Log(150);  utlDelay(200);
 
   wspData();
 
@@ -424,7 +424,7 @@ void Changewsp(short wnum) {
   }
 
   wspInit(false);
-  delayms(100);
+  utlDelay(100);
   wsp.NUM = wnum;
   wspInit(true);
   wspPower(true);
@@ -576,7 +576,7 @@ void create_dtx_file(long fnum) {
 
   sprintf(&SourceFileName[2], "%08ld.dtx", fnum);
   filehandle = creat(SourceFileName, 0);
-  delayms(500);
+  utlDelay(500);
   if (filehandle < 0) {
     flogf("\nERROR  |Create_DTX_File() errno: %d", errno);
   }
@@ -587,7 +587,7 @@ void create_dtx_file(long fnum) {
           errno);
   DBG(else flogf("\n\t|create_dtx_file(): %s closed", SourceFileName);)
 
-  delayms(10);
+  utlDelay(10);
 }
 void GatherwspFreeSpace(void) {
   short wret = 0, i, count = 0, wnum = 1;
@@ -600,7 +600,7 @@ void GatherwspFreeSpace(void) {
 
   if (wspOn) {
     wspExit();
-    delayms(2500);
+    utlDelay(2500);
   }
   wspPower(true);
 
@@ -628,7 +628,7 @@ void GatherwspFreeSpace(void) {
         if (gain || count == 2) {
           DBG1("\t|GWFS: DFP2")
           wspDFP();
-          delayms(150);
+          utlDelay(150);
           if (wspData() == 2)
             dfp = true;
         }
@@ -637,14 +637,14 @@ void GatherwspFreeSpace(void) {
       if (tgetq(PAMPort)) {
         wret = wspData();
         if (wret == 1) {
-          delayms(150);
+          utlDelay(150);
           wret = wspData();
           if (wret == 5) {
             gain = true;
-            delayms(150);
+            utlDelay(150);
             DBG1("\t|GWFS: DFP1")
             wspDFP();
-            delayms(150);
+            utlDelay(150);
             if (wspData() == 2)
               dfp = true;
           }
@@ -678,7 +678,7 @@ void GatherwspFreeSpace(void) {
   }
 
   wspInit(false);
-  delayms(100);
+  utlDelay(100);
   wsp.NUM = wnum;
   VEEStoreShort(wspNUM_NAME, wsp.NUM);
 
@@ -695,9 +695,9 @@ void UpdatewspFRS(void) {
   long filesize;
 
   flogf("\n%s|Update %s ", Time(NULL), wspfile);
-  delayms(10);
+  utlDelay(10);
   // sprintf(&wspfile[2], "wspFRS.DAT");
-  delayms(20);
+  utlDelay(20);
   if (stat(wspfile, &fileinfo) != 0) {
     flogf("%s file does not exist. making file...", wspfile);
     GatherwspFreeSpace();
@@ -708,7 +708,7 @@ void UpdatewspFRS(void) {
   DBG1("\t|File size: %ld", filesize)
 
   wspfilehandle = open(wspfile, O_RDWR);
-  delayms(25);
+  utlDelay(25);
   if (wspfilehandle <= 0)
     flogf("\nERROR  |UpdatewspFRS(): file open errno: %d", errno);
   DBG(else flogf("\n\t|UpdatewspFRS() %s opened", wspfile);)
@@ -764,7 +764,7 @@ void wspInit(int board) {
     TUTxFlush(PAMPort);
     TURxFlush(PAMPort);
     TUClose(PAMPort);
-    delayms(1000);
+    utlDelay(1000);
   }
 
   PIOClear(wspPWR_ON);
@@ -820,7 +820,7 @@ void wspInit(int board) {
     flogf("\n\t|Wrong PAM Port...");
     TUClose(PAMPort);
   }
-  delayms(100);
+  utlDelay(100);
 }
 bool wspExpectedReturn(short expected, bool reboot) {
 

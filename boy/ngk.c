@@ -33,13 +33,13 @@ void ngkInit(void) {
   PIORead(MDM_RX_TTL);              // tpu->rs232 is pin 33->48->47
   // Power up the DC-DC for the Acoustic Modem Port
   PIOClear(MDM_PWR);
-  delayms(RS232_SETTLE);
+  utlDelay(RS232_SETTLE);
   PIOSet(MDM_PWR);
-  delayms(RS232_SETTLE);
+  utlDelay(RS232_SETTLE);
   // PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
   p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
   if (p == 0)
-    shutdown("\nERR\t|ngkInit() Bad ngk serial port");
+    utlShutdown("\nERR\t|ngkInit() Bad ngk serial port");
   else {
     TUTxFlush(p);
     TURxFlush(p);
@@ -58,23 +58,20 @@ void ngkSend(MsgType msg) {
   char str[12];
   strcpy(str, ngk.msgStr[msg]);
   str[4]=WINCH_ID;
-  flogf("\nngkSend(%s) at %s", str, clockTime(scratch));
+  flogf("\nngkSend(%s) at %s", str, utlTime());
   // set winch id "#R,0X,00"
   TUTxWaitCompletion(ngk.port);
-  serWrite(ngk.port, str, EOL);
+  utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
   if (msg==dropCmd_msg || msg==riseCmd_msg 
    || msg==stopCmd_msg || msg==surfCmd_msg) 
     tmrStart(winch_tmr, ngk.delay*2+1);
   str[0] = 0;
-  serReadWait(ngk.port, str, 2);
-  if (str[0]==0) {
-    flogf("- no response from amodem");
-    return;
-  }
-  DBG1("%s", str);
-  // ?? str should include "OK"
+  utlReadWait(ngk.port, str, 2);
+  // str should include "OK"
+  if (strstr(str, "OK")==null)
+    flogf("\n\t| \nngkSend() amodem bad response '%s'", str);
 } // ngkSend
 
 ///
@@ -86,10 +83,10 @@ void ngkSend(MsgType msg) {
 MsgType ngkRecv() {
   char msgStr[BUFSZ];
   MsgType msg;
-  if (serRead(ngk.port, msgStr)==0) 
+  if (utlRead(ngk.port, msgStr)==0) 
     return null_msg;
   msg = msgParse(msgStr);
-  flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[msg], clockTime(scratch));
+  flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
   if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
     return null_msg;
@@ -102,14 +99,13 @@ MsgType ngkRecv() {
 } // ngkRecv
 
 ///
-// ?? tbd possible repeated message
 // match against ngk.msgStr[]
 // sets: (*msgP) ngk.recv[]
 // returns: msgtype
 MsgType msgParse(char *str) {
   MsgType m;
   int len;
-  len = crlfTrim(str);
+  len = utlTrim(str);
   if (len!=8) 
     flogf(" | ERR msgParse() length %d", len);
   for (m=null_msg+1; m<mangled_msg; m++)
@@ -119,7 +115,7 @@ MsgType msgParse(char *str) {
   if (m==mangled_msg)           // no match or invalid
     flogf(" | ERR msgParse(%s) fail", str);
   else
-    serWrite(ngk.port, "OK", EOL);
+    utlWrite(ngk.port, "OK", EOL);
   return m;
 } // msgParse
 

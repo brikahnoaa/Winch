@@ -12,13 +12,13 @@ extern char scratch[];
 // exception to module game
 extern void sysStop(char *out);
 
-char *clockTime(char *out);
-char *clockTimeDate(char *out);
-char *unsprintf (char *in);        // format unprintable string
-int crlfTrim(char *str);
-int serRead(Serial port, char *in);
-int serReadWait(Serial port, char *in, int wait);
-void serWrite(Serial port, char *out, char *eol);
-void delayms(int x);
-void pet(void);
-void shutdown(char *out);
+char *utlTime();
+char *utlTimeDate();
+char *utlNonPrint (char *in);        // format unprintable string
+int utlTrim(char *str);
+int utlRead(Serial port, char *in);
+int utlReadWait(Serial port, char *in, int wait);
+void utlWrite(Serial port, char *out, char *eol);
+void utlDelay(int x);
+void utlPet(void);
+void utlShutdown(char *out);

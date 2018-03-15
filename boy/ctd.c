@@ -27,11 +27,11 @@ void ctdInit(void) {
   // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
-    shutdown("\nERR\t|ctdInit(): no prompt from ctd");
+    utlShutdown("\nERR\t|ctdInit(): no prompt from ctd");
   if (ctd.log==0)
     ctd.log = open(ctd.logFile, O_APPEND | O_CREAT | O_RDWR);
   if (ctd.log<=0) 
-    shutdown("\nERR\t| ctdInit(): logfile open fail");
+    utlShutdown("\nERR\t| ctdInit(): logfile open fail");
   ctdSetDate();
   ctdSyncmode();
 } // ctdInit
@@ -60,12 +60,12 @@ void ctdSetDate(void) {
     info->tm_hour, info->tm_min, info->tm_sec);
   DBG1("%s", buffer)
   //
-  serWrite(ctd.port, buffer, EOL);
-  serReadWait(ctd.port, scratch, 1);
-  serWrite(ctd.port, "syncwait=0", EOL);
-  serReadWait(ctd.port, scratch, 1);
-  serWrite(ctd.port, "DelayBeforeSampling=0", EOL);
-  serReadWait(ctd.port, scratch, 1);
+  utlWrite(ctd.port, buffer, EOL);
+  utlReadWait(ctd.port, scratch, 1);
+  utlWrite(ctd.port, "syncwait=0", EOL);
+  utlReadWait(ctd.port, scratch, 1);
+  utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
+  utlReadWait(ctd.port, scratch, 1);
 } // ctdSetDate
 
 
@@ -82,14 +82,14 @@ bool ctdPrompt(void) {
     ctdBreak();
   TURxFlush(ctd.port);
   TUTxPutByte(ctd.port, '\r', true);
-  serReadWait(ctd.port, str, 2);
+  utlReadWait(ctd.port, str, 2);
   // looking for S>
   if (strstr(str, "S>") == NULL) {
     // try again after break
     ctdBreak();
     TURxFlush(ctd.port);
     TUTxPutByte(ctd.port, '\r', true);
-    serReadWait(ctd.port, str, 2);
+    utlReadWait(ctd.port, str, 2);
     // looking for S>
     if (strstr(str, "S>") == NULL) {
       flogf("\nERR\t| ctdPrompt fail");
@@ -104,10 +104,10 @@ bool ctdPrompt(void) {
 //
 void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
-  serWrite(ctd.port, "Syncmode=y", EOL);
+  utlWrite(ctd.port, "Syncmode=y", EOL);
   ctdPrompt();
-  serWrite(ctd.port, "QS", EOL);
-  delayms(100);
+  utlWrite(ctd.port, "QS", EOL);
+  utlDelay(100);
   TURxFlush(ctd.port);
   ctd.syncmode = true;
 } 
@@ -147,9 +147,9 @@ void ctdSample(void) {
   if (ctd.pending) return;
   if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
   else {
-    serWrite(ctd.port, "TS", EOL);
+    utlWrite(ctd.port, "TS", EOL);
     // consume echo
-    len = serReadWait(ctd.port, scratch, 1);
+    len = utlReadWait(ctd.port, scratch, 1);
     if (len<3) 
       flogf("\nERR ctdSample, TS command fail");
   }
@@ -185,12 +185,12 @@ void ctdData() {
   else
     return;           // error
   // waits up to max+1 seconds - best called after tgetq()
-  len = serReadWait(ctd.port, stringin, ctd.delay+1);
+  len = utlReadWait(ctd.port, stringin, ctd.delay+1);
   if (len==0) {       // error
     ctd.depth = 0;
     return;
   }
-  DBG2("\n\tctd-->%s", unsprintf(stringin))
+  DBG2("\n\tctd-->%s", utlNonPrint(stringin))
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: picks up trailing S> prompt if not in syncmode
@@ -209,7 +209,7 @@ void ctdData() {
   // record
   sprintf(stringout, 
     "%.4f %.5f %.3f %.4f %.4f %.4f %s",
-    temp, cond, pres, flu, par, sal, clockTimeDate(scratch));
+    temp, cond, pres, flu, par, sal, utlTimeDate());
   DBG1("\n\tctd: %s", stringout)
   // Log WriteString
   len = strlen(stringout);

@@ -38,7 +38,7 @@ int sysInit(void) {
   TUInit(calloc, free);   // enable TUAlloc for serial ports
   flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
     sys.program, sys.version, sys.project, sys.platform, sys.starts);
-  flogf("\nStart at: %s", clockTimeDate(scratch));
+  flogf("\nStart at: %s", utlTimeDate());
   return sys.starts;
 } // sysInit
 
@@ -46,7 +46,7 @@ int sysInit(void) {
 // short delay for operator abort
 void preRun(int delay) {
   char c;
-  pet();
+  utlPet();
   ciflush();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
   cprintf("You have %d seconds ", delay);
@@ -91,7 +91,7 @@ void configFile(void) {
 } // configFile
 
 void logInit(char *file) {
-  pet();
+  utlPet();
   PZCacheSetup(C_DRV, calloc, free);
   Initflog(file, true);
   flogf("\n----------------------------------------------------------------");
