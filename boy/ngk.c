@@ -12,8 +12,8 @@ NgkInfo ngk = {
   { "null",
     // ngk.msgStr[] as if sent to buoy; change ID before sending to winch
     // %B and %W are shorter, last two digits are status
-    "#B,00,00", "%B,00,", "#F,00,00", "%F,00,00", "#R,00,03", "%R,00,00",
-    "#W,00,00", "%W,00,", "#S,00,00", "%S,00,00", "#R,00,00", "mangled",
+    "#B,02,00", "%B,02,", "#F,02,00", "%F,02,00", "#R,02,03", "%R,02,00",
+    "#W,02,00", "%W,02,", "#S,02,00", "%S,02,00", "#R,02,00", "mangled",
   },
   { "null",
     "buoyCmd", "buoyRsp", "dropCmd", "dropRsp", "riseCmd", "riseRsp",
@@ -67,6 +67,14 @@ void ngkSend(MsgType msg) {
   if (msg==dropCmd_msg || msg==riseCmd_msg 
    || msg==stopCmd_msg || msg==surfCmd_msg) 
     tmrStart(winch_tmr, ngk.delay*2+1);
+  str[0] = 0;
+  serReadWait(ngk.port, str, 2);
+  if (str[0]==0) {
+    flogf("- no response from amodem");
+    return;
+  }
+  DBG1("%s", str);
+  // ?? str should include "OK"
 } // ngkSend
 
 ///

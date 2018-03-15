@@ -35,7 +35,7 @@ void serWrite(Serial port, char *out, char *eol) {
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, scratch, (long)len, (short)delay);
   DBG1("sent %d of %d", sent, len)
-  DBG2("'%s'", unsprintf(out))
+  DBG2("'%s'", unsprintf(scratch))
   if (len!=sent) 
     flogf("\nERR\t|serWrite(%s) sent %d of %d", out, sent, len);
 }
@@ -48,9 +48,9 @@ int serRead(Serial port, char *in) {
   if (TURxQueuedCount(port)<1) return 0;
   DBG0("serRead()")
   // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
-  while (len<BUFSZ) {
-    if ((in[len++] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY))<0)
-      break;
+  for (len=0; len<BUFSZ; len++) {
+    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
+    if (in[len]<0) break;
   }
   in[len]=0;            // string
   DBG1("%d->'%s'", len, unsprintf(in))
@@ -69,13 +69,15 @@ int serReadWait(Serial port, char *in, int wait) {
   if (in[0]<=0) {
     // timeout
     in[0]=0;
-    len = 0;
-  } else {
-    // rest of input, note serRead exits if nothing queued
-    delayms(CHAR_DELAY);
-    len = serRead(port, in+1) + 1;
-    DBG1("->'%s'", in)
+    return 0;
+  } 
+  // rest of input, note serRead exits if nothing queued
+  for (len=1; len<BUFSZ; len++) {
+    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
+    if (in[len]<0) break;
   }
+  in[len]=0;            // string
+  DBG1("%d->'%s'", len, unsprintf(in))
   return len;
 }
 
