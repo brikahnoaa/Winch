@@ -10,3 +10,208 @@ if timeout, drop (send any?)
 rise and send rise response
 if rope len or slack, stop and brake and and send stop command
 if stop command, stop and brake and and send stop response
+
+Thu, Mar 15, 2018  2:30:11 PM
+wintest winchTst
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>wintest
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 33, max 50
+----------------------------------------------------------------
+Program: sys.c,  Build: Mar 14 2018 15:52:26
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+----------------------------------------------------------------
+Program:   Version:   Project:   Platform:   Starts: 33
+Start at: 02/15/18 14:08:35
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+dbg0 dbg1 dbg2? help q quit ^C quit 
+B buoyRsp F dropRsp R riseRsp S stopRsp W statRsp 
+b buoyCmd f dropCmd r riseCmd s stopCmd w statCmd u surfCmd 
+
+ngkInit()
+Command: s
+
+ngkSend(#S,01,00) at 14:08:49
+serWrite() sent 10 of 10 '#S,01,00 x0D  x0A ' tmrStart()
+serReadWait(13)- no response from amodem
+Command: 
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>wintest
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 34, max 50
+----------------------------------------------------------------
+Program: sys.c,  Build: Mar 14 2018 15:52:26
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+----------------------------------------------------------------
+Program:   Version:   Project:   Platform:   Starts: 34
+Start at: 02/15/18 14:09:37
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+dbg0 dbg1 dbg2? help q quit ^C quit 
+B buoyRsp F dropRsp R riseRsp S stopRsp W statRsp 
+b buoyCmd f dropCmd r riseCmd s stopCmd w statCmd u surfCmd 
+
+ngkInit()
+Command: s
+
+ngkSend(#S,01,00) at 14:09:39
+serWrite() sent 10 of 10 '#S,01,00 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%S,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(stopRsp) at 14:09:50 tmrStop()
+ winch>> 'stopRsp' @ 14:09:50
+Command: r
+
+ngkSend(#R,01,03) at 14:10:02
+serWrite() sent 10 of 10 '#R,01,03 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%R,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(riseRsp) at 14:10:13 tmrStop()
+ winch>> 'riseRsp' @ 14:10:13
+Command: s
+
+ngkSend(#S,01,00) at 14:10:37
+serWrite() sent 10 of 10 '#S,01,00 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'#S,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(stopCmd) at 14:10:51
+ngkSend(%S,01,00) at 14:10:51
+serWrite() sent 10 of 10 '%S,01,00 x0D  x0A '
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+ winch>> 'stopCmd' @ 14:10:52
+Command: r
+
+ngkSend(#R,01,03) at 14:11:24
+serWrite() sent 10 of 10 '#R,01,03 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%R,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(riseRsp) at 14:11:36 tmrStop()
+ winch>> 'riseRsp' @ 14:11:36
+Command: r
+
+ngkSend(#R,01,03) at 14:12:11
+serWrite() sent 10 of 10 '#R,01,03 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%R,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(riseRsp) at 14:12:23 tmrStop()
+ winch>> 'riseRsp' @ 14:12:23
+Command: s
+
+ngkSend(#S,01,00) at 14:12:26
+serWrite() sent 10 of 10 '#S,01,00 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: d
+??
+Command: f
+
+ngkSend(#F,01,00) at 14:12:46
+serWrite() sent 10 of 10 '#F,01,00 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%F,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(dropRsp) at 14:12:57 tmrStop()
+ winch>> 'dropRsp' @ 14:12:58
+Command: s
+
+ngkSend(#S,01,00) at 14:12:58
+serWrite() sent 10 of 10 '#S,01,00 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%S,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(stopRsp) at 14:13:08 tmrStop()
+ winch>> 'stopRsp' @ 14:13:08
+Command: r
+
+ngkSend(#R,01,03) at 14:13:19
+serWrite() sent 10 of 10 '#R,01,03 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%R,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(riseRsp) at 14:13:30 tmrStop()
+ winch>> 'riseRsp' @ 14:13:30
+Command: 
+serRead() 10->'#S,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(stopCmd) at 14:13:39
+ngkSend(%S,01,00) at 14:13:40
+serWrite() sent 10 of 10 '%S,01,00 x0D  x0A '
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+ winch>> 'stopCmd' @ 14:13:40
+Command: S
+
+ngkSend(%S,01,00) at 14:13:50
+serWrite() sent 10 of 10 '%S,01,00 x0D  x0A '
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: f
+
+ngkSend(#F,01,00) at 14:15:11
+serWrite() sent 10 of 10 '#F,01,00 x0D  x0A ' tmrStart()
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+Command: 
+serRead() 10->'%F,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(dropRsp) at 14:15:23 tmrStop()
+ winch>> 'dropRsp' @ 14:15:23
+Command: 
+serRead() 10->'#S,02,00 x0D  x0A '
+serWrite() sent 4 of 4 'OK x0D  x0A '
+	|ngkRecv(stopCmd) at 14:16:14
+ngkSend(%S,01,00) at 14:16:14
+serWrite() sent 10 of 10 '%S,01,00 x0D  x0A '
+serReadWait(13) 4->'OK x0D  x0A ' OK
+
+
+ winch>> 'stopCmd' @ 14:16:14
+Command: 
