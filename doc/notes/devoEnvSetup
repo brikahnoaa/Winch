@@ -9,13 +9,27 @@ Run buildall, ignore errors.  open "CW for Palm OS Support\BuildAll"
 c:\Program Files\Persistor\MotoCross Support\CFX\XMLSettingsPanels\IDE\Source Trees_CF2_IDEGlobalPref.xml
 
 cygwin setup
-  c:\cygwin64\setup-x86_64.exe -qP bind-utils,binutils,ctags,cygcheck-dep,cygutils-extra,cygwin-devel,enscript,git,indent,openssh,perl,python2,python2-setuptools,rsync,vim,vim-common,vim-doc,wget
+  setup-x86_64.exe -qP bind-utils,binutils,ctags,cygcheck-dep,cygutils-extra,cygwin-devel,enscript,git,indent,openssh,perl,python2,python2-setuptools,rsync,vim,vim-common,vim-doc,wget
 
 .. pip install pyserial 
  # easy_install-2[TAB] pip
  # easy_install-3[TAB] pip
  # pip2 install pyserial
  # pip3 install pyserial
+
+. clone repository
+  cd
+  git clone https://github.com/brikahnoaa/Winch.git
+. cyg setup
+  sh ./Winch/cod/bin/cygSetup.sh
+
+Tue, Jun 13, 2017  2:16:54 PM
+ ctags -o /home/kahn/cf2/tags.h.cf2 $(find ~/cf2/headers/*/Headers -name '*.h')
+ vi .vim/vimrc
+set tags+=/home/kahn/cf2/tags.h.cf2
+
+'tagrelative' - Controls how the file names in the tags file are treated. When on, the filenames are relative to the directory where the tags file is present.
+
 .. python serial
 import serial
 import time
@@ -28,10 +42,3 @@ while 1:
         print('Data could not be read')
     time.sleep(1)
 ..
-
-Tue, Jun 13, 2017  2:16:54 PM
- ctags -o /home/kahn/cf2/tags.h.cf2 $(find ~/cf2/headers/*/Headers -name '*.h')
- vi .vim/vimrc
-set tags+=/home/kahn/cf2/tags.h.cf2
-
-'tagrelative' - Controls how the file names in the tags file are treated. When on, the filenames are relative to the directory where the tags file is present.
