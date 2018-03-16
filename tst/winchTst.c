@@ -35,7 +35,7 @@ void main(void){
       // amodem
       msg = ngkRecv();
       if (msg!=null_msg) {
-        cprintf("\n winch>> '%s' @ %s", ngkMsgName(msg), clockTime(scratch));
+        cprintf("\n winch>> '%s' @ %s", ngkMsgName(msg), utlTime());
         break; // while input
       } 
       // keyboard

@@ -1,5 +1,5 @@
 # acoustic ID
-buoyID = '00'
+buoyID = '02'
 winchID = '01'
 
 # design

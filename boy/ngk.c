@@ -70,7 +70,7 @@ void ngkSend(MsgType msg) {
   str[0] = 0;
   utlReadWait(ngk.port, str, 2);
   // str should include "OK"
-  if (strstr(str, "OK")==null)
+  if (strstr(str, "OK")==NULL)
     flogf("\n\t| \nngkSend() amodem bad response '%s'", str);
 } // ngkSend
 

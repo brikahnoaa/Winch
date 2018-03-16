@@ -106,8 +106,11 @@ def amodInput():
     l = ser.getline()
     if not l: return
     ser.log( "hearing %s" % l )
-    ser.putline( "OK" )
+    if "OK" in l:
+        ser.log( "OK" )
+        return
     if len(l) > 6: 
+        ser.putline( "OK" )
         sleep(amodDelay)
     # rise
     if riseCmd in l:
@@ -130,8 +133,6 @@ def amodInput():
     elif buoyRsp in l:
         ser.log( "buoy stat response %s" % l )
     # something strange
-    elif "OK" in l:
-        ser.log( "OK" )
     elif l:
         ser.log("amod: unexpected %r" % l)
 
