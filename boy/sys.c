@@ -32,13 +32,10 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 int sysInit(void) {
   preRun(10);
   sys.starts = startCheck();
-  comInit();              // dbg0,1,2
-  configFile();
+  comInit();              // common init: dbg0,1,2
+  cfgInit();
   logInit(sys.logFile);
   TUInit(calloc, free);   // enable TUAlloc for serial ports
-  flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
-    sys.program, sys.version, sys.project, sys.platform, sys.starts);
-  flogf("\nStart at: %s", utlTimeDate());
   return sys.starts;
 } // sysInit
 
@@ -78,27 +75,21 @@ int startCheck(void) {
 } // startCheck
 
 ///
-// read config from CONFIG_FILE
-void configFile(void) {
-  // load cfg and log file names
-  strcpy(sys.logFile, VEEFetchStr( "SYS_LOG", SYS_LOG ));
-  strcpy(sys.cfgFile, VEEFetchStr( "SYS_CFG", SYS_CFG ));
-  cfgRead(sys.cfgFile);
-  if (sys.cfgWild) {
-    // wildcard match for config files
-    // ??
-  }
-} // configFile
-
+// opens logfile named in external var SYS_LOG, defaults to sys.log
+// sets: (*file)
 void logInit(char *file) {
   utlPet();
   PZCacheSetup(C_DRV, calloc, free);
+  strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   Initflog(file, true);
   flogf("\n----------------------------------------------------------------");
   flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
         BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
+  flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
+    sys.program, sys.version, sys.project, sys.platform, sys.starts);
+  flogf("\nStarted at: %s", utlTimeDate());
   flogf("\n----------------------------------------------------------------");
   fflush(NULL);
   cdrain();

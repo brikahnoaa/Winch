@@ -11,6 +11,8 @@
 #include <sys.h>
 #include <wsp.h>
 
+CfgInfo cfg;
+
 extern AntInfo ant;
 extern BoyInfo boy;
 extern CtdInfo ctd;
@@ -27,13 +29,13 @@ typedef struct CfgParam {
   char type;                // b, c, f, i, l, s
 } CfgParam;
 // 
-// static CfgParam cfg[] = array of {id, var, ptr, type}
+// static CfgParam cfgP[] = array of {id, var, ptr, type}
 // scan for id or var name to set or update configurable data
 //
 // &ptr can be any extern var or struct component
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
-static CfgParam cfg[] = {
+static CfgParam cfgP[] = {
   {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
@@ -46,6 +48,7 @@ static CfgParam cfg[] = {
   {"bch", "boy.callHour",   &boy.callHour,    'i'},
   {"bfn", "boy.fileNum",    &boy.fileNum,     'i'},
   {"bph", "boy.phase",      &boy.phase,       'i'},
+  {"ccw", "cfg.wild",       &cfg.wild,        'c'},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
   {"cdy", "ctd.delay",      &ctd.delay,       'i'},
   {"ndy", "ngk.delay",      &ngk.delay,       'i'},
@@ -54,7 +57,6 @@ static CfgParam cfg[] = {
   {"pch", "pwr.charge",     &pwr.charge,      'f'},
   {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f'},
   {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f'},
-  {"scw", "sys.cfgWild",    &sys.cfgWild,     'c'},
   {"spt", "sys.platform",   &sys.platform,    'c'},
   {"spg", "sys.program",    &sys.program,     'c'},
   {"spj", "sys.project",    &sys.project,     'c'},
@@ -69,12 +71,22 @@ static CfgParam cfg[] = {
 
 static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
 
-//
+///
+// read config from CONFIG_FILE
+void cfgInit(void) {
+  strcpy(cfg.file, VEEFetchStr( "SYS_CFG", SYS_CFG ));
+  cfgRead(cfg.file);
+  if (cfg.wild) {
+    // wildcard match for config files
+    // ??
+  }
+} // configFile
+
+///
 // input line is short or long name, =, value
 // find setVar with id or name, call cfgSet()
 // OK to have leading space and #comments
-// uses: cfg[] cfgLen
-//
+// uses: cfgP[] cfgLen
 bool cfgString(char *str){
   char *ptr, *ref, *val;
   char s[128];
@@ -92,9 +104,9 @@ bool cfgString(char *str){
   val = ptr+1;
   // find matching name
   for (i=0; i<cfgLen; i++) {
-    if (strcmp(ref, cfg[i].id)==0 || strcmp(ref, cfg[i].var)==0) {
-      DBG1("%s:=%s", cfg[i].var, val)
-      cfgSet(cfg[i].ptr, cfg[i].type, val);
+    if (strcmp(ref, cfgP[i].id)==0 || strcmp(ref, cfgP[i].var)==0) {
+      DBG1("%s:=%s", cfgP[i].var, val)
+      cfgSet(cfgP[i].ptr, cfgP[i].type, val);
       return true;
     }
   } // for cfg

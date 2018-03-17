@@ -3,7 +3,6 @@
 #define STARTS "0"
 #define STARTS_MAX "50"
 #define SYS_LOG "c:SYS.LOG"
-#define SYS_CFG "c:SYS.CFG"
 
 typedef enum {
   null_alm=0,
@@ -15,8 +14,6 @@ typedef enum {
 } AlarmType;
 
 typedef struct SysInfo {
-  char cfgFile[32];
-  char cfgWild[32];
   char logFile[32];
   char platform[32];    // rudicsland
   char program[32];
@@ -32,7 +29,6 @@ typedef struct SysInfo {
 static int checkVitals(void);
 static int startCheck(void);
 static long sysDiskFree(void);
-static void configFile(void);
 static void dirSetup(char *path);
 static void logInit(char *file);
 static void preRun(int delay);
