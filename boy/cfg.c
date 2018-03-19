@@ -65,6 +65,7 @@ static CfgParam cfgP[] = {
   {"wdi", "wsp.detInt",     &wsp.detInt,      'i'},
   {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
   {"wdo", "wsp.detOff",     &wsp.detOff,      'i'},
+  {"wdu", "wsp.duty",       &wsp.duty,        'i'},
   {"wgn", "wsp.gain",       &wsp.gain,        'i'},
   {"wnm", "wsp.count",      &wsp.count,       'i'},
 };
