@@ -1,4 +1,12 @@
 // com.h  common to all
+typedef struct ComInfo {
+  bool dbg0;
+  bool dbg1;
+  bool dbg2;
+} ComInfo;
+
+ComInfo com;
+
 #include <cfxpico.h> // Persistor PicoDOS Definitions
 #include <cfxad.h>
 #include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
@@ -26,17 +34,21 @@
 
 #include <utl.h> // shared procs, SW
 
-extern bool dbg0, dbg1, dbg2;
+///
+// the DBG* global vars are used in macros
+// #ifdef DEBUG0
+// #define DBG0 if (dbg0) flogf(args);
+// DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
+//
+// DBG() blocks of code, as is
+// DBG0() print func names
+// DBG1() print more interesting things
+// DBG2() print details
 
 #define DEBUG
 #define DEBUG0
 #define DEBUG1
 #define DEBUG2
-
-// DBG() blocks of code, as is
-// DBG0() print func names
-// DBG1() print more interesting things
-// DBG2() print details
 
 #ifdef DEBUG
 #define DBG(...) __VA_ARGS__
@@ -45,19 +57,19 @@ extern bool dbg0, dbg1, dbg2;
 #endif
 
 #ifdef DEBUG0
-#define DBG0(...) if (dbg0) flogf("\n" __VA_ARGS__);
+#define DBG0(...) if (com.dbg0) flogf("\n" __VA_ARGS__);
 #else
 #define DBG0(...)
 #endif
 
 #ifdef DEBUG1
-#define DBG1(...) if (dbg1) flogf(" " __VA_ARGS__);
+#define DBG1(...) if (com.dbg1) flogf(" " __VA_ARGS__);
 #else
 #define DBG1(...)
 #endif
 
 #ifdef DEBUG2
-#define DBG2(...) if (dbg2) flogf(" " __VA_ARGS__);
+#define DBG2(...) if (com.dbg2) flogf(" " __VA_ARGS__);
 #else
 #define DBG2(...)
 #endif

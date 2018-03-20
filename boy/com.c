@@ -10,22 +10,17 @@
 // // global boy .port .device
 //
 
-
 ///
-// the DBG? global vars are used indirectly by 
+// the DBG* global vars are used in macros
 // #ifdef DEBUG0 
 // #define DBG0 if (dbg0) flogf(args);
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
-// sets: DBG0, DBG1, DBG2 (global vars)
-bool dbg0 = false, dbg1 = false, dbg2 = false;
+// sets: com.dbg0, .dbg1, .dbg2 (global vars)
 void comInit(void) {
-#ifdef DEBUG0
-  if (atoi(VEEFetchStr("DBG0", "999"))!=999) dbg0 = true;
-#endif
-#ifdef DEBUG1
-  if (atoi(VEEFetchStr("DBG1", "999"))!=999) dbg1 = true;
-#endif
-#ifdef DEBUG2
-  if (atoi(VEEFetchStr("DBG2", "999"))!=999) dbg2 = true;
-#endif
+  if (atoi(VEEFetchStr("DBG0", "999"))!=999) com.dbg0 = true;
+  else com.dbg0 = false;
+  if (atoi(VEEFetchStr("DBG1", "999"))!=999) com.dbg1 = true;
+  else com.dbg1 = false;
+  if (atoi(VEEFetchStr("DBG2", "999"))!=999) com.dbg2 = true;
+  else com.dbg2 = false;
 }
