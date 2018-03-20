@@ -65,11 +65,12 @@ static CfgParam cfgP[] = {
   {"wdi", "wsp.detInt",     &wsp.detInt,      'i'},
   {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
   {"wdo", "wsp.detOff",     &wsp.detOff,      'i'},
+  {"wdu", "wsp.duty",       &wsp.duty,        'i'},
   {"wgn", "wsp.gain",       &wsp.gain,        'i'},
   {"wnm", "wsp.count",      &wsp.count,       'i'},
 };
 
-static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
+static int cfgLen = sizeof(cfgP) / sizeof(CfgParam);
 
 ///
 // read config from CONFIG_FILE
@@ -93,11 +94,13 @@ bool cfgString(char *str){
   int i;
   DBG0("cfgString()")
   strcpy(s, str);
-  // erase after #, skip leading space, break at '='
+  // erase after #
   ptr = strchr(s, '#');
-  if (ptr==NULL) return false;
-  *ptr = 0;
+  if (ptr!=NULL) 
+    *ptr = 0;
+  // skip leading space
   ref = s + strspn(s, " \t");
+  // break at '='
   ptr = strchr(s, '=');
   if (ptr==NULL) return false;
   *ptr = 0;
@@ -105,8 +108,8 @@ bool cfgString(char *str){
   // find matching name
   for (i=0; i<cfgLen; i++) {
     if (strcmp(ref, cfgP[i].id)==0 || strcmp(ref, cfgP[i].var)==0) {
-      DBG1("%s:=%s", cfgP[i].var, val)
       cfgSet(cfgP[i].ptr, cfgP[i].type, val);
+      DBG2("(%c) %s:=%s", cfgP[i].type, cfgP[i].var, val)
       return true;
     }
   } // for cfg
@@ -140,7 +143,7 @@ static void cfgSet( void *ptr, char type, char *val ) {
     *(short*)ptr=(short)atoi(val);
     break;
   default:
-    flogf("\nERR\t| bad type");
+    flogf("\nERR\t| cfgSet() bad type");
   }
 } // cfgSet
 
@@ -169,12 +172,13 @@ int cfgRead(char *file) {
   r = 0;
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
-    DBG2("\n%s", ptr)
     if (cfgString(ptr))
       r++;
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
+  DBG1("\ntest:: ant.surfD=%f, boy.phase=%d, wsp.detInt=%d, wsp.duty=%d", 
+    ant.surfD, boy.phase, wsp.detInt, wsp.duty)
   return r;
 }
 
