@@ -70,11 +70,11 @@ static CfgParam cfgP[] = {
   {"wnm", "wsp.count",      &wsp.count,       'i'},
 };
 
-static int cfgLen = sizeof(cfgP) / sizeof(CfgParam);
 
 ///
 // read config from CONFIG_FILE
 void cfgInit(void) {
+  cfg.len = sizeof(cfgP) / sizeof(CfgParam);
   strcpy(cfg.file, VEEFetchStr( "SYS_CFG", SYS_CFG ));
   cfgRead(cfg.file);
   if (cfg.wild) {
@@ -87,12 +87,11 @@ void cfgInit(void) {
 // input line is short or long name, =, value
 // find setVar with id or name, call cfgSet()
 // OK to have leading space and #comments
-// uses: cfgP[] cfgLen
+// uses: cfgP[] cfg.len
 bool cfgString(char *str){
   char *ptr, *ref, *val;
   char s[128];
   int i;
-  DBG0("cfgString()")
   strcpy(s, str);
   // erase after #
   ptr = strchr(s, '#');
@@ -106,10 +105,10 @@ bool cfgString(char *str){
   *ptr = 0;
   val = ptr+1;
   // find matching name
-  for (i=0; i<cfgLen; i++) {
+  for (i=0; i<cfg.len; i++) {
     if (strcmp(ref, cfgP[i].id)==0 || strcmp(ref, cfgP[i].var)==0) {
       cfgSet(cfgP[i].ptr, cfgP[i].type, val);
-      DBG2("(%c) %s:=%s", cfgP[i].type, cfgP[i].var, val)
+      DBG2("\n(%c) %s=%s", cfgP[i].type, cfgP[i].var, val)
       return true;
     }
   } // for cfg
@@ -177,8 +176,45 @@ int cfgRead(char *file) {
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
-  DBG1("\ntest:: ant.surfD=%f, boy.phase=%d, wsp.detInt=%d, wsp.duty=%d", 
-    ant.surfD, boy.phase, wsp.detInt, wsp.duty)
   return r;
 }
+
+///
+// write value of all config settings
+// ?? add option to dump into file
+void cfgDump() {
+  int i;
+  char val[128], buff[4096];
+  buff[0] = 0;
+  // buffer output to make file writing easier
+  for (i=0; i<cfg.len; i++) {
+    switch (cfgP[i].type) {
+    case 'b':
+      sprintf(val, "=%d", *(bool *)cfgP[i].ptr);
+      break;
+    case 'c':
+      sprintf(val, "=%s", (char *)cfgP[i].ptr);
+      break;
+    case 'f':
+      sprintf(val, "=%f", *(float *)cfgP[i].ptr);
+      break;
+    case 'i':
+      sprintf(val, "=%d", *(int *)cfgP[i].ptr);
+      break;
+    case 'l':
+      sprintf(val, "=%ld", *(long *)cfgP[i].ptr);
+      break;
+    case 's':
+      sprintf(val, "=%d", *(short *)cfgP[i].ptr);
+      break;
+    }
+    // write varname=val onto buff
+    strcat(buff, cfgP[i].var);
+    strcat(buff, val);
+    strcat(buff, "\r\n");
+  } // for i<cfg.len
+  flogf("\ncfgDump() %d items", cfg.len);
+  flogf("\n---\n");
+  flogf("%s", buff);
+} // cfgDump
 

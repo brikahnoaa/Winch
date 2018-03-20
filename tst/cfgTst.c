@@ -1,9 +1,9 @@
 // cfgTst.c
 #include <com.h>
-#include <mpc.h>
+#include <cfg.h>
 #include <sys.h>
 
 void main(void){
   sysInit();
-  mpcInit();
+  cfgDump();
 }

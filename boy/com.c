@@ -1,6 +1,8 @@
 // com.c
 #include<com.h>
 
+ComInfo com;
+
 //
 // conventions:
 // three letter object types: ant, boy, ctd, etc

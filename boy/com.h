@@ -5,7 +5,7 @@ typedef struct ComInfo {
   bool dbg2;
 } ComInfo;
 
-ComInfo com;
+extern ComInfo com;
 
 #include <cfxpico.h> // Persistor PicoDOS Definitions
 #include <cfxad.h>
