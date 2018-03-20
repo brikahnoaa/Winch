@@ -10,7 +10,8 @@ typedef struct WspInfo {
   int detInt;   //-D      //Minutes   //DATA DET INTERVAL
   int detMax;   // Maximum Number of Detections to return
   int detOff;   // sleep
-  int gain; //-g 0-3
+  int duty;     // duty cycle
+  int gain;     //-g 0-3
   int count;    // number of DATA Boards
   int board;    // active board
   int log;

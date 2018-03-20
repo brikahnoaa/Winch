@@ -70,7 +70,7 @@ static CfgParam cfgP[] = {
   {"wnm", "wsp.count",      &wsp.count,       'i'},
 };
 
-static int cfgLen = sizeof(cfg) / sizeof(CfgParam);
+static int cfgLen = sizeof(cfgP) / sizeof(CfgParam);
 
 ///
 // read config from CONFIG_FILE
@@ -94,20 +94,24 @@ bool cfgString(char *str){
   int i;
   DBG0("cfgString()")
   strcpy(s, str);
-  // erase after #, skip leading space, break at '='
+  // erase after #
   ptr = strchr(s, '#');
-  if (ptr==NULL) return false;
-  *ptr = 0;
+  if (ptr!=NULL) 
+    *ptr = 0;
+  // skip leading space
   ref = s + strspn(s, " \t");
+  // break at '='
   ptr = strchr(s, '=');
   if (ptr==NULL) return false;
   *ptr = 0;
   val = ptr+1;
+  DBG1("%s=%s", ref, val)
   // find matching name
   for (i=0; i<cfgLen; i++) {
+    DBG2("(%s)", cfgP[i].var)
     if (strcmp(ref, cfgP[i].id)==0 || strcmp(ref, cfgP[i].var)==0) {
-      DBG1("%s:=%s", cfgP[i].var, val)
       cfgSet(cfgP[i].ptr, cfgP[i].type, val);
+      DBG1("%s:=%s", cfgP[i].var, val)
       return true;
     }
   } // for cfg
@@ -141,7 +145,7 @@ static void cfgSet( void *ptr, char type, char *val ) {
     *(short*)ptr=(short)atoi(val);
     break;
   default:
-    flogf("\nERR\t| bad type");
+    flogf("\nERR\t| cfgSet() bad type");
   }
 } // cfgSet
 
@@ -170,7 +174,6 @@ int cfgRead(char *file) {
   r = 0;
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
-    DBG2("\n%s", ptr)
     if (cfgString(ptr))
       r++;
     ptr = strtok(NULL, "\r\n");
