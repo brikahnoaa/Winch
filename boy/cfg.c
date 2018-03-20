@@ -105,13 +105,11 @@ bool cfgString(char *str){
   if (ptr==NULL) return false;
   *ptr = 0;
   val = ptr+1;
-  DBG1("%s=%s", ref, val)
   // find matching name
   for (i=0; i<cfgLen; i++) {
-    DBG2("(%s)", cfgP[i].var)
     if (strcmp(ref, cfgP[i].id)==0 || strcmp(ref, cfgP[i].var)==0) {
       cfgSet(cfgP[i].ptr, cfgP[i].type, val);
-      DBG1("%s:=%s", cfgP[i].var, val)
+      DBG2("(%c) %s:=%s", cfgP[i].type, cfgP[i].var, val)
       return true;
     }
   } // for cfg
@@ -179,6 +177,8 @@ int cfgRead(char *file) {
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
+  DBG1("\ntest:: ant.surfD=%f, boy.phase=%d, wsp.detInt=%d, wsp.duty=%d", 
+    ant.surfD, boy.phase, wsp.detInt, wsp.duty)
   return r;
 }
 
