@@ -23,6 +23,7 @@ void ctdInit(void) {
   ctd.port = mpcCom1Port();
   mpcDevice(ctd_dev);
   ctd.pending = false;
+  DBG1("%d", ctd.delay)
   // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
@@ -31,7 +32,7 @@ void ctdInit(void) {
     ctd.log = open(ctd.logFile, O_APPEND | O_CREAT | O_RDWR);
   if (ctd.log<=0) 
     utlShutdown("\nERR\t| ctdInit(): logfile open fail");
-  ctdSetDate();
+  // ctdSetDate();
   ctdSyncmode();
 } // ctdInit
 
@@ -75,6 +76,7 @@ void ctdSetDate(void) {
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
   static char str[32];
+  DBG0("ctdPrompt()")
   if (ctd.syncmode) 
     ctdBreak();
   TURxFlush(ctd.port);

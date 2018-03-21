@@ -8,11 +8,11 @@ void main(void){
   sysInit();
   mpcInit();
   ctdInit();
-  cprintf("\nPress a key to exit\n");
+  flogf("\nPress a key to exit\n");
   ctdSample();
   while (!cgetq()) {
     if (ctdReady()) {
-      cprintf(" %2.1f", ctdDepth());
+      flogf(" %2.1f", ctdDepth());
       ctdSample();
     }
   }

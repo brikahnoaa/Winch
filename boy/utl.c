@@ -64,7 +64,7 @@ int utlRead(Serial port, char *in) {
 // return: length
 int utlReadWait(Serial port, char *in, int wait) {
   int len;
-  DBG0("utlReadWait(%d)")
+  DBG0("utlReadWait(%d)", wait)
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   utlPet(); // could have been a long wait
   if (in[0]<=0) {
