@@ -7,6 +7,7 @@ typedef struct CfgInfo {
   int len;
 } CfgInfo;
 static void cfgSet( void *ptr, char type, char *val );
+static void cfgVee(void);
 
 bool cfgString(char *str);
 int cfgRead(char *file);

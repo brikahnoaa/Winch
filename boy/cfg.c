@@ -180,6 +180,27 @@ int cfgRead(char *file) {
 }
 
 ///
+// read all vee vars, look for *.*=*, try those as settings
+void cfgVee() {
+  VEEVar *vv;
+  char *name, *val, cfgstr[128];
+  DBG0("cfgVee()")
+  vv = VEEFetchNext(NULL);
+  while (vv) {
+    name = VEEGetName(vv);
+    if (strchr(name, '.')) {
+      val = VEEFetchStr(name, "");
+      if (val[0]==0) continue;        // break
+      strcpy(cfgstr, name);
+      strcat(cfgstr, "=");
+      strcat(cfgstr, val);
+      cfgString(cfgstr);
+      DBG2("%s", cfgstr);
+    }
+  }
+} // cfgVee
+
+///
 // write value of all config settings
 // ?? add option to dump into file
 void cfgDump() {
