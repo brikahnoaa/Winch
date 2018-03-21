@@ -14,11 +14,10 @@
 
 CtdInfo ctd;
 
-//
+///
 // buoy sbe16 set date, sync mode
 // pre: mpcInit sets up serial
 // sets: ctd.port .pending .log
-//
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1Port();
@@ -42,10 +41,9 @@ void ctdFlush(void){
   PZCacheFlush(C_DRV);
 } // ctdFlush
 
-//
+///
 // date, time for ctd. also some params.
 // uses: ctd.port
-//
 void ctdSetDate(void) {
   time_t rawtime;
   struct tm *info;
@@ -69,13 +67,12 @@ void ctdSetDate(void) {
 } // ctdSetDate
 
 
-//
+///
 // sbe16
 // \r input, echos input.  \r\n before next output.
 // pause 0.33s between \rn and s> prompt.
 // wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
 // ctdPrompt - poke buoy CTD, look for prompt
-//
 bool ctdPrompt(void) {
   static char str[32];
   if (ctd.syncmode) 
@@ -99,9 +96,8 @@ bool ctdPrompt(void) {
   return true;
 }
 
-//
+///
 // sets: ctd.syncmode
-//
 void ctdSyncmode(void) {
   DBG0("ctdSyncmode()")
   utlWrite(ctd.port, "Syncmode=y", EOL);
@@ -112,15 +108,15 @@ void ctdSyncmode(void) {
   ctd.syncmode = true;
 } 
 
-//
-//
+///
+// how to exit sync mode
 void ctdBreak(void) {
   DBG0("ctdBreak()")
   TUTxBreak(ctd.port, 5000);
   ctd.syncmode = false;
 } // ctdBreak
 
-//
+///
 // false if not pending, true if Q(), false and retry if timeout
 // sets: ctd.pending
 bool ctdReady() {
@@ -128,6 +124,7 @@ bool ctdReady() {
     return false;
   if (TURxQueuedCount(ctd.port))
     return true;
+  // retry if timeout
   if (tmrExp(ctd_tmr)) {
     flogf("\nWARN\t|ctdReady() timeout, retry");
     ctd.pending = false;      // ctdSample needs to see pending false
@@ -136,11 +133,10 @@ bool ctdReady() {
   return false;
 } // ctdReady
 
-//
+///
 // poke ctd to get sample, set interval timer
 // pause between ts\r\n and result = 4.32s
 // sets: ctd.pending ctd_tmr
-//
 void ctdSample(void) {
   int len;
   DBG0("ctdSample()")
@@ -158,22 +154,21 @@ void ctdSample(void) {
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
 
-//
+///
 // sample if not pending, wait for data, return depth
-//
 float ctdDepth() {
-  ctdSample();
+  if (!ctd.pending)
+    ctdSample();
   ctdData();
   return ctd.depth;
 } // ctdDepth
 
-//
+///
 // sbe16 response is just over 3sec in sync, well over 4sec in command
 // waits up to ctd.delay+1 seconds - good to call after tgetq()
 // data is reformatted to save a little space, written to ctd.log
 // logs: reformatted data string
 // sets: ctd.depth .pending 
-//
 void ctdData() {
   int len;
   float temp, cond, pres, flu, par, sal;
@@ -221,6 +216,8 @@ void ctdData() {
   return;
 } // ctdData
 
+///
+// ?? turn off auton mode if on
 void ctdStop(void){
   close(ctd.log);
   ctd.pending = false;

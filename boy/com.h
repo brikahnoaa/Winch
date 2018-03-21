@@ -92,4 +92,6 @@ extern ComInfo com;
 #define MDM_RX_TTL 48
 #define MDM_TX_TTL 50
 
+#define null NULL
+
 void comInit(void);
