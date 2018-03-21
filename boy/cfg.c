@@ -81,6 +81,7 @@ void cfgInit(void) {
     // wildcard match for config files
     // ??
   }
+  cfgVee();
 } // configFile
 
 ///
@@ -89,39 +90,53 @@ void cfgInit(void) {
 // OK to have leading space and #comments
 // uses: cfgP[] cfg.len
 bool cfgString(char *str){
-  char *ptr, *ref, *val;
+  char *p, *ptr, *ref, *val, *var, *id, type;
   char s[128];
   int i;
   strcpy(s, str);
   // erase after #
-  ptr = strchr(s, '#');
-  if (ptr!=NULL) 
-    *ptr = 0;
+  p = strchr(s, '#');
+  if (p!=NULL) 
+    *p = 0;
   // skip leading space
   ref = s + strspn(s, " \t");
   // break at '='
-  ptr = strchr(s, '=');
-  if (ptr==NULL) return false;
-  *ptr = 0;
-  val = ptr+1;
+  p = strchr(s, '=');
+  if (p==NULL) return false;
+  *p = 0;
+  val = p+1;
   // find matching name
   for (i=0; i<cfg.len; i++) {
-    if (strcmp(ref, cfgP[i].id)==0 || strcmp(ref, cfgP[i].var)==0) {
-      cfgSet(cfgP[i].ptr, cfgP[i].type, val);
-      DBG2("\n(%c) %s=%s", cfgP[i].type, cfgP[i].var, val)
+    id = cfgP[i].id;
+    var = cfgP[i].var;
+    ptr = cfgP[i].ptr;
+    type = cfgP[i].type;
+    // ignore case compare with cfgCmp
+    if (cfgCmp(ref, id) || cfgCmp(ref, var)) {
+      cfgSet(ptr, type, val);
+      DBG2("\n(%c) %s=%s", type, var, val)
       return true;
     }
   } // for cfg
   return false;                 // name not found
+} // cfgString
+
+///
+// compare strings for equivalence, ignore case
+bool cfgCmp(char *a, char*b) {
+  while (*a!=0) 
+    // convert char to lower, postincr, compare
+    if (tolower(*a++)!=tolower(*b++))
+      return false;
+  return true;
 }
 
-//
+///
 // convert *val to type and poke into *ptr
-//
 static void cfgSet( void *ptr, char type, char *val ) {
   switch (type) {
   case 'b':     // bool is a char
-    if (val[0]=='f'||val[0]=='F'||val[0]=='0')
+    if (val[0]=='f' || val[0]=='F' || val[0]=='0')
       *(bool*)ptr = false;
     else 
       *(bool*)ptr = true;
@@ -197,6 +212,7 @@ void cfgVee() {
       cfgString(cfgstr);
       DBG2("%s", cfgstr);
     }
+    vv = VEEFetchNext(vv);
   }
 } // cfgVee
 
