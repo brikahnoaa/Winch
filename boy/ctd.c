@@ -190,9 +190,9 @@ void ctdData() {
   DBG2("\n\tctd-->%s", utlNonPrint(stringin))
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
+  // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
-  // note: leading # in syncmode
-  temp = atof( strtok(stringin, "\r\n# "));
+  temp = atof( strtok(stringin, "\r\n#, "));
   cond = atof( strtok(NULL, ", ")); 
   pres = atof( strtok(NULL, ", "));
   flu = atof( strtok(NULL, ", "));
