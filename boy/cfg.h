@@ -1,5 +1,5 @@
 // cfg.h
-#define SYS_CFG "c:SYS.CFG"
+#define SYS_CFG "SYS.CFG"
 
 typedef struct CfgInfo {
   char file[32];

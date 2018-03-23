@@ -131,22 +131,21 @@ char *utlTimeDate(void) {
 // format non-printable string; null terminate
 // returns: global static char *str
 char *utlNonPrint (char *in) {
-  char ch, *ptr = str;
-  if (strlen(in)>BUFSZ) 
-    return "utlNonPrint(char *in) is too big";
-  // walk thru input until 0
-  while ((ch = *in++)!=0) {
+  char ch, *out = str;
+  int i, o;
+  // walk thru input until 0 or BUFSZ
+  i = o = 0;
+  while (in[i] && o<BUFSZ-6) {
+    ch = in[i++];
     if ((ch<32)||(ch>126)) {
       // non printing char
-      sprintf(ptr, " x%02X ", ch);
-      ptr += 5;     // five char hex ' x1A '
-    } else {
-      *ptr = ch;
-      ptr++;
-    }
+      sprintf(out+o, " x%02X ", ch);
+      o += 5;     // five char hex ' x1A '
+    } else 
+      out[o++] = ch;
   }
-  *ptr = 0;
-  return (str);
+  out[o] = 0;
+  return (out);
 } // printsafe
 
 void utlPet() { TickleSWSR(); }              // pet the watchdog

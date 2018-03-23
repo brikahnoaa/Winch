@@ -33,8 +33,8 @@ int sysInit(void) {
   preRun(10);
   sys.starts = startCheck();
   comInit();              // common init: dbg0,1,2
-  cfgInit();
   logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
+  cfgInit();
   TUInit(calloc, free);   // enable TUAlloc for serial ports
   return sys.starts;
 } // sysInit
@@ -75,23 +75,24 @@ int startCheck(void) {
 } // startCheck
 
 ///
-// opens logfile named in external var SYS_LOG, defaults to sys.log
+// opens logfile named in pico var SYS_LOG, defaults to sys.log
 // sets: (*file)
 void logInit(char *file) {
   utlPet();
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   Initflog(file, true);
-  flogf("\n----------------------------------------------------------------");
+  DBG0("logInit(%s)", file)
+  flogf("\n---   ---");
   flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
         BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
   flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
     sys.program, sys.version, sys.project, sys.platform, sys.starts);
-  flogf("\nStarted at: %s", utlTimeDate());
-  flogf("\n----------------------------------------------------------------");
-  fflush(NULL);
+  flogf("\nStarted: %s", utlTimeDate());
+  flogf("\n---   ---");
+  fflush(NULL);               // ??
   cdrain();
   ciflush();
   coflush();

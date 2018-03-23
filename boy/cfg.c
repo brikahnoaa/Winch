@@ -166,18 +166,16 @@ static void cfgSet( void *ptr, char type, char *val ) {
 // returns: number of cfg lines
 //
 int cfgRead(char *file) {
-  char fname[32] = "C:";
   char *buf, *ptr;
   int r, fh;
   struct stat finfo;
   //
   flogf("\ncfgRead(%s)", file);
-  strcat(fname, file);
-  if (stat(fname, &finfo) < 0) {
-    flogf("\t|ERR cannot open");
+  if (stat(file, &finfo) < 0) {
+    flogf("\t|ERR cannot stat()");
     return 0;
   }
-  fh = open(fname, O_RDONLY);
+  fh = open(file, O_RDONLY);
   // cfg file is not large, read all of it into buf and null terminate
   buf = (char *)malloc(finfo.st_size+1);
   read(fh, buf, finfo.st_size);
@@ -196,13 +194,14 @@ int cfgRead(char *file) {
 
 ///
 // read all vee vars, look for *.*=*, try those as settings
-void cfgVee() {
+void cfgVee(void) {
   VEEVar *vv;
   char *name, *val, cfgstr[128];
   DBG0("cfgVee()")
   vv = VEEFetchNext(NULL);
   while (vv) {
     name = VEEGetName(vv);
+    // got dot?
     if (strchr(name, '.')) {
       val = VEEFetchStr(name, "");
       if (val[0]==0) continue;        // break
@@ -210,7 +209,7 @@ void cfgVee() {
       strcat(cfgstr, "=");
       strcat(cfgstr, val);
       cfgString(cfgstr);
-      DBG2("%s", cfgstr);
+      DBG1("%s", cfgstr);
     }
     vv = VEEFetchNext(vv);
   }

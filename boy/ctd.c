@@ -23,13 +23,13 @@ void ctdInit(void) {
   ctd.port = mpcCom1Port();
   mpcDevice(ctd_dev);
   ctd.pending = false;
-  DBG1("%d", ctd.delay)
+  DBG1("ctd.delay=%d", ctd.delay)
   // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
     utlShutdown("ERR\t| ctdInit(): no prompt from ctd");
   ctd.log = utlLogFile(ctd.logFile);
-  // ?? ctdSetDate();
+  ctdSetDate();
   ctdSyncmode();
 } // ctdInit
 
@@ -45,7 +45,7 @@ void ctdFlush(void){
 void ctdSetDate(void) {
   time_t rawtime;
   struct tm *info;
-  char buffer[16];
+  char buffer[64];
   DBG0("ctdSetDate()")
   //
   time(&rawtime);
