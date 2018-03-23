@@ -3,7 +3,7 @@
 typedef struct CtdInfo {
   bool pending;                // request pending, expect response
   bool syncmode;              // currently in syncmode
-  char logFile[16];
+  char logFile[32];
   float depth;                // most recent
   int delay;                  // Delay seconds between polled samples
   int log;

@@ -27,12 +27,9 @@ void ctdInit(void) {
   // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
-    utlShutdown("\nERR\t|ctdInit(): no prompt from ctd");
-  if (ctd.log==0)
-    ctd.log = open(ctd.logFile, O_APPEND | O_CREAT | O_RDWR);
-  if (ctd.log<=0) 
-    utlShutdown("\nERR\t| ctdInit(): logfile open fail");
-  // ctdSetDate();
+    utlShutdown("ERR\t| ctdInit(): no prompt from ctd");
+  ctd.log = utlLogFile(ctd.logFile);
+  // ?? ctdSetDate();
   ctdSyncmode();
 } // ctdInit
 
@@ -211,7 +208,7 @@ void ctdData() {
   // Log WriteString
   len = strlen(stringout);
   if (write(ctd.log, stringout, len)<len) 
-    flogf("\nERR\t|ctdData log fail");
+    flogf("\nERR\t| ctdData log fail");
   ctd.depth = pres;
   if (ctd.pending)
     ctd.pending = false;

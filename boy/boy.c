@@ -14,10 +14,9 @@
 
 BoyInfo boy;
 
-//
+///
 // deploy or reboot, then loop over phases data/rise/call/drop
 // sets: boy.phase .phasePrev
-//
 void boyMain(int starts) {
   PhaseType phaseNext;
   // boy.phase set by sys.cfg
@@ -56,31 +55,30 @@ void boyMain(int starts) {
   } // while true
 } // boyMain() 
 
-//
-// ??
-//
+///
+// open log
 void boyInit(void) {
+  DBG0("boyInit()")
+  boy.log = utlLogFile(boy.logFile);
 } // boyInit
 
-//
+/// 
 // ??
 // figure out whats happening, continue as possible
 // load info from saved previous phase
 // ask antmod for our velocity
 // sets: boy.phase
-//
 PhaseType rebootPhase(void) {
   return drop_pha;
 } // reboot()
 
-//
+///
 // ??
 // wispr recording and detecting, buoy is docked to ngk
 // data is gathered for about 24hours (data_tmr)
 // wsp powers down for % of each hour (wispr_tmr)
 // organize data files, transfer data to antmod ??
 // uses: data_tmr duty_tmr
-//
 PhaseType dataPhase(void) {
   flogf("\n\t|dataPhase()");
   // sleep needs a lot of optimizing to be worth the trouble
@@ -90,11 +88,10 @@ PhaseType dataPhase(void) {
   return rise_pha;
 } // dataPhase
 
-//
+///
 // turn on ant, free space check, transfer files from buoy to antmod
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
-//
 PhaseType risePhase(void) {
   flogf("\n\t|risePhase() %s", utlTimeDate());
   antMode(td_mod);
@@ -120,14 +117,13 @@ PhaseType risePhase(void) {
   }
   // success
   return call_pha;
-}
+} // risePhase
 
-//
+///
 // rise up to targetD, 0 means surfacing 
 // when surfacing, expect stopCmd and don't set velocity 
 // sets: boy.lastRise .firstRise, (*msg) 
 // returns: bool
-//
 bool riseUp(float targetD, int errMax, int delay) {
   float depth, startD;
   MsgType msg;
@@ -234,23 +230,21 @@ bool riseUp(float targetD, int errMax, int delay) {
   return true;
 } // riseUp
 
-//
+///
 // ??
 // turn off sbe, on irid/gps (takes 30 sec). 
 // read gps date, loc. 
-//
 PhaseType callPhase(void) {
   return drop_pha;
 } // callPhase
 
-//
+///
 // antMod(stop), science(log), startT, dropCmd, science(stop)
 // steps: 1 dropRsp, 2 docked
 // failMode:=stage of failure 0,1; tryMax[], delay[] indexed by failMode
 // if (err>errMax) failMode++ <= failMax
 // 20 retries: 5@1sec, 5@10min, 10@1hour
 // errMax[failMode], delay[failMode]
-//
 PhaseType dropPhase() {
   int err = 0, step = 1;
   int failMode = 0, failMax = 2;
@@ -358,10 +352,9 @@ PhaseType dropPhase() {
   return data_pha;
 } // dropPhase
 
-//
+///
 // from ship deck to ocean floor
 // wait until under 10m, watch until not dropping, wait 30s, riseP
-//
 PhaseType deployPhase(void) {
   mpcDevice(ant_dev);
   antMode(idle_mod);
@@ -386,7 +379,7 @@ PhaseType deployPhase(void) {
   return rise_pha;
 }
 
-//
+///
 // ??
 // cable is stuck. short up, down to dock. 
 // go back to normal if resolved ??
@@ -395,10 +388,9 @@ PhaseType errorPhase(void) {
   return drop_pha;
 }
 
-//
+///
 // wait currChkSettle, buoy ctd, ant td, compute
 // uses: .boy2ant
-//
 float oceanCurr() {
   float aD, cD, a, b, c;
   // usually called while antMod is td_mod
@@ -414,9 +406,8 @@ float oceanCurr() {
   return b;
 }
 
-//
+///
 // uses: boy.currMax
-//
 bool oceanCurrChk() {
   float sideways;
   flogf("\n\t| oceanCurrChk() ");
@@ -429,18 +420,17 @@ bool oceanCurrChk() {
   return false;
 } // oceanCurrChk
 
-//
+///
 // shutdown buoy, reflects boyInit
-//
-// ??
-void boyStop(void) {}
+void boyStop(void) {} // ??
 
-// ??
-void boyFlush(void) {}
+///
+void boyFlush(void) {} // ??
 
-// ??
-void transferFiles(void) {}
+///
+void transferFiles(void) {} // ??
 
+///
 bool boyDocked(float depth) {
   return (abs(depth-boy.dockD)<0.2);
 }

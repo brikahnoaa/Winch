@@ -34,7 +34,7 @@ int sysInit(void) {
   sys.starts = startCheck();
   comInit();              // common init: dbg0,1,2
   cfgInit();
-  logInit(sys.logFile);
+  logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
   TUInit(calloc, free);   // enable TUAlloc for serial ports
   return sys.starts;
 } // sysInit

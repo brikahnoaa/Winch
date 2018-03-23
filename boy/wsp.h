@@ -6,7 +6,7 @@
 
 typedef struct WspInfo {
   bool on;
-  char logFile[16];
+  char logFile[32];
   int detInt;   //-D      //Minutes   //DATA DET INTERVAL
   int detMax;   // Maximum Number of Detections to return
   int detOff;   // sleep

@@ -22,7 +22,7 @@
 typedef struct PwrInfo {
   bool on;              // track and log battery capacity
   bool sampleReady;     // sample should be saved, until written
-  char logFile[16];     // log file
+  char logFile[32];     // log file
   float amps;
   float charge;         // minimum system capacity to run
   float chargeMin;      // minimum system capacity to run

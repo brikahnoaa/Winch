@@ -5,7 +5,7 @@
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
-static char str[BUFSZ];         // used by local routines, *str returned
+static char str[BUFSZ];         // used by utl funcs that return *str 
 char scratch[BUFSZ];            // used by other modules
 
 void utlDelay(int x) { 
@@ -87,7 +87,7 @@ int utlReadWait(Serial port, char *in, int wait) {
 ///
 // HH:MM:SS now
 // returns: global static char *str
-char * utlTime() {
+char *utlTime(void) {
   struct tm *tim;
   time_t secs;
 
@@ -99,21 +99,33 @@ char * utlTime() {
 } // utlTime
 
 ///
-// Time & Date String
-// MM/DD/YY HH:MM:SS now
+// Date String // MM-DD-YY 
 // returns: global static char *str
-char * utlTimeDate() {
+char *utlDate(void) {
   struct tm *tim;
   time_t secs;
   
   time(&secs);
   tim = localtime(&secs);
-  sprintf(str, "%02d/%02d/%02d %02d:%02d:%02d", tim->tm_mon,
+  sprintf(str, "%02d-%02d-%02d", tim->tm_mon,
+          tim->tm_mday, tim->tm_year - 100);
+  return str;
+} // utlDate
+
+///
+// Time & Date String // MM-DD-YY HH:MM:SS now
+// returns: global static char *str
+char *utlTimeDate(void) {
+  struct tm *tim;
+  time_t secs;
+  
+  time(&secs);
+  tim = localtime(&secs);
+  sprintf(str, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
   return str;
 } // utlTimeDate
-
 
 ///
 // format non-printable string; null terminate
@@ -141,4 +153,26 @@ void utlPet() { TickleSWSR(); }              // pet the watchdog
 
 void utlShutdown(char *out) {
   sysStop(out);
-}
+} // utlShutdown
+
+///
+// takes a base name and makes a full path, opens file, writes dateTime
+// ?? moves existing file to backup dir
+// rets: fileID
+int utlLogFile(char *fname) {
+  int log;
+  char *path[64];
+  strcpy(path, "log\\");
+  strcat(path, fname);
+  strcat(path, ".log");
+  log = open(fname, O_APPEND | O_CREAT | O_RDWR);
+  if (log<=0) {
+    sprintf(scratch, "FATAL | utlLogFile(%s): open failed", fname);
+    utlShutdown(scratch);
+    return 0;
+  } else {
+    sprintf(scratch, "---  %s ---", utlDateTime());
+    write(log, scratch, strlen(scratch));
+    return log;
+  }
+} // utlLogFile
