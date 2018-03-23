@@ -171,7 +171,7 @@ int utlLogFile(char *fname) {
     utlShutdown(scratch);
     return 0;
   } else {
-    sprintf(scratch, "---  %s ---", utlDateTime());
+    sprintf(scratch, "---  %s ---", utlTimeDate());
     write(log, scratch, strlen(scratch));
     return log;
   }
