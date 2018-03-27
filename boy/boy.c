@@ -357,7 +357,7 @@ PhaseType dropPhase() {
 // wait until under 10m, watch until not dropping, wait 30s, riseP
 PhaseType deployPhase(void) {
   mpcDevice(ant_dev);
-  antMode(idle_mod);
+  antInit();
   tmrStart( deploy_tmr, 60*60*2 );
   // wait until under 10m
   while (antDepth()<10.0) {
@@ -367,26 +367,23 @@ PhaseType deployPhase(void) {
       sysStop("deployP() 2 hour timeout");
     }
   }
-  // watch until not stationary
+  // watch until not moving
   antMode(td_mod);
   while (!antSteady()) 
     pwrNap(3);
   pwrNap(30);
-  mpcDevice(ctd_dev);
-  // use boy ctd for dockD, for later compare at end of drop_pha
-  boy.dockD = ctdDepth();
-  mpcDevice(ant_dev);
+  boy.dockD = antDepth();
+  antMode(idle_mod);
   return rise_pha;
-}
+} // deployPhase
 
 ///
 // ??
 // cable is stuck. short up, down to dock. 
 // go back to normal if resolved ??
-// 
 PhaseType errorPhase(void) {
   return drop_pha;
-}
+} // errorPhase
 
 ///
 // wait currChkSettle, buoy ctd, ant td, compute
@@ -404,7 +401,7 @@ float oceanCurr() {
   c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
   return b;
-}
+} // oceanCurr
 
 ///
 // uses: boy.currMax

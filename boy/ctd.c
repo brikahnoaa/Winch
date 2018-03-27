@@ -20,7 +20,7 @@ CtdInfo ctd;
 // sets: ctd.port .pending .log
 void ctdInit(void) {
   DBG0("ctdInit()")
-  ctd.port = mpcCom1Port();
+  ctd.port = mpcCom1();
   mpcDevice(ctd_dev);
   ctd.pending = false;
   DBG1("ctd.delay=%d", ctd.delay)
@@ -216,7 +216,7 @@ void ctdData() {
 } // ctdData
 
 ///
-// ?? turn off auton mode if on
+// ?? if auton, stop and capture data to file
 void ctdStop(void){
   close(ctd.log);
   ctd.pending = false;

@@ -26,67 +26,23 @@
 
 #include <utl.h> // shared procs, SW
 
-#define DBG_LVL 1
-#define DEBUG0
-#define DEBUG1
 
-// DBG() blocks of code, as is
-// DBG0() print func names
-// DBG1() print more interesting things
-// DBG2() print details
-
-// levels of debug
-#ifdef DBG_LVL
-  #if (DBG_LVL<=0)
-    #define DEBUG0
-  #endif
-  #if (DBG_LVL<=1)
-    #define DEBUG1
-  #endif
-  #if (DBG_LVL<=2)
-    #define DEBUG2
-  #endif
-#endif // #ifdef DBG_LVL
-
-
-#ifdef DEBUG
-#define DBG(...) __VA_ARGS__
-#else
-#define DBG(...)
-#endif
-
-#ifdef DEBUG0
-#define DBG0(...) flogf("\n" __VA_ARGS__);
-#else
-#define DBG0(...)
-#endif
-
-#ifdef DEBUG1
-#define DBG1(...) flogf(" " __VA_ARGS__);
-#else
-#define DBG1(...)
-#endif
-
-#ifdef DEBUG2
-#define DBG2(...) flogf(" " __VA_ARGS__);
-#else
-#define DBG2(...)
-#endif
+#define ANTSW 1
 
 // PINS
-#define MDM_PWR 21
-#define ANT_PWR 22  // antenna module Power pin (1=ON, 0=OFF)
-#define COM1SELECT 23  // set = antMod, clear = sbe16
-#define WISPR3 24
-#define WISPR4 25
-#define DFRPWR 26   // unused
-#define WISPR1 29
-#define WISPR2 30
-#define COM1_TX 31
-#define COM1_RX 32
-#define MDM_RX 33
-#define MDM_TX 35
-#define WISPR_PWR_ON 37
-#define WISPR_PWR_OFF 42
-#define MDM_RX_TTL 48
-#define MDM_TX_TTL 50
+#define ADCPWR 19
+#define A3LAPWR 21 // IRIDGPS PWR
+#define COM4PWR 22 // COM4 Enable
+#define SBEPWR 23 // SB#39plus TD power
+#define PAMPWR 24     // PAM PWR on/off
+#define COM4TX 25
+#define COM4RX 26  // Tied to /IRQ5
+#define PAMTX 27
+#define PAMRX 28
+#define PAMZEROBIT 29 // PAM selecton
+#define PAMONEBIT 30  // PAM selection
+#define SBETX 31
+#define SBERX 32  // Tied to IRQ2
+#define A3LARX 33  // IRIDGPS tied to /IRQ3
+#define A3LATX 35
+

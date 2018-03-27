@@ -77,14 +77,14 @@ extern ComInfo com;
 // PINS
 #define MDM_PWR 21
 #define ANT_PWR 22  // antenna module Power pin (1=ON, 0=OFF)
-#define COM1SELECT 23  // set = antMod, clear = sbe16
+#define COM1SEL 23  // set = antMod cf2, clear = ctd sbe16 in buoy
 #define WISPR3 24
 #define WISPR4 25
-#define DFRPWR 26   // unused
+#define HPSENS 26   // power for pressure sensor
 #define WISPR1 29
 #define WISPR2 30
-#define COM1_TX 31
-#define COM1_RX 32
+#define COM1TX 31
+#define COM1RX 32
 #define MDM_RX 33
 #define MDM_TX 35
 #define WISPR_PWR_ON 37

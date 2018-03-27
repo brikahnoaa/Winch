@@ -1,6 +1,6 @@
 // utl.c - utility stuff
+// #include <utl.h> in com.h
 #include <com.h>
-// note: utl.h included from com.h
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50

@@ -11,27 +11,6 @@
 
 AntInfo ant;
 
-// Definitions of uMPC TPU ports
-#define SBEPWR 23 // SB#39plus TD power
-#define SBERX 32  // Tied to IRQ2
-#define SBETX 31
-
-#define PAMPWR 24     // PAM PWR on/off
-#define PAMZEROBIT 29 // PAM selecton
-#define PAMONEBIT 30  // PAM selection
-#define PAMRX 28
-#define PAMTX 27
-
-#define ADCPWR 19
-#define ANTSW 1
-
-#define A3LAPWR 21 // IRIDGPS PWR
-#define A3LARX 33  // IRIDGPS tied to /IRQ3
-#define A3LATX 35
-
-#define COM4PWR 22 // COM4 Enable
-#define COM4RX 26  // Tied to /IRQ5
-#define COM4TX 25
 //#define       SYSCLK   8000           // choose: 160 to 32000 (kHz)
 #define SYSCLK 16000            // choose: 160 to 32000 (kHz)
 #define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
@@ -556,3 +535,19 @@ int AntMode(char r) {
 } //AntMode
 
 
+///
+// get two depth values, determine movement
+// rets: - | + | 0
+int antMoving(void) {
+  float dx, d1, d2, prec;
+  // prec := precision
+  prec = 0.1;
+  // get fresh
+  d1 = antDepth();
+  d2 = antDepth();
+  dx = d2 - d1;
+  if (abs(dx)<prec)
+    return 0;
+  else
+    return dx;
+} // antMoving

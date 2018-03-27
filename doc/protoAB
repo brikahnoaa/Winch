@@ -3,14 +3,13 @@ v4
  == td takes 2sec == in watch mode, continuously executes td until endwatch
  == all responses end with ok\n or err[0-9]\n
 ok                          =>  ok
-watchOn                     =>  ok
- ...                        =>  <temp> <depth>
-watchOff                    =>  ok
+watch                       =>  on|off ok
+moving                      =>  -0.11|0.11|0 ok
 td                          =>  <temp> <depth> ok
 halt                        =>  ok
 file <name> <size>          =>  ok|err# 
   <data=sizeB>              =>  ok|err#
-gpstd                       =>  <lat> <long> <time> <date> ok
+gps                         =>  <lat> <long> <time> <date> ok
 level                       =>  <0-5> ok
 iridium                     =>  <phone#> .. good|err#
                                 file <name> <size> .... good|err#
@@ -30,6 +29,20 @@ pico <dos command>          =>  <command response>
 
 <-- async alerts, not in direct response to query
 done                        :=  done with surface, due to time or data done
+
+v3
+Serial interface program to connect sbe39, control Iridium/GPS.
+Buoy is connected to com4 at 9600 BAUD
+ ^A Antenna G|I 
+ ^B Break
+ ^C Connect (power) I|S 
+ ^D powerDown I|S
+ ^E binary lEngth
+ ^F binary 2bytes (TBD)
+ ^G unused 
+On console (com1): s=status x=exit *=this message
+status: 
+"antenna:G iridgps:off sbe:on command:1"
 
 
 v2
