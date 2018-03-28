@@ -1,24 +1,23 @@
 // ctd.h
 
+typedef enum {idle_ctd, auto_ctd} CtdModeType;
+
 typedef struct CtdInfo {
-  bool pending;                // request pending, expect response
-  bool syncmode;              // currently in syncmode
   char logFile[32];
-  float depth;                // most recent
-  int delay;                  // Delay seconds between polled samples
+  int delay;                  // Delay seconds expected between polled samples
   int log;
+  CtdModeType mode;
   Serial port;                // same as mpc.port, ant.port
 } CtdInfo;
 
 static bool ctdPrompt(void);
 static void ctdBreak(void);
 static void ctdData(void);
+static void ctdFlush(void);
+static void ctdSample(void);
 static void ctdSetDate(void);
-static void ctdSyncmode(void); 
 
-bool ctdReady(void);
 float ctdDepth(void);
-void ctdFlush(void);
 void ctdInit(void);
-void ctdSample(void);
 void ctdStop(void);
+CtdModeType ctdMode(CtdModeType mode);

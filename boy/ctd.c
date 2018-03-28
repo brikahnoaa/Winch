@@ -5,6 +5,8 @@
 // general note: ctd wants \r only for input
 // Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
 //
+// ctd shares com1 with antmod cf2.
+//
 #include <com.h>
 #include <ctd.h>
 #include <mpc.h>
@@ -22,15 +24,11 @@ void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1();
   mpcDevice(ctd_dev);
-  ctd.pending = false;
-  DBG1("ctd.delay=%d", ctd.delay)
   // set up HW
   ctdBreak();
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
     utlShutdown("ERR\t| ctdInit(): no prompt from ctd");
-  ctd.log = utlLogFile(ctd.logFile);
   ctdSetDate();
-  ctdSyncmode();
 } // ctdInit
 
 void ctdFlush(void){
@@ -64,6 +62,11 @@ void ctdSetDate(void) {
   utlReadWait(ctd.port, scratch, 1);
 } // ctdSetDate
 
+///
+// turn autonomous on/off
+CtdModeType ctdMode(CtdModeType mode) {
+  return mode;
+}
 
 ///
 // sbe16
@@ -218,7 +221,12 @@ void ctdData() {
 ///
 // ?? if auton, stop and capture data to file
 void ctdStop(void){
+  mpcDevice(ctd_dev);
+  ctd.log = utlLogFile(ctd.logFile);
+  utlWrite(ctd.port, "stop", EOL);
+  utlReadWait(ctd.port, scratch, 1);
+  utlWrite(ctd.port, "getSamples", EOL);
+  utlReadWait(ctd.port, scratch, 1);
   close(ctd.log);
-  ctd.pending = false;
-  ctd.depth = 0;
+  mpcDevice(ant_dev);
 }

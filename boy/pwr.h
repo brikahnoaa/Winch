@@ -34,13 +34,12 @@ typedef struct PwrInfo {
 } PwrInfo;
 
 bool pwrCheck(void);
-void pwrInit(void);
 float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
 void pwrNap(int sec);
-void pwrFileName(long);
-void pwrFlush(void);
-void pwrLog(void);
-void pwrLogWrite(ushort *);
-void pwrOpenLog(long);
+static void pwrFlush(void);
+static void pwrLog(void);
+static void pwrLogWrite(ushort *);
+static void pwrOpenLog(long);
+void pwrInit(void);
 void pwrStop(void);

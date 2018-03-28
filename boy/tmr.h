@@ -5,6 +5,7 @@ typedef enum {
   ctd_tmr,          // ctd.pending waiting for ctd response
   deploy_tmr,       // steps during deploy phase0
   data_tmr,         // rise to surface, send data
+  init_tmr,         // init components
   rudics_tmr,       // max time to spend on the phone
   winch_tmr,        // win.pending amodem command response
   wispr_tmr,        // wispr duty cycle

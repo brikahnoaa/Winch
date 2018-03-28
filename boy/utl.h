@@ -21,6 +21,7 @@ int utlTrim(char *str);
 int utlRead(Serial port, char *in);
 int utlReadWait(Serial port, char *in, int wait);
 void utlWrite(Serial port, char *out, char *eol);
+void utlWriteLines(Serial port, char *out, char *eol);
 void utlDelay(int x);
 void utlPet(void);
 void utlShutdown(char *out);

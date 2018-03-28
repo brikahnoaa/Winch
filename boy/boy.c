@@ -93,15 +93,20 @@ PhaseType dataPhase(void) {
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
 PhaseType risePhase(void) {
+  bool success;
   flogf("\n\t|risePhase() %s", utlTimeDate());
-  antMode(td_mod);
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
     return drop_pha;
   }
   // MsgType riseOp(float targetD, int retry, int delay);
-  if (!riseUp(boy.currChkD, 5, 1)) {
+  antMode(auto_ant);
+  ctdMode(auto_ctd);
+  success = riseUp(boy.currChkD, 5, 1);
+  antMode(idle_ant);
+  ctdMode(idle_ctd);
+  if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
   }
@@ -111,7 +116,12 @@ PhaseType risePhase(void) {
     return drop_pha;
   }
   // surface
-  if (!riseUp(0.0, 5, 1)) {
+  antMode(auto_ant);
+  ctdMode(auto_ctd);
+  success = riseUp(0.0, 5, 1);
+  antMode(idle_ant);
+  ctdMode(idle_ctd);
+  if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
   }
@@ -151,7 +161,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antRising()) {
+      if (antMoving()>0.0) {
         // odd, we are rising but no response; log but ignore
         flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
         step = 2;
@@ -203,7 +213,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antSteady()) {
+      if (antMoving()==0.0) {
         // odd, we are stopped but no response; log but ignore
         flogf("\n\t|riseP stopCmd timeout, but stopped so continue..."); 
         step = 4;
@@ -252,12 +262,14 @@ PhaseType dropPhase() {
   float depth, startD, lastD;
   MsgType msg;
   time_t dropT = (time_t)0;
-  flogf("\n\tdropP() %s", utlTimeDate());
+  flogf("\n\tdropPhase() %s", utlTimeDate());
   /// 
   // step 1: dropCmd 
   // loop until dropRsp or dropping+timeout
-  flogf(" dropCmd");
+  flogf(" 1. dropCmd");
   ngkSend( dropCmd_msg );
+  antMode(auto_ant);
+  ctdMode(auto_ctd);
   while (step==1) {
     depth = antDepth();
     switch (msg = ngkRecv()) {
@@ -267,14 +279,14 @@ PhaseType dropPhase() {
       if (err==0) // all OK, measure dropTime
         dropT = time(0);
       step = 2;
-      continue; // while
+      continue; // while step1
     default: // unexpected msg
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     //
     if (tmrExp(winch_tmr)) {
       // minor err
-      if (antDropping()) {
+      if (antMoving()<0) {
         // odd, we are dropping but no response; log but allow
         flogf(" timeout, but dropping ..."); 
         err++;    // indicate trouble
@@ -294,8 +306,7 @@ PhaseType dropPhase() {
   ///
   // step 2: dropping 
   // ctdSample loop until docked
-  antMode(stop_mod);
-  mpcDevice(ctd_dev);
+  ctdMode(auto_ctd);
   startD = ctdDepth();
   ctdSample();
   while (step==2) {
@@ -309,7 +320,6 @@ PhaseType dropPhase() {
         tmrStart(winch_tmr, 8);
       ctdSample();
     } // ctd
-    //
     if (tmrExp(winch_tmr)) {
       // tmr set by NOT DROPPING above
       lastD = depth;
@@ -320,7 +330,6 @@ PhaseType dropPhase() {
       else                          // dropping, tmr was a mistake
         ctdSample();
     } // timeout
-    //
     switch (msg = ngkRecv()) {
     case null_msg: break;
     case stopCmd_msg:
@@ -336,7 +345,7 @@ PhaseType dropPhase() {
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
   } // while step2
-  /// 
+  antMode(idle_ant);
   // step 3: docked
   // velocity, finish science
   if (err==0) {
@@ -368,12 +377,12 @@ PhaseType deployPhase(void) {
     }
   }
   // watch until not moving
-  antMode(td_mod);
-  while (!antSteady()) 
+  antMode(auto_ant);
+  while (antMoving()!=0.0) 
     pwrNap(3);
   pwrNap(30);
   boy.dockD = antDepth();
-  antMode(idle_mod);
+  antMode(idle_ant);
   return rise_pha;
 } // deployPhase
 
@@ -390,8 +399,9 @@ PhaseType errorPhase(void) {
 // uses: .boy2ant
 float oceanCurr() {
   float aD, cD, a, b, c;
-  // usually called while antMod is td_mod
-  antMode(idle_mod);
+  // usually called while antMod is auto_ant
+  antMode(idle_ant);
+  ctdMode(idle_ctd);
   mpcDevice(ctd_dev);
   cD=ctdDepth();
   mpcDevice(ant_dev);
@@ -400,6 +410,8 @@ float oceanCurr() {
   a=cD-aD;
   c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
+  antMode(auto_ant);
+  ctdMode(auto_ctd);
   return b;
 } // oceanCurr
 
