@@ -1,5 +1,5 @@
 // mpc.c - hardware, mpc specific
-#include <com.h>
+#include <utl.h>
 #include <mpc.h>
 #include <sys.h>
 
@@ -31,7 +31,7 @@ void mpcInit(void) {
   tx = TPUChanFromPin(COM1TX);
   mpc.com1 = TUOpen(rx, tx, COM1BAUD, 0);
   if (mpc.com1==NULL)
-    utlShutdown("mpcInit() com1 open fail");
+    utlStop("mpcInit() com1 open fail");
   utlDelay(RS232_SETTLE); // to settle rs232
 
   PIOMirrorList(mirrorpins);
@@ -92,8 +92,7 @@ static void spur_ISR(void) {
 //
 void mpcSleep(void) {
   ciflush(); // flush any junk
-  utlTimeDate();
-  flogf("\nmpcSleep() at %s", scratch);
+  flogf("\nmpcSleep() at %s", utlTimeDate());
 
   // Install the interrupt handlers that will break us out by "break signal"
   // ?? this should be a one time action, we toggle pins int|I/O
@@ -134,8 +133,7 @@ void mpcSleep(void) {
   QSMRun();           // bring back the QSM
   CFEnable(true);     // turn on the CompactFlash card
   ciflush();          // discard any garbage characters
-  utlTime();
-  flogf(", wakeup at %s", scratch);
+  flogf(", wakeup at %s", utlTime());
   putflush(); 
 } // mpcSleep
 

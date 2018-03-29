@@ -1,5 +1,5 @@
 // ngk.c
-#include <com.h>
+#include <utl.h>
 #include <ngk.h>
 #include <tmr.h>
 
@@ -39,7 +39,7 @@ void ngkInit(void) {
   // PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
   p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
   if (p == 0)
-    utlShutdown("\nERR\t|ngkInit() Bad ngk serial port");
+    utlStop("\nERR\t|ngkInit() Bad ngk serial port");
   else {
     TUTxFlush(p);
     TURxFlush(p);
@@ -78,14 +78,13 @@ void ngkSend(MsgType msg) {
 // get winch message if available and parse it
 // respond immediately to stopcmd buoycmd
 // uses: ngk.expect
-// sets: ngk.on ngk.expect .lastRecv scratch 
+// sets: ngk.on ngk.expect .lastRecv 
 // returns: msg
 MsgType ngkRecv() {
-  char msgStr[BUFSZ];
   MsgType msg;
-  if (utlRead(ngk.port, msgStr)==0) 
+  if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
-  msg = msgParse(msgStr);
+  msg = msgParse(utlBuf);
   flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
   if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();

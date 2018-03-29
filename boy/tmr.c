@@ -1,5 +1,5 @@
 // tmr.c - interval timer
-#include <com.h>
+#include <utl.h>
 #include <tmr.h>
 
 // initialized to all zeros, that works

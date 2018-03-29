@@ -1,5 +1,5 @@
 // sys.h
-//
+#define SYS_H
 #define STARTS "0"
 #define STARTS_MAX "50"
 #define SYS_LOG "SYS.LOG"

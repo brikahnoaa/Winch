@@ -1,5 +1,5 @@
 // ant.c - for working with antenna module
-#include <com.h>
+#include <utl.h>
 #include <ant.h>
 #include <mpc.h>
 #include <tmr.h>
@@ -19,13 +19,13 @@ void antInit(void) {
   // get cf2 startup "ok"
   tmrStart(init_tmr, 9);
   while (true) {
-    utlRead(ant.port, scratch);
-    if (strstr(scratch, "ok")) {
+    utlRead(ant.port, utlBuf);
+    if (strstr(utlBuf, "ok")) {
       tmrStop(init_tmr);
       continue; // while
     }
     if (tmrExp(init_tmr)) 
-      utlShutdown("FATAL\t| antInit() start timeout");
+      utlStop("FATAL\t| antInit() startup fail");
   } // while
 } // antInit
 

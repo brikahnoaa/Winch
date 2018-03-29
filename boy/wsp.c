@@ -1,5 +1,5 @@
 // wsp.c
-#include <com.h>
+#include <utl.h>
 #include <wsp.h>
 
 WspInfo wsp;

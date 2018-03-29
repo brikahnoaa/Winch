@@ -1,5 +1,5 @@
 // dos.c - utility stuff
-#include <com.h>
+#include <utl.h>
 #include <dos.h>
 
 /*
@@ -47,7 +47,7 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
     return r;
   }
 
-  flogf("\n%s|COMDos() %s", clockTime(scratch), Com);
+  flogf("\n%s|COMDos() %s", clockTime(utlStr), Com);
   putflush();
   CIOdrain();
   execstr(Com);

@@ -1,5 +1,5 @@
 // sys.c
-#include <com.h>
+#include <utl.h>
 #include <sys.h>
 
 #include <ant.h>
@@ -31,10 +31,11 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 // uses: sys.starts
 int sysInit(void) {
   TUChParams *params;
-  short qsize = 16*1024;
+  short qsize = 16*BUFSZ;
   preRun(10);
   sys.starts = startCheck();
-  comInit();              // common init: dbg0,1,2
+  dbgInit();              // common init: dbg0,1,2
+  utlInit();              // malloc global utlStr
   logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
   cfgInit();
   // make serial queues larger (16K)
@@ -68,13 +69,14 @@ void preRun(int delay) {
 
 ///
 // check STARTS>STARTSMAX to see if we are rebooting wildly
+// note - dbgInit, sysInit called after this
 // returns: starts
 int startCheck(void) {
   int cnt, max;
   max = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
   cnt = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
-  sprintf(scratch, "%d", cnt);
-  VEEStoreStr("STARTS", scratch);
+  sprintf(utlStr, "%d", cnt);
+  VEEStoreStr("STARTS", utlStr);
   // log file is not open yet
   cprintf("\nstartCheck(): starts %d, max %d", cnt, max);
   if (cnt>max)
@@ -117,11 +119,11 @@ void sysSleep(void) {
 // close files, turn off devices, power off
 void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
-  // antStop();
-  // boyStop();
-  // ngkStop();
-  // pwrStop();
-  // wspStop();
+  antStop();
+  boyStop();
+  ngkStop();
+  pwrStop();
+  wspStop();
   sysSleep();
   BIOSReset();
 } // sysStop

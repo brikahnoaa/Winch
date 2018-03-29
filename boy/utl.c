@@ -1,12 +1,27 @@
 // utl.c - utility stuff
-// #include <utl.h> in com.h
-#include <com.h>
+#include <utl.h>
+#ifndef SYS_H
+#include <sys.h>
+#endif
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
-static char str[BUFSZ];         // used by utl funcs that return *str 
-char scratch[BUFSZ];            // used by other modules
+// the globals below are used by all modules, malloc'd in utlInit()
+// utlRet is returned by some char *utlFuncs()
+char *utlBuf, *utlStr, *utlRet;     
+
+UtlInfo utl;
+
+///
+// malloc static buffers (heap is 384K, stack only 16K)
+void utlInit(void) {
+  utl.buf = malloc(BUFSZ);
+  utl.str = malloc(STRSZ);
+  utlBuf = malloc(BUFSZ);
+  utlStr = malloc(STRSZ);
+  utlRet = malloc(BUFSZ);
+}
 
 void utlDelay(int x) { 
   RTCDelayMicroSeconds((long)x*1000); 
@@ -25,18 +40,18 @@ int utlTrim(char *line) {
 
 ///
 // put string to serial; queue, don't block, it should all buffer
-// uses: scratch
+// uses: utl.str
 void utlWrite(Serial port, char *out, char *eol) {
   int len, delay, sent;
   DBG0("utlWrite()")
-  strcpy(scratch, out);
+  strcpy(utl.str, out);
   if (eol!=NULL)
-    strcat(scratch, eol);
-  len = strlen(scratch);
+    strcat(utl.str, eol);
+  len = strlen(utl.str);
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
-  sent = (int)TUTxPutBlock(port, scratch, (long)len, (short)delay);
+  sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
   DBG1("sent %d of %d", sent, len)
-  DBG2("'%s'", utlNonPrint(scratch))
+  DBG2("'%s'", utlNonPrint(utl.str))
   if (len!=sent) 
     flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
 }
@@ -44,7 +59,7 @@ void utlWrite(Serial port, char *out, char *eol) {
 ///
 // write multiple lines, consume/discard some response after each line
 void utlWriteLines(Serial port, char *out, char *eol) {
-  char buf[BUFSZ], *s;
+  char *buf=utl.buf, *s;
   strcpy(buf, out);
   s=strtok(buf, "\r\n");
   while(s!=NULL) {
@@ -58,7 +73,8 @@ void utlWriteLines(Serial port, char *out, char *eol) {
 
 ///
 // read all the chars on the port, with a normal delay
-// returns: length
+// char *in should be BUFSZ
+// returns: len
 int utlRead(Serial port, char *in) {
   int len = 0;
   if (TURxQueuedCount(port)<1) return 0;
@@ -101,52 +117,52 @@ int utlReadWait(Serial port, char *in, int wait) {
 
 ///
 // HH:MM:SS now
-// returns: global static char *str
+// returns: global static char *utlRet
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
 
   time(&secs);
   tim = localtime(&secs);
-  sprintf(str, "%02d:%02d:%02d",
+  sprintf(utlRet, "%02d:%02d:%02d",
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return str;
+  return utlRet;
 } // utlTime
 
 ///
 // Date String // MM-DD-YY 
-// returns: global static char *str
+// returns: global static char *utlRet
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
   
   time(&secs);
   tim = localtime(&secs);
-  sprintf(str, "%02d-%02d-%02d", tim->tm_mon,
+  sprintf(utlRet, "%02d-%02d-%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year - 100);
-  return str;
+  return utlRet;
 } // utlDate
 
 ///
 // Time & Date String // MM-DD-YY HH:MM:SS now
-// returns: global static char *str
+// returns: global static char *utlRet
 char *utlTimeDate(void) {
   struct tm *tim;
   time_t secs;
   
   time(&secs);
   tim = localtime(&secs);
-  sprintf(str, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon,
+  sprintf(utlRet, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
-  return str;
+  return utlRet;
 } // utlTimeDate
 
 ///
 // format non-printable string; null terminate
-// returns: global static char *str
+// returns: global static char *utlRet
 char *utlNonPrint (char *in) {
-  char ch, *out = str;
+  char ch, *out = utlRet;
   int i, o;
   // walk thru input until 0 or BUFSZ
   i = o = 0;
@@ -165,10 +181,6 @@ char *utlNonPrint (char *in) {
 
 void utlPet() { TickleSWSR(); }              // pet the watchdog
 
-void utlShutdown(char *out) {
-  sysStop(out);
-} // utlShutdown
-
 ///
 // takes a base name and makes a full path, opens file, writes dateTime
 // ?? moves existing file to backup dir
@@ -181,12 +193,16 @@ int utlLogFile(char *fname) {
   strcat(path, ".log");
   log = open(fname, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
-    sprintf(scratch, "FATAL | utlLogFile(%s): open failed", fname);
-    utlShutdown(scratch);
+    sprintf(utl.str, "FATAL | utlLogFile(%s): open failed", fname);
+    utlStop(utl.str);
     return 0;
   } else {
-    sprintf(scratch, "---  %s ---", utlTimeDate());
-    write(log, scratch, strlen(scratch));
+    sprintf(utl.str, "---  %s ---", utlTimeDate());
+    write(log, utl.str, strlen(utl.str));
     return log;
   }
 } // utlLogFile
+
+void utlStop(char *out) {
+  sysStop(out);
+}

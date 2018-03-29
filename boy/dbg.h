@@ -1,38 +1,11 @@
-// com.h  common to all
-typedef struct ComInfo {
+// dbg.h  common to all
+typedef struct DbgInfo {
   bool dbg0;
   bool dbg1;
   bool dbg2;
-} ComInfo;
+} DbgInfo;
 
-extern ComInfo com;
-
-#include <cfxpico.h> // Persistor PicoDOS Definitions
-#include <cfxad.h>
-#include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
-#include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
-#include <fcntl.h> // PicoDOS POSIX-like File Access Definitions
-#include <stat.h> // PicoDOS POSIX-like File Status Definitions
-#include <termios.h> // PicoDOS POSIX-like Terminal I/O Definitions
-#include <unistd.h> // PicoDOS POSIX-like UNIX Function Definitions
-
-#include <assert.h>
-#include <ctype.h>
-#include <errno.h>
-#include <float.h>
-#include <limits.h>
-#include <locale.h>
-#include <math.h>
-#include <setjmp.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include <utl.h> // shared procs, SW
+extern DbgInfo dbg;
 
 ///
 // the DBG* global vars are used in macros
@@ -57,19 +30,19 @@ extern ComInfo com;
 #endif
 
 #ifdef DEBUG0
-#define DBG0(...) if (com.dbg0) flogf("\n" __VA_ARGS__);
+#define DBG0(...) if (dbg.dbg0) flogf("\n" __VA_ARGS__);
 #else
 #define DBG0(...)
 #endif
 
 #ifdef DEBUG1
-#define DBG1(...) if (com.dbg1) flogf(" " __VA_ARGS__);
+#define DBG1(...) if (dbg.dbg1) flogf(" " __VA_ARGS__);
 #else
 #define DBG1(...)
 #endif
 
 #ifdef DEBUG2
-#define DBG2(...) if (com.dbg2) flogf(" " __VA_ARGS__);
+#define DBG2(...) if (dbg.dbg2) flogf(" " __VA_ARGS__);
 #else
 #define DBG2(...)
 #endif
@@ -94,4 +67,4 @@ extern ComInfo com;
 
 #define null NULL
 
-void comInit(void);
+void dbgInit(void);
