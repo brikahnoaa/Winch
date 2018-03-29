@@ -77,16 +77,15 @@ AntModeType antMode(AntModeType mode) {
     out = "\n initlogging \n initlogging \n"
           "sampleInterval=0 \n txRealTime=y \n startnow \n";
     utlWriteLines(ant.port, out, EOL);
-    ant.mode = mode;
     // clear samples
     for (i=0; i<=ant.sampleCnt; i++) 
       ant.samples[i] = 0;
     break;
   case idle_ant:
     utlWrite(ant.port, "stop", EOL);
-    ant.mode = mode;
     break;
   } // switch
+  ant.mode = mode;
   return ant.mode;
 }
 

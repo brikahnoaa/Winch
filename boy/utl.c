@@ -49,7 +49,7 @@ void utlWriteLines(Serial port, char *out, char *eol) {
   s=strtok(buf, "\r\n");
   while(s!=NULL) {
     utlWrite(port, s, eol);
-    s=strtok(NULL, "\r\n"));
+    s=strtok(NULL, "\r\n");
   }
   // discard response
   utlReadWait(port, buf, 1);

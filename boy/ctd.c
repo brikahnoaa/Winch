@@ -17,7 +17,7 @@
 CtdInfo ctd;
 
 ///
-// buoy sbe16 set date, sync mode
+// buoy sbe16 set date
 // pre: mpcInit sets up serial
 // sets: ctd.port .pending .log
 void ctdInit(void) {
@@ -56,8 +56,6 @@ void ctdSetDate(void) {
   //
   utlWrite(ctd.port, buffer, EOL);
   utlReadWait(ctd.port, scratch, 1);
-  utlWrite(ctd.port, "syncwait=0", EOL);
-  utlReadWait(ctd.port, scratch, 1);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(ctd.port, scratch, 1);
 } // ctdSetDate
@@ -65,7 +63,38 @@ void ctdSetDate(void) {
 ///
 // turn autonomous on/off
 CtdModeType ctdMode(CtdModeType mode) {
-  return mode;
+  char *out, buf[4096];
+  int len1 = len2 = len3 = sizeof(buf);
+  if (ctd.mode==mode) return mode;
+  DBG0("ctdMode(%d)", mode)
+  mpcDevice(ctd_dev);
+  switch (mode) {
+  case auto_ctd:
+    out = "\n initlogging \n initlogging \n"
+          "sampleInterval=0 \n txRealTime=n \n startnow \n";
+    utlWriteLines(ctd.port, out, EOL);
+    break;
+  case idle_ctd:
+    utlWrite(ctd.port, "stop", EOL);
+    // ?? pause and flush
+    pwrNap(2);
+    TURxFlush(ctd.port);
+    // science log
+    ctd.log = utlLogFile(ctd.logFile);
+    utlWrite(ctd.port, "getSamples", EOL);
+    while (len1==len3) {
+      // repeat until less than a full buf
+      len2 = (int) TURxGetBlock(ctd.port, buf, (long) len1, (short) 100);
+      len3 = write(ctd.log, buf, len);
+      if (len2!=len3) 
+        flogf("\nERR\t| ctdMode() could not write ctd.log");
+    } // while ==
+    close(ctd.log);
+    break;
+  } // switch
+  ctd.mode = mode;
+  mpcDevice(ant_dev);
+  return ctd.mode;
 }
 
 ///
@@ -77,10 +106,8 @@ CtdModeType ctdMode(CtdModeType mode) {
 bool ctdPrompt(void) {
   static char str[32];
   DBG0("ctdPrompt()")
-  if (ctd.syncmode) 
-    ctdBreak();
   TURxFlush(ctd.port);
-  TUTxPutByte(ctd.port, '\r', true);
+  utlWrite(ctd.port, "", EOL);
   utlReadWait(ctd.port, str, 2);
   // looking for S>
   if (strstr(str, "S>") == NULL) {
@@ -99,41 +126,11 @@ bool ctdPrompt(void) {
 }
 
 ///
-// sets: ctd.syncmode
-void ctdSyncmode(void) {
-  DBG0("ctdSyncmode()")
-  utlWrite(ctd.port, "Syncmode=y", EOL);
-  ctdPrompt();
-  utlWrite(ctd.port, "QS", EOL);
-  utlDelay(100);
-  TURxFlush(ctd.port);
-  ctd.syncmode = true;
-} 
-
-///
-// how to exit sync mode
+// reset, exit sync mode
 void ctdBreak(void) {
   DBG0("ctdBreak()")
   TUTxBreak(ctd.port, 5000);
-  ctd.syncmode = false;
 } // ctdBreak
-
-///
-// false if not pending, true if Q(), false and retry if timeout
-// sets: ctd.pending
-bool ctdReady() {
-  if (!ctd.pending)
-    return false;
-  if (TURxQueuedCount(ctd.port))
-    return true;
-  // retry if timeout
-  if (tmrExp(ctd_tmr)) {
-    flogf("\nWARN\t|ctdReady() timeout, retry");
-    ctd.pending = false;      // ctdSample needs to see pending false
-    ctdSample();
-  }
-  return false;
-} // ctdReady
 
 ///
 // poke ctd to get sample, set interval timer
@@ -143,14 +140,11 @@ void ctdSample(void) {
   int len;
   DBG0("ctdSample()")
   if (ctd.pending) return;
-  if (ctd.syncmode) TUTxPutByte(ctd.port, '\r', true);
-  else {
-    utlWrite(ctd.port, "TS", EOL);
-    // consume echo
-    len = utlReadWait(ctd.port, scratch, 1);
-    if (len<3) 
-      flogf("\nERR ctdSample, TS command fail");
-  }
+  utlWrite(ctd.port, "TS", EOL);
+  // consume echo
+  len = utlReadWait(ctd.port, scratch, 1);
+  if (len<3) 
+    flogf("\nERR ctdSample, TS command fail");
   ctd.pending = true;
   // pending response, timeout in 5sec, checked by ctdReady()
   tmrStart( ctd_tmr, ctd.delay );
@@ -221,12 +215,4 @@ void ctdData() {
 ///
 // ?? if auton, stop and capture data to file
 void ctdStop(void){
-  mpcDevice(ctd_dev);
-  ctd.log = utlLogFile(ctd.logFile);
-  utlWrite(ctd.port, "stop", EOL);
-  utlReadWait(ctd.port, scratch, 1);
-  utlWrite(ctd.port, "getSamples", EOL);
-  utlReadWait(ctd.port, scratch, 1);
-  close(ctd.log);
-  mpcDevice(ant_dev);
 }

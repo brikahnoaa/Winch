@@ -30,12 +30,20 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 // pre, starts, config, log, pico
 // uses: sys.starts
 int sysInit(void) {
+  TUChParams *params;
+  short qsize = 16*1024;
   preRun(10);
   sys.starts = startCheck();
   comInit();              // common init: dbg0,1,2
   logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
   cfgInit();
-  TUInit(calloc, free);   // enable TUAlloc for serial ports
+  // make serial queues larger (16K)
+  params = TUGetDefaultParams();
+  params->rxqsz = qsize;
+  params->txqsz = qsize;
+  TUSetDefaultParams( params );
+  // enable TUAlloc for serial ports
+  TUInit(calloc, free);   
   return sys.starts;
 } // sysInit
 

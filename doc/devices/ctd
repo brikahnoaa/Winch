@@ -1,0 +1,50 @@
+handling sbe16 sbe39
+
+longer delay when sampling starts (3x inter delay?)
+several samples after STOP (3?)
+header before getsamples output
+output from getsamples != ts != txrealtime (header, lead #, trailing sampnum)
+occassional delays (above 1s?)
+
+getsd return xml including number of samples
+getsd
+<StatusData DeviceType='SBE39plus' SerialNumber='03908292'>
+   <DateTime>2018-03-28T23:57:40</DateTime>
+   <EventSummary numEvents='69'/>
+   <Power>
+      <vMain>6.77</vMain>
+      <vBackup>2.93</vBackup>
+   </Power>
+   <MemorySummary>
+      <Bytes>1656</Bytes>
+      <Samples>138</Samples>
+      <SamplesFree>5592267</SamplesFree>
+      <SampleLength>12</SampleLength>
+   </MemorySummary>
+   <AutonomousSampling>no, received stop command</AutonomousSampling>
+</StatusData>
+<Executed/>
+
+getsamples:200,300 too big gives error on sbe39
+getsamples:100,200
+start time = 28 Mar 2018, 17:51:43
+start sample number = 100
+
+  21.2837,    0.161, 28 Mar 2018, 17:51:43
+  21.2843,    0.158, 28 Mar 2018, 17:51:43
+  21.2848,    0.142, 28 Mar 2018, 17:51:44
+  21.2855,    0.160, 28 Mar 2018, 17:51:44
+  21.2855,    0.163, 28 Mar 2018, 17:51:45
+  21.2861,    0.149, 28 Mar 2018, 17:51:45
+  21.2860,    0.154, 28 Mar 2018, 17:51:46
+  21.2860,    0.165, 28 Mar 2018, 17:51:46
+  21.2864,    0.163, 28 Mar 2018, 17:51:47
+  21.2870,    0.155, 28 Mar 2018, 17:51:47
+  21.2877,    0.175, 28 Mar 2018, 17:51:48
+  21.2889,    0.169, 28 Mar 2018, 17:51:48
+  21.2911,    0.164, 28 Mar 2018, 17:51:50
+  21.2926,    0.150, 28 Mar 2018, 17:51:50
+<Executed/>
+getsamples:200,300
+<ERROR type='FAILED' msg='Out of range'/>
+<Executed/>

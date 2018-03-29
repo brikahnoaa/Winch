@@ -3,7 +3,9 @@
 typedef enum {idle_ctd, auto_ctd} CtdModeType;
 
 typedef struct CtdInfo {
+  bool pending;
   char logFile[32];
+  float depth;
   int delay;                  // Delay seconds expected between polled samples
   int log;
   CtdModeType mode;

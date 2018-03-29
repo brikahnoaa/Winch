@@ -66,7 +66,7 @@ void mpcDevice(DevType dev) {
 
 ///
 // com1 is shared
-Serial mpcCom1(void) {return mpc.com1}
+Serial mpcCom1(void) {return mpc.com1;}
 
 //
 // capture interrupt, used to wake up
