@@ -46,7 +46,7 @@ def serThread():
     buf = []
     while go.isSet():
         # CTD. syncMode, sample, settings
-        if ser.in_waiting:
+        if ser.is_open and ser.in_waiting:
             c = ser.read()
             t = time.time()
             buf += [[c,t]]
@@ -110,7 +110,7 @@ while 1:
     else :
         timer = time.time()
         # push 00 into buf as an event marker
-        buf += [[0, timer]]
+        buf += [[chr(0), timer]]
         ser.write(con + devEol)
 
 stop()
