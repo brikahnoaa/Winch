@@ -250,7 +250,11 @@ PhaseType callPhase(void) {
 
 ///
 // antMod(stop), science(log), startT, dropCmd, science(stop)
-// steps: 1 dropRsp, 2 docked
+// while (!docked) {
+//  dropcmd, [rsp] or time. 
+//  while(moving) {sleep 8} 
+//  [stopcmd] or time, rsp. 
+//  docked?}
 // failMode:=stage of failure 0,1; tryMax[], delay[] indexed by failMode
 // if (err>errMax) failMode++ <= failMax
 // 20 retries: 5@1sec, 5@10min, 10@1hour

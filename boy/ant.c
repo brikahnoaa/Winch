@@ -8,6 +8,11 @@
 
 AntInfo ant;
 
+// sbe39 - response time for TS during auto?
+// sbe16 - response time for TS during auto?
+// sbe16 - response time for getlastsamples during auto?
+// sbe16 - response to auto/getlastsamples before first sample stored?
+
 ///
 // turn on antenna module, wait until ant responds
 // sets: ant.mode .port
@@ -31,6 +36,7 @@ void antInit(void) {
 
 ///
 // get depth from antmod
+// if (ready) antData. if (!auto !pending) antSample. 
 // sets: ant.depth .temp .samples[]
 // returns: depth
 float antDepth(void) {
