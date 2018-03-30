@@ -97,6 +97,7 @@ def stampPrint(buf):
 
 init()
 start()
+sys.stdout.write("show or exit    " + time.strftime("%Y-%m-%d %H:%M") + "\n\n")
 
 while 1:
     # take \n off end of readline
