@@ -30,7 +30,7 @@ bool tmrExp(TmrType tim) {
   if (tmr.on[tim] && (tmr.timer[tim] < time(0))) {
     // on and expired
     tmr.on[tim] = false;
-    DBG2("tmrExp()")
+    DBG2("tmrExp(%d)", tim)
     return true;
   } else {
     // off or still running

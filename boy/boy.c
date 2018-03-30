@@ -306,12 +306,12 @@ PhaseType dropPhase() {
   ///
   // step 2: dropping 
   // ctdSample loop until docked
+  antMode(auto_ctd);
   ctdMode(auto_ctd);
-  startD = ctdDepth();
-  ctdSample();
+  startD = antDepth();
   while (step==2) {
-    // got science?
-    if (ctdReady()) {
+    // every 8 sec see if we are dropping
+    if (tmrExp( //??
       lastD = depth;
       depth = ctdDepth();           // logs to file
       // ctd is slow, should drop .6m between samples
