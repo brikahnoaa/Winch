@@ -108,6 +108,8 @@ while 1:
         break
     else :
         timer = time.time()
+        # push 00 into buf as an event marker
+        buf += [[0, timer]]
         ser.write(con + devEol)
 
 stop()
