@@ -8,95 +8,131 @@
 
 AntInfo ant;
 
-// sbe39 - response time for TS during auto?
-// sbe16 - response time for TS during auto?
-// sbe16 - response time for getlastsamples during auto?
-// sbe16 - response to auto/getlastsamples before first sample stored?
-
 ///
 // turn on antenna module, wait until ant responds
 // sets: ant.mode .port
 void antInit(void) {
   DBG0("antInit()")
   ant.port = mpcCom1();
-  antMode(idle_ant);
+  antAuto(false);
   PIOSet(ANT_PWR);
   // get cf2 startup "ok"
-  tmrStart(init_tmr, 9);
-  while (true) {
-    utlRead(ant.port, utlBuf);
-    if (strstr(utlBuf, "ok")) {
-      tmrStop(init_tmr);
-      continue; // while
-    }
-    if (tmrExp(init_tmr)) 
-      utlStop("FATAL\t| antInit() startup fail");
-  } // while
+  if ( utlReadWait(ant.port, utlBuf, 9)==0 )
+    utlStop("FATAL\t| antInit() startup fail");
+  // sbe39
+  if (!(antPrompt() || antPrompt()))   // fails twice
+    utlStop("ERR\t| antInit(): no prompt from ant");
+  utlWrite(ant.port, utlDateTimeBrief(), EOL);
+  utlReadWait(ant.port, utlBuf, 1);
+  utlWrite(ant.port, "DelayBeforeSampling=0", EOL);
+  utlReadWait(ant.port, utlBuf, 1);
 } // antInit
 
 ///
+// data waiting
+bool antData() {
+  return TURxQueuedCount(ant.port);
+} // antData
+
+///
+// request sample
+void antSample(void) {
+  if (ant.auton || ant.pending) return;
+  // wakeup
+  antPrompt();
+  utlWrite(ant.port, "TS", EOL);
+  len = utlReadWait(ant.port, utlBuf, 1);
+  if (len<3)
+    flogf("\nERR antSample, TS command fail");
+  ant.pending = true;
+  // pending response, checked by antRead()
+  tmrStart( ant_tmr, ant.delay );
+} // antSample
+
 // get depth from antmod
-// if (ready) antData. if (!auto !pending) antSample. 
+// if (!data)
+//  if (auto !pending) return
+//  if (pending) waitForData: while (!data) {check timeout}
+// ?? check timeout
+// if (data) antRead elseif (auton !pending) antSample. 
+// if (!auton !pending) sample.
+//
 // sets: ant.depth .temp .samples[]
 // returns: depth
-float antDepth(void) {
+void antRead(void) {
   int i;
-  char in[128];
-  if (ant.mode==auto_ant) {
+  if (!antData()) {
+    // no data from sbe39
+    if (!ant.pending) {
+      if (ant.auton) return;
+      // if auton && !pending && !data, then use the last ant.depth ant.temp 
+      else utlStop("antRead(): if !pending then should be auton");
+    }  ////
+    // pending, so wait for data
+    while (!antData()) {
+      // error if timeout
+      if (tmrExp(ctd_tmr)) {
+        flogf("\nERR\t| antRead(): tmr expired");
+        return;
+        // ?? sample again?
+      }
+    } // while !data
+  } // if !data
+  // should have data now
+  i = utlReadWait(ant.port, utlBuf, 9);
+  if (ant.auton) {
+    // shift samples in array
     for (i=0; i<ant.sampleCnt; i++) 
       ant.samples[i+1] = ant.samples[i];
     ant.samples[0] = ant.depth;
-  } else
-    // get a sample
-    utlWrite(ant.port, "td", EOL);
-  // ant.depth2 = ant.depth;
-  i = utlReadWait(ant.port, in, 9);
+  } // if auton
+  // 
   if (i<5) {
     flogf( "\nERR\t| antDepth read fail" );
     // ?? is this fatal
     return 0.0;
   }
   // ?? range check
-  ant.temp = atof(strtok(in, ", "));
+  ant.temp = atof(strtok(utlBuf, ", "));
   ant.depth = atof(strtok(NULL, ", "));
+}
+
+float antDepth(void) {
+  antSample();
+  antRead();
   return ant.depth;
 } // antDepth
 
-///
-// get temp from antmod
-// sets: ant.depth .temp
-// returns: temp
 float antTemp(void) {
-  antDepth();
+  antSample();
+  antRead();
   return ant.temp;
-} // antDepth
+} // antTemp
 
 ///
 // turn autonomous on/off. idle_ant clears samples
-AntModeType antMode(AntModeType mode) {
+void antAuto(bool auton) {
   int i;
   char *out;
-  if (ant.mode==mode) return mode;
-  DBG0("antMode(%d)", mode)
-  switch (mode) {
-  case auto_ant:
+  if (ant.auton==auton) return;
+  DBG0("antAuto(%d)", mode)
+  if (auton) {
     out = "\n initlogging \n initlogging \n"
           "sampleInterval=0 \n txRealTime=y \n startnow \n";
     utlWriteLines(ant.port, out, EOL);
     // clear samples
     for (i=0; i<=ant.sampleCnt; i++) 
       ant.samples[i] = 0;
-    break;
-  case idle_ant:
+    // this tells antRead() to wait for it
+    ant.pending = true;
+  } else {
     utlWrite(ant.port, "stop", EOL);
-    break;
-  } // switch
-  ant.mode = mode;
-  return ant.mode;
+  } // if auton
+  ant.auton = auton;
 }
 
 ///
-// if auto_ant, checks recent depth against previous
+// if auton_ant, checks recent depth against previous
 // returns delta change in depth (0 if not enough samples)
 // uses: ant.sampleCnt .sampleRes .depth
 // rets: - | + | 0.0
@@ -121,6 +157,6 @@ float antMoving(void) {
 // turn off power to antmod 
 void antStop() {
   PIOClear(ANT_PWR);
-  antMode(idle_ant);
+  antAuto(false);
 } // antStop
 

@@ -65,9 +65,10 @@ typedef struct UtlInfo {
 
 typedef TUPort * Serial;
 char *utlDate(void);
+char *utlDateTime(void);
+char *utlDateTimeBrief(void);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlTime(void);
-char *utlTimeDate(void);
 int utlLogFile(char *fname);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);

@@ -72,7 +72,7 @@ void utlWriteLines(Serial port, char *out, char *eol) {
 }
 
 ///
-// read all the chars on the port, with a normal delay
+// read all the chars on the port, with a normal char delay
 // char *in should be BUFSZ
 // returns: len
 int utlRead(Serial port, char *in) {
@@ -144,19 +144,32 @@ char *utlDate(void) {
 } // utlDate
 
 ///
-// Time & Date String // MM-DD-YY HH:MM:SS now
+// MM-DD-YY HH:MM:SS 
 // returns: global static char *utlRet
-char *utlTimeDate(void) {
+char *utlDateTime(void) {
   struct tm *tim;
   time_t secs;
-  
   time(&secs);
   tim = localtime(&secs);
   sprintf(utlRet, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
   return utlRet;
-} // utlTimeDate
+} // utlDateTime
+
+///
+// MMDDYYYYHHMMSS 
+// returns: global static char *utlRet
+char *utlDateTimeBrief(void) {
+  struct tm *tim;
+  time_t secs;
+  time(&secs);
+  tim = localtime(&secs);
+  sprintf(utlRet, "%02d%02d%04d%02d%02d%02d", tim->tm_mon,
+          tim->tm_mday, tim->tm_year + 1900, tim->tm_hour,
+          tim->tm_min, tim->tm_sec);
+  return utlRet;
+} // utlDateTimeBrief
 
 ///
 // format non-printable string; null terminate

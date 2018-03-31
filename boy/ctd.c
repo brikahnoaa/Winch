@@ -16,6 +16,13 @@
 
 CtdInfo ctd;
 
+// \r input, echos input.  \r\n before next output.
+// pause 0.33s between \rn and s> prompt.
+// wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
+// sbe16 - response time for TS during auton?
+// sbe16 - response time for getlastsamples during auton?
+// sbe16 - response to auton/getlastsamples before first sample stored?
+
 ///
 // buoy sbe16 set date
 // pre: mpcInit sets up serial
@@ -23,63 +30,35 @@ CtdInfo ctd;
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1();
-  mpcDevice(ctd_dev);
-  // set up HW
-  ctdBreak();
+  ctdAuto(true);
+  // sbe16
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
     utlStop("ERR\t| ctdInit(): no prompt from ctd");
-  ctdSetDate();
-} // ctdInit
-
-void ctdFlush(void){
-  if (ctd.pending)
-    ctdData();
-  PZCacheFlush(C_DRV);
-} // ctdFlush
-
-///
-// date, time for ctd. also some params.
-// uses: ctd.port
-void ctdSetDate(void) {
-  time_t rawtime;
-  struct tm *info;
-  DBG0("ctdSetDate()")
-  //
-  time(&rawtime);
-  info = gmtime(&rawtime);
-  //	strftime(utlBuf, 15, "%m%d%Y%H%M%S", info);
-  sprintf(utlBuf, "datetime=%02d%02d%04d%02d%02d%02d", 
-    info->tm_mon+1, info->tm_mday, info->tm_year + 1900, 
-    info->tm_hour, info->tm_min, info->tm_sec);
-  DBG1("%s", utlBuf)
-  //
-  utlWrite(ctd.port, utlBuf, EOL);
+  utlWrite(ctd.port, utlDateTimeBrief(), EOL);
   utlReadWait(ctd.port, utlBuf, 1);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(ctd.port, utlBuf, 1);
-} // ctdSetDate
+} // ctdInit
 
 ///
 // turn autonomous on/off
-CtdModeType ctdMode(CtdModeType mode) {
+void ctdAuto(bool auton) {
   char *out;
   int len1=BUFSZ;
   int len2=len1, len3=len1;
   if (ctd.mode==mode) return mode;
-  DBG0("ctdMode(%d)", mode)
+  DBG0("ctdAuto(%d)", mode)
   mpcDevice(ctd_dev);
-  switch (mode) {
-  case auto_ctd:
+  if (auton) {
     out = "\n initlogging \n initlogging \n"
           "sampleInterval=0 \n txRealTime=n \n startnow \n";
     utlWriteLines(ctd.port, out, EOL);
-    break;
-  case idle_ctd:
+  } else {
     utlWrite(ctd.port, "stop", EOL);
-    // ?? pause and flush
-    utlNap(2);
+    // pause and flush, some samples output after "stop"
+    utlNap(2*ctd.delay);
     TURxFlush(ctd.port);
-    // science log
+    // get science
     ctd.log = utlLogFile(ctd.logFile);
     utlWrite(ctd.port, "getSamples", EOL);
     while (len1==len3) {
@@ -87,37 +66,31 @@ CtdModeType ctdMode(CtdModeType mode) {
       len2 = (int) TURxGetBlock(ctd.port, utlBuf, (long) len1, (short) 100);
       len3 = write(ctd.log, utlBuf, len2);
       if (len2!=len3) 
-        flogf("\nERR\t| ctdMode() could not write ctd.log");
+        flogf("\nERR\t| ctdAuto() could not write ctd.log");
     } // while ==
     close(ctd.log);
-    break;
-  } // switch
-  ctd.mode = mode;
+  } // if auton
+  ctd.auton = auton;
   mpcDevice(ant_dev);
-  return ctd.mode;
 }
 
 ///
 // sbe16
-// \r input, echos input.  \r\n before next output.
-// pause 0.33s between \rn and s> prompt.
-// wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
-  static char str[32];
   DBG0("ctdPrompt()")
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
-  utlReadWait(ctd.port, str, 2);
+  utlReadWait(ctd.port, utlStr, 2*ctd.delay);
   // looking for S>
-  if (strstr(str, "S>") == NULL) {
+  if (strstr(utlStr, "S>") == NULL) {
     // try again after break
     ctdBreak();
     TURxFlush(ctd.port);
-    TUTxPutByte(ctd.port, '\r', true);
-    utlReadWait(ctd.port, str, 2);
+    utlWrite(ctd.port, "", EOL);
+    utlReadWait(ctd.port, utlStr, 2*ctd.delay);
     // looking for S>
-    if (strstr(str, "S>") == NULL) {
+    if (strstr(utlStr, "S>") == NULL) {
       flogf("\nERR\t| ctdPrompt fail");
       return false;
     }
@@ -133,20 +106,18 @@ void ctdBreak(void) {
 } // ctdBreak
 
 ///
-// poke ctd to get sample, set interval timer
+// poke ctd to get sample, set interval timer (ignore ctd.auton)
 // pause between ts\r\n and result = 4.32s
 // sets: ctd.pending ctd_tmr
 void ctdSample(void) {
   int len;
   DBG0("ctdSample()")
   if (ctd.pending) return;
-  if (ctd.mode==auto_ctd)
-    utlWrite(ctd.port, "getlastsamples", EOL);
-  else {
+  if (!ctd.auton)
+    // wakeup
     ctdPrompt();
-    utlWrite(ctd.port, "TS", EOL);
-  }
-  // consume echo
+  utlWrite(ctd.port, "TS", EOL);
+  // consume echo ??
   len = utlReadWait(ctd.port, utlBuf, 1);
   if (len<3) 
     flogf("\nERR ctdSample, TS command fail");
@@ -156,11 +127,17 @@ void ctdSample(void) {
 } // ctdSample
 
 ///
+// data waiting
+bool ctdData() {
+  return TURxQueuedCount(ctd.port);
+} // ctdData
+
+///
 // sample if not pending, wait for data, return depth
 float ctdDepth() {
   if (!ctd.pending)
     ctdSample();
-  ctdData();
+  ctdRead();
   return ctd.depth;
 } // ctdDepth
 
@@ -170,10 +147,10 @@ float ctdDepth() {
 // data is reformatted to save a little space, written to ctd.log
 // logs: reformatted data string
 // sets: ctd.depth .pending 
-void ctdData() {
+void ctdRead() {
   int len;
   float temp, cond, pres, flu, par, sal;
-  DBG0("ctdData()")
+  DBG0("ctdRead()")
   if (ctd.pending) 
     ctd.pending = false;
   else
@@ -181,7 +158,7 @@ void ctdData() {
   // waits up to max+1 seconds - best called after tgetq()
   len = utlReadWait(ctd.port, utlBuf, ctd.delay+1);
   if (len==0) {       // error
-    flogf("\nERR\t| ctdData() no response in %d sec", ctd.delay+1);
+    flogf("\nERR\t| ctdRead() no response in %d sec", ctd.delay+1);
     ctd.depth = 0;
     return;
   }
@@ -204,13 +181,13 @@ void ctdData() {
   // record
   flogf("\nSBE16:\t%.4f %.5f %.3f %.4f %.4f %.4f %s",
     temp, cond, pres, flu, par, sal, utlTimeDate());
-  // ctd.log is for autonomous getsample, see ctdMode
+  // ctd.log is for autonomous getsample, see ctdAuto
   // len = strlen(utlBuf);
   // if (write(ctd.log, utlBuf, len)<len) 
-  //   flogf("\nERR\t| ctdData log fail");
+  //   flogf("\nERR\t| ctdRead log fail");
   ctd.depth = pres;
   return;
-} // ctdData
+} // ctdRead
 
 ///
 // close log
