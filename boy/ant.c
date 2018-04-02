@@ -14,7 +14,10 @@ AntInfo ant;
 void antInit(void) {
   DBG0("antInit()")
   ant.port = mpcCom1();
-  antAuto(false);
+  ant.pending = false;
+  ant.auton = false;
+  TURxFlush(ant.port);
+  TUTxFlush(ant.port);
   PIOSet(ANT_PWR);
   // get cf2 startup "ok"
   if ( utlReadWait(ant.port, utlBuf, 9)==0 )
@@ -26,6 +29,7 @@ void antInit(void) {
   utlReadWait(ant.port, utlBuf, 1);
   utlWrite(ant.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(ant.port, utlBuf, 1);
+  // ?? what else should be set?
 } // antInit
 
 ///
@@ -50,50 +54,42 @@ void antSample(void) {
 } // antSample
 
 // get depth from antmod
-// if (!data)
-//  if (auto !pending) return
-//  if (pending) waitForData: while (!data) {check timeout}
-// ?? check timeout
-// if (data) antRead elseif (auton !pending) antSample. 
-// if (!auton !pending) sample.
+// if (!data !pending) if (auto) return else sample
+//  while (!data) check timeout
+//  read
 //
 // sets: ant.depth .temp .samples[]
 // returns: depth
 void antRead(void) {
   int i;
-  if (!antData()) {
-    // no data from sbe39
-    if (!ant.pending) {
-      if (ant.auton) return;
-      // if auton && !pending && !data, then use the last ant.depth ant.temp 
-      else utlStop("antRead(): if !pending then should be auton");
-    }  ////
-    // pending, so wait for data
-    while (!antData()) {
-      // error if timeout
-      if (tmrExp(ctd_tmr)) {
-        flogf("\nERR\t| antRead(): tmr expired");
-        return;
-        // ?? sample again?
-      }
-    } // while !data
-  } // if !data
-  // should have data now
-  i = utlReadWait(ant.port, utlBuf, 9);
+  char *p;
+  if (!pending && !antData()) 
+    // no data here or expected from sbe39
+    if (ant.auton) 
+      // most common case, use the last ant.depth or ant.temp 
+      return;
+    else 
+      // poke sbe, set pending 
+      antSample();
+  // pending, so wait for data
+  while (!antData()) {
+    // error if timeout
+    if (tmrExp(ctd_tmr)) {
+      flogf("\nERR\t| antRead(): tmr expired");
+      return; // ?? reset lara
+    }
+  } // while !data
+  // data ready
+  utlRead(ant.port, utlBuf);
+  // ?? sanity check
   if (ant.auton) {
     // shift samples in array
     for (i=0; i<ant.sampleCnt; i++) 
       ant.samples[i+1] = ant.samples[i];
     ant.samples[0] = ant.depth;
   } // if auton
-  // 
-  if (i<5) {
-    flogf( "\nERR\t| antDepth read fail" );
-    // ?? is this fatal
-    return 0.0;
-  }
   // ?? range check
-  ant.temp = atof(strtok(utlBuf, ", "));
+  ant.temp = atof(strtok(utlBuf, "#, "));
   ant.depth = atof(strtok(NULL, ", "));
 }
 
@@ -123,10 +119,17 @@ void antAuto(bool auton) {
     // clear samples
     for (i=0; i<=ant.sampleCnt; i++) 
       ant.samples[i] = 0;
-    // this tells antRead() to wait for it
+    // ant.pending tells antRead() to wait for first sample
     ant.pending = true;
+    // swallow header
+    utlReadWait(ant.port, utlBuf, 5);
+    if (!strstr(utlBuf, "Start logging"))
+      flogf("\nERR\t| antAuto - didn't get 'Start logging' header");
   } else {
     utlWrite(ant.port, "stop", EOL);
+    // swallow tail
+    utlNap(2);
+    TURxFlush(ant.port);
   } // if auton
   ant.auton = auton;
 }
@@ -157,6 +160,5 @@ float antMoving(void) {
 // turn off power to antmod 
 void antStop() {
   PIOClear(ANT_PWR);
-  antAuto(false);
 } // antStop
 

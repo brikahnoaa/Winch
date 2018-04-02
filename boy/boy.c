@@ -261,83 +261,60 @@ PhaseType callPhase(void) {
 // errMax[failMode], delay[failMode]
 PhaseType dropPhase() {
   int err = 0, step = 1;
-  int failMode = 0, failMax = 2;
+  int failStage = 0, failMax = 2;
   int errMax[3] = {5, 10, 20}, delay[3] = {1, 10*60, 60*60};
   float depth, startD, lastD;
   MsgType msg;
   time_t dropT = (time_t)0;
   flogf("\n\tdropPhase() %s", utlTimeDate());
-  /// 
-  // step 1: dropCmd 
-  // loop until dropRsp or dropping+timeout
   flogf(" 1. dropCmd");
+  antAuto(true);
+  ctdAuto(true);
+  // step1. loop until dropRsp or dropping+timeout
   ngkSend( dropCmd_msg );
-  antMode(auto_ant);
-  ctdMode(auto_ctd);
-  while (step==1) {
+  while (true) {
     depth = antDepth();
-    switch (msg = ngkRecv()) {
-    case null_msg: break;
-    case dropRsp_msg:
+    msg = ngkRecv();
+    if (msg==dropRsp_msg) {
       // start velocity measure
-      if (err==0) // all OK, measure dropTime
-        dropT = time(0);
-      step = 2;
-      continue; // while step1
-    default: // unexpected msg
+      dropT = time(0);
+      break; // while
+    } elseif (msg!=null_msg) {
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    } // switch
+    }
     //
     if (tmrExp(winch_tmr)) {
       // minor err
       if (antMoving()<0) {
         // odd, we are dropping but no response; log but allow
         flogf(" timeout, but dropping ..."); 
-        err++;    // indicate trouble
-        step = 2;
-        continue; // while(step 1)
+        break; // while step1
       } // if dropping
-      // err, delay and retry algorithm // failMode ++ as errs exceed errMax
-      if (++err > errMax[failMode])  
-        if (++failMode > failMax) 
+      // err, delay and retry algorithm // failStage ++ as errs exceed errMax
+      if (++err > errMax[failStage])  
+        if (++failStage > failMax) 
           return error_pha;
-      // retry dropCmd
-      pwrNap(delay[failMode]);
+      // retry dropCmd, longer delay after more errs
+      pwrNap(delay[failStage]);
       flogf(" dropCmd"); 
       ngkSend( dropCmd_msg );
     } // if timeout
   } // while step1
-  ///
-  // step 2: dropping 
-  // ctdSample loop until docked
-  antMode(auto_ctd);
-  ctdMode(auto_ctd);
-  startD = antDepth();
-  while (step==2) {
-    // every 8 sec see if we are dropping
-    if (tmrExp( //??
-      lastD = depth;
-      depth = ctdDepth();           // logs to file
-      // ctd is slow, should drop .6m between samples
-      if ((depth-lastD)<0.2)
-        // NOT DROPPING stopCmd could be pending
-        tmrStart(winch_tmr, 8);
-      ctdSample();
-    } // ctd
-    if (tmrExp(winch_tmr)) {
-      // tmr set by NOT DROPPING above
-      lastD = depth;
-      depth = ctdDepth();           
-      // ctd is slow, should drop .6m between samples
-      if ((depth-lastD)<0.2)        // not dropping & timeout, panic
-        return error_pha;
-      else                          // dropping, tmr was a mistake
-        ctdSample();
-    } // timeout
-    switch (msg = ngkRecv()) {
-    case null_msg: break;
-    case stopCmd_msg:
-      if (boyDocked(depth)) {       // normal and expected
+  // step 2: drop til you stop
+  while (antMoving<0)
+    depth = antDepth();
+  // step 3: stopCmd Rsp
+  while (true) {
+    depth = antDepth();
+    msg = ngkRecv();
+    if (msg==stopCmd_msg) {
+      ngkSend(stopRsp_msg);
+      break;
+    } elsif (msg!=null_msg) {
+      flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    }
+  // step 4: docked?
+  if (boyDocked(depth)) {       // normal and expected
         step = 3;
         continue; // while
       } else {
@@ -346,10 +323,9 @@ PhaseType dropPhase() {
       }
       break;
     default:
-      flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
   } // while step2
-  antMode(idle_ant);
+  antAuto(false);
   // step 3: docked
   // velocity, finish science
   if (err==0) {
