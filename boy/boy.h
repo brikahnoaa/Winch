@@ -1,4 +1,5 @@
 // boy.h
+#define BOY_H
 
 typedef enum {
   deploy_pha=0, reboot_pha, error_pha,

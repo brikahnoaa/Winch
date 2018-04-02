@@ -1,4 +1,5 @@
 // tmr.h interval timer
+#define TMR_H
 
 typedef enum {
   null_tmr=0,

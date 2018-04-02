@@ -1,4 +1,6 @@
 // dbg.h  common to all
+#define DBG_H
+
 typedef struct DbgInfo {
   bool dbg0;
   bool dbg1;

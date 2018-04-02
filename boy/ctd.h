@@ -1,5 +1,7 @@
 // ctd.h
 
+#define CTD_H
+
 typedef struct CtdInfo {
   bool auton;
   bool pending;

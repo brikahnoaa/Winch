@@ -1,4 +1,6 @@
 // cfg.h
+#define CFG_H
+
 #define SYS_CFG "SYS.CFG"
 
 typedef struct CfgInfo {

@@ -1,4 +1,5 @@
 // ngk.h
+#define NGK_H
 
 typedef enum {
   null_msg=0,

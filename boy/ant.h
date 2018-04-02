@@ -1,4 +1,5 @@
 // ant.h
+#define ANT_H
 
 typedef struct AntInfo {
   bool auton;

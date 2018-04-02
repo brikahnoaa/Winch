@@ -1,4 +1,5 @@
 // utl.h - utility and shared stuff
+#define UTL_H
 
 #define STRSZ 1024
 #define BUFSZ 4096

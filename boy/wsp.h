@@ -1,4 +1,5 @@
 // wsp.h
+#define WSP_H
 
 #define WSP_BAUD 9600L
 // This baud rate works with only the new wspa_053116 killerwhale file at the
