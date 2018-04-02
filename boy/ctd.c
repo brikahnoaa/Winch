@@ -46,8 +46,8 @@ void ctdAuto(bool auton) {
   char *out;
   int len1=BUFSZ;
   int len2=len1, len3=len1;
-  if (ctd.mode==mode) return mode;
-  DBG0("ctdAuto(%d)", mode)
+  if (ctd.auton==auton) return;
+  DBG0("ctdAuto(%d)", auton)
   mpcDevice(ctd_dev);
   if (auton) {
     out = "\n initlogging \n initlogging \n"
@@ -180,7 +180,7 @@ void ctdRead() {
   // time = strtok(NULL, " \r\n");
   // record
   flogf("\nSBE16:\t%.4f %.5f %.3f %.4f %.4f %.4f %s",
-    temp, cond, pres, flu, par, sal, utlTimeDate());
+    temp, cond, pres, flu, par, sal, utlDateTime());
   // ctd.log is for autonomous getsample, see ctdAuto
   // len = strlen(utlBuf);
   // if (write(ctd.log, utlBuf, len)<len) 

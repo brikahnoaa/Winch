@@ -36,15 +36,12 @@ static PhaseType errorPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static bool riseUp(float targetD, int try, int delay);
-static bool riseSurf(int try, int delay);
 static bool oceanCurrChk(void);
-static bool riseOp(float targetD, int retry, int delay);
 static float oceanCurr(void);
 static void boyStat(char *buffer);
-static void transferFiles(void);
 
 bool boyDocked(float depth);
 void boyInit(void);
 void boyFlush(void);
-void boyMain(int starts);
+void boyMain(void);
 void boyStop(void);

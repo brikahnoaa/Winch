@@ -33,6 +33,27 @@ void antInit(void) {
 } // antInit
 
 ///
+// if asleep, first EOL wakens but no response
+bool antPrompt() {
+  TURxFlush(ant.port);
+  utlWrite(ant.port, "", EOL);
+  utlReadWait(ant.port, utlBuf, 1);
+  if (strstr(utlBuf, "Exec"))
+    return true;
+  utlWrite(ant.port, "", EOL);
+  utlReadWait(ant.port, utlBuf, 1);
+  if (strstr(utlBuf, "Exec"))
+    return true;
+  utlWrite(ant.port, "", EOL);
+  utlReadWait(ant.port, utlBuf, 1);
+  if (strstr(utlBuf, "Exec"))
+    return true;
+  // three strikes
+  return false;
+}
+
+
+///
 // data waiting
 bool antData() {
   return TURxQueuedCount(ant.port);
@@ -41,6 +62,7 @@ bool antData() {
 ///
 // request sample
 void antSample(void) {
+  int len;
   if (ant.auton || ant.pending) return;
   // wakeup
   antPrompt();
@@ -62,8 +84,8 @@ void antSample(void) {
 // returns: depth
 void antRead(void) {
   int i;
-  char *p;
-  if (!pending && !antData()) 
+  char *p0, *p1;
+  if (!ant.pending && !antData()) 
     // no data here or expected from sbe39
     if (ant.auton) 
       // most common case, use the last ant.depth or ant.temp 
@@ -82,15 +104,24 @@ void antRead(void) {
   // data ready
   utlRead(ant.port, utlBuf);
   // ?? sanity check
-  if (ant.auton) {
-    // shift samples in array
-    for (i=0; i<ant.sampleCnt; i++) 
-      ant.samples[i+1] = ant.samples[i];
-    ant.samples[0] = ant.depth;
-  } // if auton
-  // ?? range check
-  ant.temp = atof(strtok(utlBuf, "#, "));
-  ant.depth = atof(strtok(NULL, ", "));
+  // could be multiple lines, ending crlf, len 32 < char < 64
+  p0 = utlBuf;
+  while ((p1 = strstr(p0, "\r\n"))) {
+    // found line, zero terminate and copy
+    *p1 = 0;
+    strcpy(utlStr, p0);
+    if (ant.auton) {
+      // shift samples in array
+      for (i=0; i<ant.sampleCnt; i++) 
+        ant.samples[i+1] = ant.samples[i];
+      ant.samples[0] = ant.depth;
+    } // if auton
+    // ?? range check
+    ant.temp = atof(strtok(utlStr, "#, "));
+    ant.depth = atof(strtok(NULL, ", "));
+    // continue scan for lines after crlf
+    p0 = p1 + 2;
+  } // while crlf
 }
 
 float antDepth(void) {
@@ -111,7 +142,7 @@ void antAuto(bool auton) {
   int i;
   char *out;
   if (ant.auton==auton) return;
-  DBG0("antAuto(%d)", mode)
+  DBG0("antAuto(%d)", auton)
   if (auton) {
     out = "\n initlogging \n initlogging \n"
           "sampleInterval=0 \n txRealTime=y \n startnow \n";

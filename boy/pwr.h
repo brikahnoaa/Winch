@@ -1,4 +1,5 @@
 // pwr.h
+#define PWR_H
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
 
@@ -37,7 +38,7 @@ bool pwrCheck(void);
 float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
 void pwrNap(int sec);
-static void pwrFlush(void);
+void pwrFlush(void);
 static void pwrLog(void);
 static void pwrLogWrite(ushort *);
 static void pwrOpenLog(long);

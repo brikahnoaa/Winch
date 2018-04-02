@@ -1,5 +1,6 @@
 // dbg.c
-#include<dbg.h>
+// #include<dbg.h> in utl.h
+#include<utl.h>
 
 DbgInfo dbg;
 

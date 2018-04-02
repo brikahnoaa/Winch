@@ -100,7 +100,7 @@ void logInit(char *file) {
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
   flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
     sys.program, sys.version, sys.project, sys.platform, sys.starts);
-  flogf("\nStarted: %s", utlTimeDate());
+  flogf("\nStarted: %s", utlDateTime());
   flogf("\n---   ---");
   fflush(NULL);               // ??
   cdrain();
@@ -164,7 +164,6 @@ long sysDiskFree(void) {
 // call flush for each module with logging
 void sysFlush(void) {
   boyFlush();
-  ctdFlush();
   pwrFlush();
   wspFlush();
 } // sysFlush

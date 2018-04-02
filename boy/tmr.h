@@ -2,6 +2,7 @@
 
 typedef enum {
   null_tmr=0,
+  ant_tmr,          // sbe39
   ctd_tmr,          // ctd.pending waiting for ctd response
   deploy_tmr,       // steps during deploy phase0
   data_tmr,         // rise to surface, send data

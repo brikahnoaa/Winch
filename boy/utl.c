@@ -3,6 +3,9 @@
 #ifndef SYS_H
 #include <sys.h>
 #endif
+#ifndef PWR_H
+#include <pwr.h>
+#endif
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
@@ -210,11 +213,19 @@ int utlLogFile(char *fname) {
     utlStop(utl.str);
     return 0;
   } else {
-    sprintf(utl.str, "---  %s ---", utlTimeDate());
+    sprintf(utl.str, "---  %s ---", utlDateTime());
     write(log, utl.str, strlen(utl.str));
     return log;
   }
 } // utlLogFile
+
+///
+// nap called often
+void utlNap(int sec) {
+  pwrNap(sec);
+}
+
+
 
 void utlStop(char *out) {
   sysStop(out);

@@ -92,7 +92,7 @@ static void spur_ISR(void) {
 //
 void mpcSleep(void) {
   ciflush(); // flush any junk
-  flogf("\nmpcSleep() at %s", utlTimeDate());
+  flogf("\nmpcSleep() at %s", utlDateTime());
 
   // Install the interrupt handlers that will break us out by "break signal"
   // ?? this should be a one time action, we toggle pins int|I/O

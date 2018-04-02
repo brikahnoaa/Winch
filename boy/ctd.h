@@ -17,6 +17,6 @@ static void ctdSample(void);
 
 bool ctdData(void);
 float ctdDepth(void);
-void ctdAuto(bool auto);
+void ctdAuto(bool auton);
 void ctdInit(void);
 void ctdStop(void);
