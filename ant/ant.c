@@ -1,16 +1,36 @@
-// ant.c
+// antmain.c
 
-#include <com.h>
-#include <ant.h> 
+//  Program to communicate with T-D sensor and irid/gps switch
+//  July 12, 2017 blk
+//  April 2018 blk
+// buoy is on com4. all serial is transfered between buoy and sbe
+// EXCEPT for commands that begin with 001-007 ^A-^G
 
-#include <ctd.h>
-#include <gps.h>
-#include <mpc.h>
-#include <sys.h>
-#include <tmr.h>
+#include <ant.h>
 
-AntInfo ant;
+#define VERSION "3.0"
+#define RS232_SETTLE 100000
+// Definitions of uMPC TPU ports
+#define SBEPWR 23 // SB#39plus TD power
+#define SBERX 32  // Tied to IRQ2
+#define SBETX 31
 
+#define PAMPWR 24     // PAM PWR on/off
+#define PAMZEROBIT 29 // PAM selecton
+#define PAMONEBIT 30  // PAM selection
+#define PAMRX 28
+#define PAMTX 27
+
+#define ADCPWR 19
+#define ANTSW 1
+
+#define A3LAPWR 21 // IRIDGPS PWR
+#define A3LARX 33  // IRIDGPS tied to /IRQ3
+#define A3LATX 35
+
+#define COM4PWR 22 // COM4 Enable
+#define COM4RX 26  // Tied to /IRQ5
+#define COM4TX 25
 //#define       SYSCLK   8000           // choose: 160 to 32000 (kHz)
 #define SYSCLK 16000            // choose: 160 to 32000 (kHz)
 #define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
@@ -23,36 +43,20 @@ AntInfo ant;
 #define SBE 1
 #define IRID 2
 
-TUPort* OpenSbePt(bool on);
-TUPort* OpenIridPt(bool on);
-TUPort* OpenBuoyPt(bool on);
-short getByte(TUPort *tup);
-short power(short c, bool on);
-void connect(char c);
-short char2id(short ch);
-void init();
-void help();
-void status();
-void antennaSwitch(char c);
-void transBlock(long b);
-void printchar(char c);
-void prerun();
-
 DBG( bool echoDn=false; bool echoUp=false;)
 uchar *buf;
-char *LogFile = {"activity.log"}; 
+char *LogFile = {"sys.log"}; 
 char antSw;
 struct { char *name, c; bool power; TUPort *port; } dev[3] = {
   { "BUOY", 'B', false, NULL },
   { "SBE", 'S', false, NULL },
   { "IRID", 'I', false, NULL } };
-short devID; // ID of upstream device, 1-2
+// short devID; // ID of upstream device, 1-2
 TUPort *buoy=NULL, *devPort=NULL; // dev port of connnected upstream device
 
 
-/******************************************************************************\
-**	main
-\******************************************************************************/
+//
+///	main
 void main() {
   short ch;
   int arg, arg2;
@@ -65,7 +69,6 @@ void main() {
   buf = (uchar *)malloc(BUFSIZE);
   // initial connection is SBE
   power('S', true);
-  connect('S');
 
   // exit via biosreset{topicodos}
   while (true) {
@@ -73,7 +76,6 @@ void main() {
     // note: using vars buoy,devport is faster than dev[id].port
     // get from dev upstream
     if (devPort && TURxQueuedCount(devPort)) {
-      // ch=getByte(devPort);
       ch=TURxGetByte(devPort, true); // blocking, best to check queue first
       TUTxPutByte(buoy, ch, true); // block if queue is full
       DBG( if (echoDn) printchar(ch); )
@@ -102,7 +104,7 @@ void main() {
             transBlock((long) arg);
             break;
           case 3: // ^C Connect I|S
-            connect(arg);
+            power(arg, true);
             break;
           case 4: // ^D powerDown I|S
             power(arg, false);
@@ -148,9 +150,9 @@ void main() {
 
 
 
-/*
- * OpenSbePt(true)
- */
+//
+// OpenSbePt(true)
+//
 TUPort* OpenSbePt(bool on) {
   TUPort *sbePort=NULL;
   long baud = 9600L;
@@ -176,15 +178,14 @@ TUPort* OpenSbePt(bool on) {
     PIOClear(SBEPWR); // SBE TD
     return NULL;
   }
-} /*OpenSbePt(bool on) */
+} //OpenSbePt(bool on) 
 
 
-/*************************************************************************
-* OpenIridPt(bool on)
-* If on=true, open the com.
-* If on=false, close the com.
-* IRQ3
-**************************************************************************/
+// OpenIridPt(bool on)
+// If on=true, open the com.
+// If on=false, close the com.
+// IRQ3
+/*
 TUPort* OpenIridPt(bool on) {
   TUPort *IridPt=NULL;
   long baud = IRID_BAUD;
@@ -219,13 +220,12 @@ TUPort* OpenIridPt(bool on) {
     flogf("Close IRIDGPS term\n");
     return NULL;
   }
-} /*OpenIridPt(bool on) */
+} //OpenIridPt(bool on) 
+*/
 
-/*************************************************************************
-* OpenBuoyPt(bool on) for uMPC. On MPC it is for AMODEM com
-* If on=true, open the com.
-* If on=false, close the com.
-**************************************************************************/
+// OpenBuoyPt(bool on) for uMPC. On MPC it is for AMODEM com
+// If on=true, open the com.
+// If on=false, close the com.
 TUPort* OpenBuoyPt(bool on) {
   TUPort *BuoyPt=NULL;
   long baud = BUOY_BAUD;
@@ -235,15 +235,13 @@ TUPort* OpenBuoyPt(bool on) {
     PIOSet(COM4PWR); // PWR On COM4 device
     com4rxch = TPUChanFromPin(COM4RX);
     com4txch = TPUChanFromPin(COM4TX);
-    RTCDelayMicroSeconds(1000000L);
     PIORead(IRQ5);
 
     // Define COM4 tuport
     BuoyPt = TUOpen(com4rxch, com4txch, baud, 0);
-    RTCDelayMicroSeconds(100000L);
+    RTCDelayMicroSeconds(RS232_SETTLE);
     TUTxFlush(BuoyPt);
     TURxFlush(BuoyPt);
-    RTCDelayMicroSeconds(100000L);
     if (BuoyPt == NULL) 
       flogf("\n!!! Error opening COM4 port...");
     else
@@ -256,24 +254,22 @@ TUPort* OpenBuoyPt(bool on) {
     DBG1(flogf("Close COM4 port\n");)
     return NULL;
   }
-} /*OpenBuoyPt(bool on) */
+} //OpenBuoyPt(bool on) 
 
 
 
 
-/*
- * help() - help message to console
- */
+//
+// help() - help message to console
+//
 void help() {
   // Identify the progam and build
   char *ProgramDescription = {
       "\n"
-      "Serial interface program to control and communiate with SBE and "
-      "Iridium/GPS.\n"
-      "Buoy is downstream, connecting to com4 at %d BAUD\n"
+      "Buoy, com4 at %d BAUD\n"
       " ^A Antenna G|I \n"
       " ^B Blockmode (2byte short) \n"
-      " ^C Connect I|S \n"
+      " ^C powerup I|S \n"
       " ^D powerDown I|S \n"
       " ^F unused \n"
       " ^G unused \n"
@@ -281,7 +277,7 @@ void help() {
       DBG("  if debug, d=echo Downstream, u=echo Upstream\n")
       };
 
-  printf("\nProgram: %s: 2.1-%f, %s %s \n", __FILE__, (float)VERSION, __DATE__,
+  printf("\nProgram: %s: v%s, %s %s \n", __FILE__, VERSION, __DATE__,
          __TIME__);
   printf("Persistor CF%d SN:%ld   BIOS:%d.%02d   PicoDOS:%d.%02d\n", CFX,
          BIOSGVT.CFxSerNum, BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease,
@@ -289,9 +285,9 @@ void help() {
   printf(ProgramDescription, BUOY_BAUD);
 } // help()
 
-/*
- * init() - initialize hardware, open com ports
- */
+//
+// init() - initialize hardware, open com ports
+//
 void init() {
   // I am here because the main eletronics powered this unit up and *.app
   // program started.
@@ -317,39 +313,19 @@ void init() {
 
   power('B', true);
   buoy=dev[BUOY].port;
-  RTCDelayMicroSeconds(500000L);
 } // init()
 
-/*
- * status() - console <- "connected:A3LA A3LA:on SBE:on"
- */
+//
+// status() 
+//
 void status() {
-  cprintf("connected:%s antenna:%c iridgps:%s sbe:%s \n",
-    dev[devID].name, antSw,
-    dev[IRID].power ? "on" : "off",
-    dev[SBE].power ? "on" : "off");
+  cprintf("antenna:%c iridgps-A3LA:%s sbe39:%s \n",
+    antSw, dev[IRID].power ? "on" : "off", dev[SBE].power ? "on" : "off");
 }
 
-/*
- * getByte(tup) - get byte from TU port and log rs232 errors
- */
-short getByte(TUPort *tup) {
-  // global int rs232errors, char *devName
-  short ch;
-  ch=TURxGetByte(tup, true); // blocking, best to check queue first
-  // high bits means errors, log
-  if (ch & 0xFF00) {
-    short i;
-    for (i=0; i<3; i++)  if (dev[i].port == tup) break;
-    flogf("Error code %d on char '%c' from %s\n", ch>>8, ch, dev[devID].name);
-    ch&=0x00FF;
-  }
-  return ch;
-} // getByte()
-
-/*
- * antennaSwitch(ch) - change antenna=G|I, else return current state
- */
+//
+// antennaSwitch(ch) - change antenna=G|I, else return current state
+//
 void antennaSwitch(char c) {
   // global short antSw
   DBG1(printf("antennaSwitch %c\n", c);)
@@ -361,9 +337,9 @@ void antennaSwitch(char c) {
   antSw=c;
 } // antennaSwitch()
 
-/*
- * char2id('G') - returns id 0-2, no match -1
- */
+//
+// char2id('G') - returns id 0-2, no match -1
+//
 short char2id(short ch) {
   switch (ch) {
     case 'I': return IRID;
@@ -372,53 +348,29 @@ short char2id(short ch) {
     default: return -1;
   }
 } // char2id()
-  
 
-/*
- * connect(I|S) - make a3la or sbe be the upstream device
- */
-void connect(char c) {
-  short id;
-  // global short devID, TUPort *devPort
-  id=char2id(c);
-  if (id == -1) {
-    flogf( "ERR connect(%c) '%d'\n", c, (short)c);
-    return;
-  }
-  // power up if not
-  if (! dev[id].power) 
-    power(c, true);
-  // for efficiency in char handling
-  devPort=dev[id].port; 
-  devID=id;
-} // connect()
-
-/*
- * power(I|S, on) - power device on/off
- * returns 1 if power unchanged, 0 changed, -1 failed
- */
+//
+// power(I|S, on) - power device on/off
+// returns 1 if power unchanged, 0 changed, -1 failed
+//
 short power(short c, bool onoff) {
   short id;
   TUPort *r;
   id=char2id(c);
   if (id == -1) {
-    flogf( "ERR connect(%c) '%d'\n", c, (short)c);
+    flogf( "ERR power(%c) '%d'\n", c, (short)c);
     return -1;
   }
-  DBG1(printf("dev:%c devid:%d onoff:%d\n", c, id, onoff);)
+  DBG1(printf("dev:%c onoff:%d\n", c, onoff);)
   if (dev[id].power == onoff) return 1;
   switch (c) {
-    case 'I': r=OpenIridPt(onoff); break;
+    // case 'I': r=OpenIridPt(onoff); break;
     case 'S': r=OpenSbePt(onoff); break;
     case 'B': r=OpenBuoyPt(onoff); break;
   }
   if (onoff && (r == NULL)) { // fail, on returns tup*
     BIOSResetToPicoDOS();
     // return -1;
-  }
-  if (!onoff && (id == devID)) { // powering off, check if connected
-    devID=BUOY;
-    devPort=NULL;
   }
   dev[id].power=onoff;
   dev[id].port=r;  // currently also done in Open*Pt
@@ -451,7 +403,7 @@ void prerun() {
 
 // block transfer from buoy to devID
 void transBlock(long b) {
-  DBG1(int len;)
+  DBG(int len;)
   long count;
   // long TURxGetBlock(TUPort *tup, uchar *buffer, long bytes, short millisecs);
   // long TUTxPutBlock(TUPort *tup, uchar *buffer, long bytes, short millisecs);
@@ -468,86 +420,3 @@ void transBlock(long b) {
       cprintf("%d bytes accumulated on devPort \n", len);
   )
 }
-
-/*
- * int DevSelect(DEVA);
- * DEVX=0 = off, DEVA=1 = antenna, DEVB=2 = buoy
- * mod: mpc.devID
- */
-void DevSelect(int dev) {
-  // global devicePort
-  // use a stronger tests for open??
-  if (dev==mpc.devID) return; // already selected
-  DBG2(flogf("\n\t|DevSelect(%d)", dev);)
-
-  switch (dev) {
-  // deva devb share the port
-  case DEVA: // antenna module dev
-    mpc.devID=DEVA;
-    if (PIOTestAssertClear(ANTMODPWR)) { // ant module is off, turn it on
-      PIOSet(ANTMODPWR);
-      Delay_AD_Log(5); // power up delay
-    }
-    PIOSet(DEVICECOM);
-    break;
-  case DEVB: // buoy sbe
-    mpc.devID=DEVB;
-    PIOClear(DEVICECOM); // talk to local port // do not turn off ant module
-    break;
-  } //switch
-  return;
-} //DevSelect
-
-/*
- * AntMode(G|I|S)
- * Switch antenna module between SBE39 TD, Iridium and GPS.
- * ^A Antenna G|I * ^B Binary byte * ^C Connect I|S * ^D powerDown I|S
- */
-int AntMode(char r) {
-  static char ant='-', dev='-';
-  char a, d;
-  DBG2(flogf("\n\t|AntMode(%c)", r);)
-  DevSelect(DEVA);
-  // select ant SBE16, switch ant device
-  switch (r) {
-    case 'G': { a='G'; d='I'; break; }
-    case 'I': { a='I'; d='I'; break; }
-    case 'S': { a=ant; d='S'; break; }
-    default: { // bad case
-      flogf("\nError DevSelect(%c): bad choice", r);
-      return -1;
-    }
-  }
-  if (d!=dev) {
-    // turn on, connect
-    TUTxPutByte(devicePort, 3, true);  // ^C connect device
-    TUTxPutByte(devicePort, d, true);
-    dev=d;
-    Delayms(3000); // wait 3 sec for device start
-  }
-  if (a!=ant) {
-    TUTxPutByte(devicePort, 1, true);  // ^A antenna
-    TUTxPutByte(devicePort, a, true);  // G I
-    ant=a;
-    Delayms(1000); // wait 1 sec to settle antenna switch noise
-  }
-  return 0;
-} //AntMode
-
-
-///
-// get two depth values, determine movement
-// rets: - | + | 0
-int antMoving(void) {
-  float dx, d1, d2, prec;
-  // prec := precision
-  prec = 0.1;
-  // get fresh
-  d1 = antDepth();
-  d2 = antDepth();
-  dx = d2 - d1;
-  if (abs(dx)<prec)
-    return 0;
-  else
-    return dx;
-} // antMoving
