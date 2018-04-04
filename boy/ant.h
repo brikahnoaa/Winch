@@ -25,7 +25,7 @@ bool antSurf(void);
 float antDepth(void);
 float antMoving(void);
 float antTemp(void);
-void antAuto(bool auton);
+void antAuton(bool auton);
 void antInit(void);
 void antSample(void);
 void antStop(void);

@@ -108,12 +108,13 @@ PhaseType risePhase(void) {
     return drop_pha;
   }
   antAuto(true);
-  ctdAuto(true);
+  ctdAuton(true);
   success = riseUp(boy.currChkD, 5, 1);
   antAuto(false);
-  ctdAuto(false);
+  ctdAuton(false);
+  ctdLog();
   if (!success) {
-    flogf(" | fails at %3.1f m", antDepth());
+    flogf("\n\t| riseUp fails at %3.1f m", antDepth());
     return drop_pha;
   }
   // if current is too strong at midway
@@ -123,10 +124,11 @@ PhaseType risePhase(void) {
   }
   // surface
   antAuto(true);
-  ctdAuto(true);
+  ctdAuton(true);
   success = riseUp(0.0, 5, 1);
   antAuto(false);
-  ctdAuto(false);
+  ctdAuton(false);
+  ctdLog();
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
@@ -274,7 +276,7 @@ PhaseType dropPhase() {
   MsgType msg;
   flogf("\n\tdropPhase() %s", utlDateTime());
   antAuto(true);
-  ctdAuto(true);
+  ctdAuton(true);
   // step1. loop until dropRsp or dropping+timeout
   ngkSend( dropCmd_msg );
   while (true) {
@@ -332,7 +334,8 @@ PhaseType dropPhase() {
   }
   // turn off ant, clear ngk, clear ctd
   antAuto(false);
-  ctdAuto(false);
+  ctdAuton(false);
+  ctdLog();
   ngkStop();
   ctdStop();
   antStop();
@@ -379,7 +382,7 @@ float oceanCurr() {
   float aD, cD, a, b, c;
   // usually called while auto_ant
   antAuto(true);
-  ctdAuto(true);
+  ctdAuton(true);
   mpcDevice(ctd_dev);
   cD=ctdDepth();
   mpcDevice(ant_dev);
@@ -389,7 +392,8 @@ float oceanCurr() {
   c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
   antAuto(false);
-  ctdAuto(false);
+  ctdAuton(false);
+  ctdLog();
   return b;
 } // oceanCurr
 

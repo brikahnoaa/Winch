@@ -60,21 +60,6 @@ void utlWrite(Serial port, char *out, char *eol) {
 }
 
 ///
-// write multiple lines, consume/discard some response after each line
-void utlWriteLines(Serial port, char *out, char *eol) {
-  char *buf=utl.buf, *s;
-  strcpy(buf, out);
-  s=strtok(buf, "\r\n");
-  while(s!=NULL) {
-    utlWrite(port, s, eol);
-    s=strtok(NULL, "\r\n");
-  }
-  // discard response
-  utlReadWait(port, buf, 1);
-  DBG2("-> '%s'", buf)
-}
-
-///
 // read all the chars on the port, with a normal char delay
 // char *in should be BUFSZ
 // returns: len

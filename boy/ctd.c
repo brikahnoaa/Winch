@@ -30,7 +30,7 @@ CtdInfo ctd;
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1();
-  ctdAuto(true);
+  ctdAuto(false);
   // sbe16
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
     utlStop("ERR\t| ctdInit(): no prompt from ctd");
@@ -41,38 +41,49 @@ void ctdInit(void) {
 } // ctdInit
 
 ///
-// turn autonomous on/off
-void ctdAuto(bool auton) {
+// turn autonomous on/off. see ctdLog
+void ctdAuton(bool auton) {
   char *out;
-  int len1=BUFSZ;
-  int len2=len1, len3=len1;
   if (ctd.auton==auton) return;
   DBG0("ctdAuto(%d)", auton)
   mpcDevice(ctd_dev);
   if (auton) {
-    out = "\n initlogging \n initlogging \n"
-          "sampleInterval=0 \n txRealTime=n \n startnow \n";
-    utlWriteLines(ctd.port, out, EOL);
+    // note - initlogging done at end of ctdLog
+    ctdPrompt();
+    utlWriteLine(ctd.port, "sampleInterval=0", EOL);
+    utlWriteLine(ctd.port, "txRealTime=n", EOL);
+    utlWriteLine(ctd.port, "startnow", EOL);
+    TURxFlush(ctd.port);
   } else {
     utlWrite(ctd.port, "stop", EOL);
     // pause and flush, some samples output after "stop"
     utlNap(2*ctd.delay);
     TURxFlush(ctd.port);
-    // get science
-    ctd.log = utlLogFile(ctd.logFile);
-    utlWrite(ctd.port, "getSamples", EOL);
-    while (len1==len3) {
-      // repeat until less than a full buf
-      len2 = (int) TURxGetBlock(ctd.port, utlBuf, (long) len1, (short) 100);
-      len3 = write(ctd.log, utlBuf, len2);
-      if (len2!=len3) 
-        flogf("\nERR\t| ctdAuto() could not write ctd.log");
-    } // while ==
-    close(ctd.log);
   } // if auton
   ctd.auton = auton;
   mpcDevice(ant_dev);
-}
+} // ctdAuton
+
+///
+// get science, clear log
+void ctdLog(void) {
+  int len1=BUFSZ;
+  int len2=len1, len3=len1;
+  DBG0("ctdLog(%s)", ctd.logFile)
+  ctd.log = utlLogFile(ctd.logFile);
+  ctdPrompt();          // wakeup
+  utlWrite(ctd.port, "getSamples", EOL);
+  while (len1==len3) {
+    // repeat until less than a full buf
+    len2 = (int) TURxGetBlock(ctd.port, utlBuf, (long) len1, (short) 100);
+    len3 = write(ctd.log, utlBuf, len2);
+    if (len2!=len3) 
+      flogf("\nERR\t| ctdLog() could not write ctd.log");
+  } // while ==
+  close(ctd.log);
+  utlWrite(ctd.port, "initLogging \n initLogging", EOL);
+  TURxFlush(ctd.port);
+} // ctdLog
 
 ///
 // sbe16
@@ -190,8 +201,5 @@ void ctdRead() {
 } // ctdRead
 
 ///
-// close log
 void ctdStop(void){
-  if (ctd.log)
-    close(ctd.log);
 }

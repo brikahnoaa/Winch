@@ -1,4 +1,4 @@
-// cfgTst.c
+// ctdTst.c
 #include <com.h>
 #include <ctd.h>
 #include <mpc.h>
@@ -9,11 +9,11 @@ void main(void){
   mpcInit();
   ctdInit();
   flogf("\nPress a key to exit\n");
-  ctdSample();
+  flogf(" %2.1f", ctdDepth());
+  ctdAuto(true);
   while (!cgetq()) {
-    if (ctdReady()) {
-      flogf(" %2.1f", ctdDepth());
-      ctdSample();
     }
+  ctdAuto(false);
+  ctdLog();
   }
 }
