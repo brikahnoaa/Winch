@@ -29,7 +29,8 @@ CtdInfo ctd;
 // sets: ctd.port .pending .log
 void ctdInit(void) {
   DBG0("ctdInit()")
-  ctd.port = mpcCom1();
+  mpcPam(sbe_pam);
+  ctd.port = mpcPort();
   ctdAuton(false);
   // sbe16
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
@@ -45,7 +46,6 @@ void ctdInit(void) {
 void ctdAuton(bool auton) {
   if (ctd.auton==auton) return;
   DBG0("ctdAuton(%d)", auton)
-  mpcDevice(ctd_dev);
   if (auton) {
     // note - initlogging done at end of ctdLog
     ctdPrompt();
@@ -62,7 +62,6 @@ void ctdAuton(bool auton) {
     TURxFlush(ctd.port);
   } // if auton
   ctd.auton = auton;
-  mpcDevice(ant_dev);
 } // ctdAuton
 
 ///
@@ -207,4 +206,5 @@ void ctdRead() {
 
 ///
 void ctdStop(void){
+  mpcPam(non_pam);
 }

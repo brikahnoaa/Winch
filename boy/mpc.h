@@ -3,23 +3,23 @@
 
 #define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
-#define COM1BAUD 9600
+#define PAM_BAUD 9600
 
-typedef enum { ant_dev, ctd_dev } DevType;
+typedef enum { non_pam, wsp_pam, sbe_pam } PamType;
 
 typedef struct MpcInfo {
   long diskFree;
   long diskSize;
-  DevType device;             // sbe39|gpsirid
-  Serial com1;
+  PamType pam;             // wsp_12, sbe_16
+  Serial port;
 } MpcInfo;
 
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
 static void spur_ISR(void);
 
-Serial mpcCom1(void);
-void mpcDevice(DevType dev);
+Serial mpcPort(void);
+void mpcPam(PamType pam);
 void mpcInit(void);
 void mpcSleep(void);
 void mpcStop(void);

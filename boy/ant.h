@@ -1,6 +1,10 @@
 // ant.h
 #define ANT_H
 
+#define ANT_BAUD 9600
+
+typedef enum { cf2_dev, a3la_dev } DevType;
+
 typedef struct AntInfo {
   bool auton;
   bool pending;               // TS query or start of auton before 1st sample
@@ -14,18 +18,21 @@ typedef struct AntInfo {
   float temp;
   int delay;
   int sampleCnt;
+  DevType dev;
   Serial port;
 } AntInfo;
 
+static bool antData(void);
+static bool antPrompt(void);
 static void antRead(void);
+static void antSample(void);
 
-bool antPrompt(void);
-bool antData(void);
 bool antSurf(void);
 float antDepth(void);
+void antDevice(DevType dev);
 float antMoving(void);
 float antTemp(void);
 void antAuton(bool auton);
 void antInit(void);
-void antSample(void);
+void antStart(void);
 void antStop(void);

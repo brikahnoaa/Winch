@@ -12,25 +12,62 @@ AntInfo ant;
 // turn on antenna module, wait until ant responds
 // sets: ant.mode .port
 void antInit(void) {
+  short rx, tx;
   DBG0("antInit()")
-  ant.port = mpcCom1();
-  ant.pending = false;
-  ant.auton = false;
+  // port
+  rx = TPUChanFromPin(ANT_RX);
+  tx = TPUChanFromPin(ANT_TX);
+  ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
+  if (ant.port==NULL)
+    utlStop("antInit() com1 open fail");
+} // antInit
+
+///
+// turn on, clean, set params
+void antStart(void) {
+  DBG0("antStart() %s", utlDateTime())
+  PIOSet(ANT_PWR);
+  utlDelay(RS232_SETTLE); // to settle rs232
   TURxFlush(ant.port);
   TUTxFlush(ant.port);
-  PIOSet(ANT_PWR);
-  // get cf2 startup "ok"
+  // state
+  ant.pending = false;
+  ant.auton = false;
+  // get cf2 startup message
+  utlNap(3);
   if ( utlReadWait(ant.port, utlBuf, 9)==0 )
     utlStop("FATAL\t| antInit() startup fail");
+  DBG1("-> %s", utlBuf)
   // sbe39
   if (!(antPrompt() || antPrompt()))   // fails twice
     utlStop("ERR\t| antInit(): no prompt from ant");
-  utlWrite(ant.port, utlDateTimeBrief(), EOL);
-  utlReadWait(ant.port, utlBuf, 1);
+  sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
+  utlWrite(ant.port, utlStr, EOL);
+  // utlWrite(ant.port, "OutputFormat=1", EOL);
   utlWrite(ant.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(ant.port, utlBuf, 1);
   // ?? what else should be set?
-} // antInit
+} // antStart
+
+///
+// antmod uMPC cf2 and iridium A3LA
+// switch between devices on com1, clear pipe
+void antDevice(DevType dev) {
+  if (dev==ant.dev) return;
+  if (dev==cf2_dev)
+    PIOSet(ANT_SEL);
+  else if (dev==a3la_dev)
+    PIOClear(ANT_SEL);
+  else
+    return;
+  utlDelay(RS232_SETTLE);
+  TUTxFlush(ant.port);
+  TURxFlush(ant.port);
+  utlPet();
+  return;
+} // antDevice
+
+
 
 ///
 // if asleep, first EOL wakens but no response

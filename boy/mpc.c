@@ -24,17 +24,18 @@ short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 void mpcInit(void) {
   ushort nsRAM, nsFlash, nsCF;
   short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
-  uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
   short rx, tx;
-  // port
-  rx = TPUChanFromPin(COM1RX);
-  tx = TPUChanFromPin(COM1TX);
-  mpc.com1 = TUOpen(rx, tx, COM1BAUD, 0);
-  if (mpc.com1==NULL)
-    utlStop("mpcInit() com1 open fail");
-  utlDelay(RS232_SETTLE); // to settle rs232
-
+  uchar mirrorpins[] = {15, 16, 17, 18, 19, 26, 36, 0};
   PIOMirrorList(mirrorpins);
+  // pam port, shared by wispr and science ctd sbe16
+  rx = TPUChanFromPin(PAM_RX);
+  tx = TPUChanFromPin(PAM_TX);
+  mpc.port = TUOpen(rx, tx, PAM_BAUD, 0);
+  if (mpc.port==NULL)
+    utlStop("mpcInit() pam open fail");
+  utlDelay(RS232_SETTLE); // to settle rs232
+  TUTxFlush(mpc.port);
+  TURxFlush(mpc.port);
 
   TMGSetSpeed(SYSCLK);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
@@ -47,53 +48,56 @@ void mpcInit(void) {
 } // mpcInit
 
 ///
-// antmod cf2 and buoy ctd are on same com
-// switch between devices on com1, clear pipe
-void mpcDevice(DevType dev) {
-  if (dev==mpc.device) return;
-  if (dev==ant_dev)
-    PIOSet(COM1SEL);
-  else if (dev==ctd_dev)
-    PIOClear(COM1SEL);
-  else
-    return;
-  utlDelay(RS232_SETTLE);
-  TUTxFlush(mpc.com1);
-  TURxFlush(mpc.com1);
+// pam port shares rx/tx between com3, com4
+// switch between devices on pam port, clear 
+void mpcPam(PamType pam) {
+  if (pam==mpc.pam) return;
+  if (pam==wsp_pam) {
+    PIOClear(SBE_PAM);
+    PIOSet(WSP_PAM);
+  } else if (pam==sbe_pam) {
+    PIOClear(WSP_PAM);
+    PIOSet(SBE_PAM);
+  } else {
+    PIOClear(WSP_PAM);
+    PIOClear(SBE_PAM);
+  }
+  TUTxFlush(mpc.port);
+  TURxFlush(mpc.port);
   utlPet();
   return;
-} // mpcDevice
+} // mpcPam
 
 ///
-// com1 is shared
-Serial mpcCom1(void) {return mpc.com1;}
+// pam port is shared
+Serial mpcPort(void) {
+  return mpc.port;
+ } // mpcPort
 
-//
+///
 // capture interrupt, used to wake up
-//
 static void IRQ4_ISR(void) {
   PIORead(IRQ4RXD);     // console
   RTE();
 } // IRQ4_ISR
+
+///
 static void IRQ5_ISR(void) {
   PIORead(IRQ5);        // pam ??
   RTE();
 } // IRQ5_ISR
 
-//
+///
 // spurious interrupt, ignore
-//
 static void spur_ISR(void) {
   RTE();
 } // spur_ISR
 
-//
+///
 // Sleep until keypress or wispr
-//
 void mpcSleep(void) {
   ciflush(); // flush any junk
   flogf("\nmpcSleep() at %s", utlDateTime());
-
   // Install the interrupt handlers that will break us out by "break signal"
   // ?? this should be a one time action, we toggle pins int|I/O
   IEVInsertAsmFunct(IRQ4_ISR, level4InterruptAutovector);

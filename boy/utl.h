@@ -12,14 +12,16 @@
 // PINS
 #define MDM_PWR 21
 #define ANT_PWR 22  // antenna module Power pin (1=ON, 0=OFF)
-#define COM1SEL 23  // set = antMod cf2, clear = ctd sbe16 in buoy
-#define WISPR3 24
-#define WISPR4 25
+#define ANT_SEL 23  // set = antMod cf2, clear = a3la
+#define SBE_PAM 24   // 24 cannot be on with 29
+#define SBE_16 25   // 24&25 -> sbe16
 #define HPSENS 26   // power for pressure sensor
-#define WISPR1 29
-#define WISPR2 30
-#define COM1TX 31
-#define COM1RX 32
+#define PAM_TX 27   // com2,3: (pam_12)(pam_34) 
+#define PAM_RX 28   // // selected by 24, 29
+#define WSP_PAM 29   // 24 cannot be on with 29
+#define WSP_12 30   // 29&!30 -> wsp1, 29&30 -> wsp2
+#define ANT_TX 31   // com1: ant mod, uMPC and A3LA
+#define ANT_RX 32   // // selected by 23
 #define MDM_RX 33
 #define MDM_TX 35
 #define WISPR_PWR_ON 37

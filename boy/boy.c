@@ -346,8 +346,7 @@ PhaseType dropPhase() {
 // from ship deck to ocean floor
 // wait until under 10m, watch until not dropping, wait 30s, riseP
 PhaseType deployPhase(void) {
-  mpcDevice(ant_dev);
-  antInit();
+  antStart();
   tmrStart( deploy_tmr, 60*60*2 );
   // wait until under 10m
   while (antDepth()<10.0) {
@@ -381,19 +380,12 @@ PhaseType errorPhase(void) {
 float oceanCurr() {
   float aD, cD, a, b, c;
   // usually called while auto_ant
-  antAuton(true);
-  ctdAuton(true);
-  mpcDevice(ctd_dev);
   cD=ctdDepth();
-  mpcDevice(ant_dev);
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
   a=cD-aD;
   c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
-  antAuton(false);
-  ctdAuton(false);
-  ctdLog();
   return b;
 } // oceanCurr
 
