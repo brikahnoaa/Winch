@@ -73,7 +73,7 @@ int utlRead(Serial port, char *in) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG1("%d->'%s'", len, utlNonPrint(in))
+  DBG2("%d->'%s'", len, utlNonPrint(in))
   return len;
 }
 
@@ -97,7 +97,7 @@ int utlReadWait(Serial port, char *in, int wait) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG1("%d->'%s'", len, utlNonPrint(in))
+  DBG2("%d->'%s'", len, utlNonPrint(in))
   return len;
 }
 
@@ -192,13 +192,13 @@ int utlLogFile(char *fname) {
   strcpy(path, "log\\");
   strcat(path, fname);
   strcat(path, ".log");
-  log = open(fname, O_APPEND | O_CREAT | O_RDWR);
+  log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
     sprintf(utl.str, "FATAL | utlLogFile(%s): open failed", fname);
     utlStop(utl.str);
     return 0;
   } else {
-    sprintf(utl.str, "---  %s ---", utlDateTime());
+    sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
     write(log, utl.str, strlen(utl.str));
     return log;
   }

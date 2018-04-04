@@ -49,14 +49,16 @@ void ctdAuton(bool auton) {
   if (auton) {
     // note - initlogging done at end of ctdLog
     ctdPrompt();
-    utlWrite(ctd.port, "sampleInterval=0", EOL);
+    utlWrite(ctd.port, "sampleInterval=1.5", EOL);
     utlWrite(ctd.port, "txRealTime=n", EOL);
     utlWrite(ctd.port, "startnow", EOL);
+    DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
     TURxFlush(ctd.port);
   } else {
     utlWrite(ctd.port, "stop", EOL);
     // pause and flush, some samples output after "stop"
     utlNap(2*ctd.delay);
+    DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
     TURxFlush(ctd.port);
   } // if auton
   ctd.auton = auton;
@@ -71,16 +73,18 @@ void ctdLog(void) {
   DBG0("ctdLog(%s)", ctd.logFile)
   ctd.log = utlLogFile(ctd.logFile);
   ctdPrompt();          // wakeup
-  utlWrite(ctd.port, "getSamples", EOL);
+  utlWrite(ctd.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
-    len2 = (int) TURxGetBlock(ctd.port, utlBuf, (long) len1, (short) 100);
+    len2 = (int) TURxGetBlock(ctd.port, utlBuf, (long) len1, (short) 1000);
     len3 = write(ctd.log, utlBuf, len2);
     if (len2!=len3) 
       flogf("\nERR\t| ctdLog() could not write ctd.log");
   } // while ==
   close(ctd.log);
-  utlWrite(ctd.port, "initLogging \n initLogging", EOL);
+  utlWrite(ctd.port, "initLogging", EOL);
+  utlWrite(ctd.port, "initLogging", EOL);
+  DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
   TURxFlush(ctd.port);
 } // ctdLog
 
@@ -89,6 +93,7 @@ void ctdLog(void) {
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
   DBG0("ctdPrompt()")
+  DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
   utlReadWait(ctd.port, utlStr, 2*ctd.delay);
@@ -96,6 +101,7 @@ bool ctdPrompt(void) {
   if (strstr(utlStr, "S>") == NULL) {
     // try again after break
     ctdBreak();
+    DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
     TURxFlush(ctd.port);
     utlWrite(ctd.port, "", EOL);
     utlReadWait(ctd.port, utlStr, 2*ctd.delay);
