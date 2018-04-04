@@ -107,10 +107,10 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     return drop_pha;
   }
-  antAuto(true);
+  antAuton(true);
   ctdAuton(true);
   success = riseUp(boy.currChkD, 5, 1);
-  antAuto(false);
+  antAuton(false);
   ctdAuton(false);
   ctdLog();
   if (!success) {
@@ -123,10 +123,10 @@ PhaseType risePhase(void) {
     return drop_pha;
   }
   // surface
-  antAuto(true);
+  antAuton(true);
   ctdAuton(true);
   success = riseUp(0.0, 5, 1);
-  antAuto(false);
+  antAuton(false);
   ctdAuton(false);
   ctdLog();
   if (!success) {
@@ -275,7 +275,7 @@ PhaseType dropPhase() {
   time_t dropT;
   MsgType msg;
   flogf("\n\tdropPhase() %s", utlDateTime());
-  antAuto(true);
+  antAuton(true);
   ctdAuton(true);
   // step1. loop until dropRsp or dropping+timeout
   ngkSend( dropCmd_msg );
@@ -333,7 +333,7 @@ PhaseType dropPhase() {
       boy.dropVFirst = boy.dropVLast;
   }
   // turn off ant, clear ngk, clear ctd
-  antAuto(false);
+  antAuton(false);
   ctdAuton(false);
   ctdLog();
   ngkStop();
@@ -358,12 +358,12 @@ PhaseType deployPhase(void) {
     }
   }
   // watch until not moving
-  antAuto(true);
+  antAuton(true);
   while (antMoving()!=0.0) 
     pwrNap(3);
   pwrNap(30);
   boy.dockD = antDepth();
-  antAuto(false);
+  antAuton(false);
   return rise_pha;
 } // deployPhase
 
@@ -381,7 +381,7 @@ PhaseType errorPhase(void) {
 float oceanCurr() {
   float aD, cD, a, b, c;
   // usually called while auto_ant
-  antAuto(true);
+  antAuton(true);
   ctdAuton(true);
   mpcDevice(ctd_dev);
   cD=ctdDepth();
@@ -391,7 +391,7 @@ float oceanCurr() {
   a=cD-aD;
   c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
-  antAuto(false);
+  antAuton(false);
   ctdAuton(false);
   ctdLog();
   return b;

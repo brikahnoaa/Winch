@@ -30,7 +30,7 @@ CtdInfo ctd;
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcCom1();
-  ctdAuto(false);
+  ctdAuton(false);
   // sbe16
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
     utlStop("ERR\t| ctdInit(): no prompt from ctd");
@@ -43,16 +43,15 @@ void ctdInit(void) {
 ///
 // turn autonomous on/off. see ctdLog
 void ctdAuton(bool auton) {
-  char *out;
   if (ctd.auton==auton) return;
-  DBG0("ctdAuto(%d)", auton)
+  DBG0("ctdAuton(%d)", auton)
   mpcDevice(ctd_dev);
   if (auton) {
     // note - initlogging done at end of ctdLog
     ctdPrompt();
-    utlWriteLine(ctd.port, "sampleInterval=0", EOL);
-    utlWriteLine(ctd.port, "txRealTime=n", EOL);
-    utlWriteLine(ctd.port, "startnow", EOL);
+    utlWrite(ctd.port, "sampleInterval=0", EOL);
+    utlWrite(ctd.port, "txRealTime=n", EOL);
+    utlWrite(ctd.port, "startnow", EOL);
     TURxFlush(ctd.port);
   } else {
     utlWrite(ctd.port, "stop", EOL);

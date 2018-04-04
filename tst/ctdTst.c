@@ -1,5 +1,5 @@
 // ctdTst.c
-#include <com.h>
+#include <utl.h>
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
@@ -10,10 +10,10 @@ void main(void){
   ctdInit();
   flogf("\nPress a key to exit\n");
   flogf(" %2.1f", ctdDepth());
-  ctdAuto(true);
+  ctdAuton(true);
   while (!cgetq()) {
-    }
-  ctdAuto(false);
-  ctdLog();
   }
+  flogf(" %2.1f", ctdDepth());
+  ctdAuton(false);
+  ctdLog();
 }

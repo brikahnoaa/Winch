@@ -140,15 +140,14 @@ float antTemp(void) {
 // turn autonomous on/off. idle_ant clears samples
 void antAuton(bool auton) {
   int i;
-  char *out;
   if (ant.auton==auton) return;
   DBG0("antAuto(%d)", auton)
   if (auton) {
-    utlWriteLine(ant.port, "initlogging", EOL);
-    utlWriteLine(ant.port, "initlogging", EOL);
-    utlWriteLine(ant.port, "sampleInterval=0", EOL);
-    utlWriteLine(ant.port, "txRealTime=y", EOL);
-    utlWriteLine(ant.port, "startnow", EOL);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlWrite(ant.port, "sampleInterval=0", EOL);
+    utlWrite(ant.port, "txRealTime=y", EOL);
+    utlWrite(ant.port, "startnow", EOL);
     // clear samples
     for (i=0; i<=ant.sampleCnt; i++) 
       ant.samples[i] = 0;
