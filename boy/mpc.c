@@ -25,11 +25,12 @@ void mpcInit(void) {
   ushort nsRAM, nsFlash, nsCF;
   short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
   short i, rx, tx;
-  uchar mirrorpins[] = {0, 1};
+  uchar mirrorpins[] = {15, 16, 17, 18, 19, 36, 0};
+  uchar clearpins[] = {22, 23, 24, 25, 26, 27, 28, 29, 30, 0};
   PIOMirrorList(mirrorpins);
-  for (i=15; i<36; i++) 
-    PIOMirror(i);
-  // pam port, shared by wispr and science ctd sbe16
+  for (i=0; clearpins[i]; i++) 
+    PIOClear(i);
+  // setup pam port, shared by wispr and science ctd sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
   mpc.pam = null_pam;
