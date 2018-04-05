@@ -13,11 +13,8 @@ void main(void){
   ctdInit();
   flogf("\nPress q to exit\n");
   flogf(" %2.1f", ctdDepth());
-  ctdAuton(true);
-  while (!cgetq()) {}
-  flogf(" %2.1f", ctdDepth());
-  ctdAuton(false);
-  ctdGetSamples();
+  while (!cgetq()) 
+    flogf(" %2.1f", ctdDepth());
   while (true) {
     if (cgetq()) {
       c=cgetc();
