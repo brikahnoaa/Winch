@@ -112,7 +112,7 @@ PhaseType risePhase(void) {
   success = riseUp(boy.currChkD, 5, 1);
   antAuton(false);
   ctdAuton(false);
-  ctdLog();
+  ctdGetSamples();
   if (!success) {
     flogf("\n\t| riseUp fails at %3.1f m", antDepth());
     return drop_pha;
@@ -128,7 +128,7 @@ PhaseType risePhase(void) {
   success = riseUp(0.0, 5, 1);
   antAuton(false);
   ctdAuton(false);
-  ctdLog();
+  ctdGetSamples();
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     return drop_pha;
@@ -335,7 +335,7 @@ PhaseType dropPhase() {
   // turn off ant, clear ngk, clear ctd
   antAuton(false);
   ctdAuton(false);
-  ctdLog();
+  ctdGetSamples();
   ngkStop();
   ctdStop();
   antStop();

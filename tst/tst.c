@@ -17,7 +17,7 @@ void main(void){
   while (!cgetq()) {}
   flogf(" %2.1f", ctdDepth());
   ctdAuton(false);
-  ctdLog();
+  ctdGetSamples();
   while (true) {
     if (cgetq()) {
       c=cgetc();

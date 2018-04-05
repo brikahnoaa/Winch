@@ -19,6 +19,7 @@ typedef struct AntInfo {
   float temp;
   int delay;
   int sampleCnt;
+  AntType antenna;
   DevType dev;
   Serial port;
 } AntInfo;
@@ -27,6 +28,7 @@ static bool antData(void);
 static bool antPrompt(void);
 static void antRead(void);
 static void antSample(void);
+static void antSwitch(AntType antenna);
 
 bool antSurf(void);
 float antDepth(void);
