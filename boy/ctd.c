@@ -36,9 +36,9 @@ void ctdInit(void) {
   if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
     utlStop("ERR\t| ctdInit(): no prompt from ctd");
   utlWrite(ctd.port, utlDateTimeBrief(), EOL);
-  utlReadWait(ctd.port, utlBuf, 1);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
-  utlReadWait(ctd.port, utlBuf, 1);
+  DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
+  TURxFlush(ctd.port);
 } // ctdInit
 
 ///
@@ -49,16 +49,16 @@ void ctdAuton(bool auton) {
   if (auton) {
     // note - initlogging done at end of ctdLog
     ctdPrompt();
-    utlWrite(ctd.port, "sampleInterval=1.5", EOL);
+    utlWrite(ctd.port, "sampleInterval=10", EOL);
     utlWrite(ctd.port, "txRealTime=n", EOL);
     utlWrite(ctd.port, "startnow", EOL);
-    DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
+    DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
     TURxFlush(ctd.port);
   } else {
     utlWrite(ctd.port, "stop", EOL);
     // pause and flush, some samples output after "stop"
     utlNap(2*ctd.delay);
-    DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
+    DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
     TURxFlush(ctd.port);
   } // if auton
   ctd.auton = auton;
@@ -66,7 +66,7 @@ void ctdAuton(bool auton) {
 
 ///
 // get science, clear log
-void ctdLog(void) {
+void ctdGetSamples(void) {
   int len1=BUFSZ;
   int len2=len1, len3=len1;
   DBG0("ctdLog(%s)", ctd.logFile)
@@ -83,16 +83,29 @@ void ctdLog(void) {
   close(ctd.log);
   utlWrite(ctd.port, "initLogging", EOL);
   utlWrite(ctd.port, "initLogging", EOL);
-  DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
+  DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
   TURxFlush(ctd.port);
 } // ctdLog
+
+///
+// start logging ctdDepth() calls
+void ctdLog(bool on) {
+  DBG0("ctdLog(%s)", ctd.logFile)
+  if (on) {
+    ctd.log = utlLogFile(ctd.logFile);
+    ctd.logging = true;
+  } else {
+    close(ctd.log);
+    ctd.logging = false;
+  }
+}
 
 ///
 // sbe16
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
   DBG0("ctdPrompt()")
-  DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
+  DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
   utlReadWait(ctd.port, utlStr, 2*ctd.delay);
@@ -100,7 +113,7 @@ bool ctdPrompt(void) {
   if (strstr(utlStr, "S>") == NULL) {
     // try again after break
     ctdBreak();
-    DBG2("\nctd>>%s", utlRead(ctd.port,utlStr)?utlStr:NULL)
+    DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
     TURxFlush(ctd.port);
     utlWrite(ctd.port, "", EOL);
     utlReadWait(ctd.port, utlStr, 2*ctd.delay);
@@ -207,4 +220,6 @@ void ctdRead() {
 ///
 void ctdStop(void){
   mpcPam(non_pam);
+  if (ctd.logging) 
+    ctdLog(false);
 }

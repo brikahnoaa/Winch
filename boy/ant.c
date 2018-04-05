@@ -67,8 +67,16 @@ void antDevice(DevType dev) {
   return;
 } // antDevice
 
-
-
+void antSwitch(AntType antenna) {
+  if (antenna==ant.antenna) return;
+  TUTxPutByte(ant.port, 1, false);        // ^A
+  if (antenna==gps_ant) 
+    TUTxPutByte(ant.port, 'G', false);
+  else
+    TUTxPutByte(ant.port, 'I', false);
+  ant.antenna = antenna;
+} // antSwitch
+    
 ///
 // if asleep, first EOL wakens but no response
 bool antPrompt() {

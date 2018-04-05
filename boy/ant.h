@@ -4,6 +4,7 @@
 #define ANT_BAUD 9600
 
 typedef enum { cf2_dev, a3la_dev } DevType;
+typedef enum { gps_ant, irid_ant } AntType;
 
 typedef struct AntInfo {
   bool auton;
