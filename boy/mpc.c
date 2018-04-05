@@ -30,6 +30,7 @@ void mpcInit(void) {
   // pam port, shared by wispr and science ctd sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
+  mpc.pam = null_pam;
   mpc.port = TUOpen(rx, tx, PAM_BAUD, 0);
   if (mpc.port==NULL)
     utlStop("mpcInit() pam open fail");
@@ -52,15 +53,22 @@ void mpcInit(void) {
 // switch between devices on pam port, clear 
 void mpcPam(PamType pam) {
   if (pam==mpc.pam) return;
+  DBG0("mpcPam(%d)", pam)
   if (pam==wsp_pam) {
     PIOClear(SBE_PAM);
+    PIOClear(SBE_16);
     PIOSet(WSP_PAM);
+    PIOSet(WSP_12);
   } else if (pam==sbe_pam) {
     PIOClear(WSP_PAM);
+    PIOClear(WSP_12);
     PIOSet(SBE_PAM);
+    PIOSet(SBE_16);
   } else {
     PIOClear(WSP_PAM);
+    PIOClear(WSP_12);
     PIOClear(SBE_PAM);
+    PIOClear(SBE_16);
   }
   TUTxFlush(mpc.port);
   TURxFlush(mpc.port);

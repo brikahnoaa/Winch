@@ -5,7 +5,7 @@
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 #define PAM_BAUD 9600
 
-typedef enum { non_pam, wsp_pam, sbe_pam } PamType;
+typedef enum { null_pam, wsp_pam, sbe_pam } PamType;
 
 typedef struct MpcInfo {
   long diskFree;

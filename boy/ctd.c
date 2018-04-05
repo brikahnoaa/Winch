@@ -219,7 +219,7 @@ void ctdRead() {
 
 ///
 void ctdStop(void){
-  mpcPam(non_pam);
+  mpcPam(null_pam);
   if (ctd.logging) 
     ctdLog(false);
 }
