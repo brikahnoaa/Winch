@@ -3,17 +3,31 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
+#include <ant.h>
+
+extern AntInfo ant;
 
 void main(void){
+  // char c;
   sysInit();
   mpcInit();
   ctdInit();
-  flogf("\nPress a key to exit\n");
-  flogf(" %2.1f", ctdDepth());
-  ctdAuton(true);
+  antInit();
+  flogf("\nPress q to exit\n");
   while (!cgetq()) {
+    flogf(" %2.1f", antDepth());
   }
-  flogf(" %2.1f", ctdDepth());
-  ctdAuton(false);
-  ctdLog();
+  /*
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
+  }
+  */
 }

@@ -3,18 +3,21 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
+#include <ant.h>
 
-extern CtdInfo ctd;
+extern AntInfo ant;
 
 void main(void){
-  char c;
+  // char c;
   sysInit();
   mpcInit();
   ctdInit();
+  antInit();
   flogf("\nPress q to exit\n");
-  flogf(" %2.1f", ctdDepth());
-  while (!cgetq()) 
-    flogf(" %2.1f", ctdDepth());
+  while (!cgetq()) {
+    flogf(" %2.1f", antDepth());
+  }
+  /*
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -26,4 +29,5 @@ void main(void){
       cputc(c);
     }
   }
+  */
 }

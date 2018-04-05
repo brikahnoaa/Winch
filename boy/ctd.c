@@ -32,13 +32,14 @@ void ctdInit(void) {
   mpcPam(sbe_pam);
   ctd.port = mpcPort();
   ctdAuton(false);
-  // sbe16
-  if (!(ctdPrompt() || ctdPrompt()))   // fails twice 
+  if (!ctdPrompt())
     utlStop("ERR\t| ctdInit(): no prompt from ctd");
+  // sbe16 gets quirky when logging, best to STOP even if it flags error
+  utlWrite(ctd.port, "stop", EOL);
   utlWrite(ctd.port, utlDateTimeBrief(), EOL);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
-  DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
-  TURxFlush(ctd.port);
+  utlRead(ctd.port,utlBuf);
+  DBG2("\nctd>>%s", utlBuf)
 } // ctdInit
 
 ///
@@ -52,14 +53,14 @@ void ctdAuton(bool auton) {
     utlWrite(ctd.port, "sampleInterval=10", EOL);
     utlWrite(ctd.port, "txRealTime=n", EOL);
     utlWrite(ctd.port, "startnow", EOL);
-    DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
-    TURxFlush(ctd.port);
+    utlRead(ctd.port,utlBuf);
+    DBG2("\nctd>>%s", utlBuf)
   } else {
     utlWrite(ctd.port, "stop", EOL);
     // pause and flush, some samples output after "stop"
     utlNap(2*ctd.delay);
-    DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
-    TURxFlush(ctd.port);
+    utlRead(ctd.port,utlBuf);
+    DBG2("\nctd>>%s", utlBuf)
   } // if auton
   ctd.auton = auton;
 } // ctdAuton
@@ -83,8 +84,8 @@ void ctdGetSamples(void) {
   close(ctd.log);
   utlWrite(ctd.port, "initLogging", EOL);
   utlWrite(ctd.port, "initLogging", EOL);
-  DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
-  TURxFlush(ctd.port);
+  utlRead(ctd.port,utlBuf);
+  DBG2("\nctd>>%s", utlBuf)
 } // ctdLog
 
 ///
@@ -105,25 +106,19 @@ void ctdLog(bool on) {
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
   DBG0("ctdPrompt()")
-  DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
-  utlReadWait(ctd.port, utlStr, 2*ctd.delay);
-  // looking for S>
-  if (strstr(utlStr, "S>") == NULL) {
-    // try again after break
-    ctdBreak();
-    DBG2("\nctd>>%s", utlReadWait(ctd.port,utlStr,2)?utlStr:NULL)
-    TURxFlush(ctd.port);
-    utlWrite(ctd.port, "", EOL);
-    utlReadWait(ctd.port, utlStr, 2*ctd.delay);
-    // looking for S>
-    if (strstr(utlStr, "S>") == NULL) {
-      flogf("\nERR\t| ctdPrompt fail");
-      return false;
-    }
-  }
-  return true;
+  utlReadWait(ctd.port, utlBuf, 2*ctd.delay);
+  // looking for S> at end
+  if (strstr(utlBuf, "S>"))
+    return true;
+  // try again after break
+  ctdBreak();
+  utlWrite(ctd.port, "", EOL);
+  utlReadWait(ctd.port, utlBuf, 2*ctd.delay);
+  if (strstr(utlBuf, "S>"))
+    return true;
+  return false;
 }
 
 ///

@@ -1,4 +1,4 @@
-// antmain.c
+// antmod.c
 
 //  Program to communicate with T-D sensor and irid/gps switch
 //  July 12, 2017 blk
@@ -6,7 +6,7 @@
 // buoy is on com4. all serial is transfered between buoy and sbe
 // EXCEPT for commands that begin with 001-007 ^A-^G
 
-#include <ant.h>
+#include <antmod.h>
 
 #define VERSION "3.0"
 #define RS232_SETTLE 100000
@@ -391,7 +391,7 @@ void printchar(char c) {
 void prerun() {
   short i=2;
   SCIRxFlush();
-  cprintf("Exit to Pico? ");
+  cprintf("Press any key to exit. 3 seconds, %d", i);
   while (i--) {
     RTCDelayMicroSeconds(1000000L);
     if (SCIRxGetByte(false) != RxD_NO_DATA) BIOSResetToPicoDOS();

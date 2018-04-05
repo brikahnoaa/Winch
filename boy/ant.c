@@ -114,7 +114,7 @@ void antSample(void) {
   utlWrite(ant.port, "TS", EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
   if (len<3)
-    flogf("\nERR antSample, TS command fail");
+    utlShut("\nERR antSample, TS command fail");
   ant.pending = true;
   // pending response, checked by antRead()
   tmrStart( ant_tmr, ant.delay );
