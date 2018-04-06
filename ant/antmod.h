@@ -28,7 +28,7 @@
 #include <termios.h>  // PicoDOS POSIX-like Terminal I/O Definitions
 #include <unistd.h>   // PicoDOS POSIX-like UNIX Function Definitions
 
-#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
 #define DBG(X) X // template:   DBG( cprintf("\n"); )
 #else               /*  */
@@ -55,3 +55,8 @@ void antennaSwitch(char c);
 void transBlock(long b);
 void printchar(char c);
 void prerun();
+void antBreak();
+void buoyStr(char *out);
+void buoyCout(char ch);
+char buoyCin(void);
+int buoyQ(void);

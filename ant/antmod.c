@@ -46,88 +46,84 @@ DBG( bool echoDn=false; bool echoUp=false;)
 uchar *buf;
 char *LogFile = {"sys.log"}; 
 char antSw;
-struct { char *name, c; bool power; TUPort *port; } dev[4] = {
-  { "BUOY", 'B', false, NULL },
-  { "SBE", 'S', false, NULL },
-  { "IRID", 'I', false, NULL },
-  { "ANT", 'A', false, NULL }
+struct { char *name, c; bool power; } dev[4] = {
+  { "BUOY", 'B', false},
+  { "SBE", 'S', false},
+  { "IRID", 'I', false},
+  { "ANT", 'A', false}
   };
-TUPort *buoy, *devPort; // dev port of connnected upstream device
+TUPort *buoy, *sbe; // dev port of connnected upstream device
 
 //
 ///	main
 void main() {
   short ch;
-  int arg, arg2;
-
+  int arg;
   // escape to pico
   prerun();
-  DBG1(echoDn=true;echoUp=true;)
+  // DBG(echoDn=true;echoUp=true;)
   // set up hw
   init();
+  DBG(flogf("\ndebug");)
+  DBG1(flogf("\ndebug1");)
   buf = (uchar *)malloc(BUFSIZE);
   // initial connection is SBE
   power('I', false);
   power('S', true);
-  devPort = OpenSbePt();
-  buoy = OpenBuoyPt();
+  sbe = OpenSbePt();
+  buoyStr("ok\r\n");
 
   // exit via biosreset{topicodos}
   while (true) {
     // look for chars on both sides, process
-    // note: using vars buoy,devport is faster than dev[id].port
     // get from dev upstream
-    if (devPort && TURxQueuedCount(devPort)) {
-      ch=TURxGetByte(devPort, true); // blocking, best to check queue first
-      TUTxPutByte(buoy, ch, true); // block if queue is full
-      DBG( if (echoDn) printchar(ch); )
+    if (TURxQueuedCount(sbe)) {
+      ch=TURxGetByte(sbe, true); // blocking, best to check queue first
+      buoyCout(ch);
     } // char from device
 
     // get from buoy
-    if (TURxQueuedCount(buoy)) {
-      // blocking, best to check queue first
-      ch=TURxGetByte(buoy, true) & 0x00FF; 
-      if (ch<8) {
-        // get argument
-        arg=(int) TURxGetByte(buoy, true) & 0x00FF; // blocking
+    if (buoyQ()) {
+      ch=buoyCin();
+      if (ch<=8) {
         switch (ch) { // command
           case 0: // null
-            flogf("\nERR: NULL\n");
+            DBG1(flogf("\nERR: NULL\n");)
             break;
           case 1: // ^A Antenna G|I
+            arg=(int) buoyCin();
             antennaSwitch(arg);
             break;
-          case 2: // ^B Binary Block 2bytes arg
-            // get another byte
-            DBG1( printchar('-'); printchar((char) arg);)
-            arg2=(int) TURxGetByte(buoy, true) & 0x00FF;
-            arg=(int)(arg<<8) + arg2;
-            DBG1( printchar('-'); printchar((char) (arg2)); printchar('-');)
-            transBlock((long) arg);
+          case 2: // ^B Break to SBE
+            antBreak();
             break;
           case 3: // ^C Connect I|S
+            arg=(int) buoyCin();
             power(arg, true);
             break;
           case 4: // ^D powerDown I|S
+            arg=(int) buoyCin();
             power(arg, false);
             break;
           case 5: // ^E exit to pico
             BIOSResetToPicoDOS(); 
             break;
-          default: // uhoh
-            flogf("ERR: illegal command %d\n", ch);
-            cdrain();
-            break; // exit
+          case 6: // ^F print status
+            status();
+            break;
+          case 7: // ^G
+          case 8: // ^H help
+            help();
+            break;
         } // switch (command)
-        DBG1(printf("cmd:%d arg:%d\n", ch, arg);)
-      // if (ch<8)
+      // if (ch<=8)
       } else { 
         // regular char
-        TUTxPutByte(devPort, ch, true);
-        DBG( if (echoUp) printchar(ch); )
+        TUTxPutByte(sbe, ch, true);
       }
     } // if buoy
 
+#ifdef BUOY_COM4
     // console
     if (SCIRxQueuedCount()) {
       ch=SCIRxGetChar();
@@ -138,17 +134,18 @@ void main() {
         case 's':
           status(); break;
         case 'd':
-          echoDn = !echoDn; 
-          cprintf("\nechoDn: %s\n", echoDn ? "on" : "off"); 
+          DBG(echoDn = !echoDn; )
+          DBG(cprintf("\nechoDn: %s\n", echoDn ? "on" : "off"); )
           break;
         case 'u':
-          echoUp = !echoUp; 
-          cprintf("\nechoUp: %s\n", echoUp ? "on" : "off"); 
+          DBG(echoUp = !echoUp; )
+          DBG(cprintf("\nechoUp: %s\n", echoUp ? "on" : "off"); )
           break;
         default:
           help();
       } // switch (ch)
     } // if console 
+#endif
   } // while run
 } // main()
 
@@ -167,11 +164,8 @@ TUPort* OpenSbePt(void) {
   sb39rxch = TPUChanFromPin(SBERX);
   sb39txch = TPUChanFromPin(SBETX);
   sbePort = TUOpen(sb39rxch, sb39txch, BAUD, 0);
-  if (sbePort == NULL) {
+  if (sbePort == NULL) 
     flogf("\n!!! Error opening SBE channel...");
-  } else {
-    dev[SBE].port = sbePort;
-  }
   RTCDelayMicroSeconds(RS232_SETTLE);
   TURxFlush(sbePort);
   return sbePort;
@@ -181,20 +175,16 @@ TUPort* OpenBuoyPt(void) {
   TUPort *BuoyPt=NULL;
   short com4rxch, com4txch;
   DBG1(flogf("Opening the buoy COM4 port at %ld \n", BAUD);)
-  PIOSet(COM4PWR); // PWR On COM4 device
   com4rxch = TPUChanFromPin(COM4RX);
   com4txch = TPUChanFromPin(COM4TX);
   PIORead(IRQ5);
-
   // Define COM4 tuport
   BuoyPt = TUOpen(com4rxch, com4txch, BAUD, 0);
+  if (BuoyPt == NULL) 
+    flogf("\n!!! Error opening COM4 port...");
   RTCDelayMicroSeconds(RS232_SETTLE);
   TUTxFlush(BuoyPt);
   TURxFlush(BuoyPt);
-  if (BuoyPt == NULL) 
-    flogf("\n!!! Error opening COM4 port...");
-  else
-    dev[BUOY].port=BuoyPt;
   return BuoyPt;
 } // OpenBuoyPt
 
@@ -210,13 +200,13 @@ void help() {
       "\n"
       "Buoy, com4 at %d BAUD\n"
       " ^A Antenna G|I \n"
-      " ^B Blockmode (2B=length) \n"
+      " ^B 5sec Break to SBE \n"
       " ^C powerup I|S \n"
       " ^D powerDown I|S \n"
       " ^E Exit to pico \n"
-      " ^F unused \n"
+      " ^F status \n"
       " ^G unused \n"
-      "On console (com1):\n s=status x=exit *=this message\n"
+      " ^H help msg \n"
       DBG("  if debug, d=echo Downstream, u=echo Upstream\n")
       };
 
@@ -226,11 +216,11 @@ void help() {
          BIOSGVT.CFxSerNum, BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease,
          BIOSGVT.PICOVersion, BIOSGVT.PICORelease);
   printf(ProgramDescription, BAUD);
+  status();
 } // help()
 
-//
+///
 // init() - initialize hardware, open com ports
-//
 void init() {
   // I am here because the main eletronics powered this unit up and *.app
   // program started.
@@ -242,28 +232,24 @@ void init() {
   PIOClear(ADCPWR);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
   TMGSetSpeed(SYSCLK);
-
   // Initialize activity logging
   Initflog(LogFile, true);
-
   // settle antenna
   antennaSwitch('I');
   RTCDelayMicroSeconds(500000L);
   antennaSwitch('G');
-
   // Initialize to open TPU UART
   TUInit(calloc, free);
-
-  power('B', true);
-  buoy=dev[BUOY].port;
+  // buoy
+  PIOSet(COM4PWR);
+  buoy = OpenBuoyPt();
 } // init()
 
-//
-// status() 
-//
 void status() {
-  cprintf("antenna:%c iridgps-A3LA:%s sbe39:%s \n",
+  char out[80];
+  sprintf(out, "antenna:%c iridgps-A3LA:%s sbe39:%s \n",
     antSw, dev[IRID].power ? "on" : "off", dev[SBE].power ? "on" : "off");
+  buoyStr(out);
 }
 
 //
@@ -330,6 +316,10 @@ void printchar(char c) {
   cdrain();
 }
 
+void antBreak(void) {
+  TUTxBreak(sbe, 5000);
+}
+
 // short count, exit, first thing
 void prerun() {
   short i=2;
@@ -344,22 +334,43 @@ void prerun() {
   cprintf("\n");
 }
 
-// block transfer from buoy to devID
-void transBlock(long b) {
-  DBG(int len;)
-  long count;
-  // long TURxGetBlock(TUPort *tup, uchar *buffer, long bytes, short millisecs);
-  // long TUTxPutBlock(TUPort *tup, uchar *buffer, long bytes, short millisecs);
-  count = TURxGetBlock(buoy, buf, b, 50000);
-  if (count != b) 
-    cprintf("Error: getblock %ld != expected %ld \n", count, b);
-  count = TUTxPutBlock(devPort, buf, b, 10000);
-  if (count != b) 
-    cprintf("Error: putblock %ld != expected %ld \n", count, b);
-  DBG(if (echoUp||echoDn) cprintf(" [[%ld]] ", count);)
-  DBG(
-  len = (int) TURxQueuedCount(devPort); // accumulated
-  if (len > 0)
-      cprintf("%d bytes accumulated on devPort \n", len);
-  )
+/// 
+// check buoy port for input
+int buoyQ(void) {
+#ifdef BUOY_COM4
+  return TURxQueuedCount(buoy);
+#else
+  return (cgetq());
+#endif
 }
+
+///
+// get char from buoy, blocking
+char buoyCin(void) {
+#ifdef BUOY_COM4
+  return TURxGetByte(buoy, true);
+#else
+  return(cgetc());
+#endif
+}
+
+/// 
+// push ch to buoy
+void buoyCout(char ch) {
+#ifdef BUOY_COM4
+  TUTxPutByte(buoy, ch, true); // block if queue is full
+#else
+  cputc(ch);
+#endif
+}
+
+///
+// push string to buoy
+void buoyStr(char *out) {
+#ifdef BUOY_COM4
+  TUTxPrintf(out);
+#else
+  cprintf(out);
+#endif
+}
+

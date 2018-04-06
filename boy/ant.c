@@ -4,7 +4,7 @@
 #include <mpc.h>
 #include <tmr.h>
 
-#define EOL "\n"
+#define EOL "\r"
 
 AntInfo ant;
 
