@@ -9,7 +9,7 @@
 #include <antmod.h>
 
 #define VERSION "3.1"
-#define RS232_SETTLE 100000
+#define RS232_SETTLE 1000
 // Definitions of uMPC TPU ports
 #define SBEPWR 23 // SB#39plus TD power
 #define SBERX 32  // Tied to IRQ2
@@ -34,9 +34,7 @@
 //#define       SYSCLK   8000           // choose: 160 to 32000 (kHz)
 #define SYSCLK 16000            // choose: 160 to 32000 (kHz)
 #define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
-#define BUOY_BAUD 9600L
-// #define BUOY_BAUD 19200L
-#define IRID_BAUD 9600L
+#define BAUD 9600L
 #define BUFSIZE 4096
 
 #define BUOY 0
@@ -54,9 +52,7 @@ struct { char *name, c; bool power; TUPort *port; } dev[4] = {
   { "IRID", 'I', false, NULL },
   { "ANT", 'A', false, NULL }
   };
-// short devID; // ID of upstream device, 1-2
-TUPort *buoy=NULL, *devPort=NULL; // dev port of connnected upstream device
-
+TUPort *buoy, *devPort; // dev port of connnected upstream device
 
 //
 ///	main
@@ -73,7 +69,8 @@ void main() {
   // initial connection is SBE
   power('I', false);
   power('S', true);
-  devPort = OpenSbePt(true);
+  devPort = OpenSbePt();
+  buoy = OpenBuoyPt();
 
   // exit via biosreset{topicodos}
   while (true) {
@@ -161,110 +158,45 @@ void main() {
 //
 // OpenSbePt(true)
 //
-TUPort* OpenSbePt(bool on) {
+TUPort* OpenSbePt(void) {
   TUPort *sbePort=NULL;
-  long baud = 9600L;
   short sb39rxch, sb39txch;
-  if (on) {
-    DBG1(flogf("Opening the SBE port 9600\n");)
-    if (!dev[SBE].power)
-      flogf("\nOpenSbePt() warning, not powered on");
-    sb39rxch = TPUChanFromPin(SBERX);
-    sb39txch = TPUChanFromPin(SBETX);
-
-    // Define SBE TD tuporst
-    RTCDelayMicroSeconds(100L);
-    sbePort = TUOpen(sb39rxch, sb39txch, baud, 0);
-    if (sbePort == NULL) {
-      flogf("\n!!! Error opening SBE channel...");
-    } else {
-      dev[SBE].port = sbePort;
-    }
-    RTCDelayMicroSeconds(100L);
-    TURxFlush(sbePort);
-    return sbePort;
-  } else { // if (!on) {
-    TUClose(dev[SBE].port);
-    dev[SBE].port=NULL;
-    return NULL;
+  DBG1(flogf("Opening the SBE port 9600\n");)
+  if (!dev[SBE].power)
+    flogf("\nOpenSbePt() warning, not powered on");
+  sb39rxch = TPUChanFromPin(SBERX);
+  sb39txch = TPUChanFromPin(SBETX);
+  sbePort = TUOpen(sb39rxch, sb39txch, BAUD, 0);
+  if (sbePort == NULL) {
+    flogf("\n!!! Error opening SBE channel...");
+  } else {
+    dev[SBE].port = sbePort;
   }
-} // OpenSbePt(bool on) 
+  RTCDelayMicroSeconds(RS232_SETTLE);
+  TURxFlush(sbePort);
+  return sbePort;
+} // OpenSbePt
 
-
-// OpenIridPt(bool on)
-// If on=true, open the com.
-// If on=false, close the com.
-// IRQ3
-/*
-TUPort* OpenIridPt(bool on) {
-  TUPort *IridPt=NULL;
-  long baud = IRID_BAUD;
-  short iridrxch, iridtxch;
-  if (on) {
-    DBG1(flogf("Opening the high speed IRID/GPS port\n");)
-    PIOSet(A3LAPWR);                   // PWR ON
-    iridrxch = TPUChanFromPin(A3LARX); //
-    iridtxch = TPUChanFromPin(A3LATX);
-    // Important!! This is connected to TXin of the internal RS232 IC
-    PIORead(48); 
-    PIORead(33);
-    PIORead(IRQ3RXX);               // Make IRQ3 read. Not bus.
-    RTCDelayMicroSeconds(1000000L); // wait for IRID/GPS unit to warm up
-
-    // Define dev[SBE].port 
-    IridPt = TUOpen(iridrxch, iridtxch, baud, 0);
-    RTCDelayMicroSeconds(100000L);
-    TUTxFlush(IridPt);
-    TURxFlush(IridPt);
-    RTCDelayMicroSeconds(1000000L);
-    if (IridPt == NULL) {
-      flogf("\n!!! Error opening IRIDGPS channel...");
-    } else {
-      dev[IRID].port=IridPt;
-    }
-    return IridPt;
-  } else { // if (!on) {
-    TUClose(dev[IRID].port);
-    dev[IRID].port=NULL;
-    PIOClear(A3LAPWR); // Shut down IRID PWR
-    flogf("Close IRIDGPS term\n");
-    return NULL;
-  }
-} //OpenIridPt(bool on) 
-*/
-
-// OpenBuoyPt(bool on) for uMPC. On MPC it is for AMODEM com
-// If on=true, open the com.
-// If on=false, close the com.
-TUPort* OpenBuoyPt(bool on) {
+TUPort* OpenBuoyPt(void) {
   TUPort *BuoyPt=NULL;
-  long baud = BUOY_BAUD;
   short com4rxch, com4txch;
-  if (on) {
-    DBG1(flogf("Opening the buoy COM4 port at %ld \n", baud);)
-    PIOSet(COM4PWR); // PWR On COM4 device
-    com4rxch = TPUChanFromPin(COM4RX);
-    com4txch = TPUChanFromPin(COM4TX);
-    PIORead(IRQ5);
+  DBG1(flogf("Opening the buoy COM4 port at %ld \n", BAUD);)
+  PIOSet(COM4PWR); // PWR On COM4 device
+  com4rxch = TPUChanFromPin(COM4RX);
+  com4txch = TPUChanFromPin(COM4TX);
+  PIORead(IRQ5);
 
-    // Define COM4 tuport
-    BuoyPt = TUOpen(com4rxch, com4txch, baud, 0);
-    RTCDelayMicroSeconds(RS232_SETTLE);
-    TUTxFlush(BuoyPt);
-    TURxFlush(BuoyPt);
-    if (BuoyPt == NULL) 
-      flogf("\n!!! Error opening COM4 port...");
-    else
-      dev[BUOY].port=BuoyPt;
-    return BuoyPt;
-  } else { // if (!on) {
-    TUClose(dev[BUOY].port);
-    dev[BUOY].port=NULL;
-    PIOClear(COM4PWR); // Shut down COM4 device
-    DBG1(flogf("Close COM4 port\n");)
-    return NULL;
-  }
-} //OpenBuoyPt(bool on) 
+  // Define COM4 tuport
+  BuoyPt = TUOpen(com4rxch, com4txch, BAUD, 0);
+  RTCDelayMicroSeconds(RS232_SETTLE);
+  TUTxFlush(BuoyPt);
+  TURxFlush(BuoyPt);
+  if (BuoyPt == NULL) 
+    flogf("\n!!! Error opening COM4 port...");
+  else
+    dev[BUOY].port=BuoyPt;
+  return BuoyPt;
+} // OpenBuoyPt
 
 
 
@@ -276,7 +208,7 @@ void help() {
   // Identify the progam and build
   char *ProgramDescription = {
       "\n"
-      "Buoy, com4 at 9600 BAUD\n"
+      "Buoy, com4 at %d BAUD\n"
       " ^A Antenna G|I \n"
       " ^B Blockmode (2B=length) \n"
       " ^C powerup I|S \n"
@@ -293,7 +225,7 @@ void help() {
   printf("Persistor CF%d SN:%ld   BIOS:%d.%02d   PicoDOS:%d.%02d\n", CFX,
          BIOSGVT.CFxSerNum, BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease,
          BIOSGVT.PICOVersion, BIOSGVT.PICORelease);
-  printf(ProgramDescription, BUOY_BAUD);
+  printf(ProgramDescription, BAUD);
 } // help()
 
 //

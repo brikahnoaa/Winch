@@ -44,8 +44,8 @@
 #endif              /*  */
 
 // TUPort* OpenIridPt(bool on);
-TUPort* OpenSbePt(bool on);
-TUPort* OpenBuoyPt(bool on);
+TUPort* OpenSbePt(void);
+TUPort* OpenBuoyPt(void);
 short power(short c, bool on);
 short char2id(short ch);
 void init();
