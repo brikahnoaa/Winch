@@ -42,15 +42,18 @@
 #define BUOY 0
 #define SBE 1
 #define IRID 2
+#define ANT 3
 
 DBG( bool echoDn=false; bool echoUp=false;)
 uchar *buf;
 char *LogFile = {"sys.log"}; 
 char antSw;
-struct { char *name, c; bool power; TUPort *port; } dev[3] = {
+struct { char *name, c; bool power; TUPort *port; } dev[4] = {
   { "BUOY", 'B', false, NULL },
   { "SBE", 'S', false, NULL },
-  { "IRID", 'I', false, NULL } };
+  { "IRID", 'I', false, NULL },
+  { "ANT", 'A', false, NULL }
+  };
 // short devID; // ID of upstream device, 1-2
 TUPort *buoy=NULL, *devPort=NULL; // dev port of connnected upstream device
 
@@ -68,7 +71,9 @@ void main() {
   init();
   buf = (uchar *)malloc(BUFSIZE);
   // initial connection is SBE
+  power('I', false);
   power('S', true);
+  devPort = OpenSbePt(true);
 
   // exit via biosreset{topicodos}
   while (true) {
@@ -162,26 +167,28 @@ TUPort* OpenSbePt(bool on) {
   short sb39rxch, sb39txch;
   if (on) {
     DBG1(flogf("Opening the SBE port 9600\n");)
-    PIOSet(SBEPWR); // turn on SBE serial term power
+    if (!dev[SBE].power)
+      flogf("\nOpenSbePt() warning, not powered on");
     sb39rxch = TPUChanFromPin(SBERX);
     sb39txch = TPUChanFromPin(SBETX);
 
     // Define SBE TD tuporst
-    RTCDelayMicroSeconds(100000L);
+    RTCDelayMicroSeconds(100L);
     sbePort = TUOpen(sb39rxch, sb39txch, baud, 0);
     if (sbePort == NULL) {
       flogf("\n!!! Error opening SBE channel...");
     } else {
       dev[SBE].port = sbePort;
     }
+    RTCDelayMicroSeconds(100L);
+    TURxFlush(sbePort);
     return sbePort;
   } else { // if (!on) {
     TUClose(dev[SBE].port);
     dev[SBE].port=NULL;
-    PIOClear(SBEPWR); // SBE TD
     return NULL;
   }
-} //OpenSbePt(bool on) 
+} // OpenSbePt(bool on) 
 
 
 // OpenIridPt(bool on)
@@ -349,6 +356,7 @@ short char2id(short ch) {
     case 'I': return IRID;
     case 'S': return SBE;
     case 'B': return BUOY;
+    case 'A': return ANT;
     default: return -1;
   }
 } // char2id()
@@ -357,27 +365,26 @@ short char2id(short ch) {
 // power(I|S, on) - power device on/off
 // returns 1 if power unchanged, 0 changed, -1 failed
 //
-short power(short c, bool onoff) {
+short power(short c, bool on) {
   short id;
-  TUPort *r;
   id=char2id(c);
   if (id == -1) {
     flogf( "ERR power(%c) '%d'\n", c, (short)c);
     return -1;
   }
-  DBG1(printf("dev:%c onoff:%d\n", c, onoff);)
-  if (dev[id].power == onoff) return 1;
+  if (dev[id].power == on) return 1;
+  DBG1(printf("dev:%c on:1/off:0:%d\n", c, on);)
   switch (c) {
-    // case 'I': r=OpenIridPt(onoff); break;
-    case 'S': r=OpenSbePt(onoff); break;
-    case 'B': r=OpenBuoyPt(onoff); break;
+    case 'I': 
+      if (on) PIOSet(A3LAPWR);
+      else PIOClear(A3LAPWR);
+      break;
+    case 'S':
+      if (on) PIOSet(SBEPWR);
+      else PIOClear(SBEPWR);
+      break;
   }
-  if (onoff && (r == NULL)) { // fail, on returns tup*
-    BIOSResetToPicoDOS();
-    // return -1;
-  }
-  dev[id].power=onoff;
-  dev[id].port=r;  // currently also done in Open*Pt
+  dev[id].power=on;
   return 0;
 } // power()
 
