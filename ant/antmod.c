@@ -8,7 +8,7 @@
 
 #include <antmod.h>
 
-#define VERSION "3.0"
+#define VERSION "3.1"
 #define RS232_SETTLE 100000
 // Definitions of uMPC TPU ports
 #define SBEPWR 23 // SB#39plus TD power
@@ -108,6 +108,9 @@ void main() {
             break;
           case 4: // ^D powerDown I|S
             power(arg, false);
+            break;
+          case 5: // ^E exit to pico
+            BIOSResetToPicoDOS(); 
             break;
           default: // uhoh
             flogf("ERR: illegal command %d\n", ch);
@@ -266,11 +269,12 @@ void help() {
   // Identify the progam and build
   char *ProgramDescription = {
       "\n"
-      "Buoy, com4 at %d BAUD\n"
+      "Buoy, com4 at 9600 BAUD\n"
       " ^A Antenna G|I \n"
-      " ^B Blockmode (2byte short) \n"
+      " ^B Blockmode (2B=length) \n"
       " ^C powerup I|S \n"
       " ^D powerDown I|S \n"
+      " ^E Exit to pico \n"
       " ^F unused \n"
       " ^G unused \n"
       "On console (com1):\n s=status x=exit *=this message\n"
