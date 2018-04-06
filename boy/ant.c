@@ -32,71 +32,55 @@ void antStart(void) {
   TUTxFlush(ant.port);
   // state
   ant.pending = false;
-  ant.auton = false;
+  antAuton(false);
   // get cf2 startup message
   utlNap(3);
   if ( utlReadWait(ant.port, utlBuf, 9)==0 )
     utlStop("FATAL\t| antInit() startup fail");
   DBG1("-> %s", utlBuf)
   // sbe39
-  if (!(antPrompt() || antPrompt()))   // fails twice
+  if (!(antPrompt())   
     utlStop("ERR\t| antInit(): no prompt from ant");
+  // utlWrite(ant.port, "OutputFormat=1", EOL);
+  // stop in case hw is autonomous
+  utlWrite(ant.port, "stop", EOL);
+  utlWrite(ant.port, "SampleInterval=0.5", EOL);
+  utlWrite(ant.port, "DelayBeforeSampling=0", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
-  // utlWrite(ant.port, "OutputFormat=1", EOL);
-  utlWrite(ant.port, "DelayBeforeSampling=0", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
-  // ?? what else should be set?
+  utlRead(ant.port, utlBuf);
 } // antStart
 
 ///
-// antmod uMPC cf2 and iridium A3LA
-// switch between devices on com1, clear pipe
-void antDevice(DevType dev) {
-  if (dev==ant.dev) return;
-  if (dev==cf2_dev)
-    PIOSet(ANT_SEL);
-  else if (dev==a3la_dev)
-    PIOClear(ANT_SEL);
-  else
-    return;
-  utlDelay(RS232_SETTLE);
-  TUTxFlush(ant.port);
-  TURxFlush(ant.port);
-  utlPet();
-  return;
-} // antDevice
+// turn off power to antmod 
+void antStop() {
+  PIOClear(ANT_PWR);
+} // antStop
 
-void antSwitch(AntType antenna) {
-  if (antenna==ant.antenna) return;
-  TUTxPutByte(ant.port, 1, false);        // ^A
-  if (antenna==gps_ant) 
-    TUTxPutByte(ant.port, 'G', false);
-  else
-    TUTxPutByte(ant.port, 'I', false);
-  ant.antenna = antenna;
-} // antSwitch
-    
 ///
 // if asleep, first EOL wakens but no response
 bool antPrompt() {
+  DBG2("antPrompt()")
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
+  utlReadWait(ant.port, utlBuf, 2*ant.delay);
   if (strstr(utlBuf, "Exec"))
     return true;
+  // try again after break
+  antBreak();
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
+  utlReadWait(ant.port, utlBuf, 2*ant.delay);
   if (strstr(utlBuf, "Exec"))
     return true;
-  utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
-  if (strstr(utlBuf, "Exec"))
-    return true;
-  // three strikes
   return false;
-}
+} // antPrompt
 
+///
+// reset or exit sync mode
+void antBreak(void) {
+  DBG0("antBreak()")
+  TUTxBreak(ant.port, 5000);
+} // antBreak
 
 ///
 // data waiting
@@ -108,8 +92,8 @@ bool antData() {
 // request sample
 void antSample(void) {
   int len;
+  DBG0("antSample()")
   if (ant.auton || ant.pending) return;
-  // wakeup
   antPrompt();
   utlWrite(ant.port, "TS", EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
@@ -234,8 +218,30 @@ float antMoving(void) {
 } // antMoving
 
 ///
-// turn off power to antmod 
-void antStop() {
-  PIOClear(ANT_PWR);
-} // antStop
+// antmod uMPC cf2 and iridium A3LA
+// switch between devices on com1, clear pipe
+void antDevice(DevType dev) {
+  if (dev==ant.dev) return;
+  if (dev==cf2_dev)
+    PIOSet(ANT_SEL);
+  else if (dev==a3la_dev)
+    PIOClear(ANT_SEL);
+  else
+    return;
+  utlDelay(RS232_SETTLE);
+  TUTxFlush(ant.port);
+  TURxFlush(ant.port);
+  utlPet();
+  return;
+} // antDevice
 
+void antSwitch(AntType antenna) {
+  if (antenna==ant.antenna) return;
+  TUTxPutByte(ant.port, 1, false);        // ^A
+  if (antenna==gps_ant) 
+    TUTxPutByte(ant.port, 'G', false);
+  else
+    TUTxPutByte(ant.port, 'I', false);
+  ant.antenna = antenna;
+} // antSwitch
+    
