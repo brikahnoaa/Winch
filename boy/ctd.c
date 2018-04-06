@@ -39,7 +39,7 @@ void ctdInit(void) {
   utlWrite(ctd.port, "stop", EOL);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
-  utlWrite(ant.port, utlStr, EOL);
+  utlWrite(ctd.port, utlStr, EOL);
   utlRead(ctd.port,utlBuf);
   DBG2("\nctd>>%s", utlBuf)
 } // ctdInit

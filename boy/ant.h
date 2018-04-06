@@ -26,16 +26,17 @@ typedef struct AntInfo {
 
 static bool antData(void);
 static bool antPrompt(void);
+static void antBreak(void);
 static void antRead(void);
 static void antSample(void);
 static void antSwitch(AntType antenna);
 
 bool antSurf(void);
 float antDepth(void);
-void antDevice(DevType dev);
 float antMoving(void);
 float antTemp(void);
 void antAuton(bool auton);
+void antDevice(DevType dev);
 void antInit(void);
 void antStart(void);
 void antStop(void);

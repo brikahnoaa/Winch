@@ -39,7 +39,7 @@ void antStart(void) {
     utlStop("FATAL\t| antInit() startup fail");
   DBG1("-> %s", utlBuf)
   // sbe39
-  if (!(antPrompt())   
+  if (!antPrompt())   
     utlStop("ERR\t| antInit(): no prompt from ant");
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   // stop in case hw is autonomous
@@ -98,7 +98,7 @@ void antSample(void) {
   utlWrite(ant.port, "TS", EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
   if (len<3)
-    utlShut("\nERR antSample, TS command fail");
+    utlStop("\nERR antSample, TS command fail");
   ant.pending = true;
   // pending response, checked by antRead()
   tmrStart( ant_tmr, ant.delay );
