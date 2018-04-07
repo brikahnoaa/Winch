@@ -1,0 +1,678 @@
+
+C:\>boot app
+Will boot Application at 0xE40000
+Resetting...  
+Press any key to exit. 3 seconds, 2 1 0
+ok
+
+<Executed/>
+ts
+  22.1108,   -0.143, 06 Apr 2018, 23:28:48
+<Executed/>
+
+Program: antmod.c: v3.1, Apr  6 2018 15:50:06 
+Persistor CF2 SN:16184   BIOS:4.03   PicoDOS:4.03
+
+Buoy, com4 at 0 BAUD
+ ^A Antenna G|I 
+ ^B 5sec Break to SBE 
+ ^C powerup I|S 
+ ^D powerDown I|S 
+ ^E Exit to pico 
+ ^F status 
+ ^G unused 
+ ^H help msg 
+antenna:G iridgps-A3LA:off sbe39:on 
+antenna:G iridgps-A3LA:off sbe39:on 
+
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 16184    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>reset
+Resetting...
+Press any key to exit. 3 seconds, 2 1 0
+ok
+
+
+C:\>
+C:\>
+###MX Load: CRC 010000 01C1F1 = F8EF9B2A
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 16:36:25
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 16:36:26
+utlReadWait(9)
+mpcSleep() at 03-06-18 16:36:39
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>pc 22
+Pin 22 [I/O OUT] = 0
+C:\>
+###MX Load: CRC 010000 01C1F1 = F8EF9B2A
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 16:40:46
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 16:40:48
+utlReadWait(9)
+mpcSleep() at 03-06-18 16:40:51
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>pc 22
+Pin 22 [I/O OUT] = 0
+C:\>
+###MX Load: CRC 010000 01C1F1 = F8EF9B2A
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9  8 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 16:46:45
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 16:46:47
+utlReadWait(9) 1->'|' -> | antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+mpcSleep() at 03-06-18 16:46:55
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+C:\>
+###MX Load: CRC 010000 01C1F1 = F8EF9B2A
+Gs tst
+Saving 49650 bytes to TST.PXE...
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 16:56:46
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 16:56:48
+utlReadWait(9)
+mpcSleep() at 03-06-18 16:57:00
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+###MX Load: CRC 010000 01C251 = A11BC2AF
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 17:12:28
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 17:12:30
+utlReadWait(2)FATAL	| antInit() startup fail ->  antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)FATAL	| antInit(): no prompt from ant
+utlWrite() sent 5 of 5 'stop x0D '
+utlWrite() sent 19 of 19 'SampleInterval=0.5 x0D '
+utlWrite() sent 22 of 22 'DelayBeforeSampling=0 x0D '
+utlWrite() sent 24 of 24 'datetime=03062018171242 x0D '
+utlRead() 0->''
+Press q to exit
+
+antSample() antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+utlWrite() sent 3 of 3 'TS x0D '
+utlReadWait(1)
+mpcSleep() at 03-06-18 17:12:48
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+###MX Load: CRC 010000 01C2A5 = F9D4799D
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 17:22:48
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 17:22:50
+utlReadWait(2)FATAL	| antInit() startup fail ->  antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)FATAL	| antInit(): no prompt from ant
+utlWrite() sent 5 of 5 'stop x0D '
+utlWrite() sent 19 of 19 'SampleInterval=0.5 x0D '
+utlWrite() sent 22 of 22 'DelayBeforeSampling=0 x0D '
+utlWrite() sent 24 of 24 'datetime=03062018172302 x0D '
+utlRead() 0->''
+Press q to exit
+
+antSample() antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+utlWrite() sent 3 of 3 'TS x0D '
+utlReadWait(1)
+mpcSleep() at 03-06-18 17:23:08
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+###MX Load: CRC 010000 01C29D = 8EED576F
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 17:25:29
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 17:25:31
+utlReadWait(2)FATAL	| antInit() startup fail ->  antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)FATAL	| antInit(): no prompt from ant
+utlWrite() sent 5 of 5 'stop x0D '
+utlWrite() sent 19 of 19 'SampleInterval=0.5 x0D '
+utlWrite() sent 22 of 22 'DelayBeforeSampling=0 x0D '
+utlWrite() sent 24 of 24 'datetime=03062018172543 x0D '
+Press q to exit
+
+Application returned: 1
+
+C:\>
+###MX Load: CRC 010000 01C29D = 8EED576F
+G
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 17:26:53
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 17:26:55
+utlReadWait(2)FATAL	| antInit() startup fail ->  antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0) 3->' x0D  x0D o'FATAL	| antInit(): no prompt from ant
+utlWrite() sent 5 of 5 'stop x0D '
+utlWrite() sent 19 of 19 'SampleInterval=0.5 x0D '
+utlWrite() sent 22 of 22 'DelayBeforeSampling=0 x0D '
+utlWrite() sent 24 of 24 'datetime=03062018172707 x0D '
+utlRead() 1->'s'
+Press q to exit
+
+antSample() antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0)
+antBreak()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0) 3->'ok x0D '
+utlWrite() sent 3 of 3 'TS x0D '
+utlReadWait(1) 1->'o'
+mpcSleep() at 03-06-18 17:27:13
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 12997    PicoDOS V4.03r1      PBM V4.03 
+  (C) 1998-2007 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+###MX Load: CRC 010000 01C29D = 8EED576F
+Gs tst
+Saving 49822 bytes to TST.PXE...
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 1, max 50
+logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr  6 2018 09:17:34
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-06-18 18:17:38
+---   ---
+cfgRead(SYS.CFG) 
+(c) ant.gpsLong=125:00.00W 
+(c) ant.gpsLat=45:00.00N 
+(f) ant.sampleRes=0.5 
+(i) ant.sampleCnt=3 
+(f) ant.surfD=1.2 
+(c) boy.logFile=boy 
+(f) boy.ant2tip=2.35 
+(f) boy.boy2ant=16.0 
+(f) boy.currChkD=10.0 
+(f) boy.currMax=3.0 
+(i) boy.callFreq=1 
+(i) boy.callHour=1 
+(i) boy.fileNum=1 
+(i) boy.phase=2 
+(c) cfg.wild=*-* 
+(c) ctd.logFile=ctd 
+(i) ctd.delay=5 
+(i) ngk.delay=7 
+(b) pwr.on=0 
+(c) pwr.logFile=pwr 
+(f) pwr.charge=12000.0 
+(f) pwr.chargeMin=200.0 
+(f) pwr.voltsMin=12.5 
+(c) sys.platform=LR01 
+(c) sys.program=LARA 
+(c) sys.project=QUEH 
+(c) sys.version=4.0 
+(c) wsp.logFile=wsp 
+(i) wsp.detInt=10 
+(i) wsp.detMax=20 
+(i) wsp.detOff=0 
+(i) wsp.duty=50 
+(i) wsp.gain=1 
+(i) wsp.count=1
+cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+antInit()
+antStart() 03-06-18 18:17:40
+utlReadWait(2) 46->'Press any key to exit. 3 seconds, 2 1 0 x0D  x0A ok x0D  x0D  x0A ' -> Press any key to exit. 3 seconds, 2 1 0
+
+ok
+
+
+ antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0) 15->' x0D  x0A <Executed/> x0D  x0A '
+utlWrite() sent 5 of 5 'stop x0D '
+utlWrite() sent 19 of 19 'SampleInterval=0.5 x0D '
+utlWrite() sent 22 of 22 'DelayBeforeSampling=0 x0D '
+utlWrite() sent 24 of 24 'datetime=03062018181745 x0D '
+utlRead() 236->'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive commandSampleInterval=0.5 x0D  x0A '/> x0D  x0A <Executed/> x0D  x0A <Executed/> x0D  x0A DelayBeforeSampling=0 x0D  x0A <ERROR type='INVALID COMMAND' msg='Cmd not recognized'/> x0D  x0A <Executed/> x0D  x0A datetime=03062018181745 x0D  x0A <Executed/> x0D  x0A '
+Press q to exit
+
+antSample() antPrompt()
+utlWrite() sent 1 of 1 ' x0D '
+utlReadWait(0) 15->' x0D  x0A <Executed/> x0D  x0A '
+utlWrite() sent 3 of 3 'TS x0D '
+utlReadWait(1) 4->'TS x0D  x0A ' tmrStart()
+utlRead() 57->'  21.5865,   -0.152, 06 Mar 2018, 18:17:45 x0D  x0A <Executed/> x0D  x0A ' 1.0
+antSample()
