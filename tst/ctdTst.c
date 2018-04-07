@@ -11,8 +11,9 @@ void main(void){
   // char c;
   sysInit();
   mpcInit();
-  ctdInit();
   antInit();
+  antDevice(cf2_dev);
+  antStart();
   flogf("\nPress q to exit\n");
   while (!cgetq()) {
     flogf(" %2.1f", antDepth());

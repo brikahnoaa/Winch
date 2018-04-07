@@ -208,10 +208,10 @@ int utlLogFile(char *fname) {
 // nap called often
 void utlNap(int sec) {
   pwrNap(sec);
-}
+} // utlNap
 
-
-
+///
+// stop called often
 void utlStop(char *out) {
   sysStop(out);
-}
+} // utlStop

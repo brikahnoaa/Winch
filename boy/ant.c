@@ -23,24 +23,23 @@ void antInit(void) {
 } // antInit
 
 ///
-// turn on, clean, set params
+// turn on, clean, set params, talk to sbe39
 void antStart(void) {
   DBG0("antStart() %s", utlDateTime())
   PIOSet(ANT_PWR);
-  utlDelay(RS232_SETTLE); // to settle rs232
-  TURxFlush(ant.port);
-  TUTxFlush(ant.port);
+  // antDevice(cf2_dev);
+  PIOSet(ANT_SEL);
   // state
   ant.pending = false;
   antAuton(false);
   // get cf2 startup message
-  utlNap(3);
-  if ( utlReadWait(ant.port, utlBuf, 9)==0 )
-    utlStop("FATAL\t| antInit() startup fail");
+  utlNap(4);
+  if ( utlReadWait(ant.port, utlBuf, 2)==0 )
+    flogf("FATAL\t| antInit() startup fail");
   DBG1("-> %s", utlBuf)
   // sbe39
   if (!antPrompt())   
-    utlStop("ERR\t| antInit(): no prompt from ant");
+    flogf("FATAL\t| antInit(): no prompt from ant");
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   // stop in case hw is autonomous
   utlWrite(ant.port, "stop", EOL);
@@ -222,6 +221,7 @@ float antMoving(void) {
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
   if (dev==ant.dev) return;
+  DBG0("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
   if (dev==cf2_dev)
     PIOSet(ANT_SEL);
   else if (dev==a3la_dev)
