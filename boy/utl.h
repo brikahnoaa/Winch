@@ -56,6 +56,8 @@
 
 #include <dbg.h>
 
+typedef enum {ant_err, ctd_err, log_err} ErrType;
+
 // the globals below are used by all modules // malloc'd in utlInit()
 extern char *utlBuf;
 extern char *utlStr;

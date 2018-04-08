@@ -135,13 +135,13 @@ void antRead(void) {
     if (!p0) break;
   } // while 
   tmrStop(ant_tmr);
-  ant.time = time();
+  ant.time = time(0);
 }
 
 ///
 // data read recently
 bool fresh(void) {
-  return (time()-ant.time)<ant.fresh;
+  return (time(0)-ant.time)<ant.fresh;
 }
 
 ///
@@ -154,8 +154,6 @@ bool pending(void) {
   return false;
 }
     
-  
-
 ///
 // if !data&&fresh, return. if !pending, sample. wait for data. read.
 float antDepth(void) {

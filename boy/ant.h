@@ -8,7 +8,6 @@ typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
 typedef struct AntInfo {
   bool auton;
-  bool pending;               // TS query or start of auton before 1st sample
   bool surf;                  // on surface
   char gpsLong[32];           // 123:45.6789W
   char gpsLat[32];            // 45:67.8900N
@@ -28,6 +27,8 @@ typedef struct AntInfo {
 
 static bool antData(void);
 static bool antPrompt(void);
+static bool fresh(void);
+static bool pending(void);
 static void antBreak(void);
 static void antRead(void);
 static void antSample(void);
