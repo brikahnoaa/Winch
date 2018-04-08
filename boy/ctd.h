@@ -7,7 +7,9 @@ typedef struct CtdInfo {
   char logFile[32];
   float depth;
   int delay;                  // Delay seconds expected between polled samples
+  int fresh;
   int log;                    // log fileid
+  time_t time;
   Serial port;                // same as mpc.port, ant.port
 } CtdInfo;
 

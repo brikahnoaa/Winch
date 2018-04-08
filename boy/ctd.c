@@ -99,7 +99,7 @@ void ctdSample(void) {
 // sets: ctd.depth .ctdPending 
 void ctdRead() {
   float temp, cond, pres;
-  char *p0;
+  char *p0, *p1;
   if (!ctdData()) return;
   DBG0("ctdRead()")
   utlRead(ctd.port, utlBuf);
@@ -131,16 +131,16 @@ void ctdRead() {
 ///
 // data read recently
 bool ctdFresh(void) {
-  return (time(0)-ant.time)<ant.fresh;
+  return (time(0)-ctd.time)<ctd.fresh;
 }
 
 ///
 // tmrOn ? ctdPending. tmrExp ? err
 bool ctdPending(void) {
-  if (ant.auton || tmrOn(ant_tmr))
+  if (ctd.auton || tmrOn(ctd_tmr))
     return true;
-  if (tmrExp(ant_tmr))
-    utlErr(ant_err, "ant timer expired");
+  if (tmrExp(ctd_tmr))
+    utlErr(ctd_err, "ctd timer expired");
   return false;
 }
 

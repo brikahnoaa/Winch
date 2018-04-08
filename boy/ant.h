@@ -29,8 +29,8 @@ typedef struct AntInfo {
 
 static bool antData(void);
 static bool antPrompt(void);
-static bool ctdFresh(void);
-static bool ctdPending(void);
+static bool antFresh(void);
+static bool antPending(void);
 static void antBreak(void);
 static void antRead(void);
 static void antSample(void);
