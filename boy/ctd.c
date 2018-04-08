@@ -18,13 +18,13 @@ CtdInfo ctd;
 // sbe16 response is just over 3sec in sync, well over 4sec in command
 
 ///
-// sets: ctd.port .pending
+// sets: ctd.port .ctdPending
 void ctdInit(void) {
   DBG0("ctdInit()")
   mpcPam(sbe_pam);
   ctd.port = mpcPort();
-  ctd.pending = false;
   ctdAuton(false);
+  tmrStop(ctd_tmr);
   if (!ctdPrompt())
     utlStop("ERR\t| ctdInit(): no prompt from ctd");
   // sbe16 gets quirky when logging, best to STOP even if it flags error
@@ -34,13 +34,16 @@ void ctdInit(void) {
   utlWrite(ctd.port, utlStr, EOL);
   utlRead(ctd.port,utlBuf);
   DBG2("\nctd>>%s", utlBuf)
+  if (strlen(ctd.logFile))
+    ctd.log = utlLogFile(ctd.logFile);
 } // ctdInit
 
 ///
 void ctdStop(void){
   mpcPam(null_pam);
-  if (ctd.logging) 
-    ctdLog(false);
+  if (ctd.log) 
+    close(ctd.log);
+  ctd.log = 0;
 } // ctdStop
 
 ///
@@ -78,56 +81,45 @@ bool ctdData() {
 
 ///
 // poke ctd to get sample, set interval timer (ignore ctd.auton)
-// sets: ctd.pending ctd_tmr
+// sets: ctd.ctdPending ctd_tmr
 void ctdSample(void) {
   int len;
   DBG0("ctdSample()")
-  if (ctd.auton || ctd.pending) return;
+  if (ctdPending()) return;
   ctdPrompt();
   utlWrite(ctd.port, "TS", EOL);
   len = utlReadWait(ctd.port, utlBuf, 1);
-  if (len<3) 
-    flogf("\nERR ctdSample, TS command fail");
-  ctd.pending = true;
+  // get echo ?? better check, and utlErr()
+  if (len<8 || !strstr(utlBuf, "TS"))
+    utlStop("\nERR ctdSample, TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
 
 ///
-// sets: ctd.depth .pending 
+// sets: ctd.depth .ctdPending 
 void ctdRead() {
-  int len;
-  float temp, cond, pres, flu, par, sal;
+  float temp, cond, pres;
+  char *p0;
+  if (!ctdData()) return;
   DBG0("ctdRead()")
-  if (ctd.pending) 
-    ctd.pending = false;
-  else
-    return;           // error
-  // waits up to max+1 seconds - best called after tgetq()
-  len = utlReadWait(ctd.port, utlBuf, ctd.delay+1);
-  if (len==0) {       // error
-    flogf("\nERR\t| ctdRead() no response in %d sec", ctd.delay+1);
-    ctd.depth = 0;
-    return;
-  }
+  utlRead(ctd.port, utlBuf);
+  if (ctd.log) 
+    write(ctd.log, utlBuf, strlen(utlBuf));
   DBG2("\n\tctd-->%s", utlNonPrint(utlBuf))
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
-  temp = atof( strtok(utlBuf, "\r\n#, "));
-  cond = atof( strtok(NULL, ", ")); 
-  pres = atof( strtok(NULL, ", "));
-  flu = atof( strtok(NULL, ", "));
-  par = atof( strtok(NULL, ", "));
-  sal = atof( strtok(NULL, ", "));
-  // rest is date time
-  // day = strtok(NULL, ", ");
-  // month = strtok(NULL, " ");
-  // year = strtok(NULL, " ");
-  // time = strtok(NULL, " \r\n");
-  // record
-  flogf("\nSBE16:\t%.4f %.5f %.3f %.4f %.4f %.4f %s",
-    temp, cond, pres, flu, par, sal, utlDateTime());
+  p0 = strtok(utlBuf, "\r\n#");
+  // p0 = {crlf#}...{crlf}  e.g. one line
+  // skip to 3rd value. Xtemp,X Xcond,X pres
+  p1 = strtok(p0, "#, "));
+  if (!p1) return;
+  p1 = strtok(NULL, ", "); 
+  if (!p1) return;
+  p1 = strtok(NULL, ", "));
+  if (!p1) return;
+  pres = atof( p1 );
   // ctd.log is for autonomous getsample, see ctdAuto
   // len = strlen(utlBuf);
   // if (write(ctd.log, utlBuf, len)<len) 
@@ -137,18 +129,36 @@ void ctdRead() {
 } // ctdRead
 
 ///
-// sample if not pending, wait for data, return depth
-float ctdDepth() {
-  if (!ctd.pending)
-    ctdSample();
+// data read recently
+bool ctdFresh(void) {
+  return (time(0)-ant.time)<ant.fresh;
+}
+
+///
+// tmrOn ? ctdPending. tmrExp ? err
+bool ctdPending(void) {
+  if (ant.auton || tmrOn(ant_tmr))
+    return true;
+  if (tmrExp(ant_tmr))
+    utlErr(ant_err, "ant timer expired");
+  return false;
+}
+
+///
+// sample if not ctdPending, wait for data, return depth
+float ctdDepth(void) {
+  if (!ctdData() && ctdFresh())
+    return ctd.depth;
+  while (!ctdData())
+    if (!ctdPending())
+      ctdSample();
   ctdRead();
   return ctd.depth;
 } // ctdDepth
 
 ///
-// turn autonomous on/off. see ctdLog
+// turn autonomous on/off.
 void ctdAuton(bool auton) {
-  if (ctd.auton==auton) return;
   DBG0("ctdAuton(%d)", auton)
   if (auton) {
     // note - initlogging done at end of ctdGetSamples
@@ -165,6 +175,7 @@ void ctdAuton(bool auton) {
     utlRead(ctd.port, utlBuf);
     DBG2("\nctd>>%s", utlBuf)
   } // if auton
+  tmrStop(ctd_tmr);
   ctd.auton = auton;
 } // ctdAuton
 
@@ -173,7 +184,7 @@ void ctdAuton(bool auton) {
 void ctdGetSamples(void) {
   int len1=BUFSZ;
   int len2=len1, len3=len1;
-  DBG0("ctdLog(%s)", ctd.logFile)
+  DBG0("ctdGetSamples(%s)", ctd.logFile)
   ctd.log = utlLogFile(ctd.logFile);
   ctdPrompt();          // wakeup
   utlWrite(ctd.port, "GetSamples:", EOL);
@@ -182,25 +193,12 @@ void ctdGetSamples(void) {
     len2 = (int) TURxGetBlock(ctd.port, utlBuf, (long) len1, (short) 1000);
     len3 = write(ctd.log, utlBuf, len2);
     if (len2!=len3) 
-      flogf("\nERR\t| ctdLog() could not write ctd.log");
+      flogf("\nERR\t| ctdGetSamples() could not write ctd.log");
   } // while ==
   close(ctd.log);
   utlWrite(ctd.port, "initLogging", EOL);
   utlWrite(ctd.port, "initLogging", EOL);
   utlRead(ctd.port,utlBuf);
   DBG2("\nctd>>%s", utlBuf)
-} // ctdLog
-
-///
-// start logging ctdDepth() calls
-void ctdLog(bool on) {
-  DBG0("ctdLog(%s)", ctd.logFile)
-  if (on) {
-    ctd.log = utlLogFile(ctd.logFile);
-    ctd.logging = true;
-  } else {
-    close(ctd.log);
-    ctd.logging = false;
-  }
-}
+} // ctdGetSamples
 

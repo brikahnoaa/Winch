@@ -11,6 +11,7 @@ typedef struct AntInfo {
   bool surf;                  // on surface
   char gpsLong[32];           // 123:45.6789W
   char gpsLat[32];            // 45:67.8900N
+  char logFile[64];
   float depth;
   float surfD;                // depth of CTD when ant is floating
   float samples[10];          // depth measurement during auto_mod
@@ -18,6 +19,7 @@ typedef struct AntInfo {
   float temp;
   int delay;
   int fresh;                  // time()-ant.time < fresh is usable
+  int log;
   int sampleCnt;
   time_t time;                // time() of last sample
   AntType antenna;
@@ -27,8 +29,8 @@ typedef struct AntInfo {
 
 static bool antData(void);
 static bool antPrompt(void);
-static bool fresh(void);
-static bool pending(void);
+static bool ctdFresh(void);
+static bool ctdPending(void);
 static void antBreak(void);
 static void antRead(void);
 static void antSample(void);

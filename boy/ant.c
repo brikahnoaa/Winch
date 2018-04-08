@@ -20,6 +20,8 @@ void antInit(void) {
   ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
+  if (strlen(ant.logFile))
+    ant.log = utlLogFile(ant.logFile);
 } // antInit
 
 ///
@@ -37,6 +39,7 @@ void antStart(void) {
   if ( utlReadWait(ant.port, utlBuf, 2)==0 )
     flogf("FATAL\t| antInit() startup fail");
   DBG1("-> %s", utlBuf)
+  // ?? look for "ok"
   // sbe39
   if (!antPrompt())   
     flogf("FATAL\t| antInit(): no prompt from ant");
@@ -53,6 +56,9 @@ void antStart(void) {
 ///
 // turn off power to antmod 
 void antStop() {
+  if (ant.log)
+    close(ant.log);
+  ant.log = 0;
   PIOClear(ANT_PWR);
 } // antStop
 
@@ -78,7 +84,7 @@ bool antPrompt() {
 // reset or exit sync mode
 void antBreak(void) {
   DBG0("antBreak()")
-  TUTxBreak(ant.port, 5000);
+  TUTxPutByte(ant.port, (ushort) 2,1);      // ^B  (blocking)
 } // antBreak
 
 ///
@@ -93,7 +99,7 @@ bool antData() {
 void antSample(void) {
   int len;
   DBG0("antSample()")
-  if (pending()) return;
+  if (antPending()) return;
   antPrompt();
   utlWrite(ant.port, "TS", EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
@@ -112,6 +118,8 @@ void antRead(void) {
   if (!antData()) return;
   DBG0("antRead()");
   utlRead(ant.port, utlBuf);
+  if (ant.log)
+    write(ant.log, utlBuf, strlen(utlBuf));
   // ?? sanity check
   // could be multiple lines, ending crlf, len 32 < char < 64
   // read temp, depth and scan ahead for line end
@@ -140,13 +148,13 @@ void antRead(void) {
 
 ///
 // data read recently
-bool fresh(void) {
+bool antFresh(void) {
   return (time(0)-ant.time)<ant.fresh;
 }
 
 ///
 // tmrOn ? pending. tmrExp ? err
-bool pending(void) {
+bool antPending(void) {
   if (ant.auton || tmrOn(ant_tmr)) 
     return true;
   if (tmrExp(ant_tmr)) 
@@ -157,10 +165,10 @@ bool pending(void) {
 ///
 // if !data&&fresh, return. if !pending, sample. wait for data. read.
 float antDepth(void) {
-  if (!antData() && fresh()) 
+  if (!antData() && antFresh()) 
     return ant.depth;
   while (!antData())
-    if (!pending())
+    if (!antPending())
       antSample();
   antRead();
   return ant.depth;
@@ -176,7 +184,6 @@ float antTemp(void) {
 // turn autonomous on/off. idle_ant clears samples
 void antAuton(bool auton) {
   int i;
-  if (ant.auton==auton) return;
   DBG0("antAuto(%d)", auton)
   if (auton) {
     utlWrite(ant.port, "initlogging", EOL);

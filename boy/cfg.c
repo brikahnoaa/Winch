@@ -38,6 +38,7 @@ typedef struct CfgParam {
 static CfgParam cfgP[] = {
   {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
+  {"alF", "ant.logFile",    &ant.logFile,     'c'},
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
   {"asR", "ant.sampleRes",  &ant.sampleRes,   'f'},
   {"ady", "ant.delay",      &ant.delay,       'i'},
@@ -55,6 +56,7 @@ static CfgParam cfgP[] = {
   {"ccw", "cfg.wild",       &cfg.wild,        'c'},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
   {"cdy", "ctd.delay",      &ctd.delay,       'i'},
+  {"cfr", "ctd.fresh",      &ctd.fresh,       'i'},
   {"ndy", "ngk.delay",      &ngk.delay,       'i'},
   {"pon", "pwr.on",         &pwr.on,          'b'},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c'},
