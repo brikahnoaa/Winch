@@ -98,7 +98,7 @@ void ctdSample(void) {
 ///
 // sets: ctd.depth .ctdPending 
 void ctdRead() {
-  float temp, cond, pres;
+  float pres;
   char *p0, *p1;
   if (!ctdData()) return;
   DBG0("ctdRead()")
