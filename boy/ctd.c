@@ -113,11 +113,11 @@ void ctdRead() {
   p0 = strtok(utlBuf, "\r\n#");
   // p0 = {crlf#}...{crlf}  e.g. one line
   // skip to 3rd value. Xtemp,X Xcond,X pres
-  p1 = strtok(p0, "#, "));
+  p1 = strtok(p0, "#, ");
   if (!p1) return;
   p1 = strtok(NULL, ", "); 
   if (!p1) return;
-  p1 = strtok(NULL, ", "));
+  p1 = strtok(NULL, ", ");
   if (!p1) return;
   pres = atof( p1 );
   // ctd.log is for autonomous getsample, see ctdAuto
