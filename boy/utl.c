@@ -205,6 +205,12 @@ int utlLogFile(char *fname) {
 } // utlLogFile
 
 ///
+// ?? tbd sophist err handling, allow limit by type
+void utlErr( ErrType err, char *str) {
+  utlStop(str);
+}
+
+///
 // nap called often
 void utlNap(int sec) {
   pwrNap(sec);

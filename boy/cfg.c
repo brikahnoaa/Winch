@@ -41,6 +41,7 @@ static CfgParam cfgP[] = {
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
   {"asR", "ant.sampleRes",  &ant.sampleRes,   'f'},
   {"ady", "ant.delay",      &ant.delay,       'i'},
+  {"afr", "ant.fresh",      &ant.fresh,       'i'},
   {"asC", "ant.sampleCnt",  &ant.sampleCnt,   'i'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},

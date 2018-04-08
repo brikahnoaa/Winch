@@ -27,11 +27,11 @@ void antInit(void) {
 void antStart(void) {
   DBG0("antStart() %s", utlDateTime())
   PIOSet(ANT_PWR);
-  // antDevice(cf2_dev);
   PIOSet(ANT_SEL);
   // state
-  ant.pending = false;
+  antDevice(cf2_dev);
   antAuton(false);
+  tmrStop(ant_tmr);
   // get cf2 startup message
   utlNap(4);
   if ( utlReadWait(ant.port, utlBuf, 2)==0 )
@@ -88,56 +88,41 @@ bool antData() {
 } // antData
 
 ///
-// request sample
+// if !tmrOn request sample
+// sets: ant_tmr
 void antSample(void) {
   int len;
   DBG0("antSample()")
-  if (ant.auton || ant.pending) return;
+  if (pending()) return;
   antPrompt();
   utlWrite(ant.port, "TS", EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
-  if (len<3)
+  // get echo ?? better check, and utlErr()
+  if (len<8 || !strstr(utlBuf, "TS"))
     utlStop("\nERR antSample, TS command fail");
-  ant.pending = true;
-  // pending response, checked by antRead()
   tmrStart( ant_tmr, ant.delay );
 } // antSample
 
-// get depth from antmod
-// if (!data !pending) if (auto) return else sample
-//  while (!data) check timeout
-//  read
-//
+///
+// antRead processes one or more lines of data, stores samples if auton
 // sets: ant.depth .temp .samples[]
-// returns: depth
 void antRead(void) {
   int i;
-  char *p0, *p1;
-  if (!ant.pending && !antData()) 
-    // no data here or expected from sbe39
-    if (ant.auton) 
-      // most common case, use the last ant.depth or ant.temp 
-      return;
-    else 
-      // poke sbe, set pending 
-      antSample();
-  // pending, so wait for data
-  while (!antData()) {
-    // error if timeout
-    if (tmrExp(ctd_tmr)) {
-      flogf("\nERR\t| antRead(): tmr expired");
-      return; // ?? reset lara
-    }
-  } // while !data
-  // data ready
+  char *p0, *p1, *p2;
+  if (!antData()) return;
+  DBG0("antRead()");
   utlRead(ant.port, utlBuf);
   // ?? sanity check
   // could be multiple lines, ending crlf, len 32 < char < 64
+  // read temp, depth and scan ahead for line end
   p0 = utlBuf;
-  while ((p1 = strstr(p0, "\r\n"))) {
-    // found line, zero terminate and copy
-    *p1 = 0;
-    strcpy(utlStr, p0);
+  while (true) {
+    p1 = strtok(p0, "\r\n#, ");
+    if (!p1) break;
+    p2 = strtok(NULL, ", ");
+    if (!p2) break;
+    ant.temp = atof(p1);
+    ant.depth = atof(p2);
     if (ant.auton) {
       // shift samples in array
       for (i=0; i<ant.sampleCnt; i++) 
@@ -145,15 +130,40 @@ void antRead(void) {
       ant.samples[0] = ant.depth;
     } // if auton
     // ?? range check
-    ant.temp = atof(strtok(utlStr, "#, "));
-    ant.depth = atof(strtok(NULL, ", "));
     // continue scan for lines after crlf
-    p0 = p1 + 2;
-  } // while crlf
+    p0 = strstr(p0, "\r\n");
+    if (!p0) break;
+  } // while 
+  tmrStop(ant_tmr);
+  ant.time = time();
 }
 
+///
+// data read recently
+bool fresh(void) {
+  return (time()-ant.time)<ant.fresh;
+}
+
+///
+// tmrOn ? pending. tmrExp ? err
+bool pending(void) {
+  if (ant.auton || tmrOn(ant_tmr)) 
+    return true;
+  if (tmrExp(ant_tmr)) 
+    utlErr(ant_err, "ant timer expired");
+  return false;
+}
+    
+  
+
+///
+// if !data&&fresh, return. if !pending, sample. wait for data. read.
 float antDepth(void) {
-  antSample();
+  if (!antData() && fresh()) 
+    return ant.depth;
+  while (!antData())
+    if (!pending())
+      antSample();
   antRead();
   return ant.depth;
 } // antDepth
@@ -179,8 +189,6 @@ void antAuton(bool auton) {
     // clear samples
     for (i=0; i<=ant.sampleCnt; i++) 
       ant.samples[i] = 0;
-    // ant.pending tells antRead() to wait for first sample
-    ant.pending = true;
     // swallow header
     utlReadWait(ant.port, utlBuf, 5);
     if (!strstr(utlBuf, "Start logging"))
@@ -191,6 +199,7 @@ void antAuton(bool auton) {
     utlNap(2);
     TURxFlush(ant.port);
   } // if auton
+  tmrStop(ant_tmr);
   ant.auton = auton;
 }
 

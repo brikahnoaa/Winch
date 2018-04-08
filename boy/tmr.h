@@ -15,6 +15,7 @@ typedef enum {
   } TmrType;
 
 bool tmrExp(TmrType tim);
+bool tmrOn(TmrType tim);
 int tmrQuery(TmrType tim);
 void tmrStart(TmrType tim, int secs);
 void tmrStop(TmrType tim);

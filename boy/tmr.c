@@ -22,10 +22,9 @@ void tmrStop(TmrType tim) {
   tmr.on[tim] = false;
 } // tmrStop
 
-//
+///
 // is timer expired? turn it off
 // timer==now is not expired, so now+1 runs at least 1 sec 
-//
 bool tmrExp(TmrType tim) {
   if (tmr.on[tim] && (tmr.timer[tim] < time(0))) {
     // on and expired
@@ -37,6 +36,13 @@ bool tmrExp(TmrType tim) {
     return false;
   }
 } // tmrExp
+
+///
+// is timer still running?
+// timer==now is not expired, so now+1 runs at least 1 sec 
+bool tmrOn(TmrType tim) {
+  return (tmr.on[tim] && (tmr.timer[tim] > time(0)));
+} // tmrOn
 
 //
 // how long until a timer expires (else 0=off, neg=expired)

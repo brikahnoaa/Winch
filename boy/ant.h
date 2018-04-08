@@ -3,8 +3,8 @@
 
 #define ANT_BAUD 9600
 
-typedef enum { cf2_dev, a3la_dev } DevType;
-typedef enum { gps_ant, irid_ant } AntType;
+typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
+typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
 typedef struct AntInfo {
   bool auton;
@@ -18,7 +18,9 @@ typedef struct AntInfo {
   float sampleRes;            // accuracy - change greater than this to count
   float temp;
   int delay;
+  int fresh;                  // time()-ant.time < fresh is usable
   int sampleCnt;
+  time_t time;                // time() of last sample
   AntType antenna;
   DevType dev;
   Serial port;

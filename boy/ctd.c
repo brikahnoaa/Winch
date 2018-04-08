@@ -1,12 +1,4 @@
 // ctd.c sbe16
-// 
-// ctd.c
-// handling CTD in buoy, seabird SBE 16plus
-// general note: ctd wants \r only for input
-// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
-//
-// ctd shares com1 with antmod cf2.
-//
 #include <utl.h>
 #include <ctd.h>
 #include <mpc.h>
@@ -16,17 +8,17 @@
 
 CtdInfo ctd;
 
+// general note: ctd wants \r only for input, outputs \r\n
+// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
+//
 // \r input, echos input.  \r\n before next output.
 // pause 0.33s between \rn and s> prompt.
 // wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
-// sbe16 - response time for TS during auton?
-// sbe16 - response time for getlastsamples during auton?
-// sbe16 - response to auton/getlastsamples before first sample stored?
+// pause between ts\r\n and result = 4.32s
+// sbe16 response is just over 3sec in sync, well over 4sec in command
 
 ///
-// buoy sbe16 set date
-// pre: mpcInit sets up serial
-// sets: ctd.port .pending .log
+// sets: ctd.port .pending
 void ctdInit(void) {
   DBG0("ctdInit()")
   mpcPam(sbe_pam);
@@ -49,7 +41,7 @@ void ctdStop(void){
   mpcPam(null_pam);
   if (ctd.logging) 
     ctdLog(false);
-}
+} // ctdStop
 
 ///
 // sbe16
@@ -86,7 +78,6 @@ bool ctdData() {
 
 ///
 // poke ctd to get sample, set interval timer (ignore ctd.auton)
-// pause between ts\r\n and result = 4.32s
 // sets: ctd.pending ctd_tmr
 void ctdSample(void) {
   int len;
@@ -98,15 +89,10 @@ void ctdSample(void) {
   if (len<3) 
     flogf("\nERR ctdSample, TS command fail");
   ctd.pending = true;
-  // pending response, timeout in 5sec, checked by ctdReady()
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
 
 ///
-// sbe16 response is just over 3sec in sync, well over 4sec in command
-// waits up to ctd.delay+1 seconds - good to call after tgetq()
-// data is reformatted to save a little space, written to ctd.log
-// logs: reformatted data string
 // sets: ctd.depth .pending 
 void ctdRead() {
   int len;
