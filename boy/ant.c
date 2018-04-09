@@ -47,7 +47,6 @@ void antStart(void) {
   // stop in case hw is autonomous
   utlWrite(ant.port, "stop", EOL);
   utlWrite(ant.port, "SampleInterval=0.5", EOL);
-  utlWrite(ant.port, "DelayBeforeSampling=0", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
   utlRead(ant.port, utlBuf);
@@ -104,8 +103,8 @@ void antSample(void) {
   utlWrite(ant.port, "TS", EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
   // get echo ?? better check, and utlErr()
-  if (len<8 || !strstr(utlBuf, "TS"))
-    utlStop("\nERR antSample, TS command fail");
+  if (!strstr(utlBuf, "TS"))
+    utlErr(ant_err, "\nERR antSample, TS command fail");
   tmrStart( ant_tmr, ant.delay );
 } // antSample
 
@@ -165,6 +164,7 @@ bool antPending(void) {
 ///
 // if !data&&fresh, return. if !pending, sample. wait for data. read.
 float antDepth(void) {
+  DBG1("antDepth()")
   if (!antData() && antFresh()) 
     return ant.depth;
   while (!antData())
