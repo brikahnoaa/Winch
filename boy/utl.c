@@ -207,7 +207,7 @@ int utlLogFile(char *fname) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
-  utlStop(str);
+  flogf(str);
 }
 
 ///
