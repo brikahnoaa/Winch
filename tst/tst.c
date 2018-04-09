@@ -1,4 +1,4 @@
-// ctdTst.c
+// antTst.c
 #include <utl.h>
 #include <ctd.h>
 #include <mpc.h>
@@ -8,7 +8,7 @@
 extern AntInfo ant;
 
 void main(void){
-  // char c;
+  char c;
   sysInit();
   mpcInit();
   antInit();
@@ -18,17 +18,15 @@ void main(void){
   while (!cgetq()) {
     flogf(" %2.1f", antDepth());
   }
-  /*
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='q') break;
-      TUTxPutByte(ctd.port,c,false);
+      TUTxPutByte(ant.port,c,false);
     }
-    if (TURxQueuedCount(ctd.port)) {
-      c=TURxGetByte(ctd.port,false);
+    if (TURxQueuedCount(ant.port)) {
+      c=TURxGetByte(ant.port,false);
       cputc(c);
     }
   }
-  */
 }
