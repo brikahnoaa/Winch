@@ -323,11 +323,14 @@ void antBreak(void) {
 // short count, exit, first thing
 void prerun() {
   short i=2;
-  SCIRxFlush();
-  cprintf("Press any key to exit. 3 seconds, %d", i);
+  ciflush();
+  cprintf("Press [SPACE] key to exit. 3 seconds, %d", i);
   while (i--) {
     RTCDelayMicroSeconds(1000000L);
-    if (SCIRxGetByte(false) != RxD_NO_DATA) BIOSResetToPicoDOS();
+    if (SCIRxGetByte(false) == ' ') {
+      VEEStoreStr("ERR", "User power down");
+      BIOSResetToPicoDOS();
+    }
     cprintf(" %d", i);
     coflush();
   }

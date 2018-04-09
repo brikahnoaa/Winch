@@ -1,7 +1,7 @@
 // utl.h - utility and shared stuff
 #define UTL_H
 
-#define STRSZ 1024
+#define STRSZ 128
 #define BUFSZ 4096
 #define C_DRV ('C'-'A')
 #define null NULL
@@ -56,7 +56,7 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, ctd_err, log_err} ErrType;
+typedef enum {ant_err, ctd_err, log_err, file_err} ErrType;
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern char *utlBuf;

@@ -26,7 +26,7 @@ void ctdInit(void) {
   ctdAuton(false);
   tmrStop(ctd_tmr);
   if (!ctdPrompt())
-    utlStop("ERR\t| ctdInit(): no prompt from ctd");
+    utlErr(ctd_err, "ERR\t| ctdInit(): no prompt from ctd");
   // sbe16 gets quirky when logging, best to STOP even if it flags error
   utlWrite(ctd.port, "stop", EOL);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
@@ -53,14 +53,14 @@ bool ctdPrompt(void) {
   DBG2("ctdPrompt()")
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
-  utlReadWait(ctd.port, utlBuf, 2*ctd.delay);
+  utlReadWait(ctd.port, utlBuf, 2+ctd.delay);
   // looking for S> at end
   if (strstr(utlBuf, "S>"))
     return true;
   // try again after break
   ctdBreak();
   utlWrite(ctd.port, "", EOL);
-  utlReadWait(ctd.port, utlBuf, 2*ctd.delay);
+  utlReadWait(ctd.port, utlBuf, 2+ctd.delay);
   if (strstr(utlBuf, "S>"))
     return true;
   return false;
@@ -90,8 +90,8 @@ void ctdSample(void) {
   utlWrite(ctd.port, "TS", EOL);
   len = utlReadWait(ctd.port, utlBuf, 1);
   // get echo ?? better check, and utlErr()
-  if (len<8 || !strstr(utlBuf, "TS"))
-    utlStop("\nERR ctdSample, TS command fail");
+  if (!strstr(utlBuf, "TS"))
+    utlErr(ctd_err, "\nERR ctdSample, TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
 

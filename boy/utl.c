@@ -20,9 +20,9 @@ UtlInfo utl;
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
   utl.buf = malloc(BUFSZ);
-  utl.str = malloc(STRSZ);
+  utl.str = malloc(BUFSZ);
   utlBuf = malloc(BUFSZ);
-  utlStr = malloc(STRSZ);
+  utlStr = malloc(BUFSZ);
   utlRet = malloc(BUFSZ);
 }
 
@@ -46,7 +46,7 @@ int utlTrim(char *line) {
 // uses: utl.str
 void utlWrite(Serial port, char *out, char *eol) {
   int len, delay, sent;
-  DBG0("utlWrite()")
+  DBG0("\tutlWrite()")
   strcpy(utl.str, out);
   if (eol!=NULL)
     strcat(utl.str, eol);
@@ -66,7 +66,7 @@ void utlWrite(Serial port, char *out, char *eol) {
 int utlRead(Serial port, char *in) {
   int len = 0;
   if (TURxQueuedCount(port)<1) return 0;
-  DBG0("utlRead()")
+  DBG0("\tutlRead()")
   // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
   for (len=0; len<BUFSZ; len++) {
     in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
@@ -83,7 +83,7 @@ int utlRead(Serial port, char *in) {
 // return: length
 int utlReadWait(Serial port, char *in, int wait) {
   int len;
-  DBG0("utlReadWait(%d)", wait)
+  DBG0("\tutlReadWait(%d)", wait)
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   utlPet(); // could have been a long wait
   if (in[0]<=0) {
@@ -195,7 +195,7 @@ int utlLogFile(char *fname) {
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
     sprintf(utl.str, "FATAL | utlLogFile(%s): open failed", fname);
-    utlStop(utl.str);
+    utlErr(file_err, utl.str);
     return 0;
   } else {
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());

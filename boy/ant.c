@@ -30,12 +30,12 @@ void antStart(void) {
   DBG0("antStart() %s", utlDateTime())
   PIOSet(ANT_PWR);
   PIOSet(ANT_SEL);
+  utlNap(4);                        // uMPC has countdown exit = 3
   // state
   antDevice(cf2_dev);
   antAuton(false);
   tmrStop(ant_tmr);
   // get cf2 startup message
-  utlNap(4);
   if ( utlReadWait(ant.port, utlBuf, 2)==0 )
     flogf("FATAL\t| antInit() startup fail");
   DBG1("-> %s", utlBuf)
@@ -67,13 +67,13 @@ bool antPrompt() {
   DBG2("antPrompt()")
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 2*ant.delay);
+  utlReadWait(ant.port, utlBuf, 2+ant.delay);
   if (strstr(utlBuf, "Exec"))
     return true;
   // try again after break
   antBreak();
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 2*ant.delay);
+  utlReadWait(ant.port, utlBuf, 2+ant.delay);
   if (strstr(utlBuf, "Exec"))
     return true;
   return false;
