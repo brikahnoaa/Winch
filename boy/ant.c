@@ -22,6 +22,10 @@ void antInit(void) {
     utlStop("antInit() com1 open fail");
   if (strlen(ant.logFile))
     ant.log = utlLogFile(ant.logFile);
+  if (ant.logging)
+    strcpy(ant.sample, "TSSon");
+  else
+    strcpy(ant.sample, "TS");
 } // antInit
 
 ///
@@ -99,10 +103,10 @@ void antSample(void) {
   DBG0("antSample()")
   if (antPending()) return;
   antPrompt();
-  utlWrite(ant.port, "TS", EOL);
+  utlWrite(ant.port, ant.sample, EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
   // get echo ?? better check, and utlErr()
-  if (!strstr(utlBuf, "TS"))
+  if (!strstr(utlBuf, ant.sample))
     utlErr(ant_err, "\nERR antSample, TS command fail");
   tmrStart( ant_tmr, ant.delay );
 } // antSample
@@ -227,8 +231,8 @@ float antMoving(void) {
   d = ant.depth-d;
   if (abs(d)<ant.sampleRes) 
     return 0.0;
-  // got depth?
-  if (ant.depth>(ant.surfD-ant.sampleRes))
+  // got depth? wave motion
+  if (ant.depth<(ant.surfD+ant.sampleRes))
     return 0.0;
   // delta
   return d;
@@ -263,3 +267,24 @@ void antSwitch(AntType antenna) {
   ant.antenna = antenna;
 } // antSwitch
     
+void antGetSamples(void) {
+  int len1=sizeof(utlBuf);
+  int len2=len1, len3=len1;
+  int total=0;
+  ant.log = utlLogFile(ant.logFile);
+  antPrompt();          // wakeup
+  utlWrite(ant.port, "GetSamples:", EOL);
+  while (len1==len3) {
+    // repeat until less than a full buf
+    len2 = (int) TURxGetBlock(ant.port, utlBuf, (long) len1, (short) 1000);
+    len3 = write(ant.log, utlBuf, len2);
+    if (len2!=len3)
+      flogf("\nERR\t| antGetSamples() could not write ant.log");
+    total += len3;
+  } // while ==
+  close(ant.log);
+  utlWrite(ant.port, "initLogging", EOL);
+  utlWrite(ant.port, "initLogging", EOL);
+  utlReadWait(ant.port, utlBuf, 1);
+  flogf("\nantGetSamples(): %d bytes to %s", total, ant.logFile);
+} // antGetSamples

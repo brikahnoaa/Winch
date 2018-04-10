@@ -308,7 +308,7 @@ PhaseType dropPhase() {
     } // if timeout
   } // while step1
   // step 2: drop til you stop
-  while (antMoving()<0)
+  while (antMoving()>0)
     depth = antDepth();
   // step 3: stopCmd Rsp
   while (true) {

@@ -4,7 +4,9 @@
 
 typedef struct CtdInfo {
   bool auton;
+  bool logging;
   char logFile[32];
+  char sample[32];
   float depth;
   int delay;                  // Delay seconds expected between polled samples
   int fresh;

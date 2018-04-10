@@ -36,6 +36,10 @@ void ctdInit(void) {
   DBG2("\nctd>>%s", utlBuf)
   if (strlen(ctd.logFile))
     ctd.log = utlLogFile(ctd.logFile);
+  if (ctd.logging)
+    strcpy(ctd.sample, "TSSon");
+  else
+    strcpy(ctd.sample, "TS");
 } // ctdInit
 
 ///
@@ -87,10 +91,10 @@ void ctdSample(void) {
   DBG0("ctdSample()")
   if (ctdPending()) return;
   ctdPrompt();
-  utlWrite(ctd.port, "TS", EOL);
+  utlWrite(ctd.port, ctd.sample, EOL);
   len = utlReadWait(ctd.port, utlBuf, 1);
   // get echo ?? better check, and utlErr()
-  if (!strstr(utlBuf, "TS"))
+  if (!strstr(utlBuf, ctd.sample))
     utlErr(ctd_err, "\nERR ctdSample, TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
@@ -181,9 +185,9 @@ void ctdAuton(bool auton) {
 ///
 // get science, clear log
 void ctdGetSamples(void) {
-  int len1=BUFSZ;
+  int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
-  DBG0("ctdGetSamples(%s)", ctd.logFile)
+  int total=0;
   ctd.log = utlLogFile(ctd.logFile);
   ctdPrompt();          // wakeup
   utlWrite(ctd.port, "GetSamples:", EOL);
@@ -193,11 +197,12 @@ void ctdGetSamples(void) {
     len3 = write(ctd.log, utlBuf, len2);
     if (len2!=len3) 
       flogf("\nERR\t| ctdGetSamples() could not write ctd.log");
+    total += len3;
   } // while ==
   close(ctd.log);
   utlWrite(ctd.port, "initLogging", EOL);
   utlWrite(ctd.port, "initLogging", EOL);
-  utlRead(ctd.port,utlBuf);
-  DBG2("\nctd>>%s", utlBuf)
+  utlReadWait(ctd.port, utlBuf, 1);
+  flogf("\nctdGetSamples(): %d bytes to %s", total, ctd.logFile);
 } // ctdGetSamples
 
