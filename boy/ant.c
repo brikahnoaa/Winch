@@ -129,7 +129,7 @@ void antRead(void) {
     if (!p2) break;
     ant.temp = atof(p1);
     ant.depth = atof(p2);
-    DBG2("p1:'%s'%f p2:'%s'%f", p1, ant.temp, p2, ant.depth)
+    DBG2("p1:'%s' p2:'%s'", p1, p2)
     if (ant.auton) {
       // shift samples in array
       for (i=0; i<ant.sampleCnt; i++) 

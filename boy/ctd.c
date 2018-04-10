@@ -98,34 +98,32 @@ void ctdSample(void) {
 ///
 // sets: ctd.depth .ctdPending 
 void ctdRead() {
-  float pres;
-  char *p0, *p1;
+  char *p0, *p1, *p2, *p3;
   if (!ctdData()) return;
   DBG0("ctdRead()")
   utlRead(ctd.port, utlBuf);
   if (ctd.log) 
     write(ctd.log, utlBuf, strlen(utlBuf));
-  DBG2("\n\tctd-->%s", utlNonPrint(utlBuf))
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
-  p0 = strtok(utlBuf, "\r\n#");
-  // p0 = {crlf#}...{crlf}  e.g. one line
-  // skip to 3rd value. Xtemp,X Xcond,X pres
-  p1 = strtok(p0, "#, ");
+  p0 = utlBuf;
+  p1 = strtok(p0, "\r\n#, ");
   if (!p1) return;
-  p1 = strtok(NULL, ", "); 
-  if (!p1) return;
-  p1 = strtok(NULL, ", ");
-  if (!p1) return;
-  pres = atof( p1 );
+  p2 = strtok(NULL, ", "); 
+  if (!p2) return;
+  p3 = strtok(NULL, ", ");
+  if (!p3) return;
+  ctd.depth = atof( p3 );
+  DBG2("p1:'%s' p2:'%s' p3:'%s'", p1, p2, p3)
   // ctd.log is for autonomous getsample, see ctdAuto
   // len = strlen(utlBuf);
   // if (write(ctd.log, utlBuf, len)<len) 
   //   flogf("\nERR\t| ctdRead log fail");
-  ctd.depth = pres;
   return;
+  tmrStop(ctd_tmr);
+  ctd.time = time(0);
 } // ctdRead
 
 ///
@@ -164,16 +162,17 @@ void ctdAuton(bool auton) {
     // note - initlogging done at end of ctdGetSamples
     ctdPrompt();
     utlWrite(ctd.port, "sampleInterval=10", EOL);
+    utlReadWait(ctd.port, utlBuf, 1);
     utlWrite(ctd.port, "txRealTime=y", EOL);
+    utlReadWait(ctd.port, utlBuf, 1);
     utlWrite(ctd.port, "startnow", EOL);
-    utlRead(ctd.port,utlBuf);
-    DBG2("\nctd>>%s", utlBuf)
+    utlReadWait(ctd.port, utlBuf, 1);
+    if (!strstr(utlBuf, "Start logging"))
+      utlErr(ctd_err, "ctdAuto - didn't get 'Start logging' header");
   } else {
     utlWrite(ctd.port, "stop", EOL);
-    // pause and flush, some sample output after "stop"
-    utlNap(2*ctd.delay);
-    utlRead(ctd.port, utlBuf);
-    DBG2("\nctd>>%s", utlBuf)
+    // utlNap(2+ctd.delay);
+    utlReadWait(ctd.port, utlBuf, 1);
   } // if auton
   tmrStop(ctd_tmr);
   ctd.auton = auton;
