@@ -56,19 +56,21 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, ctd_err, log_err, file_err} ErrType;
+typedef enum {ant_err, ctd_err, log_err, file_err, sizeof_err} ErrType;
+
+typedef struct UtlInfo {
+  char *buf;
+  char *str;
+  int err[sizeof_err];
+} UtlInfo;
+
+typedef TUPort * Serial;
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern char *utlBuf;
 extern char *utlStr;
 extern char *utlRet;      // returned by some char *utlFuncs()
 
-typedef struct UtlInfo {
-  char *buf;
-  char *str;
-} UtlInfo;
-
-typedef TUPort * Serial;
 char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeBrief(void);

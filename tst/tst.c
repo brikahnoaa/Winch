@@ -6,26 +6,33 @@
 #include <ant.h>
 
 extern AntInfo ant;
+extern CtdInfo ctd;
 
 void main(void){
   char c;
   sysInit();
   mpcInit();
+  /* 
   antInit();
   antDevice(cf2_dev);
   antStart();
   flogf("\nPress q to exit\n");
+  antAuton(true);
+  */
+  ctdInit();
+  flogf("\nPress q to exit\n");
+  // ctdAuton(true);
   while (!cgetq()) {
-    flogf(" %2.1f", antDepth());
+    flogf(" %f", ctdDepth());
   }
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='q') break;
-      TUTxPutByte(ant.port,c,false);
+      TUTxPutByte(ctd.port,c,false);
     }
-    if (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
       cputc(c);
     }
   }

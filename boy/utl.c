@@ -46,15 +46,14 @@ int utlTrim(char *line) {
 // uses: utl.str
 void utlWrite(Serial port, char *out, char *eol) {
   int len, delay, sent;
-  DBG0("\tutlWrite()")
   strcpy(utl.str, out);
   if (eol!=NULL)
     strcat(utl.str, eol);
   len = strlen(utl.str);
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
-  DBG1("sent %d of %d", sent, len)
-  DBG2("'%s'", utlNonPrint(utl.str))
+  DBG1(">>=%d", sent)
+  DBG2(">>'%s'", utlNonPrint(utl.str))
   if (len!=sent) 
     flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
 }
@@ -66,14 +65,14 @@ void utlWrite(Serial port, char *out, char *eol) {
 int utlRead(Serial port, char *in) {
   int len = 0;
   if (TURxQueuedCount(port)<1) return 0;
-  DBG0("\tutlRead()")
   // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
   for (len=0; len<BUFSZ; len++) {
     in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG2("%d->'%s'", len, utlNonPrint(in))
+  DBG1("<<=%d", len)
+  DBG2("<<'%s'", utlNonPrint(in))
   return len;
 }
 
@@ -83,7 +82,6 @@ int utlRead(Serial port, char *in) {
 // return: length
 int utlReadWait(Serial port, char *in, int wait) {
   int len;
-  DBG0("\tutlReadWait(%d)", wait)
   in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
   utlPet(); // could have been a long wait
   if (in[0]<=0) {
@@ -97,7 +95,8 @@ int utlReadWait(Serial port, char *in, int wait) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG2("%d->'%s'", len, utlNonPrint(in))
+  DBG1("<<(%d)=%d", len)
+  DBG2("<<'%s'", utlNonPrint(in))
   return len;
 }
 
@@ -207,6 +206,7 @@ int utlLogFile(char *fname) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
+  utl.err[err]++;
   flogf(str);
 }
 

@@ -46,7 +46,6 @@ void antStart(void) {
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   // stop in case hw is autonomous
   utlWrite(ant.port, "stop", EOL);
-  utlWrite(ant.port, "SampleInterval=0.5", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
   utlRead(ant.port, utlBuf);
@@ -130,6 +129,7 @@ void antRead(void) {
     if (!p2) break;
     ant.temp = atof(p1);
     ant.depth = atof(p2);
+    DBG2("p1:'%s'%f p2:'%s'%f", p1, ant.temp, p2, ant.depth)
     if (ant.auton) {
       // shift samples in array
       for (i=0; i<ant.sampleCnt; i++) 
@@ -186,18 +186,22 @@ void antAuton(bool auton) {
   int i;
   DBG0("antAuto(%d)", auton)
   if (auton) {
-    utlWrite(ant.port, "initlogging", EOL);
-    utlWrite(ant.port, "initlogging", EOL);
-    utlWrite(ant.port, "sampleInterval=0", EOL);
+    utlWrite(ant.port, "SampleInterval=0.5", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
     utlWrite(ant.port, "txRealTime=y", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
     utlWrite(ant.port, "startnow", EOL);
-    // clear samples
-    for (i=0; i<=ant.sampleCnt; i++) 
-      ant.samples[i] = 0;
     // swallow header
     utlReadWait(ant.port, utlBuf, 5);
     if (!strstr(utlBuf, "Start logging"))
-      flogf("\nERR\t| antAuto - didn't get 'Start logging' header");
+      utlErr(ant_err, "antAuto - didn't get 'Start logging' header");
+    // clear samples used for antMoving()
+    for (i=0; i<=ant.sampleCnt; i++) 
+      ant.samples[i] = 0;
   } else {
     utlWrite(ant.port, "stop", EOL);
     // swallow tail
