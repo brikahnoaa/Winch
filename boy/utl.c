@@ -227,3 +227,20 @@ void utlNap(int sec) {
 void utlStop(char *out) {
   sysStop(out);
 } // utlStop
+
+///
+// do misc activity, frequently
+void utlX(void) {
+  char c;
+  if (cgetq()) {
+    c = cgetc();
+    switch (c) {
+    case 'q':
+    case 'x':
+      utlStop("user quit");
+      break;
+    }
+  }
+  // pwrChk();
+  // utlPet();
+}

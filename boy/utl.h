@@ -86,5 +86,6 @@ void utlInit(void);
 void utlNap(int sec);
 void utlPet(void);
 void utlStop(char *out);
+void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
 

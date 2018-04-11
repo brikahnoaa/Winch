@@ -33,6 +33,7 @@ void boyMain() {
   flogf("\nboyMain(): starting with phase %d", boy.phase);
     
   while (true) {
+    utlX();
     sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
     switch (boy.phase) {
@@ -107,11 +108,7 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     return drop_pha;
   }
-  antAuton(true);
-  ctdAuton(true);
   success = riseUp(boy.currChkD, 5, 1);
-  antAuton(false);
-  ctdAuton(false);
   ctdGetSamples();
   if (!success) {
     flogf("\n\t| riseUp fails at %3.1f m", antDepth());
@@ -123,11 +120,7 @@ PhaseType risePhase(void) {
     return drop_pha;
   }
   // surface
-  antAuton(true);
-  ctdAuton(true);
   success = riseUp(0.0, 5, 1);
-  antAuton(false);
-  ctdAuton(false);
   ctdGetSamples();
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
@@ -153,6 +146,7 @@ bool riseUp(float targetD, int errMax, int delay) {
   // watch for riseRsp. on timeout, retry or continue if rising
   ngkSend( riseCmd_msg );
   while (step==1) {
+    utlX();
     depth = antDepth();
     switch (msg = ngkRecv()) {
     case null_msg: break;
@@ -194,6 +188,7 @@ bool riseUp(float targetD, int errMax, int delay) {
   /// step 2: depth
   // watch until target depth
   while (step==2) {
+    utlX();
     depth = antDepth();
     if (depth<=targetD) 
       step = 3;
@@ -206,6 +201,7 @@ bool riseUp(float targetD, int errMax, int delay) {
   err = 0;
   ngkSend( stopCmd_msg );
   while (step==3) {
+    utlX();
     depth = antDepth();
     switch (msg = ngkRecv()) {
     case null_msg: break;
@@ -236,7 +232,7 @@ bool riseUp(float targetD, int errMax, int delay) {
         return false;
       }
     } // tmr
-  } // while step1
+  } // while step3
   // velocity to target, not to surface
   if (targetD!=0)
     // skip if we didn't stop cleanly
@@ -275,11 +271,11 @@ PhaseType dropPhase() {
   time_t dropT;
   MsgType msg;
   flogf("\n\tdropPhase() %s", utlDateTime());
-  antAuton(true);
-  ctdAuton(true);
   // step1. loop until dropRsp or dropping+timeout
   ngkSend( dropCmd_msg );
   while (true) {
+    utlX();
+    utlX();
     depth = antDepth();
     msg = ngkRecv();
     if (msg==dropRsp_msg) {
@@ -308,10 +304,13 @@ PhaseType dropPhase() {
     } // if timeout
   } // while step1
   // step 2: drop til you stop
-  while (antMoving()>0)
+  while (antMoving()>0) {
+    utlX();
     depth = antDepth();
+  }
   // step 3: stopCmd Rsp
   while (true) {
+    utlX();
     msg = ngkRecv();
     if (msg==stopCmd_msg) {
       ngkSend(stopRsp_msg);
@@ -333,8 +332,6 @@ PhaseType dropPhase() {
       boy.dropVFirst = boy.dropVLast;
   }
   // turn off ant, clear ngk, clear ctd
-  antAuton(false);
-  ctdAuton(false);
   ctdGetSamples();
   ngkStop();
   ctdStop();
@@ -350,6 +347,7 @@ PhaseType deployPhase(void) {
   tmrStart( deploy_tmr, 60*60*2 );
   // wait until under 10m
   while (antDepth()<10.0) {
+    utlX();
     pwrNap(30);
     if (tmrExp(deploy_tmr)) {
       flogf("\n%s\t|deployP() 2 hour timeout", utlDateTime());
@@ -357,12 +355,12 @@ PhaseType deployPhase(void) {
     }
   }
   // watch until not moving
-  antAuton(true);
-  while (antMoving()!=0.0) 
+  while (antMoving()!=0.0) {
+    utlX();
     pwrNap(3);
+  }
   pwrNap(30);
   boy.dockD = antDepth();
-  antAuton(false);
   return rise_pha;
 } // deployPhase
 
