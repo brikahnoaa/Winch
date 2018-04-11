@@ -16,12 +16,9 @@ void main(void){
   antDevice(cf2_dev);
   antStart();
   flogf("\nPress q to exit\n");
-  antAuton(true);
-  // ctdInit();
-  flogf("\nPress q to exit\n");
-  // ctdAuton(true);
+  // antAuton(true);
   while (!cgetq()) {
-    flogf(" %f", antDepth());
+    flogf("%s %f\n", utlTime(), antDepth());
   }
   flogf("connected to ant\n");
   while (true) {

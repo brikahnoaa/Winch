@@ -19,6 +19,7 @@ UtlInfo utl;
 ///
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
+  DBG2("utlInit()")
   utl.buf = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
   utlBuf = malloc(BUFSZ);
@@ -27,6 +28,7 @@ void utlInit(void) {
 }
 
 void utlDelay(int x) { 
+  DBG2("utlInit()")
   RTCDelayMicroSeconds((long)x*1000); 
 }
 
@@ -35,6 +37,7 @@ void utlDelay(int x) {
 int utlTrim(char *line) {
   char c;
   int len = strlen(line);
+  DBG2("utlInit()")
   // trim off crlf at end 
   c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
   c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
@@ -95,7 +98,7 @@ int utlReadWait(Serial port, char *in, int wait) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG1("<<(%d)=%d", len)
+  DBG1("<<(%d)=%d", wait, len)
   DBG2("<<'%s'", utlNonPrint(in))
   return len;
 }
@@ -188,9 +191,11 @@ void utlPet() { TickleSWSR(); }              // pet the watchdog
 int utlLogFile(char *fname) {
   int log;
   char *path[64];
+  DBG0("utlLogFile")
   strcpy(path, "log\\");
   strcat(path, fname);
   strcat(path, ".log");
+  DBG1("(%s)", path)
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
     sprintf(utl.str, "FATAL | utlLogFile(%s): open failed", fname);
@@ -206,8 +211,9 @@ int utlLogFile(char *fname) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
+  DBG0("utlErr()")
   utl.err[err]++;
-  flogf(str);
+  flogf("\nERR\t|%d| %s", utl.err[err], str);
 }
 
 ///

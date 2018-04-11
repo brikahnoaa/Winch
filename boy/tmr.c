@@ -5,16 +5,16 @@
 // initialized to all zeros, that works
 static struct {
   bool on[sizeof_tmr];
-  time_t timer[sizeof_tmr];
+  time_t exp[sizeof_tmr];
 } tmr;
   
 //
-// sets: tmr.on .timer[]
+// sets: tmr.on .exp[]
 //
 void tmrStart(TmrType tim, int secs) {
   DBG2("tmrStart(%d,%d)", tim, secs)
   tmr.on[tim] = true;
-  tmr.timer[tim] = time(0)+secs;
+  tmr.exp[tim] = time(0)+secs;
 } // tmrStart
 
 void tmrStop(TmrType tim) {
@@ -24,9 +24,10 @@ void tmrStop(TmrType tim) {
 
 ///
 // is timer expired? turn it off
-// timer==now is not expired, so now+1 runs at least 1 sec 
+// exp==now is not expired, so now+1 runs at least 1 sec 
+// sets: tmr.on[] .exp[]
 bool tmrExp(TmrType tim) {
-  if (tmr.on[tim] && (tmr.timer[tim] < time(0))) {
+  if (tmr.on[tim] && (tmr.exp[tim] < time(0))) {
     // on and expired
     tmr.on[tim] = false;
     DBG2("tmrExp(%d)", tim)
@@ -39,9 +40,9 @@ bool tmrExp(TmrType tim) {
 
 ///
 // is timer still running?
-// timer==now is not expired, so now+1 runs at least 1 sec 
+// exp==now is not expired, so now+1 runs at least 1 sec 
 bool tmrOn(TmrType tim) {
-  return (tmr.on[tim] && (tmr.timer[tim] > time(0)));
+  return (tmr.on[tim] && (tmr.exp[tim] >= time(0)));
 } // tmrOn
 
 //
@@ -49,7 +50,7 @@ bool tmrOn(TmrType tim) {
 //
 int tmrQuery(TmrType tim) {
   if (tmr.on[tim]) 
-    return (int)(tmr.timer[tim]-time(0))+1;
+    return (int)(tmr.exp[tim]-time(0))+1;
   else
     return 0;
 } // tmrQuery

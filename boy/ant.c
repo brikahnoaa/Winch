@@ -114,14 +114,12 @@ void antSample(void) {
 ///
 // antRead processes one or more lines of data, stores samples if auton
 // sets: ant.depth .temp .samples[]
-void antRead(void) {
+bool antRead(void) {
   int i;
   char *p0, *p1, *p2;
-  if (!antData()) return;
+  if (!antData()) return false;
   DBG0("antRead()");
   utlRead(ant.port, utlBuf);
-  if (ant.log)
-    write(ant.log, utlBuf, strlen(utlBuf));
   // ?? sanity check
   // could be multiple lines, ending crlf, len 32 < char < 64
   // read temp, depth and scan ahead for line end
@@ -147,20 +145,25 @@ void antRead(void) {
   } // while 
   tmrStop(ant_tmr);
   ant.time = time(0);
+  return true;
 }
 
 ///
 // data read recently
 bool antFresh(void) {
-  return (time(0)-ant.time)<ant.fresh;
+  bool fresh = (time(0)-ant.time)<ant.fresh;
+  DBG1("antFresh()->%d", fresh)
+  return fresh;
 }
 
 ///
 // tmrOn ? pending. tmrExp ? err
 bool antPending(void) {
-  if (ant.auton || tmrOn(ant_tmr)) 
+  if (ant.auton)
     return true;
-  if (tmrExp(ant_tmr)) 
+  else if (tmrOn(ant_tmr)) 
+    return true;
+  else if (tmrExp(ant_tmr)) 
     utlErr(ant_err, "ant timer expired");
   return false;
 }
@@ -171,11 +174,15 @@ float antDepth(void) {
   DBG1("antDepth()")
   if (!antData() && antFresh()) 
     return ant.depth;
-  while (!antData())
-    if (!antPending())
-      antSample();
-  antRead();
-  return ant.depth;
+  if (!antPending())
+    antSample();
+  // err if timeout ?? count?
+  while (antPending())
+    if (antData()) 
+      if (antRead())
+        return ant.depth;
+  // timeout
+  return 0.0;
 } // antDepth
 
 float antTemp(void) {
@@ -223,6 +230,7 @@ void antAuton(bool auton) {
 // rets: - | + | 0.0
 float antMoving(void) {
   float d;
+  DBG1("antMoving()")
   // got samples?
   d = ant.samples[ant.sampleCnt];
   if (d==0.0) 
@@ -259,6 +267,7 @@ void antDevice(DevType dev) {
 
 void antSwitch(AntType antenna) {
   if (antenna==ant.antenna) return;
+  DBG0("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
   TUTxPutByte(ant.port, 1, false);        // ^A
   if (antenna==gps_ant) 
     TUTxPutByte(ant.port, 'G', false);
@@ -271,6 +280,7 @@ void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
   int total=0;
+  DBG0("antGetSamples()")
   ant.log = utlLogFile(ant.logFile);
   antPrompt();          // wakeup
   utlWrite(ant.port, "GetSamples:", EOL);
