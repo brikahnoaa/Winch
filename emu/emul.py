@@ -4,30 +4,30 @@ import winch, sbe16, sbe39, floats
 
 def init():
     "init all"
-    sbe16.init()
+    # sbe16.init()
     winch.init()
-    # sbe39.init()
+    sbe39.init()
     # ant.init()
 
 def start():
     "start all"
-    sbe16.start()
+    # sbe16.start()
     winch.start()
-    # sbe39.start()
+    sbe39.start()
     # ant.start()
 
 def stop():
     "stop all"
-    sbe16.stop()
+    # sbe16.stop()
     winch.stop()
-    # sbe39.stop()
+    sbe39.stop()
     # ant.stop()
 
 def info():
     "info all"
-    sbe16.info()
+    # sbe16.info()
     winch.info()
-    # sbe39.info()
+    sbe39.info()
     # ant.info()
     
 def restart():

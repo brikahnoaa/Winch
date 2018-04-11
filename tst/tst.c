@@ -12,27 +12,26 @@ void main(void){
   char c;
   sysInit();
   mpcInit();
-  /* 
   antInit();
   antDevice(cf2_dev);
   antStart();
   flogf("\nPress q to exit\n");
   antAuton(true);
-  */
-  ctdInit();
+  // ctdInit();
   flogf("\nPress q to exit\n");
   // ctdAuton(true);
   while (!cgetq()) {
-    flogf(" %f", ctdDepth());
+    flogf(" %f", antDepth());
   }
+  flogf("connected to ant\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='q') break;
-      TUTxPutByte(ctd.port,c,false);
+      TUTxPutByte(ant.port,c,false);
     }
-    if (TURxQueuedCount(ctd.port)) {
-      c=TURxGetByte(ctd.port,false);
+    if (TURxQueuedCount(ant.port)) {
+      c=TURxGetByte(ant.port,false);
       cputc(c);
     }
   }

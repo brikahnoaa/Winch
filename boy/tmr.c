@@ -12,7 +12,7 @@ static struct {
 // sets: tmr.on .timer[]
 //
 void tmrStart(TmrType tim, int secs) {
-  DBG2("tmrStart()")
+  DBG2("tmrStart(%d,%d)", tim, secs)
   tmr.on[tim] = true;
   tmr.timer[tim] = time(0)+secs;
 } // tmrStart
