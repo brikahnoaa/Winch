@@ -50,3 +50,6 @@ extern DbgInfo dbg;
 #endif
 
 void dbgInit(void);
+void dbg0(void);
+void dbg1(void);
+void dbg2(void);

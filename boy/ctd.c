@@ -151,10 +151,14 @@ bool ctdPending(void) {
 float ctdDepth(void) {
   if (!ctdData() && ctdFresh())
     return ctd.depth;
-  while (!ctdData())
-    if (!ctdPending())
+  if (!ctdPending())
       ctdSample();
-  ctdRead();
+  // err if timeout ?? count?
+  while (ctdPending())
+    if (ctdData())
+      if (ctdRead())
+        return ctd.depth;
+  // timeout
   return ctd.depth;
 } // ctdDepth
 

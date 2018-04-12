@@ -18,3 +18,17 @@ void dbgInit(void) {
   if (atoi(VEEFetchStr("DBG2", "999"))!=999) dbg.dbg2 = true;
   else dbg.dbg2 = false;
 }
+
+///
+// turn dbg level on/off
+void dbg0(bool on) {
+  dbg.dbg0 = on;
+}
+
+void dbg1(bool on) {
+  dbg.dbg1 = on;
+}
+
+void dbg2(bool on) {
+  dbg.dbg2 = on;
+}

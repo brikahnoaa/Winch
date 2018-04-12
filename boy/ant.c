@@ -186,8 +186,7 @@ float antDepth(void) {
 } // antDepth
 
 float antTemp(void) {
-  antSample();
-  antRead();
+  antDepth();
   return ant.temp;
 } // antTemp
 
