@@ -241,6 +241,7 @@ void utlX(void) {
       break;
     }
   }
+  DBGX(utlDelay(500); cputc('.');)
   // pwrChk();
   // utlPet();
 }

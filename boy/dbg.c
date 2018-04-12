@@ -11,6 +11,8 @@ DbgInfo dbg;
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
 // sets: dbg.dbg0, .dbg1, .dbg2 (global vars)
 void dbgInit(void) {
+  if (atoi(VEEFetchStr("DBGX", "999"))!=999) dbg.dbgx = true;
+  else dbg.dbgx = false;
   if (atoi(VEEFetchStr("DBG0", "999"))!=999) dbg.dbg0 = true;
   else dbg.dbg0 = false;
   if (atoi(VEEFetchStr("DBG1", "999"))!=999) dbg.dbg1 = true;
@@ -21,6 +23,10 @@ void dbgInit(void) {
 
 ///
 // turn dbg level on/off
+void dbgx(bool on) {
+  dbg.dbgx = on;
+}
+
 void dbg0(bool on) {
   dbg.dbg0 = on;
 }

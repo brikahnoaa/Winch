@@ -377,10 +377,10 @@ PhaseType errorPhase(void) {
 // uses: .boy2ant
 float oceanCurr() {
   float aD, cD, a, b, c;
-  // usually called while auto_ant
   cD=ctdDepth();
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
+  // b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
   b=sqrt(pow(c,2)-pow(a,2));
@@ -409,6 +409,8 @@ void boyStop(void) {} // ??
 void boyFlush(void) {} // ??
 
 ///
+// do not use until 
 bool boyDocked(float depth) {
-  return (abs(depth-boy.dockD)<1.0);
+  if (boy.dockD==0.0) return false;
+  else return (abs(depth-boy.dockD)<1.0);
 }

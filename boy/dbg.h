@@ -2,6 +2,7 @@
 #define DBG_H
 
 typedef struct DbgInfo {
+  bool dbgx;
   bool dbg0;
   bool dbg1;
   bool dbg2;
@@ -20,15 +21,15 @@ extern DbgInfo dbg;
 // DBG1() print more interesting things
 // DBG2() print details
 
-#define DEBUG
+#define DEBUGX
 #define DEBUG0
 #define DEBUG1
 #define DEBUG2
 
-#ifdef DEBUG
-#define DBG(...) __VA_ARGS__
+#ifdef DEBUGX
+#define DBGX(...) if (dbg.dbgx) {__VA_ARGS__}
 #else
-#define DBG(...)
+#define DBGX(...)
 #endif
 
 #ifdef DEBUG0
@@ -50,6 +51,7 @@ extern DbgInfo dbg;
 #endif
 
 void dbgInit(void);
-void dbg0(void);
-void dbg1(void);
-void dbg2(void);
+void dbgx(bool on);
+void dbg0(bool on);
+void dbg1(bool on);
+void dbg2(bool on);

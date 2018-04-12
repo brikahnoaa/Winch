@@ -19,7 +19,7 @@ static bool ctdPrompt(void);
 static bool ctdPending(void);
 static bool ctdFresh(void);
 static void ctdBreak(void);
-static void ctdRead(void);
+static bool ctdRead(void);
 static void ctdSample(void);
 
 bool ctdData(void);

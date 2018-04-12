@@ -101,9 +101,9 @@ void ctdSample(void) {
 
 ///
 // sets: ctd.depth .ctdPending 
-void ctdRead() {
+bool ctdRead(void) {
   char *p0, *p1, *p2, *p3;
-  if (!ctdData()) return;
+  if (!ctdData()) return false;
   DBG0("ctdRead()")
   utlRead(ctd.port, utlBuf);
   if (ctd.log) 
@@ -114,20 +114,16 @@ void ctdRead() {
   // note: picks up trailing S> prompt if not in syncmode
   p0 = utlBuf;
   p1 = strtok(p0, "\r\n#, ");
-  if (!p1) return;
+  if (!p1) return false;
   p2 = strtok(NULL, ", "); 
-  if (!p2) return;
+  if (!p2) return false;
   p3 = strtok(NULL, ", ");
-  if (!p3) return;
+  if (!p3) return false;
   ctd.depth = atof( p3 );
   DBG2("p1:'%s' p2:'%s' p3:'%s'", p1, p2, p3)
-  // ctd.log is for autonomous getsample, see ctdAuto
-  // len = strlen(utlBuf);
-  // if (write(ctd.log, utlBuf, len)<len) 
-  //   flogf("\nERR\t| ctdRead log fail");
-  return;
   tmrStop(ctd_tmr);
   ctd.time = time(0);
+  return true;
 } // ctdRead
 
 ///
