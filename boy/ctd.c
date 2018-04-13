@@ -54,7 +54,7 @@ void ctdStop(void){
 // sbe16
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
-  DBG2("ctdPrompt()")
+  DBG1("ctdPrompt()")
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
   utlReadWait(ctd.port, utlBuf, 2+ctd.delay);
@@ -73,13 +73,14 @@ bool ctdPrompt(void) {
 ///
 // reset, exit sync mode
 void ctdBreak(void) {
-  DBG0("ctdBreak()")
+  DBG1("ctdBreak()")
   TUTxBreak(ctd.port, 5000);
 } // ctdBreak
 
 ///
 // data waiting
 bool ctdData() {
+  DBG1("cD")
   return TURxQueuedCount(ctd.port);
 } // ctdData
 
@@ -88,7 +89,7 @@ bool ctdData() {
 // sets: ctd.ctdPending ctd_tmr
 void ctdSample(void) {
   int len;
-  DBG0("ctdSample()")
+  DBG1("ctdSample()")
   if (ctdPending()) return;
   ctdPrompt();
   utlWrite(ctd.port, ctd.sample, EOL);
@@ -104,7 +105,7 @@ void ctdSample(void) {
 bool ctdRead(void) {
   char *p0, *p1, *p2, *p3;
   if (!ctdData()) return false;
-  DBG0("ctdRead()")
+  DBG1("ctdRead()")
   utlRead(ctd.port, utlBuf);
   if (ctd.log) 
     write(ctd.log, utlBuf, strlen(utlBuf));
@@ -120,7 +121,7 @@ bool ctdRead(void) {
   p3 = strtok(NULL, ", ");
   if (!p3) return false;
   ctd.depth = atof( p3 );
-  DBG2("p1:'%s' p2:'%s' p3:'%s'", p1, p2, p3)
+  DBG1("= %4.2", ctd.depth)
   tmrStop(ctd_tmr);
   ctd.time = time(0);
   return true;
@@ -129,6 +130,7 @@ bool ctdRead(void) {
 ///
 // data read recently
 bool ctdFresh(void) {
+  DBG1("ctdFresh()")
   return (time(0)-ctd.time)<ctd.fresh;
 }
 
@@ -145,6 +147,7 @@ bool ctdPending(void) {
 ///
 // sample if not ctdPending, wait for data, return depth
 float ctdDepth(void) {
+  DBG1("ctdDepth()")
   if (!ctdData() && ctdFresh())
     return ctd.depth;
   if (!ctdPending())
@@ -189,6 +192,7 @@ void ctdGetSamples(void) {
   int len2=len1, len3=len1;
   int total=0;
   ctd.log = utlLogFile(ctd.logFile);
+  flogf("\n+ctdGetSamples()");
   ctdPrompt();          // wakeup
   utlWrite(ctd.port, "GetSamples:", EOL);
   while (len1==len3) {
@@ -197,12 +201,13 @@ void ctdGetSamples(void) {
     len3 = write(ctd.log, utlBuf, len2);
     if (len2!=len3) 
       flogf("\nERR\t| ctdGetSamples() could not write ctd.log");
+    flogf("+[%d]", len3);
     total += len3;
   } // while ==
   close(ctd.log);
   utlWrite(ctd.port, "initLogging", EOL);
   utlWrite(ctd.port, "initLogging", EOL);
   utlReadWait(ctd.port, utlBuf, 1);
-  flogf("\nctdGetSamples(): %d bytes to %s", total, ctd.logFile);
+  flogf(" = %d bytes to %s", total, ctd.logFile);
 } // ctdGetSamples
 

@@ -6,6 +6,7 @@ typedef struct DbgInfo {
   bool dbg0;
   bool dbg1;
   bool dbg2;
+  bool dbg3;
 } DbgInfo;
 
 extern DbgInfo dbg;
@@ -20,11 +21,13 @@ extern DbgInfo dbg;
 // DBG0() print func names
 // DBG1() print more interesting things
 // DBG2() print details
+// DBG3() serial i/o
 
 #define DEBUGX
 #define DEBUG0
 #define DEBUG1
 #define DEBUG2
+#define DEBUG3
 
 #ifdef DEBUGX
 #define DBGX(...) if (dbg.dbgx) {__VA_ARGS__}
@@ -33,7 +36,7 @@ extern DbgInfo dbg;
 #endif
 
 #ifdef DEBUG0
-#define DBG0(...) if (dbg.dbg0) flogf("\n" __VA_ARGS__);
+#define DBG0(...) if (dbg.dbg0) flogf("\n+" __VA_ARGS__);
 #else
 #define DBG0(...)
 #endif
@@ -50,8 +53,15 @@ extern DbgInfo dbg;
 #define DBG2(...)
 #endif
 
+#ifdef DEBUG3
+#define DBG3(...) if (dbg.dbg3) flogf(" " __VA_ARGS__);
+#else
+#define DBG3(...)
+#endif
+
 void dbgInit(void);
 void dbgx(bool on);
 void dbg0(bool on);
 void dbg1(bool on);
 void dbg2(bool on);
+void dbg3(bool on);

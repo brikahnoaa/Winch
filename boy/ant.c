@@ -20,8 +20,6 @@ void antInit(void) {
   ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
-  if (strlen(ant.logFile))
-    ant.log = utlLogFile(ant.logFile);
   if (ant.logging)
     strcpy(ant.sample, "TSSon");
   else
@@ -40,9 +38,10 @@ void antStart(void) {
   antAuton(false);
   tmrStop(ant_tmr);
   // get cf2 startup message
-  if ( utlReadWait(ant.port, utlBuf, 2)==0 )
-    flogf("FATAL\t| antInit() startup fail");
-  DBG1("-> %s", utlBuf)
+  utlReadWait(ant.port, utlBuf, 2);
+  if (!strstr(utlBuf, "Program:"))
+    flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
+  DBG2("-> %s", utlBuf)
   // ?? look for "ok"
   // sbe39
   if (!antPrompt())   
@@ -67,7 +66,7 @@ void antStop() {
 ///
 // if asleep, first EOL wakens but no response
 bool antPrompt() {
-  DBG2("antPrompt()")
+  DBG1("antPrompt()")
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
   utlReadWait(ant.port, utlBuf, 2+ant.delay);
@@ -92,6 +91,7 @@ void antBreak(void) {
 ///
 // data waiting
 bool antData() {
+  DBG1("aD")
   return TURxQueuedCount(ant.port);
 } // antData
 
@@ -100,7 +100,7 @@ bool antData() {
 // sets: ant_tmr
 void antSample(void) {
   int len;
-  DBG0("antSample()")
+  DBG1("antSample()")
   if (antPending()) return;
   antPrompt();
   utlWrite(ant.port, ant.sample, EOL);
@@ -118,7 +118,7 @@ bool antRead(void) {
   int i;
   char *p0, *p1, *p2;
   if (!antData()) return false;
-  DBG0("antRead()");
+  DBG1("antRead()");
   utlRead(ant.port, utlBuf);
   // ?? sanity check
   // could be multiple lines, ending crlf, len 32 < char < 64
@@ -131,7 +131,7 @@ bool antRead(void) {
     if (!p2) break;
     ant.temp = atof(p1);
     ant.depth = atof(p2);
-    DBG2("p1:'%s' p2:'%s'", p1, p2)
+    DBG1("= %4.2f, %4.2f", ant.temp, ant.depth)
     if (ant.auton) {
       // shift samples in array
       for (i=0; i<ant.sampleCnt; i++) 

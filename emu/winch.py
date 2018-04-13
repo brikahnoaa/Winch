@@ -21,7 +21,7 @@ serThreadObj = None
 def info():
     global go, cableLen, motorRunState
     "globals which may be externally set"
-    print "(go:%s)   motor('%s')   cableLen=%.2f" % \
+    print "winch:  go=%s  winch.motor('%s')  winch.cable(%.2f)" % \
         (go.isSet(), motorRunState, cableLen)
 
 def init():

@@ -1,0 +1,106 @@
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds
+startCheck(): starts 1, max 50
++logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr 12 2018 17:35:12
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 03-12-18 17:50:07
+---   ---
+cfgRead(SYS.CFG)
++cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
++antInit()
++boyInit()
++utlLogFile
++ctdInit()
++mpcPam(2)
++ctdAuton(0)
++utlLogFile
++ngkInit()
+boyMain(): starting with phase 0.
++deployPhase()@03-12-18 17:50:10
++antStart() 03-12-18 17:50:10
++antDevice(cf2)
++antAuto(0)
+Err	| expected ant startup message, got ''
++utlErr()
+ERR	|1| ant timer expired.
++antBreak()
++utlErr()
+ERR	|2|
+ERR antSample, TS command fail
+deployPhase() at 8.05.
+deployPhase() at 8.05>10 so wait to stop
+	| boy.dockD = 34.00
+	| deployed @ 03-12-18 17:51:59.
++risePhase()@03-12-18 17:52:00
+	| oceanCurrChk()  @34.0=nan
++riseUp(16420m)
+ngkSend(#R,01,03) at 17:52:03.................
+	|ngkRecv(riseRsp) at 17:52:15.............................................................................................
+ngkSend(#S,01,00) at 17:53:21...............
+	|ngkRecv(stopRsp) at 17:53:33
+	| oceanCurrChk()  @8.0=14.0 too strong, cancel ascent.
+	dropPhase()@03-12-18 17:53:37
+ngkSend(#F,01,00) at 17:53:37..................
+	|ngkRecv(dropRsp) at 17:53:49................................................................................................................................................................................................................................................................
+	|ngkRecv(stopCmd) at 17:55:58
+ngkSend(%S,01,00) at 17:55:58
+	|
+ngkSend() amodem bad response ''
+ngkSend(%S,01,00) at 17:56:00.
++errorPhase()@03-12-18 17:56:00.
+	dropPhase()@03-12-18 17:56:01
+ngkSend(#F,01,00) at 17:56:01
+	|
+ngkSend() amodem bad response ''.. | ERR msgParse() length 2 | ERR msgParse(OK) fail
+	|ngkRecv(mangled) at 17:56:06
+	|dropP() unexpected mangled at 34.0 m................ dropCmd
+ngkSend(#F,01,00) at 17:56:18..................
+	|ngkRecv(dropRsp) at 17:56:30........
+	|ngkRecv(stopCmd) at 17:56:35
+ngkSend(%S,01,00) at 17:56:35
+ngkSend(%S,01,00) at 17:56:35
+	|
+ngkSend() amodem bad response ''
++antGetSamples()
++utlLogFile
+antGetSamples(): 69 bytes to ant
++utlLogFile
++utlErr()
+ERR	|1| FATAL | utlLogFile(ctd): open failed
++ctdGetSamples()
+ERR	| ctdGetSamples() could not write ctd.log+[-1] = -1 bytes to ctd.
++dataPhase()@03-12-18 17:56:46.
++risePhase()@03-12-18 17:56:47
+	| oceanCurrChk()
++antBreak()
++utlErr()
+ERR	|3|
+ERR antSample, TS command fail
++utlErr()
+ERR	|4| ant timer expired
++antBreak()
++utlErr()
+ERR	|5|
+ERR antSample, TS command fail
++utlErr()
+ERR	|6| ant timer expired @0.0=nan
++riseUp(16420m)
++antBreak()
++utlErr()
+ERR	|7|
+ERR antSample, TS command fail
++utlErr()
+ERR	|8| ant timer expired
+ngkSend(#R,01,03) at 17:57:46
+mpcSleep() at 03-12-18 17:57:46
+pc 22
+
+Pin 22 [I/O OUT] = 0
+C:\>

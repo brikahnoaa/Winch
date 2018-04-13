@@ -20,8 +20,8 @@ serThreadObj = None
 
 def info():
     "globals which may be externally set"
-    print "(go:%s)   syncMode=%s   syncModePending=%s   sleepMode=%s" % \
-        (go.isSet(), syncMode, syncModePending, sleepMode)
+    print "(go:%s)   depth=%s   sleepMode=%s" % \
+        (go.isSet(), depth(), sleepMode)
 
 def init():
     "set globals to defaults"

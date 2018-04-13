@@ -9,7 +9,7 @@ DbgInfo dbg;
 // #ifdef DEBUG0 
 // #define DBG0 if (dbg0) flogf(args);
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
-// sets: dbg.dbg0, .dbg1, .dbg2 (global vars)
+// sets: dbg.dbg0, .dbg1, .dbg2 .dbg3 (global vars)
 void dbgInit(void) {
   if (atoi(VEEFetchStr("DBGX", "999"))!=999) dbg.dbgx = true;
   else dbg.dbgx = false;
@@ -19,6 +19,8 @@ void dbgInit(void) {
   else dbg.dbg1 = false;
   if (atoi(VEEFetchStr("DBG2", "999"))!=999) dbg.dbg2 = true;
   else dbg.dbg2 = false;
+  if (atoi(VEEFetchStr("DBG3", "999"))!=999) dbg.dbg3 = true;
+  else dbg.dbg3 = false;
 }
 
 ///
@@ -37,4 +39,8 @@ void dbg1(bool on) {
 
 void dbg2(bool on) {
   dbg.dbg2 = on;
+}
+
+void dbg3(bool on) {
+  dbg.dbg3 = on;
 }

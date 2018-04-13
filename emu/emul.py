@@ -1,5 +1,6 @@
 # emulator. v3
 # import winch, sbe16, sbe39, floats, ant
+from design import *
 import winch, sbe16, sbe39, floats
 
 def init():
@@ -39,5 +40,5 @@ def restart():
 import atexit
 atexit.register(stop)
 
-print "start() stop() restart() sbe16.info() winch.cable(0)"
+print "start() stop() restart() info() mooring"
 info()

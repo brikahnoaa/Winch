@@ -19,9 +19,9 @@ CTD_WAKE = 0.78
 serThreadObj = None
 
 def info():
-    "globals which may be externally set"
-    print "(go:%s)   syncMode=%s   syncModePending=%s   sleepMode=%s" % \
-        (go.isSet(), syncMode, syncModePending, sleepMode)
+    "info about what's up"
+    print "sbe39:  go=%s  depth=%s temper=%s  sleepMode=%s" % \
+        (go.isSet(), depth(), temper(), sleepMode)
 
 def init():
     "set globals to defaults"

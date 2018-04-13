@@ -8,6 +8,7 @@ typedef enum {
 
 // boy
 typedef struct BoyInfo {
+  bool sbe39Log;          // capture log for sbe39 as well as sbe16
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water

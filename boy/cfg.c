@@ -44,6 +44,7 @@ static CfgParam cfgP[] = {
   {"ady", "ant.delay",      &ant.delay,       'i'},
   {"afr", "ant.fresh",      &ant.fresh,       'i'},
   {"asC", "ant.sampleCnt",  &ant.sampleCnt,   'i'},
+  {"b39", "boy.sbe39Log",   &boy.sbe39Log,    'b'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},

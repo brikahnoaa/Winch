@@ -3,9 +3,9 @@ buoyID = '02'
 winchID = '01'
 
 # design
-mooring = 40
+mooring = 60
 buoyLine = 10
-floatsLine = 10
-antLine = 6
+floatsLine = 16
+antLine = 0
 # depth of ant sbe39 floating at surface
-antSBEpos = 1.5
+antSBEpos = 1.2
