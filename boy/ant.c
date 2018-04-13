@@ -124,24 +124,21 @@ bool antRead(void) {
   // could be multiple lines, ending crlf, len 32 < char < 64
   // read temp, depth and scan ahead for line end
   p0 = utlBuf;
-  while (true) {
+  while (p0) {              // p0 will be null when no more lines
     p1 = strtok(p0, "\r\n#, ");
-    if (!p1) break;
+    if (!p1) continue;
     p2 = strtok(NULL, ", ");
-    if (!p2) break;
+    if (!p2) continue;
+    // samples[] for antMoving - shift samples in array
+    for (i=0; i<ant.sampleCnt; i++) 
+      ant.samples[i+1] = ant.samples[i];
+    ant.samples[0] = ant.depth;
     ant.temp = atof(p1);
     ant.depth = atof(p2);
     DBG1("= %4.2f, %4.2f", ant.temp, ant.depth)
-    if (ant.auton) {
-      // shift samples in array
-      for (i=0; i<ant.sampleCnt; i++) 
-        ant.samples[i+1] = ant.samples[i];
-      ant.samples[0] = ant.depth;
-    } // if auton
     // ?? range check
-    // continue scan for lines after crlf
-    p0 = strstr(p0, "\r\n");
-    if (!p0) break;
+    // loop until no more line ends in buf
+    p0 = strstr(p0, "\r");
   } // while 
   tmrStop(ant_tmr);
   ant.time = time(0);
@@ -223,7 +220,7 @@ void antAuton(bool auton) {
 }
 
 ///
-// if auton_ant, checks recent depth against previous
+// checks recent depth against previous
 // returns delta change in depth (0 if not enough samples)
 // uses: ant.sampleCnt .sampleRes .depth
 // rets: - | + | 0.0
