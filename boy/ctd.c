@@ -26,7 +26,7 @@ void ctdInit(void) {
   ctdAuton(false);
   tmrStop(ctd_tmr);
   if (!ctdPrompt())
-    utlErr(ctd_err, "ERR\t| ctdInit(): no prompt from ctd");
+    utlErr(ctd_err, "ctd: no prompt");
   // sbe16 gets quirky when logging, best to STOP even if it flags error
   utlWrite(ctd.port, "stop", EOL);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
@@ -96,7 +96,7 @@ void ctdSample(void) {
   len = utlReadWait(ctd.port, utlBuf, 1);
   // get echo ?? better check, and utlErr()
   if (!strstr(utlBuf, ctd.sample))
-    utlErr(ctd_err, "\nERR ctdSample, TS command fail");
+    utlErr(ctd_err, "ctd: TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
 
@@ -140,7 +140,7 @@ bool ctdPending(void) {
   if (ctd.auton || tmrOn(ctd_tmr))
     return true;
   if (tmrExp(ctd_tmr))
-    utlErr(ctd_err, "ctd timer expired");
+    utlErr(ctd_err, "ctd: timer expired");
   return false;
 }
 
@@ -175,7 +175,7 @@ void ctdAuton(bool auton) {
     utlWrite(ctd.port, "startnow", EOL);
     utlReadWait(ctd.port, utlBuf, 1);
     if (!strstr(utlBuf, "Start logging"))
-      utlErr(ctd_err, "ctdAuto - didn't get 'Start logging' header");
+      utlErr(ctd_err, "ctdAuton: expected 'Start logging' header");
   } else {
     utlWrite(ctd.port, "stop", EOL);
     // utlNap(2+ctd.delay);

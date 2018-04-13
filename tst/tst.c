@@ -13,12 +13,12 @@ void main(void){
   sysInit();
   mpcInit();
   antInit();
-  antDevice(cf2_dev);
+  ctdInit();
   antStart();
-  flogf("\nPress q to exit\n");
-  // antAuton(true);
+  flogf("\nPress any to talk, q to exit\n");
   while (!cgetq()) {
-    flogf("%s %f\n", utlTime(), antDepth());
+    flogf("antDepth() -> %f\n", antDepth());
+    flogf("antMoving() -> %f\n", antMoving());
   }
   flogf("connected to ant\n");
   while (true) {

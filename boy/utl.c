@@ -25,6 +25,13 @@ void utlInit(void) {
   utlBuf = malloc(BUFSZ);
   utlStr = malloc(BUFSZ);
   utlRet = malloc(BUFSZ);
+  utl.errName[ant_err] = "ant";
+  utl.errName[ctd_err] = "ctd";
+  utl.errName[log_err] = "log";
+  utl.errName[file_err] = "file";
+  utl.errName[ngk_err] = "ngk";
+  utl.errName[ngkParse_err] = "ngkParse";
+  // utl.errName[_err] = "";
 }
 
 void utlDelay(int x) { 
@@ -198,7 +205,7 @@ int utlLogFile(char *fname) {
   DBG1("(%s)", path)
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
-    sprintf(utl.str, "FATAL | utlLogFile(%s): open failed", fname);
+    sprintf(utl.str, "utlLogFile(%s): open failed for %s", fname, path);
     utlErr(file_err, utl.str);
     return 0;
   } else {
@@ -211,9 +218,8 @@ int utlLogFile(char *fname) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
-  DBG0("utlErr()")
-  utl.err[err]++;
-  flogf("\nERR\t|%d| %s", utl.err[err], str);
+  flogf("\nErr(%s)\t|%d| %s", utl.errName[err], utl.errCnt[err], str);
+  utl.errCnt[err]++;
 }
 
 ///

@@ -36,6 +36,7 @@ typedef struct CfgParam {
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
+  {"alg", "ant.logging",    &ant.logging,     'b'},
   {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
   {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
   {"alF", "ant.logFile",    &ant.logFile,     'c'},
@@ -44,7 +45,6 @@ static CfgParam cfgP[] = {
   {"ady", "ant.delay",      &ant.delay,       'i'},
   {"afr", "ant.fresh",      &ant.fresh,       'i'},
   {"asC", "ant.sampleCnt",  &ant.sampleCnt,   'i'},
-  {"b39", "boy.sbe39Log",   &boy.sbe39Log,    'b'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},
@@ -55,6 +55,7 @@ static CfgParam cfgP[] = {
   {"bfn", "boy.fileNum",    &boy.fileNum,     'i'},
   {"bph", "boy.phase",      &boy.phase,       'i'},
   {"ccw", "cfg.wild",       &cfg.wild,        'c'},
+  {"clg", "ctd.logging",    &ctd.logging,     'b'},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
   {"cdy", "ctd.delay",      &ctd.delay,       'i'},
   {"cfr", "ctd.fresh",      &ctd.fresh,       'i'},

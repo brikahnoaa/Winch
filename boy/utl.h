@@ -56,12 +56,14 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, ctd_err, log_err, file_err, sizeof_err} ErrType;
+typedef enum {ant_err, ctd_err, log_err, file_err, 
+    ngk_err, ngkParse_err, sizeof_err} ErrType;
 
 typedef struct UtlInfo {
   char *buf;
+  char *errName[sizeof_err];
   char *str;
-  int err[sizeof_err];
+  int errCnt[sizeof_err];
 } UtlInfo;
 
 typedef TUPort * Serial;

@@ -107,7 +107,6 @@ def amodInput():
     if not l: return
     ser.log( "hearing %s" % l )
     if "OK" in l:
-        ser.log( "OK" )
         return
     if len(l) > 6: 
         ser.putline( "OK" )

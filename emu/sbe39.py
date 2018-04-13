@@ -100,6 +100,7 @@ def serThread():
                     if l:
                         l = l[:-len(ser.eol)]
                         if 'TS' in l:
+                            ser.put(l + "\r\n")
                             ctdOut()
                         elif 'DATE' in l:
                             # trim up to =

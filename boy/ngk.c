@@ -56,10 +56,10 @@ void ngkStop(void){
 // sets: .send[] .lastSend 
 void ngkSend(MsgType msg) {
   char str[12];
+  // copy msgStr and change id character // e.g. "#R,0X,00"
   strcpy(str, ngk.msgStr[msg]);
   str[4]=WINCH_ID;
-  flogf("\nngkSend(%s) at %s", str, utlTime());
-  // set winch id "#R,0X,00"
+  flogf("\n+ngkSend(%s) at %s", str, utlTime());
   TUTxWaitCompletion(ngk.port);
   utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
@@ -85,7 +85,7 @@ MsgType ngkRecv() {
   if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
   msg = msgParse(utlBuf);
-  flogf("\n\t|ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
+  flogf("\n+ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
   if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
     return null_msg;
@@ -112,7 +112,7 @@ MsgType msgParse(char *str) {
       break;
   ngk.recv[m]++;
   if (m==mangled_msg)           // no match or invalid
-    flogf(" | ERR msgParse(%s) fail", str);
+    utlErr(ngkParse_err, str);
   else
     utlWrite(ngk.port, "OK", EOL);
   return m;

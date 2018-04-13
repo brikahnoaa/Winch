@@ -331,9 +331,10 @@ PhaseType dropPhase() {
     if (boy.dropVFirst==0)
       boy.dropVFirst = boy.dropVLast;
   }
-  // turn off ant, clear ngk, clear ctd
-  if (boy.sbe39Log) antGetSamples();
+  // get samples, depends on ant. ctd.logging
+  antGetSamples();
   ctdGetSamples();
+  // turn off ant, clear ngk, clear ctd
   ngkStop();
   ctdStop();
   antStop();
@@ -344,30 +345,30 @@ PhaseType dropPhase() {
 // from ship deck to ocean floor
 // wait until under 10m, watch until not dropping, wait 30s, riseP
 PhaseType deployPhase(void) {
-  flogf("\n+deployPhase()@%s", utlDateTime());
   antStart();
   tmrStart( deploy_tmr, 60*60*2 );
+  flogf("\n+deployPhase()@%s", utlDateTime());
   // wait until under 10m
   while (antDepth()<10.0) {
     utlX();
     flogf("\ndeployPhase() at %4.2f", antDepth());
-    pwrNap(30);
-    if (tmrExp(deploy_tmr)) {
-      flogf("\n%s\t|deployP() 2 hour timeout", utlDateTime());
+    if (tmrExp(deploy_tmr)) 
       sysStop("deployP() 2 hour timeout");
-    }
+    pwrNap(30);
   }
   // watch until not moving
-  flogf(">10 so wait to stop");
+  flogf(">10 so wait to stop\n");
   while (antMoving()!=0.0) {
     utlX();
-    flogf(".");
+    if (tmrExp(deploy_tmr)) 
+      sysStop("deployP() 2 hour timeout");
     pwrNap(3);
   }
-  pwrNap(30);
+  tmrStop(deploy_tmr);
   boy.dockD = antDepth();
   flogf("\n\t| boy.dockD = %4.2f", antDepth());
   flogf("\n\t| go to surface, call home");
+  pwrNap(10);
   // rise to surface, 5 tries, short delay
   if (riseUp(0.0, 5, 1)) {
     flogf("\n\t| deployed @ %s", utlDateTime());

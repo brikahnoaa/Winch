@@ -30,28 +30,25 @@ void antInit(void) {
 // turn on, clean, set params, talk to sbe39
 void antStart(void) {
   DBG0("antStart() %s", utlDateTime())
+  antDevice(cf2_dev);
+  PIOClear(ANT_PWR);
+  utlDelay(200);
   PIOSet(ANT_PWR);
   PIOSet(ANT_SEL);
   utlNap(4);                        // uMPC has countdown exit = 3
   // state
-  antDevice(cf2_dev);
-  antAuton(false);
+  ant.auton = false;
   tmrStop(ant_tmr);
   // get cf2 startup message
-  utlReadWait(ant.port, utlBuf, 2);
+  utlReadWait(ant.port, utlBuf, 4);
   if (!strstr(utlBuf, "Program:"))
     flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
   DBG2("-> %s", utlBuf)
-  // ?? look for "ok"
-  // sbe39
-  if (!antPrompt())   
-    flogf("FATAL\t| antInit(): no prompt from ant");
+  antPrompt();
   // utlWrite(ant.port, "OutputFormat=1", EOL);
-  // stop in case hw is autonomous
-  utlWrite(ant.port, "stop", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
-  utlRead(ant.port, utlBuf);
+  utlReadWait(ant.port, utlBuf, 1);
 } // antStart
 
 ///
@@ -74,10 +71,13 @@ bool antPrompt() {
     return true;
   // try again after break
   antBreak();
+  TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 2+ant.delay);
+  utlNap(2+ant.delay);
+  utlReadWait(ant.port, utlBuf, 1);
   if (strstr(utlBuf, "Exec"))
     return true;
+  utlErr(ant_err, "antPrompt: fail");
   return false;
 } // antPrompt
 
@@ -105,10 +105,11 @@ void antSample(void) {
   antPrompt();
   utlWrite(ant.port, ant.sample, EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
-  // get echo ?? better check, and utlErr()
+  // get echo 
   if (!strstr(utlBuf, ant.sample))
-    utlErr(ant_err, "\nERR antSample, TS command fail");
-  tmrStart( ant_tmr, ant.delay );
+    utlErr(ant_err, "antSample: TS command fail");
+  else
+    tmrStart( ant_tmr, ant.delay );
 } // antSample
 
 ///
@@ -161,7 +162,7 @@ bool antPending(void) {
   else if (tmrOn(ant_tmr)) 
     return true;
   else if (tmrExp(ant_tmr)) 
-    utlErr(ant_err, "ant timer expired");
+    utlErr(ant_err, "ant: timer expired");
   return false;
 }
     
@@ -205,7 +206,7 @@ void antAuton(bool auton) {
     // swallow header
     utlReadWait(ant.port, utlBuf, 5);
     if (!strstr(utlBuf, "Start logging"))
-      utlErr(ant_err, "antAuto - didn't get 'Start logging' header");
+      utlErr(ant_err, "antAuto: expected 'Start logging' header");
     // clear samples used for antMoving()
     for (i=0; i<=ant.sampleCnt; i++) 
       ant.samples[i] = 0;
