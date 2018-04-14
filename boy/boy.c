@@ -159,12 +159,12 @@ bool riseUp(float targetD, int errMax, int delay) {
       flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
       return false;
     default: // unexpected msg
-      flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antMoving()>0.0) {
+      if (antMoving()<0.0) {
         // odd, we are rising but no response; log but ignore
-        flogf("\n\t|risePhase() timeout on ngk, but rising so continue..."); 
+        flogf("\n\t|riseUp() timeout on ngk, but rising so continue..."); 
         step = 2;
         continue;
       } else if (++err <= errMax) {
@@ -179,7 +179,7 @@ bool riseUp(float targetD, int errMax, int delay) {
     } // tmr
     // this shouldn't happen in step 1
     if (depth<=targetD) {          
-      flogf("\nWARN\t| riseP() reached target depth without riseRsp_msg");
+      flogf("\nWARN\t| riseUp() reached target depth without riseRsp_msg");
       step = 3;
       continue;
     }
@@ -193,7 +193,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       step = 3;
     // this shouldn't happen in step 2
     if ((msg = ngkRecv())!=null_msg)          
-      flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
   /// step 3: stopCmd 
   // watch for stopRsp. on timeout, retry or continue if stopped
@@ -213,12 +213,12 @@ bool riseUp(float targetD, int errMax, int delay) {
         depth);
       return false;
     default: // unexpected msg
-      flogf("\n\t|riseP unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
       if (antMoving()==0.0) {
         // odd, we are stopped but no response; log but ignore
-        flogf("\n\t|riseP stopCmd timeout, but stopped so continue..."); 
+        flogf("\n\t|riseUp() stopCmd timeout, but stopped so continue..."); 
         step = 4;
         continue; // while
       } else if (++err <= errMax) {
@@ -270,11 +270,11 @@ PhaseType dropPhase() {
   float depth, dropD;
   time_t dropT;
   MsgType msg;
-  flogf("\n\tdropPhase()@%s", utlDateTime());
+  flogf("\n+dropPhase()@%s", utlDateTime());
+  antFlush();
   // step1. loop until dropRsp or dropping+timeout
   ngkSend( dropCmd_msg );
   while (true) {
-    utlX();
     utlX();
     depth = antDepth();
     msg = ngkRecv();
@@ -288,7 +288,7 @@ PhaseType dropPhase() {
     }
     //
     if (tmrExp(winch_tmr)) {
-      if (antMoving()<0) {
+      if (antMoving()>0.0) {
         // odd, we are dropping but no response; log but allow
         flogf(" timeout, but dropping ..."); 
         break; // while step1
@@ -343,11 +343,11 @@ PhaseType dropPhase() {
 
 ///
 // from ship deck to ocean floor
-// wait until under 10m, watch until not dropping, wait 30s, riseP
+// wait until under 10m, watch until not dropping, wait 30s, riseUp()
 PhaseType deployPhase(void) {
   antStart();
   tmrStart( deploy_tmr, 60*60*2 );
-  flogf("\n+deployPhase()@%s", utlDateTime());
+  flogf("\n+deployPhase()@%s at %4.2f", utlDateTime(), antDepth());
   // wait until under 10m
   while (antDepth()<10.0) {
     utlX();
@@ -357,15 +357,17 @@ PhaseType deployPhase(void) {
     pwrNap(30);
   }
   // watch until not moving
-  flogf(">10 so wait to stop\n");
+  flogf(">10 so wait until not moving\n");
   while (antMoving()!=0.0) {
     utlX();
+    antDepth();
     if (tmrExp(deploy_tmr)) 
       sysStop("deployP() 2 hour timeout");
     pwrNap(3);
   }
   tmrStop(deploy_tmr);
   boy.dockD = antDepth();
+  antFlush();             // flush antMoving samples
   flogf("\n\t| boy.dockD = %4.2f", antDepth());
   flogf("\n\t| go to surface, call home");
   pwrNap(10);

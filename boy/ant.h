@@ -8,21 +8,22 @@ typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
 typedef struct AntInfo {
   bool auton;
-  bool logging;
+  bool logging;               // use TS or TSSon
   bool surf;                  // on surface
   char gpsLong[32];           // 123:45.6789W
   char gpsLat[32];            // 45:67.8900N
   char logFile[64];
-  char sample[32];
+  char samCmd[32];            // TS or TSSon
   float depth;
   float surfD;                // depth of CTD when ant is floating
-  float samples[10];          // depth measurement during auto_mod
-  float sampleRes;            // accuracy - change greater than this to count
+  float samQue[32];          // depth measurement during auto_mod
+  float samRes;            // accuracy - change greater than this to count
   float temp;
   int delay;
   int fresh;                  // time()-ant.time < fresh is usable
   int log;
-  int sampleCnt;
+  int samCnt;                 // sam in samQue
+  int samLen;                 // sizeof samQue
   time_t time;                // time() of last sample
   AntType antenna;
   DevType dev;
@@ -44,6 +45,7 @@ float antMoving(void);
 float antTemp(void);
 void antAuton(bool auton);
 void antDevice(DevType dev);
+void antFlush(void);
 void antGetSamples(void);
 void antInit(void);
 void antStart(void);

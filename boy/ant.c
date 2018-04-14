@@ -21,9 +21,9 @@ void antInit(void) {
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
   if (ant.logging)
-    strcpy(ant.sample, "TSSon");
+    strcpy(ant.samCmd, "TSSon");
   else
-    strcpy(ant.sample, "TS");
+    strcpy(ant.samCmd, "TS");
 } // antInit
 
 ///
@@ -39,6 +39,7 @@ void antStart(void) {
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
+  antFlush();                      // flush sample buffer
   // get cf2 startup message
   utlReadWait(ant.port, utlBuf, 4);
   if (!strstr(utlBuf, "Program:"))
@@ -103,10 +104,10 @@ void antSample(void) {
   DBG1("antSample()")
   if (antPending()) return;
   antPrompt();
-  utlWrite(ant.port, ant.sample, EOL);
+  utlWrite(ant.port, ant.samCmd, EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
   // get echo 
-  if (!strstr(utlBuf, ant.sample))
+  if (!strstr(utlBuf, ant.samCmd))
     utlErr(ant_err, "antSample: TS command fail");
   else
     tmrStart( ant_tmr, ant.delay );
@@ -114,7 +115,7 @@ void antSample(void) {
 
 ///
 // antRead processes one or more lines of data, stores samples if auton
-// sets: ant.depth .temp .samples[]
+// sets: ant.depth .temp 
 bool antRead(void) {
   int i;
   char *p0, *p1, *p2;
@@ -130,10 +131,7 @@ bool antRead(void) {
     if (!p1) continue;
     p2 = strtok(NULL, ", ");
     if (!p2) continue;
-    // samples[] for antMoving - shift samples in array
-    for (i=0; i<ant.sampleCnt; i++) 
-      ant.samples[i+1] = ant.samples[i];
-    ant.samples[0] = ant.depth;
+    antMovSam();
     ant.temp = atof(p1);
     ant.depth = atof(p2);
     DBG1("= %4.2f, %4.2f", ant.temp, ant.depth)
@@ -144,7 +142,22 @@ bool antRead(void) {
   tmrStop(ant_tmr);
   ant.time = time(0);
   return true;
-}
+} // antRead
+
+///
+// antSample wait antRead
+bool antSampleRead(void) {
+  if (!antPending())
+    antSample();
+  // err if timeout ?? count?
+  while (antPending())
+    utlX;
+    if (antData()) 
+      return (antRead());
+  }
+  // error 
+  return false;
+} // antSampleRead
 
 ///
 // data read recently
@@ -172,13 +185,8 @@ float antDepth(void) {
   DBG1("antDepth()")
   if (!antData() && antFresh()) 
     return ant.depth;
-  if (!antPending())
-    antSample();
-  // err if timeout ?? count?
-  while (antPending())
-    if (antData()) 
-      if (antRead())
-        return ant.depth;
+  if (antSampleRead())
+    return ant.depth;
   // timeout
   return 0.0;
 } // antDepth
@@ -189,59 +197,45 @@ float antTemp(void) {
 } // antTemp
 
 ///
-// turn autonomous on/off. idle_ant clears samples
-void antAuton(bool auton) {
-  int i;
-  DBG0("antAuto(%d)", auton)
-  if (auton) {
-    utlWrite(ant.port, "SampleInterval=0.5", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "txRealTime=y", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "initlogging", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "initlogging", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "startnow", EOL);
-    // swallow header
-    utlReadWait(ant.port, utlBuf, 5);
-    if (!strstr(utlBuf, "Start logging"))
-      utlErr(ant_err, "antAuto: expected 'Start logging' header");
-    // clear samples used for antMoving()
-    for (i=0; i<=ant.sampleCnt; i++) 
-      ant.samples[i] = 0;
-  } else {
-    utlWrite(ant.port, "stop", EOL);
-    // swallow tail
-    utlNap(2);
-    TURxFlush(ant.port);
-  } // if auton
-  tmrStop(ant_tmr);
-  ant.auton = auton;
-}
-
-///
 // checks recent depth against previous
-// returns delta change in depth (0 if not enough samples)
-// uses: ant.sampleCnt .sampleRes .depth
-// rets: - | + | 0.0
+// returns delta change in depth 
+// fills sample buffer if not enough samples, takes several seconds
+// uses: ant.samLen .samRes .depth
+// rets: -rise | +drop | 0.0stop
 float antMoving(void) {
   float d;
   DBG1("antMoving()")
-  // got samples?
-  d = ant.samples[ant.sampleCnt];
-  if (d==0.0) 
-    return 0.0;
+  // got samples? fill FIFO buffer
+  while (ant.samCnt<ant.samLen) 
+    antSampleRead();
   // got delta?
-  d = ant.depth-d;
-  if (abs(d)<ant.sampleRes) 
+  d = ant.depth-ant.samQue[ant.samCnt];
+  if (abs(d)<ant.samRes) 
     return 0.0;
   // got depth? wave motion
-  if (ant.depth<(ant.surfD+ant.sampleRes))
+  if (ant.depth<(ant.surfD+ant.samRes))
     return 0.0;
   // delta
   return d;
 } // antMoving
+
+///
+// shift sample in samQue, used by antMoving
+// sets: ant.samQue[] .samCnt
+void antMovSam(void) {
+  // samples[] for antMoving - shift samples in array
+  for (i=0; i<ant.samCnt; i++)
+    ant.samQue[i+1] = ant.samQue[i];
+  if (ant.samCnt<ant.samLen)
+    ant.samCnt++;
+  ant.samQue[0] = ant.depth;
+} // antMovSam
+
+///
+// clear samples used by antMoving, call this when winch stops
+void antFlush(void) {
+  ant.samCnt = 0;
+}
 
 ///
 // antmod uMPC cf2 and iridium A3LA
@@ -273,6 +267,35 @@ void antSwitch(AntType antenna) {
   ant.antenna = antenna;
 } // antSwitch
     
+///
+// turn autonomous on/off. idle_ant clears samples
+void antAuton(bool auton) {
+  int i;
+  DBG0("antAuto(%d)", auton)
+  if (auton) {
+    utlWrite(ant.port, "SampleInterval=0.5", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+    utlWrite(ant.port, "txRealTime=y", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+    utlWrite(ant.port, "startnow", EOL);
+    // swallow header
+    utlReadWait(ant.port, utlBuf, 5);
+    if (!strstr(utlBuf, "Start logging"))
+      utlErr(ant_err, "antAuto: expected 'Start logging' header");
+  } else {
+    utlWrite(ant.port, "stop", EOL);
+    // swallow tail
+    utlNap(2);
+    TURxFlush(ant.port);
+  } // if auton
+  tmrStop(ant_tmr);
+  ant.auton = auton;
+}
+
 void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;

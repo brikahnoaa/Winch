@@ -238,6 +238,9 @@ void utlStop(char *out) {
 // do misc activity, frequently
 void utlX(void) {
   char c;
+  // ?? pwrChk();
+  // ?? utlPet();
+  // console?
   if (cgetq()) {
     c = cgetc();
     switch (c) {
@@ -247,7 +250,4 @@ void utlX(void) {
       break;
     }
   }
-  DBGX(utlDelay(500); cputc('.');)
-  // pwrChk();
-  // utlPet();
 }
