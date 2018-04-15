@@ -104,6 +104,7 @@ PhaseType dataPhase(void) {
 PhaseType risePhase(void) {
   bool success;
   flogf("\n+risePhase()@%s", utlDateTime());
+  antStart();
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);

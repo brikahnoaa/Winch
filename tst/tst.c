@@ -15,21 +15,6 @@ void main(void){
   antInit();
   ctdInit();
   antStart();
-  flogf("\nPress any to talk, q to exit\n");
-  while (!cgetq()) {
-    flogf("antDepth() -> %f\n", antDepth());
-    flogf("antMoving() -> %f\n", antMoving());
-  }
-  flogf("connected to ant\n");
-  while (true) {
-    if (cgetq()) {
-      c=cgetc();
-      if (c=='q') break;
-      TUTxPutByte(ant.port,c,false);
-    }
-    if (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
-      cputc(c);
-    }
-  }
+  cprintf("oceanCurr = %f\n", oceanCurr());
+  cprintf("oceanCurrChk = %d\n", oceanCurrChk());
 }

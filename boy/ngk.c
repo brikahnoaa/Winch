@@ -69,10 +69,11 @@ void ngkSend(MsgType msg) {
    || msg==stopCmd_msg || msg==surfCmd_msg) 
     tmrStart(winch_tmr, ngk.delay*2+1);
   str[0] = 0;
-  utlReadWait(ngk.port, str, 2);
+  if (utlReadWait(ngk.port, str, 2)==0)
+    utlErr(ngk_err, "expected OK, no response");
   // str should include "OK"
   if (strstr(str, "OK")==NULL)
-    flogf("\n\t| \nngkSend() amodem bad response '%s'", str);
+    flogf("\n\t| ngkSend() amodem bad response '%s'", utlNonPrint(str));
 } // ngkSend
 
 ///
@@ -86,6 +87,8 @@ MsgType ngkRecv() {
   if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
   msg = msgParse(utlBuf);
+  if (msg!=mangled_msg)
+    utlWrite(ngk.port, "OK", EOL);
   flogf("\n+ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
   if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
@@ -114,8 +117,6 @@ MsgType msgParse(char *str) {
   ngk.recv[m]++;
   if (m==mangled_msg)           // no match or invalid
     utlErr(ngkParse_err, str);
-  else
-    utlWrite(ngk.port, "OK", EOL);
   return m;
 } // msgParse
 
