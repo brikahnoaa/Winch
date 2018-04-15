@@ -156,7 +156,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       step = 2;
       continue; // while
     case stopCmd_msg:     // stopped by winch
-      // ngkSend(stopRsp_msg) in ngkRecv
+      ngkSend(stopRsp_msg);
       flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
       return false;
     default: // unexpected msg
@@ -211,7 +211,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       step = 4;
       continue; // while
     case stopCmd_msg:     // stopped by winch
-      // ngkSend(stopRsp_msg) in ngkRecv
+      ngkSend(stopRsp_msg);
       flogf("\n\t | riseUp() stopped by winch at %3.1fm. Strange not fatal.", 
         depth);
       return false;

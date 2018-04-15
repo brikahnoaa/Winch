@@ -96,8 +96,6 @@ MsgType ngkRecv() {
   }
   if (msg==dropRsp_msg || msg==riseRsp_msg || msg==stopRsp_msg) 
     tmrStop(winch_tmr);
-  if (msg==stopCmd_msg)
-    ngkSend(stopRsp_msg);
   return msg;
 } // ngkRecv
 
