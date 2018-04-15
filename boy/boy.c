@@ -242,6 +242,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       if (boy.riseVFirst==0.0)
         boy.riseVFirst = boy.riseVLast;
     }
+  flogf("\n\t| riseUp() to depth %d", depth);
   return true;
 } // riseUp
 

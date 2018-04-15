@@ -55,12 +55,13 @@ void ngkStop(void){
 // send message to winch via amodem
 // sets: .send[] .lastSend 
 void ngkSend(MsgType msg) {
-  char str[12];
+  char str[128];
   // copy msgStr and change id character // e.g. "#R,0X,00"
   strcpy(str, ngk.msgStr[msg]);
   str[4]=WINCH_ID;
   flogf("\n+ngkSend(%s) at %s", str, utlTime());
   TUTxWaitCompletion(ngk.port);
+  TURxFlush(ngk.port);
   utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
