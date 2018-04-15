@@ -5,6 +5,7 @@
 #include <tmr.h>
 
 #define EOL "\r"
+#define SBE_SLEEP 20
 
 AntInfo ant;
 
@@ -62,23 +63,27 @@ void antStop() {
 } // antStop
 
 ///
-// if asleep, first EOL wakens but no response
 bool antPrompt() {
   DBG1("antPrompt()")
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 2+ant.delay);
+  utlReadWait(ant.port, utlBuf, ant.delay);
   if (strstr(utlBuf, "Exec"))
     return true;
-  // try again after break
+  // if asleep, first EOL wakens but no response
+  utlWrite(ant.port, "", EOL);
+  utlReadWait(ant.port, utlBuf, ant.delay);
+  if (strstr(utlBuf, "Exec"))
+    return true;
+  // try a third time after break
   antBreak();
   TURxFlush(ant.port);
+  utlNap(2);
   utlWrite(ant.port, "", EOL);
-  utlNap(2+ant.delay);
   utlReadWait(ant.port, utlBuf, 1);
   if (strstr(utlBuf, "Exec"))
     return true;
-  utlErr(ant_err, "antPrompt: fail");
+  utlErr(ant_err, "antPrompt() fail");
   return false;
 } // antPrompt
 
@@ -101,9 +106,11 @@ bool antData() {
 // sets: ant_tmr
 void antSample(void) {
   int len;
-  DBG1("antSample()")
+  DBG1("aS")
   if (antPending()) return;
-  antPrompt();
+  // sleeping?
+  if (ant.lastT+SBE_SLEEP<time(0))
+    antPrompt();
   utlWrite(ant.port, ant.samCmd, EOL);
   len = utlReadWait(ant.port, utlBuf, 1);
   // get echo 
@@ -139,15 +146,14 @@ bool antRead(void) {
     p0 = strstr(p0, "\r");
   } // while 
   tmrStop(ant_tmr);
-  ant.time = time(0);
+  ant.lastT = time(0);
   return true;
 } // antRead
 
 ///
 // antSample wait antRead
 bool antSampleRead(void) {
-  if (!antPending())
-    antSample();
+  antSample();
   // err if timeout ?? count?
   while (antPending())
     utlX;
@@ -160,7 +166,7 @@ bool antSampleRead(void) {
 ///
 // data read recently
 bool antFresh(void) {
-  bool fresh = (time(0)-ant.time)<ant.fresh;
+  bool fresh = (time(0)-ant.lastT)<ant.fresh;
   DBG1("antFresh()->%d", fresh)
   return fresh;
 }
@@ -269,7 +275,6 @@ void antSwitch(AntType antenna) {
 ///
 // turn autonomous on/off. idle_ant clears samples
 void antAuton(bool auton) {
-  int i;
   DBG0("antAuto(%d)", auton)
   if (auton) {
     utlWrite(ant.port, "SampleInterval=0.5", EOL);

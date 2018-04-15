@@ -24,7 +24,7 @@ typedef struct AntInfo {
   int log;
   int samCnt;                 // sam in samQue
   int samLen;                 // sizeof samQue
-  time_t time;                // time() of last sample
+  time_t lastT;                // time() of last sample
   AntType antenna;
   DevType dev;
   Serial port;
