@@ -30,12 +30,14 @@ typedef struct AntInfo {
   Serial port;
 } AntInfo;
 
-static bool antRead(void);
 static bool antData(void);
-static bool antPrompt(void);
 static bool antFresh(void);
 static bool antPending(void);
+static bool antPrompt(void);
+static bool antRead(void);
+static bool antSampleRead(void);
 static void antBreak(void);
+static void antMovSam(void);
 static void antSample(void);
 static void antSwitch(AntType antenna);
 

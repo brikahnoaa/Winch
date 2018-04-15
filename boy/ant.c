@@ -223,6 +223,7 @@ float antMoving(void) {
 // shift sample in samQue, used by antMoving
 // sets: ant.samQue[] .samCnt
 void antMovSam(void) {
+  int i;
   // samples[] for antMoving - shift samples in array
   for (i=0; i<ant.samCnt; i++)
     ant.samQue[i+1] = ant.samQue[i];
