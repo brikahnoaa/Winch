@@ -117,7 +117,6 @@ void antSample(void) {
 // antRead processes one or more lines of data, stores samples if auton
 // sets: ant.depth .temp 
 bool antRead(void) {
-  int i;
   char *p0, *p1, *p2;
   if (!antData()) return false;
   DBG1("antRead()");
@@ -154,7 +153,6 @@ bool antSampleRead(void) {
     utlX;
     if (antData()) 
       return (antRead());
-  }
   // error 
   return false;
 } // antSampleRead
