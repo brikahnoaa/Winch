@@ -406,7 +406,10 @@ float oceanCurr() {
   // b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
+  DBG1("aD=%4.2f cD=%4.2f boy2ant=%4.2f", aD, cD, c)
+  if (a<0 || c<a) return -1.0;
   b=sqrt(pow(c,2)-pow(a,2));
+  DBG1("sideways=%4.2f", b)
   return b;
 } // oceanCurr
 
@@ -416,9 +419,15 @@ bool oceanCurrChk() {
   float sideways;
   flogf("\n\t| oceanCurrChk() ");
   sideways = oceanCurr();
+  if (sideways<0) {
+    utlErr(logic_err, "oceanCurr invalid value");
+    return false;
+  }
   flogf(" @%.1f=%.1f ", antDepth(), sideways);
   if (sideways>boy.currMax) {
     flogf("too strong, cancel ascent");
+    // ignore current when dbg ?? should be setting
+    DBG(return false;)
     return true;
   }
   return false;

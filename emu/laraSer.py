@@ -68,6 +68,7 @@ class Serial(serial.Serial):
                     # translate eol for echo
                     c = join(split(c, eol), eol_out)
                 self.write(c)
+                self.flush()
             if eol in b:
                 i = b.find(eol) + len(eol)
                 r = b[:i]
@@ -83,9 +84,11 @@ class Serial(serial.Serial):
         "put to serial"
         eol = self.eol_out
         self.write("%s%s" % (s, eol))
+        self.flush()
         self.logOut(s)
 
     def put(self,s):
         "put to serial"
         self.write(s)
+        self.flush()
         self.logOut(s)
