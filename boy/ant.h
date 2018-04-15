@@ -7,7 +7,8 @@ typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
 typedef struct AntInfo {
-  bool auton;
+  bool auton;                 // autonomous mode
+  bool autoSample;            // antSample after antRead
   bool logging;               // use TS or TSSon
   bool surf;                  // on surface
   char gpsLong[32];           // 123:45.6789W
@@ -30,12 +31,12 @@ typedef struct AntInfo {
   Serial port;
 } AntInfo;
 
-static bool antData(void);
 static bool antFresh(void);
 static bool antPending(void);
 static bool antPrompt(void);
 static bool antRead(void);
 static bool antSampleRead(void);
+static int antData(void);
 static void antBreak(void);
 static void antMovSam(void);
 static void antSample(void);
@@ -46,6 +47,7 @@ float antDepth(void);
 float antMoving(void);
 float antTemp(void);
 void antAuton(bool auton);
+void antAutoSample(bool autos);
 void antDevice(DevType dev);
 void antFlush(void);
 void antGetSamples(void);

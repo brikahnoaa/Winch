@@ -96,9 +96,10 @@ void antBreak(void) {
 
 ///
 // data waiting
-bool antData() {
-  DBG1("aD")
-  return TURxQueuedCount(ant.port);
+int antData() {
+  int r=TURxQueuedCount(ant.port);
+  DBG1("aDa>%d", r)
+  return r;
 } // antData
 
 ///
@@ -106,7 +107,7 @@ bool antData() {
 // sets: ant_tmr
 void antSample(void) {
   int len;
-  DBG1("aS")
+  DBG1("aSa")
   if (antPending()) return;
   // sleeping?
   if (ant.lastT+SBE_SLEEP<time(0))
@@ -147,12 +148,15 @@ bool antRead(void) {
   } // while 
   tmrStop(ant_tmr);
   ant.lastT = time(0);
+  if (ant.autoSample)
+    antSample();
   return true;
 } // antRead
 
 ///
 // antSample wait antRead
 bool antSampleRead(void) {
+  DBG1("aSR")
   antSample();
   // err if timeout ?? count?
   while (antPending())
@@ -167,15 +171,18 @@ bool antSampleRead(void) {
 // data read recently
 bool antFresh(void) {
   bool fresh = (time(0)-ant.lastT)<ant.fresh;
-  DBG1("antFresh()->%d", fresh)
+  DBG1("aFr=%d", fresh)
   return fresh;
 }
 
 ///
 // tmrOn ? pending. tmrExp ? err
 bool antPending(void) {
+  DGB1("aPe")
   if (ant.auton)
     return true;
+  else if (tmrOff(ant_tmr))
+    return false;
   else if (tmrOn(ant_tmr)) 
     return true;
   else if (tmrExp(ant_tmr)) 
@@ -189,6 +196,7 @@ float antDepth(void) {
   DBG1("antDepth()")
   if (!antData() && antFresh()) 
     return ant.depth;
+  // data || !fresh
   if (antSampleRead())
     return ant.depth;
   // timeout
@@ -272,6 +280,11 @@ void antSwitch(AntType antenna) {
   ant.antenna = antenna;
 } // antSwitch
     
+///
+void antAutoSample(bool autos) {
+  ant.autoSample = autos;
+} // antAutoSample
+
 ///
 // turn autonomous on/off. idle_ant clears samples
 void antAuton(bool auton) {

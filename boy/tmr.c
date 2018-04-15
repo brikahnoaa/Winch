@@ -45,6 +45,11 @@ bool tmrOn(TmrType tim) {
   return (tmr.on[tim] && (tmr.exp[tim] >= time(0)));
 } // tmrOn
 
+///
+bool tmrOff(TmrType tim) {
+  return (!tmr.on[tim]);
+}
+
 //
 // how long until a timer expires (else 0=off, neg=expired)
 //
