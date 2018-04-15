@@ -346,6 +346,7 @@ PhaseType dropPhase() {
 // wait until under 10m, watch until not dropping, wait 30s, riseUp()
 PhaseType deployPhase(void) {
   antStart();
+  antAutoSample(true);
   tmrStart( deploy_tmr, 60*60*2 );
   flogf("\n+deployPhase()@%s at %4.2f", utlDateTime(), antDepth());
   // wait until under 10m

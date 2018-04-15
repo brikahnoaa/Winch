@@ -12,13 +12,13 @@ static struct {
 // sets: tmr.on .exp[]
 //
 void tmrStart(TmrType tim, int secs) {
-  DBG2("tmrStart(%d,%d)", tim, secs)
+  DBG1("tmrStart(%d,%d)", tim, secs)
   tmr.on[tim] = true;
   tmr.exp[tim] = time(0)+secs;
 } // tmrStart
 
 void tmrStop(TmrType tim) {
-  DBG2("tmrStop()")
+  DBG1("tmrStop()")
   tmr.on[tim] = false;
 } // tmrStop
 

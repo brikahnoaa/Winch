@@ -178,7 +178,7 @@ bool antFresh(void) {
 ///
 // tmrOn ? pending. tmrExp ? err
 bool antPending(void) {
-  DGB1("aPe")
+  DBG1("aPe")
   if (ant.auton)
     return true;
   else if (tmrOff(ant_tmr))
@@ -193,11 +193,14 @@ bool antPending(void) {
 ///
 // if !data&&fresh, return. if !pending, sample. wait for data. read.
 float antDepth(void) {
+  int d = antData();
   DBG1("antDepth()")
-  if (!antData() && antFresh()) 
+  if (!d && antFresh()) 
     return ant.depth;
   // data || !fresh
-  if (antSampleRead())
+  else if (d && antRead())
+    return ant.depth;
+  else if (antSampleRead())
     return ant.depth;
   // timeout
   return 0.0;
@@ -282,6 +285,7 @@ void antSwitch(AntType antenna) {
     
 ///
 void antAutoSample(bool autos) {
+  DBG1("antAutoSample")
   ant.autoSample = autos;
 } // antAutoSample
 
