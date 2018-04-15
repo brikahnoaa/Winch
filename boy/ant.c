@@ -98,7 +98,7 @@ void antBreak(void) {
 // data waiting
 int antData() {
   int r=TURxQueuedCount(ant.port);
-  DBG1("aDa>%d", r)
+  DBG1("aDa=%d", r)
   return r;
 } // antData
 
@@ -160,9 +160,9 @@ bool antSampleRead(void) {
   antSample();
   // err if timeout ?? count?
   while (antPending())
-    utlX;
     if (antData()) 
       return (antRead());
+    utlX;
   // error 
   return false;
 } // antSampleRead
@@ -178,16 +178,19 @@ bool antFresh(void) {
 ///
 // tmrOn ? pending. tmrExp ? err
 bool antPending(void) {
-  DBG1("aPe")
+  bool r=false;
   if (ant.auton)
-    return true;
+    r = true;
   else if (tmrOff(ant_tmr))
-    return false;
+    r = false;
   else if (tmrOn(ant_tmr)) 
-    return true;
-  else if (tmrExp(ant_tmr)) 
+    r = true;
+  else if (tmrExp(ant_tmr)) {
     utlErr(ant_err, "ant: timer expired");
-  return false;
+    r = false;
+  }
+  DBG1("aPe=%d", r)
+  return r;
 }
     
 ///

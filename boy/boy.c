@@ -186,6 +186,8 @@ bool riseUp(float targetD, int errMax, int delay) {
   } // while step1
   /// step 2: depth
   // watch until target depth
+  if (targetD==0.0)
+    step = 3;
   while (step==2) {
     utlX();
     depth = antDepth();
