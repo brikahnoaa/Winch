@@ -10,6 +10,7 @@ typedef struct GpsInfo {
   char gpsLong[32];           // 123:45.6789W
   char gpsLat[32];            // 45:67.8900N
   char logFile[64];
+  int delay;
   int log;
   Serial port;
 } GpsInfo;
@@ -21,5 +22,5 @@ static int gpsData(void);
 
 void gpsFlush(void);
 void gpsInit(void);
-void gpsStart(void);
+void gpsOn(bool on);
 void gpsStop(void);

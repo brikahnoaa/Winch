@@ -39,7 +39,7 @@ void gpsStop() {
   if (gps.log)
     close(gps.log);
   gps.log = 0;
-  antDevice(ctd_dev);
+  antDevice(cf2_dev);
 } // gpsStop
 
 ///
