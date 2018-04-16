@@ -57,7 +57,7 @@
 #include <dbg.h>
 
 typedef enum {ant_err, ctd_err, log_err, file_err, 
-    ngk_err, ngkParse_err, sizeof_err} ErrType;
+    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;
 
 typedef struct UtlInfo {
   char *buf;

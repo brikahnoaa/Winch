@@ -427,7 +427,7 @@ bool oceanCurrChk() {
   if (sideways>boy.currMax) {
     flogf("too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
-    DBG(return false;)
+    DBGX(return false;)
     return true;
   }
   return false;

@@ -4,17 +4,18 @@
 #include <mpc.h>
 #include <sys.h>
 #include <ant.h>
+#include <boy.h>
 
 extern AntInfo ant;
 extern CtdInfo ctd;
 
 void main(void){
-  char c;
   sysInit();
   mpcInit();
   antInit();
   ctdInit();
   antStart();
-  cprintf("oceanCurr = %f\n", oceanCurr());
-  cprintf("oceanCurrChk = %d\n", oceanCurrChk());
+  cprintf("\n");
+  printf("oceanCurr = %f\n", oceanCurr());
+  printf("oceanCurrChk = %d\n", oceanCurrChk());
 }

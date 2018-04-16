@@ -37,8 +37,8 @@ static PhaseType errorPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static bool riseUp(float targetD, int try, int delay);
-static bool oceanCurrChk(void);
-static float oceanCurr(void);
+bool oceanCurrChk(void);
+float oceanCurr(void);
 static void boyStat(char *buffer);
 
 bool boyDocked(float depth);
