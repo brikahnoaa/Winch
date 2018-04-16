@@ -56,7 +56,7 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, ctd_err, log_err, file_err, 
+typedef enum {ant_err, ctd_err, log_err, file_err, logic_err,
     ngk_err, ngkParse_err, sizeof_err} ErrType;
 
 typedef struct UtlInfo {
@@ -88,6 +88,6 @@ void utlInit(void);
 void utlNap(int sec);
 void utlPet(void);
 void utlStop(char *out);
-void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
+void utlX(void);
 

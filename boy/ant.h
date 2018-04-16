@@ -10,6 +10,7 @@ typedef struct AntInfo {
   bool auton;                 // autonomous mode
   bool autoSample;            // antSample after antRead
   bool logging;               // use TS or TSSon
+  bool on;                    // powered up
   bool surf;                  // on surface
   char gpsLong[32];           // 123:45.6789W
   char gpsLat[32];            // 45:67.8900N
@@ -52,5 +53,6 @@ void antDevice(DevType dev);
 void antFlush(void);
 void antGetSamples(void);
 void antInit(void);
-void antStart(void);
+void antOn(bool on);
 void antStop(void);
+Serial antPort(void);

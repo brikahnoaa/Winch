@@ -1,6 +1,7 @@
 // ant.c - for working with antenna module
 #include <utl.h>
 #include <ant.h>
+#include <gps.h>
 #include <mpc.h>
 #include <tmr.h>
 
@@ -25,33 +26,40 @@ void antInit(void) {
     strcpy(ant.samCmd, "TSSon");
   else
     strcpy(ant.samCmd, "TS");
+  gpsInit();
 } // antInit
 
 ///
 // turn on, clean, set params, talk to sbe39
-void antStart(void) {
-  DBG0("antStart() %s", utlDateTime())
-  antDevice(cf2_dev);
-  PIOClear(ANT_PWR);
-  utlDelay(200);
-  PIOSet(ANT_PWR);
-  PIOSet(ANT_SEL);
-  utlNap(4);                        // uMPC has countdown exit = 3
-  // state
-  ant.auton = false;
-  tmrStop(ant_tmr);
-  antFlush();                      // flush sample buffer
-  // get cf2 startup message
-  utlReadWait(ant.port, utlBuf, 4);
-  if (!strstr(utlBuf, "Program:"))
-    flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
-  DBG2("-> %s", utlBuf)
-  antPrompt();
-  // utlWrite(ant.port, "OutputFormat=1", EOL);
-  sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
-  utlWrite(ant.port, utlStr, EOL);
-  utlReadWait(ant.port, utlBuf, 1);
-} // antStart
+void antOn(bool on) {
+  if (ant.on==on) return;
+  DBG0("antOn() %s", utlDateTime())
+  if (on) {
+    antDevice(cf2_dev);
+    PIOClear(ANT_PWR);
+    utlDelay(200);
+    PIOSet(ANT_PWR);
+    PIOSet(ANT_SEL);
+    utlNap(4);                        // uMPC has countdown exit = 3
+    // state
+    ant.auton = false;
+    tmrStop(ant_tmr);
+    antFlush();                      // flush sample buffer
+    // get cf2 startup message
+    utlReadWait(ant.port, utlBuf, 4);
+    if (!strstr(utlBuf, "Program:"))
+      flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
+    DBG2("-> %s", utlBuf)
+    antPrompt();
+    // utlWrite(ant.port, "OutputFormat=1", EOL);
+    sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
+    utlWrite(ant.port, utlStr, EOL);
+    utlReadWait(ant.port, utlBuf, 1);
+  } else {
+    antStop();
+  } // if on
+  ant.on = on;
+} // antOn
 
 ///
 // turn off power to antmod 
@@ -61,6 +69,12 @@ void antStop() {
   ant.log = 0;
   PIOClear(ANT_PWR);
 } // antStop
+
+///
+// gps.c shares com with ant.c
+Serial antPort(void) {
+  return ant.port;
+}
 
 ///
 bool antPrompt() {
@@ -262,12 +276,18 @@ void antFlush(void) {
 void antDevice(DevType dev) {
   if (dev==ant.dev) return;
   DBG0("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
-  if (dev==cf2_dev)
+  switch (dev) {
+  case cf2_dev:
     PIOSet(ANT_SEL);
-  else if (dev==a3la_dev)
+    TUTxPutByte(ant.port, 4, false);        // ^D powerdown a3la
+    TUTxPutByte(ant.port, 'I', false);
+    break;
+  case a3la_dev:
     PIOClear(ANT_SEL);
-  else
-    return;
+    TUTxPutByte(ant.port, 3, false);        // ^C powerup a3la
+    TUTxPutByte(ant.port, 'I', false);
+    break;
+  } // dev
   utlDelay(RS232_SETTLE);
   TUTxFlush(ant.port);
   TURxFlush(ant.port);

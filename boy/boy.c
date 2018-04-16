@@ -104,7 +104,7 @@ PhaseType dataPhase(void) {
 PhaseType risePhase(void) {
   bool success;
   flogf("\n+risePhase()@%s", utlDateTime());
-  antStart();
+  antOn(true);
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
@@ -341,7 +341,7 @@ PhaseType dropPhase() {
   // turn off ant, clear ngk, clear ctd
   ngkStop();
   ctdStop();
-  antStop();
+  antOn(false);
   return data_pha;
 } // dropPhase
 
@@ -349,7 +349,7 @@ PhaseType dropPhase() {
 // from ship deck to ocean floor
 // wait until under 10m, watch until not dropping, wait 30s, riseUp()
 PhaseType deployPhase(void) {
-  antStart();
+  antOn(true);
   antAutoSample(true);
   tmrStart( deploy_tmr, 60*60*2 );
   flogf("\n+deployPhase()@%s at %4.2f", utlDateTime(), antDepth());
@@ -375,7 +375,7 @@ PhaseType deployPhase(void) {
   antFlush();             // flush antMoving samples
   flogf("\n\t| boy.dockD = %4.2f", antDepth());
   flogf("\n\t| go to surface, call home");
-  pwrNap(10);
+  utlNap(30);
   // rise to surface, 5 tries, short delay
   if (riseUp(0.0, 5, 1)) {
     flogf("\n\t| deployed @ %s", utlDateTime());
@@ -427,7 +427,7 @@ bool oceanCurrChk() {
   if (sideways>boy.currMax) {
     flogf("too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
-    DBG(return false;)
+    DBGX(return false;)
     return true;
   }
   return false;

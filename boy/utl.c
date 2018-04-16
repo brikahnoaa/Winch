@@ -220,7 +220,7 @@ int utlLogFile(char *fname) {
 void utlErr( ErrType err, char *str) {
   flogf("\nErr(%s)\t|%d| %s", utl.errName[err], utl.errCnt[err], str);
   utl.errCnt[err]++;
-}
+} // utlErr
 
 ///
 // nap called often
@@ -248,6 +248,6 @@ void utlX(void) {
     case 'x':
       utlStop("user quit");
       break;
-    }
-  }
-}
+    } // switch
+  } // if
+} // utlX
