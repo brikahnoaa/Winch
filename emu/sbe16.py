@@ -20,8 +20,8 @@ serThreadObj = None
 
 def info():
     "globals which may be externally set"
-    print "sbe16.go:%s   depth=%s   sleepMode=%s" % \
-        (go.isSet(), depth(), sleepMode)
+    print "sbe16@%s: go:%s   depth=%s   sleepMode=%s" % \
+        (portSelect, go.isSet(), depth(), sleepMode)
 
 def init():
     "set globals to defaults"

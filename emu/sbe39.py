@@ -20,8 +20,8 @@ serThreadObj = None
 
 def info():
     "info about what's up"
-    print "sbe39:  go=%s  depth=%s temper=%s  sleepMode=%s" % \
-        (go.isSet(), depth(), temper(), sleepMode)
+    print "sbe39@%s:  go=%s  depth=%s temper=%s  sleepMode=%s" % \
+        (portSelect, go.isSet(), depth(), temper(), sleepMode)
 
 def init():
     "set globals to defaults"
