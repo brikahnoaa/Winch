@@ -37,9 +37,9 @@ void ctdInit(void) {
   if (strlen(ctd.logFile))
     ctd.log = utlLogFile(ctd.logFile);
   if (ctd.logging)
-    strcpy(ctd.sample, "TSSon");
+    strcpy(ctd.samCmd, "TSSon");
   else
-    strcpy(ctd.sample, "TS");
+    strcpy(ctd.samCmd, "TS");
 } // ctdInit
 
 ///
@@ -92,10 +92,10 @@ void ctdSample(void) {
   DBG1("ctdSample()")
   if (ctdPending()) return;
   ctdPrompt();
-  utlWrite(ctd.port, ctd.sample, EOL);
+  utlWrite(ctd.port, ctd.samCmd, EOL);
   len = utlReadWait(ctd.port, utlBuf, 1);
   // get echo ?? better check, and utlErr()
-  if (!strstr(utlBuf, ctd.sample))
+  if (!strstr(utlBuf, ctd.samCmd))
     utlErr(ctd_err, "ctd: TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
@@ -123,7 +123,7 @@ bool ctdRead(void) {
   ctd.depth = atof( p3 );
   DBG1("= %4.2", ctd.depth)
   tmrStop(ctd_tmr);
-  ctd.time = time(0);
+  ctd.lastT = time(0);
   return true;
 } // ctdRead
 
@@ -131,7 +131,7 @@ bool ctdRead(void) {
 // data read recently
 bool ctdFresh(void) {
   DBG1("ctdFresh()")
-  return (time(0)-ctd.time)<ctd.fresh;
+  return (time(0)-ctd.lastT)<ctd.fresh;
 }
 
 ///

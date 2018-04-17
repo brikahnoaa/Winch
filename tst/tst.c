@@ -1,22 +1,32 @@
-// tst.c
-//
+// ctdTst.c
 #include <utl.h>
-#include <ant.h>
-#include <boy.h>
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
 
-// extern AntInfo ant;
-// extern CtdInfo ctd;
+extern CtdInfo ctd;
 
 void main(void){
+  char c;
   sysInit();
   mpcInit();
-  antInit();
   ctdInit();
-  antOn(true);
-  cprintf("\n");
-  printf("oceanCurr = %f\n", oceanCurr());
-  printf("oceanCurrChk = %d\n", oceanCurrChk());
+  flogf("\nPress q to exit\n");
+  flogf(" %2.1f", ctdDepth());
+  ctdAuton(true);
+  while (!cgetq()) {}
+  flogf(" %2.1f", ctdDepth());
+  ctdAuton(false);
+  ctdLog();
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
+  }
 }
