@@ -228,10 +228,12 @@ float antMoving(void) {
     antSampleRead();
   // got delta?
   d = ant.depth-ant.samQue[ant.samCnt];
+  DBG4("antMoving(min)=%4.2f", antSurfMaxD())
+  DBG4("antMoving(d)=%4.2f", d)
   if (abs(d)<ant.samRes) 
     return 0.0;
   // got depth? wave motion
-  if (ant.depth<(ant.surfD+ant.samRes))
+  if (ant.depth<antSurfMaxD())
     return 0.0;
   // delta
   return d;
@@ -342,3 +344,7 @@ void antGetSamples(void) {
   utlReadWait(ant.port, utlBuf, 1);
   flogf("\nantGetSamples(): %d bytes to %s", total, ant.logFile);
 } // antGetSamples
+
+float antSurfMaxD(void) {
+  return ant.surfD+ant.samRes;
+} // antSurfMaxD

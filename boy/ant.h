@@ -45,6 +45,7 @@ static void antSwitch(AntType antenna);
 bool antSurf(void);
 float antDepth(void);
 float antMoving(void);
+float antSurfMaxD(void);
 float antTemp(void);
 void antAuton(bool auton);
 void antAutoSample(bool autos);

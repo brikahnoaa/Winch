@@ -131,6 +131,77 @@ PhaseType risePhase(void) {
 } // risePhase
 
 ///
+// simpler form of riseUp()
+bool riseToSurf(void) {
+  float depth, startD;
+  MsgType msg;
+  int err = 0, step = 1;
+  int errMax = 5, delay = 5;
+  time_t riseT;
+  DBG0("riseToSurf()")
+  startD = depth = antDepth();
+  /// step 1: riseCmd
+  // watch for riseRsp. on timeout, retry or continue if rising
+  ngkSend( riseCmd_msg );
+  while (step==1) {
+    utlX();
+    depth = antDepth();
+    switch (msg = ngkRecv()) {
+    case null_msg: break;
+    case riseRsp_msg:
+      // start velocity measure
+      riseT = time(0);
+      step = 2;
+      continue; // while
+    case stopCmd_msg:     // stopped by winch
+      ngkSend(stopRsp_msg);
+      flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
+      return false;
+    default: // unexpected msg
+      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
+    if (tmrExp(winch_tmr)) {
+      if (antMoving()<0.0) {
+        // odd, we are rising but no response; log but ignore
+        flogf("\n\t|riseUp() timeout on ngk, but rising so continue...");
+        step = 2;
+        continue;
+      } else if (++err <= errMax) {
+        // retry
+        flogf(", retry");
+        utlDelay(delay*1000);
+        ngkSend( riseCmd_msg );
+      } else {
+        flogf(", ERR abort");
+        return false;
+      }
+    } // tmr
+  } // while step1
+  // step 2: going to surf, watch for stopCmd
+  while (step==2) {
+    utlX();
+    depth = antDepth();
+    if (antMoving()>=0.0) {
+      utlErr(ngk_err, "riseToSurf() step 2 not rising, retry");
+      return riseToSurf();
+    }
+    msg = ngkRecv();
+    switch (msg) {
+    case null_msg: break;
+    case stopCmd_msg:     // stopped by winch
+      ngkSend(stopRsp_msg);
+      step = 3;
+      continue;  // while step2
+    default:
+      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
+  } // while step2
+  if (depth>antSurfMaxD())
+    flogf("\n\t|riseToSurf() too deep at %4.2f", depth);
+  return true;
+} // riseToSurf
+
+///
 // rise up to targetD, 0 means surfacing 
 // when surfacing, expect stopCmd and don't set velocity 
 // sets: boy.lastRise .firstRise, (*msg) 
@@ -140,6 +211,8 @@ bool riseUp(float targetD, int errMax, int delay) {
   MsgType msg;
   int err = 0, step = 1;
   time_t riseT;
+  // if surfacing use riseToSurf()
+  if (targetD==0.0) return riseToSurf();
   DBG0("riseUp(%dm)", targetD)
   startD = depth = antDepth();
   /// step 1: riseCmd
@@ -187,8 +260,6 @@ bool riseUp(float targetD, int errMax, int delay) {
   } // while step1
   /// step 2: depth
   // watch until target depth
-  if (targetD==0.0)
-    step = 3;
   while (step==2) {
     utlX();
     depth = antDepth();

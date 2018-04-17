@@ -21,6 +21,8 @@ void dbgInit(void) {
   else dbg.dbg2 = false;
   if (atoi(VEEFetchStr("DBG3", "999"))!=999) dbg.dbg3 = true;
   else dbg.dbg3 = false;
+  if (atoi(VEEFetchStr("DBG4", "999"))!=999) dbg.dbg4 = true;
+  else dbg.dbg4 = false;
 }
 
 ///
