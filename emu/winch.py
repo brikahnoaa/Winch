@@ -115,15 +115,15 @@ def amodInput():
     # rise
     if riseCmd in l:
         motor('up')
-        amodOutput(riseRsp)
+        amodPut(riseRsp)
     # stop
     elif stopCmd in l:
         motor('off')
-        amodOutput(stopRsp)
+        amodPut(stopRsp)
     # fall
     elif fallCmd in l:
         motor('down')
-        amodOutput(fallRsp)
+        amodPut(fallRsp)
     elif quitRsp in l:
         ser.log( "buoy stop response %s" % l )
     # buoy responds to stop after dock or slack
