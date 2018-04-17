@@ -46,3 +46,10 @@ void dbg2(bool on) {
 void dbg3(bool on) {
   dbg.dbg3 = on;
 }
+
+void dbgLevel(int i) {
+  if (i>=0) dbg.dbg0 = true;
+  if (i>=1) dbg.dbg1 = true;
+  if (i>=2) dbg.dbg2 = true;
+  if (i>=3) dbg.dbg3 = true;
+}

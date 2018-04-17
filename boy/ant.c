@@ -228,8 +228,7 @@ float antMoving(void) {
     antSampleRead();
   // got delta?
   d = ant.depth-ant.samQue[ant.samCnt];
-  DBG4("antMoving(min)=%4.2f", antSurfMaxD())
-  DBG4("antMoving(d)=%4.2f", d)
+  DBG4("aM=%4.2f", d)
   if (abs(d)<ant.samRes) 
     return 0.0;
   // got depth? wave motion

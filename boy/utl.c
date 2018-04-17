@@ -218,7 +218,8 @@ int utlLogFile(char *fname) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
-  flogf("\nErr(%s)\t|%d| %s", utl.errName[err], utl.errCnt[err], str);
+  flogf("\n-Err(%s)\t|%d| %s %s", 
+    utl.errName[err], utl.errCnt[err], utlTime(), str);
   utl.errCnt[err]++;
 }
 

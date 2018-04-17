@@ -86,6 +86,7 @@ MsgType ngkRecv() {
   MsgType msg;
   if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
+  flogf("\n+ngkRecv(%s) at %s", utlBuf, utlTime());
   msg = msgParse(utlBuf);
   if (msg!=mangled_msg)
     utlWrite(ngk.port, "OK", EOL);

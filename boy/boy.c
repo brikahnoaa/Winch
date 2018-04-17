@@ -155,10 +155,12 @@ bool riseToSurf(void) {
       continue; // while
     case stopCmd_msg:     // stopped by winch
       ngkSend(stopRsp_msg);
-      flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
-      return false;
+      if (depth<=antSurfMaxD())
+        return true;
+      else
+        flogf(", stopCmd at %4.2fm riseToSurf() step 1", depth);
     default: // unexpected msg
-      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      flogf("\n\t|riseUp() unexpected %s at %4.2f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
       if (antMoving()<0.0) {
@@ -181,10 +183,10 @@ bool riseToSurf(void) {
   while (step==2) {
     utlX();
     depth = antDepth();
-    if (antMoving()>=0.0) {
-      utlErr(ngk_err, "riseToSurf() step 2 not rising, retry");
-      return riseToSurf();
-    }
+    // ?? if (antMoving()>=0.0) {
+    //  utlErr(ngk_err, "riseToSurf() step 2 not rising, retry");
+    //  return riseToSurf();
+    // }
     msg = ngkRecv();
     switch (msg) {
     case null_msg: break;

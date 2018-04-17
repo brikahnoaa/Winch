@@ -74,3 +74,4 @@ void dbg0(bool on);
 void dbg1(bool on);
 void dbg2(bool on);
 void dbg3(bool on);
+void dbgLevel(int i);
