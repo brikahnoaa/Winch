@@ -32,13 +32,13 @@ void mpcInit(void) {
   // setup pam port, shared by wispr and science ctd sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
-  mpc.pam = null_pam;
-  mpc.port = TUOpen(rx, tx, PAM_BAUD, 0);
-  if (mpc.port==NULL)
+  mpc.pamDev = null_pam;
+  mpc.pamPort = TUOpen(rx, tx, PAM_BAUD, 0);
+  if (mpc.pamPort==NULL)
     utlStop("mpcInit() pam open fail");
   utlDelay(RS232_SETTLE); // to settle rs232
-  TUTxFlush(mpc.port);
-  TURxFlush(mpc.port);
+  TUTxFlush(mpc.pamPort);
+  TURxFlush(mpc.pamPort);
 
   TMGSetSpeed(SYSCLK);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
@@ -53,35 +53,61 @@ void mpcInit(void) {
 ///
 // pam port shares rx/tx between com3, com4
 // switch between devices on pam port, clear 
-void mpcPam(PamType pam) {
-  if (pam==mpc.pam) return;
+void mpcPamDev(PamDevType pam) {
+  if (pam==mpc.pamDev) return;
   DBG0("mpcPam(%d)", pam)
-  if (pam==wsp_pam) {
+  switch (mpc.pamDev) {
+  case wsp1_pam:
+  case wsp2_pam:
+    mpcPamPulse(WISPR_PWR_OFF);
+    break;
+  } // switch
+  switch (pam) {
+  case wsp1_pam:
+    PIOClear(SBE_PAM);
+    PIOClear(SBE_16);
+    PIOSet(WSP_PAM);
+    PIOClear(WSP_12);
+    mpcPamPulse(WISPR_PWR_ON);
+    break;
+  case wsp2_pam:
     PIOClear(SBE_PAM);
     PIOClear(SBE_16);
     PIOSet(WSP_PAM);
     PIOSet(WSP_12);
-  } else if (pam==sbe_pam) {
+    mpcPamPulse(WISPR_PWR_ON);
+    break;
+  case sbe16_pam:
     PIOClear(WSP_PAM);
     PIOClear(WSP_12);
     PIOSet(SBE_PAM);
     PIOSet(SBE_16);
-  } else {
+    break;
+  case null_pam:
     PIOClear(WSP_PAM);
     PIOClear(WSP_12);
     PIOClear(SBE_PAM);
     PIOClear(SBE_16);
-  }
-  TUTxFlush(mpc.port);
-  TURxFlush(mpc.port);
+    break;
+  } // switch
+  TUTxFlush(mpc.pamPort);
+  TURxFlush(mpc.pamPort);
   utlPet();
+  mpc.pamDev = pam;
   return;
 } // mpcPam
 
 ///
+void mpcPamPulse(int pin) {
+  PIOSet(pin);
+  utlDelay(1);
+  PIOClear(pin);
+} // mpcPamPulse
+
+///
 // pam port is shared
-Serial mpcPort(void) {
-  return mpc.port;
+Serial mpcPamPort(void) {
+  return mpc.pamPort;
  } // mpcPort
 
 ///

@@ -1,24 +1,23 @@
 // wsp.h
-#define WSP_H
 
-#define WSP_BAUD 9600L
-// This baud rate works with only the new wspa_053116 killerwhale file at the
-// moment. 060116- AT
+#define WSP_H
 
 typedef struct WspInfo {
   bool on;
+  bool logging;
   char logFile[32];
-  int detInt;   //-D      //Minutes   //DATA DET INTERVAL
-  int detMax;   // Maximum Number of Detections to return
-  int detOff;   // sleep
-  int duty;     // duty cycle
-  int gain;     //-g 0-3
-  int count;    // number of DATA Boards
-  int board;    // active board
-  int log;
-  Serial port;
+  int detMax;                 // stop detections at max; 0 means no limit
+  int duty;                   // duty cycle = percent of each hour to run
+  int gain;                   // param
+  int num;                    // number of wspr cards
+  int log;                    // log fileid
+  time_t time;
+  Serial port;                // same as mpc.port, ant.port
 } WspInfo;
 
-void wspInit(int board);
+static bool wspRead(void);
+
+bool wspData(void);
+void wspInit(void);
+void wspLog(bool on);
 void wspStop(void);
-void wspFlush(void);

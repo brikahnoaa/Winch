@@ -5,21 +5,22 @@
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 #define PAM_BAUD 9600
 
-typedef enum { null_pam, wsp_pam, sbe_pam } PamType;
+typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;
 
 typedef struct MpcInfo {
   long diskFree;
   long diskSize;
-  PamType pam;             // wsp_12, sbe_16
-  Serial port;
+  PamDevType pamDev;             // wsp_1,_2,_3, sbe_16
+  Serial pamPort;
 } MpcInfo;
 
+static void mpcPamPulse(int pin);
+static void spur_ISR(void);
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
-static void spur_ISR(void);
 
-Serial mpcPort(void);
-void mpcPam(PamType pam);
+void mpcPamDev(PamDevType pam);
 void mpcInit(void);
 void mpcSleep(void);
 void mpcStop(void);
+Serial mpcPamPort(void);
