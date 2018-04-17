@@ -21,8 +21,8 @@ serThreadObj = None
 def info():
     global go, cableLen, motorRunState
     "globals which may be externally set"
-    print "winch:  go=%s  winch.motor('%s')  winch.cable(%.2f)" % \
-        (go.isSet(), motorRunState, cableLen)
+    print "winch@%s:  go=%s  winch.motor('%s')  winch.cable(%.2f)" % \
+        (portSelect, go.isSet(), motorRunState, cableLen)
 
 def init():
     "set global vars to defaults"
@@ -110,22 +110,20 @@ def amodInput():
         return
     if len(l) > 6: 
         ser.putline( "OK" )
+        # this sleep applies to all cases below
         sleep(amodDelay)
     # rise
     if riseCmd in l:
         motor('up')
-        sleep(amodDelay)
-        ser.putline(riseRsp)
+        amodOutput(riseRsp)
     # stop
     elif stopCmd in l:
         motor('off')
-        sleep(amodDelay)
-        ser.putline(stopRsp)
+        amodOutput(stopRsp)
     # fall
     elif fallCmd in l:
         motor('down')
-        sleep(amodDelay)
-        ser.putline(fallRsp)
+        amodOutput(fallRsp)
     elif quitRsp in l:
         ser.log( "buoy stop response %s" % l )
     # buoy responds to stop after dock or slack
