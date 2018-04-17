@@ -192,16 +192,17 @@ bool riseUp(float targetD, int errMax, int delay) {
   while (step==2) {
     utlX();
     depth = antDepth();
-    if (depth<=targetD) 
+    if (depth<=targetD) {
+      ngkSend( stopCmd_msg );
       step = 3;
-    // this shouldn't happen in step 2
+    }
+    // shouldn't get winch msg in step 2 // ?? utlErr
     if ((msg = ngkRecv())!=null_msg)          
       flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
   /// step 3: stopCmd 
   // watch for stopRsp. on timeout, retry or continue if stopped
   err = 0;
-  ngkSend( stopCmd_msg );
   while (step==3) {
     utlX();
     depth = antDepth();
