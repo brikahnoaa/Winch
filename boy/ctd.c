@@ -21,8 +21,8 @@ CtdInfo ctd;
 // sets: ctd.port .ctdPending
 void ctdInit(void) {
   DBG0("ctdInit()")
-  mpcPam(sbe_pam);
-  ctd.port = mpcPort();
+  mpcPamDev(sbe16_pam);
+  ctd.port = mpcPamPort();
   ctdAuton(false);
   tmrStop(ctd_tmr);
   if (!ctdPrompt())
@@ -44,7 +44,7 @@ void ctdInit(void) {
 
 ///
 void ctdStop(void){
-  mpcPam(null_pam);
+  mpcPamDev(null_pam);
   if (ctd.log) 
     close(ctd.log);
   ctd.log = 0;
