@@ -55,25 +55,25 @@ void ngkStop(void){
 // send message to winch via amodem
 // sets: .send[] .lastSend 
 void ngkSend(MsgType msg) {
+  int len;
   char str[128];
+  flogf("\n+ngkSend");
   // copy msgStr and change id character // e.g. "#R,0X,00"
   strcpy(str, ngk.msgStr[msg]);
   str[4]=WINCH_ID;
-  flogf("\n+ngkSend(%s) at %s", str, utlTime());
+  flogf("(%s) at %s", str, utlTime());
   TUTxWaitCompletion(ngk.port);
-  TURxFlush(ngk.port);
+  utlRead(ngk.port, utlBuf);
   utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
   if (msg==dropCmd_msg || msg==riseCmd_msg 
    || msg==stopCmd_msg || msg==surfCmd_msg) 
     tmrStart(winch_tmr, ngk.delay*2+1);
-  str[0] = 0;
-  if (utlReadWait(ngk.port, str, 2)==0)
-    utlErr(ngk_err, "expected OK, no response");
+  len = utlReadWait(ngk.port, str, 2);
   // str should include "OK"
   if (strstr(str, "OK")==NULL)
-    flogf("\n\t| ngkSend() amodem bad response '%s'", utlNonPrint(str));
+    utlErr(ngk_err, "expected OK, not found");
 } // ngkSend
 
 ///
@@ -84,12 +84,13 @@ void ngkSend(MsgType msg) {
 // returns: msg
 MsgType ngkRecv() {
   MsgType msg;
+  flogf("\n+ngkRecv");
   if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
   msg = msgParse(utlBuf);
   if (msg!=mangled_msg)
     utlWrite(ngk.port, "OK", EOL);
-  flogf("\n+ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
+  flogf("(%s) at %s", ngk.msgName[msg], utlTime());
   if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
     return null_msg;
@@ -127,3 +128,9 @@ char * ngkMsgName(MsgType msg) {
 void ngkBuoyRsp(void) {
   ngkSend( buoyRsp_msg);
 }
+
+///
+bool ngkData(void) {
+  DBG1("nD")
+  return TURxQueuedCount(ngk.port);
+} // ngkData

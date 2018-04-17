@@ -25,7 +25,8 @@ static MsgType msgParse(char *str);
 static void ngkBuoyRsp(void);
 
 MsgType ngkRecv(void);
+bool ngkData(void);
+char *ngkMsgName(MsgType msg);
 void ngkInit(void);
-char * ngkMsgName(MsgType msg);
 void ngkSend(MsgType msg);
 void ngkStop(void);

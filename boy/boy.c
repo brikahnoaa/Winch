@@ -148,20 +148,23 @@ bool riseUp(float targetD, int errMax, int delay) {
   while (step==1) {
     utlX();
     depth = antDepth();
-    switch (msg = ngkRecv()) {
-    case null_msg: break;
-    case riseRsp_msg:
-      // start velocity measure
-      riseT = time(0);
-      step = 2;
-      continue; // while
-    case stopCmd_msg:     // stopped by winch
-      ngkSend(stopRsp_msg);
-      flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
-      return false;
-    default: // unexpected msg
-      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    } // switch
+    if (ngkData()) {
+      msg = ngkRecv();
+      switch (msg) {
+      case null_msg: break;
+      case riseRsp_msg:
+        // start velocity measure
+        riseT = time(0);
+        step = 2;
+        continue; // while
+      case stopCmd_msg:     // stopped by winch
+        ngkSend(stopRsp_msg);
+        flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
+        return false;
+      default: // unexpected msg
+        flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      } // switch
+    } // nD
     if (tmrExp(winch_tmr)) {
       if (antMoving()<0.0) {
         // odd, we are rising but no response; log but ignore
@@ -195,7 +198,9 @@ bool riseUp(float targetD, int errMax, int delay) {
     if (depth<=targetD) 
       step = 3;
     // this shouldn't happen in step 2
-    if ((msg = ngkRecv())!=null_msg)          
+    if (ngkData())
+      msg = ngkRecv();
+    if (msg!=null_msg)          
       flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
   /// step 3: stopCmd 
@@ -205,19 +210,22 @@ bool riseUp(float targetD, int errMax, int delay) {
   while (step==3) {
     utlX();
     depth = antDepth();
-    switch (msg = ngkRecv()) {
-    case null_msg: break;
-    case stopRsp_msg:
-      step = 4;
-      continue; // while
-    case stopCmd_msg:     // stopped by winch
-      ngkSend(stopRsp_msg);
-      flogf("\n\t | riseUp() stopped by winch at %3.1fm. Strange not fatal.", 
-        depth);
-      return false;
-    default: // unexpected msg
-      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    } // switch
+    if (ngkData()) {
+      msg = ngkRecv();
+      switch (msg) {
+      case null_msg: break;
+      case stopRsp_msg:
+        step = 4;
+        continue; // while
+      case stopCmd_msg:     // stopped by winch
+        ngkSend(stopRsp_msg);
+        flogf("\n\t | riseUp() stopped by winch at %3.1fm. Strange not fatal.", 
+          depth);
+        return false;
+      default: // unexpected msg
+        flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      } // switch
+    } // nD
     if (tmrExp(winch_tmr)) {
       if (antMoving()==0.0) {
         // odd, we are stopped but no response; log but ignore
@@ -281,16 +289,17 @@ PhaseType dropPhase() {
   while (true) {
     utlX();
     depth = antDepth();
-    msg = ngkRecv();
-    if (msg==dropRsp_msg) {
-      // start velocity measure
-      dropT = time(0);
-      dropD = depth;
-      break; // while
-    } else if (msg!=null_msg) {
-      flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    }
-    //
+    if (ngkData()) {
+      msg = ngkRecv();
+      if (msg==dropRsp_msg) {
+        // start velocity measure
+        dropT = time(0);
+        dropD = depth;
+        break; // while
+      } else if (msg!=null_msg) {
+        flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      }
+    } // nD
     if (tmrExp(winch_tmr)) {
       if (antMoving()>0.0) {
         // odd, we are dropping but no response; log but allow
@@ -315,13 +324,15 @@ PhaseType dropPhase() {
   // step 3: stopCmd Rsp
   while (true) {
     utlX();
-    msg = ngkRecv();
-    if (msg==stopCmd_msg) {
-      ngkSend(stopRsp_msg);
-      break;
-    } else if (msg!=null_msg) {
-      flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    }
+    if (ngkData()) {
+      msg = ngkRecv();
+      if (msg==stopCmd_msg) {
+        ngkSend(stopRsp_msg);
+        break;
+      } else if (msg!=null_msg) {
+        flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+      }
+    } // nD
   }
   // step 4: docked?
   if (!boyDocked(depth)) {       // normal and expected
