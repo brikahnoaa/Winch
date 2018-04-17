@@ -34,11 +34,11 @@ void mpcInit(void) {
   tx = TPUChanFromPin(PAM_TX);
   mpc.pamDev = null_pam;
   mpc.pamPort = TUOpen(rx, tx, PAM_BAUD, 0);
-  if (mpc.port==NULL)
+  if (mpc.pamPort==NULL)
     utlStop("mpcInit() pam open fail");
   utlDelay(RS232_SETTLE); // to settle rs232
-  TUTxFlush(mpc.port);
-  TURxFlush(mpc.port);
+  TUTxFlush(mpc.pamPort);
+  TURxFlush(mpc.pamPort);
 
   TMGSetSpeed(SYSCLK);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
@@ -53,24 +53,24 @@ void mpcInit(void) {
 ///
 // pam port shares rx/tx between com3, com4
 // switch between devices on pam port, clear 
-void mpcPamDev(PamType pam) {
-  if (pam==mpc.pam) return;
+void mpcPamDev(PamDevType pam) {
+  if (pam==mpc.pamDev) return;
   DBG0("mpcPam(%d)", pam)
   switch (mpc.pamDev) {
-  case wsp1_pam;
-  case wsp2_pam;
+  case wsp1_pam:
+  case wsp2_pam:
     mpcPamPulse(WISPR_PWR_OFF);
     break;
   } // switch
   switch (pam) {
-  case wsp1_pam;
+  case wsp1_pam:
     PIOClear(SBE_PAM);
     PIOClear(SBE_16);
     PIOSet(WSP_PAM);
     PIOClear(WSP_12);
     mpcPamPulse(WISPR_PWR_ON);
     break;
-  case wsp2_pam;
+  case wsp2_pam:
     PIOClear(SBE_PAM);
     PIOClear(SBE_16);
     PIOSet(WSP_PAM);
@@ -83,7 +83,7 @@ void mpcPamDev(PamType pam) {
     PIOSet(SBE_PAM);
     PIOSet(SBE_16);
     break;
-  case null_pam
+  case null_pam:
     PIOClear(WSP_PAM);
     PIOClear(WSP_12);
     PIOClear(SBE_PAM);

@@ -63,10 +63,10 @@ bool wspRead(void) {
   if (!p2) return false;
   p3 = strtok(NULL, ", ");
   if (!p3) return false;
-  wsp.depth = atof( p3 );
-  DBG1("= %4.2", wsp.depth)
+  // wsp.depth = atof( p3 );
+  // DBG1("= %4.2", wsp.depth)
   tmrStop(wsp_tmr);
-  wsp.time = time(0);
+  // wsp.time = time(0);
   return true;
 } // wspRead
 

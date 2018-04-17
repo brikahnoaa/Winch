@@ -70,12 +70,10 @@ static CfgParam cfgP[] = {
   {"spj", "sys.project",    &sys.project,     'c'},
   {"svs", "sys.version",    &sys.version,     'c'},
   {"wlF", "wsp.logFile",    &wsp.logFile,     'c'},
-  {"wdi", "wsp.detInt",     &wsp.detInt,      'i'},
   {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
-  {"wdo", "wsp.detOff",     &wsp.detOff,      'i'},
   {"wdu", "wsp.duty",       &wsp.duty,        'i'},
   {"wgn", "wsp.gain",       &wsp.gain,        'i'},
-  {"wnm", "wsp.count",      &wsp.count,       'i'},
+  {"wnm", "wsp.num",        &wsp.num,         'i'},
 };
 
 
