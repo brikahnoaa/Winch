@@ -124,6 +124,7 @@ bool cfgString(char *str){
       return true;
     }
   } // for cfg
+  flogf("\nErr\t|cfgString() %s=%s", ref, val);
   return false;                 // name not found
 } // cfgString
 
@@ -141,7 +142,7 @@ bool cfgCmp(char *a, char*b) {
 // convert *val to type and poke into *ptr
 static void cfgSet( void *ptr, char type, char *val ) {
   switch (type) {
-  case 'b':     // bool is a char
+  case 'b':     // bool is 0,1 or t,f or T,F or true,false
     if (val[0]=='f' || val[0]=='F' || val[0]=='0')
       *(bool*)ptr = false;
     else 
@@ -183,7 +184,7 @@ int cfgRead(char *file) {
   }
   fh = open(file, O_RDONLY);
   // cfg file is not large, read all of it into buf and null terminate
-  buf = (char *)malloc(finfo.st_size+1);
+  buf = (char *)malloc(finfo.st_size+2);
   read(fh, buf, finfo.st_size);
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
   // parse cfg strings (dos or linux) and return count r
@@ -207,10 +208,11 @@ void cfgVee(void) {
   vv = VEEFetchNext(NULL);
   while (vv) {
     name = VEEGetName(vv);
-    // got dot?
-    if (strchr(name, '.')) {
-      val = VEEFetchStr(name, "");
-      if (val[0]==0) continue;        // break
+    val = VEEFetchStr(name, "");
+    // got dot? not qpbc? has value?
+    if (strchr(name, '.')
+        && !strstr(name, "SYS.QPBC")
+        && val[0]!=0 ) {
       strcpy(cfgstr, name);
       strcat(cfgstr, "=");
       strcat(cfgstr, val);

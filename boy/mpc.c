@@ -1,4 +1,4 @@
-// mpc.c - hardware, mpc specific
+// mpc.c - hardware, mpc specific; pam x 4
 #include <utl.h>
 #include <mpc.h>
 #include <sys.h>
@@ -25,20 +25,18 @@ void mpcInit(void) {
   ushort nsRAM, nsFlash, nsCF;
   short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
   short rx, tx;
-  uchar unusedpins[] = {15, 16, 17, 18, 19, 36, 0};
-  uchar outputpins[] = {22, 23, 24, 25, 26, 27, 28, 29, 30, 0};
+  uchar iopins[] = {27, 28, 31, 32, 33, 34, 35, 48, 50, 0};
+  uchar unusedpins[] = {1, 15, 16, 17, 18, 19, 20, 0};
+  uchar outputpins[] = {21, 22, 23, 24, 25, 26, 29, 30, 37, 42, 0};
   PIOMirrorList(unusedpins);
   PIOMirrorList(outputpins);
   // setup pam port, shared by wispr and science ctd sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
-  mpc.pamDev = null_pam;
   mpc.pamPort = TUOpen(rx, tx, PAM_BAUD, 0);
   if (mpc.pamPort==NULL)
     utlStop("mpcInit() pam open fail");
-  utlDelay(RS232_SETTLE); // to settle rs232
-  TUTxFlush(mpc.pamPort);
-  TURxFlush(mpc.pamPort);
+  mpcPamDev(null_pam);
 
   TMGSetSpeed(SYSCLK);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
@@ -55,31 +53,33 @@ void mpcInit(void) {
 // switch between devices on pam port, clear 
 void mpcPamDev(PamDevType pam) {
   if (pam==mpc.pamDev) return;
-  DBG0("mpcPam(%d)", pam)
+  DBG0("mpcPamDev(%d)", pam)
+  // was this, turn down
   switch (mpc.pamDev) {
   case wsp1_pam:
   case wsp2_pam:
     mpcPamPulse(WISPR_PWR_OFF);
+    PIOClear(WSP_PAM);
+    PIOClear(WSP_12);
     break;
-  } // switch
-  switch (pam) {
-  case wsp1_pam:
+  case sbe16_pam:
     PIOClear(SBE_PAM);
     PIOClear(SBE_16);
+    break;
+  } // switch
+  // now this, turn up
+  switch (pam) {
+  case wsp1_pam:
     PIOSet(WSP_PAM);
     PIOClear(WSP_12);
     mpcPamPulse(WISPR_PWR_ON);
     break;
   case wsp2_pam:
-    PIOClear(SBE_PAM);
-    PIOClear(SBE_16);
     PIOSet(WSP_PAM);
     PIOSet(WSP_12);
     mpcPamPulse(WISPR_PWR_ON);
     break;
   case sbe16_pam:
-    PIOClear(WSP_PAM);
-    PIOClear(WSP_12);
     PIOSet(SBE_PAM);
     PIOSet(SBE_16);
     break;
@@ -108,7 +108,7 @@ void mpcPamPulse(int pin) {
 // pam port is shared
 Serial mpcPamPort(void) {
   return mpc.pamPort;
- } // mpcPort
+} // mpcPort
 
 ///
 // capture interrupt, used to wake up
