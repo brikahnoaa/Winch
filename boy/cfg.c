@@ -184,7 +184,7 @@ int cfgRead(char *file) {
   }
   fh = open(file, O_RDONLY);
   // cfg file is not large, read all of it into buf and null terminate
-  buf = (char *)malloc(finfo.st_size+1);
+  buf = (char *)malloc(finfo.st_size+2);
   read(fh, buf, finfo.st_size);
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
   // parse cfg strings (dos or linux) and return count r
