@@ -108,23 +108,23 @@ PhaseType risePhase(void) {
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
-    return drop_pha;
+    //?? return drop_pha;
   }
   success = riseUp(boy.currChkD, 5, 1);
   if (!success) {
     flogf("\n\t| riseUp fails at %3.1f m", antDepth());
-    return drop_pha;
+    //??  return drop_pha;
   }
   // if current is too strong at midway
   if (oceanCurrChk()) {
     sysAlarm(midwayCurr_alm);
-    return drop_pha;
+    //?? return drop_pha;
   }
   // surface
   success = riseUp(0.0, 5, 1);
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
-    return drop_pha;
+    //?? return drop_pha;
   }
   // success
   return call_pha;
