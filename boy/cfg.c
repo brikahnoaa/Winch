@@ -124,7 +124,7 @@ bool cfgString(char *str){
       return true;
     }
   } // for cfg
-  flogf("\nErr\t|cfgString(%c) %s=%s", type, var, val);
+  flogf("\nErr\t|cfgString() %s=%s", ref, val);
   return false;                 // name not found
 } // cfgString
 
