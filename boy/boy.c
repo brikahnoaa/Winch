@@ -350,62 +350,83 @@ PhaseType dropPhase() {
   float depth, dropD;
   time_t dropT;
   MsgType msg;
-  flogf("\n+dropPhase()@%s", utlDateTime());
+  flogf("\n+dropPhase() %s", utlTime());
   // step1. loop until dropRsp or dropping+timeout
+  step = 1;
   ngkSend( dropCmd_msg );
-  while (true) {
+  while (step==1) {
     utlX();
     depth = antDepth();
     msg = ngkRecv();
-    if (msg==dropRsp_msg) {
+    switch (msg) {
+    case null_msg: break;
+    case dropRsp_msg:
       // start velocity measure
       dropT = time(0);
       dropD = depth;
-      break; // while
-    } else if (msg!=null_msg) {
+      step = 2;
+      break; 
+    default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    }
-    //
+    } // switch
+    // err, delay and retry algorithm 
     if (tmrExp(winch_tmr)) {
+      flogf(" timeout"); 
+      // timeout
       if (antMoving()>0.0) {
         // odd, we are dropping but no response; log but allow
-        flogf(" timeout, but dropping ..."); 
+        flogf(" but dropping"); 
+        step = 2;
         break; // while step1
-      } // if dropping
-      // err, delay and retry algorithm // failStage ++ as errs exceed errMax
-      if (++err > errMax[failStage])  
-        if (++failStage > failMax) 
-          return error_pha;
-      // retry dropCmd, longer delay after more errs
-      pwrNap(delay[failStage]);
-      flogf(" dropCmd"); 
+      } 
+      if (++err > errMax[failStage] && ++failStage > failMax) {
+        // note: ++err, ++failStage as errs exceed errMax
+        flogf("\n\t|dropPhase() too many retries, panic");
+        return error_pha;
+      }
+      // here: timeout & !dropping & errs<max
+      // retry dropCmd, use longer delay after more errs
+      utlNap(delay[failStage]);
+      flogf(" retry dropCmd"); 
       ngkSend( dropCmd_msg );
     } // if timeout
   } // while step1
   // step 2: drop til you stop
-  while (antMoving()>0) {
+  while (step==2) {
     utlX();
     depth = antDepth();
+    if (antMoving()<=0.0)
+      step = 3;
   }
   // step 3: stopCmd Rsp
-  while (true) {
+  tmrStart(winch_tmr, 10);        // ?? this should be ngk.delay
+  while (step==3) {
     utlX();
     msg = ngkRecv();
-    if (msg==stopCmd_msg) {
+    switch (msg) {
+    case null_msg: break;
+    case stopCmd_msg:
       ngkSend(stopRsp_msg);
+      step = 4;
       break;
-    } else if (msg!=null_msg) {
+    default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
+    } // switch
+    if (tmrExp(winch_tmr)) {
+      flogf(" timeout");
+      // ok, we are not dropping (step2)
+      step = 4;
     }
-  }
+  } // while msg
   // step 4: docked?
-  if (!boyDocked(depth)) {       // normal and expected
+  if (!boyDocked(depth)) {
     // if stop but not docked, cable is stuck
+    sysAlarm(cableStuck_alm);
     return error_pha;
   }
   // velocity, finish science
   if (err==0) {
-    // skip if we didn't stop clean
+    // skip if we didn't drop clean
     boy.dropVLast = (dropD-depth) / (time(0)-dropT);
     if (boy.dropVFirst==0)
       boy.dropVFirst = boy.dropVLast;

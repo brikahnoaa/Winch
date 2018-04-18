@@ -11,6 +11,7 @@ typedef enum {
   midwayCurr_alm,
   ice_alm,
   ngkTimeout_alm,
+  cableStuck_alm,
   sizeof_alm
 } AlarmType;
 
