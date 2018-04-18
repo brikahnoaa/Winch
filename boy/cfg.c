@@ -124,6 +124,7 @@ bool cfgString(char *str){
       return true;
     }
   } // for cfg
+  flogf("\nErr\t|cfgString(%c) %s=%s", type, var, val);
   return false;                 // name not found
 } // cfgString
 
@@ -141,7 +142,7 @@ bool cfgCmp(char *a, char*b) {
 // convert *val to type and poke into *ptr
 static void cfgSet( void *ptr, char type, char *val ) {
   switch (type) {
-  case 'b':     // bool is a char
+  case 'b':     // bool is 0,1 or t,f or T,F or true,false
     if (val[0]=='f' || val[0]=='F' || val[0]=='0')
       *(bool*)ptr = false;
     else 
