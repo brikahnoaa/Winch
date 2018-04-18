@@ -4,7 +4,7 @@
 #include <mpc.h>
 #include <tmr.h>
 
-#define EOL "\r"
+#define EOL "\r\n"
 
 WspInfo wsp;
 
@@ -32,20 +32,23 @@ void wspInit(void) {
 // uses: wsp.card
 void wspStart(void) {
   int len;
-  mpcPamDev(wsp1_pam);
+  // mpcPamDev(wsp1_pam);
+  // utlNap(20);
+  // len = wspRead(utlBuf);
+  mpcPamDev(wsp2_pam);
   len = wspRead(utlBuf);
-  //  mpcPamDev(wsp2_pam);
-  //utlNap(20);
-  //len = wspRead(utlBuf);
 } // wspStart
 
 ///
 // wsp started. interact.
 int wspRead(char *buf) {
-  int len;
-  utlNap(20);
+  int i, len;
+  for (i=0; i<10; i++) {cprintf(".");utlNap(10);}
   utlWrite(wsp.port, "$WS?*", EOL);
-  len = utlReadWait(wsp.port, buf, 600);
+  len = utlReadWait(wsp.port, buf, 10);
+  for (i=0; i<10; i++) {cprintf(".");utlNap(10);}
+  len = utlReadWait(wsp.port, buf, 10);
+  cprintf("\nwspRead()->'%s'", buf);
   flogf("\nwspRead()->'%s'", buf);
   return len;
 } // wspRead
