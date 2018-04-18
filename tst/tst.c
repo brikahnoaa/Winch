@@ -3,11 +3,11 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
+#include <wsp.h>
 
 extern CtdInfo ctd;
 
 void main(void){
-  char c;
   sysInit();
   mpcInit();
   ctdInit();

@@ -31,12 +31,12 @@ void wspInit(void) {
 ///
 // uses: wsp.card
 void wspStart(void) {
+  int len;
   mpcPamDev(wsp1_pam);
-  len = wspData(utlBuf);
+  len = wspRead(utlBuf);
   //  mpcPamDev(wsp2_pam);
   //utlNap(20);
-  //len = wspData(utlBuf);
-  mpcPamDev(null_pam);
+  //len = wspRead(utlBuf);
 } // wspStart
 
 ///
@@ -64,31 +64,4 @@ bool wspData() {
   DBG1("wD")
   return TURxQueuedCount(wsp.port);
 } // wspData
-
-///
-// sets: wsp.depth .wspPending 
-bool wspRead(void) {
-  char *p0, *p1, *p2, *p3;
-  if (!wspData()) return false;
-  DBG1("wspRead()")
-  utlRead(wsp.port, utlBuf);
-  if (wsp.log) 
-    write(wsp.log, utlBuf, strlen(utlBuf));
-  // Temp, conductivity, depth, fluromtr, PAR, salinity, time
-  // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
-  // note: leading # in syncmode '# 20.6...'
-  // note: picks up trailing S> prompt if not in syncmode
-  p0 = utlBuf;
-  p1 = strtok(p0, "\r\n#, ");
-  if (!p1) return false;
-  p2 = strtok(NULL, ", "); 
-  if (!p2) return false;
-  p3 = strtok(NULL, ", ");
-  if (!p3) return false;
-  // wsp.depth = atof( p3 );
-  // DBG1("= %4.2", wsp.depth)
-  tmrStop(wsp_tmr);
-  // wsp.time = time(0);
-  return true;
-} // wspRead
 
