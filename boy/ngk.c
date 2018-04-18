@@ -108,6 +108,8 @@ MsgType msgParse(char *str) {
   MsgType m;
   int len;
   len = utlTrim(str);
+  if (strstr(str, "OK") && strlen(str)==2)
+    return null_msg;
   if (len!=8) 
     flogf(" | ERR msgParse() length %d", len);
   for (m=null_msg+1; m<mangled_msg; m++)
