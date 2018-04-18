@@ -208,13 +208,11 @@ void cfgVee(void) {
   vv = VEEFetchNext(NULL);
   while (vv) {
     name = VEEGetName(vv);
-    // special case, not a setting
-    if (strstr(name, "SYS.QPBC"))
-      continue;
-    // got dot?
-    if (strchr(name, '.')) {
-      val = VEEFetchStr(name, "");
-      if (val[0]==0) continue;        // break
+    val = VEEFetchStr(name, "");
+    // got dot? not qpbc? has value?
+    if (strchr(name, '.')
+        && !strstr(name, "SYS.QPBC")
+        && val[0]!=0 ) {
       strcpy(cfgstr, name);
       strcat(cfgstr, "=");
       strcat(cfgstr, val);
