@@ -14,8 +14,8 @@ void main(void){
   mpcInit();
   antInit();
   ctdInit();
-  antStart();
-  cprintf("\n");
-  printf("oceanCurr = %f\n", oceanCurr());
-  printf("oceanCurrChk = %d\n", oceanCurrChk());
+  wspInit();
+  cprintf("\n+dataPhase()@%s", utlDateTime());
+  wspStart();
+  wspStop();
 }

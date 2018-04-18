@@ -88,11 +88,11 @@ PhaseType rebootPhase(void) {
 // data is gathered for about 24hours (data_tmr)
 // wsp powers down for % of each hour (wispr_tmr)
 // organize data files, transfer data to antmod ??
+// sleep needs a lot of optimizing to be worth the trouble
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
   flogf("\n+dataPhase()@%s", utlDateTime());
-  // sleep needs a lot of optimizing to be worth the trouble
-  // Sleep();
+  wspStart();
   wspStop();
   return rise_pha;
 } // dataPhase
@@ -105,6 +105,7 @@ PhaseType risePhase(void) {
   bool success;
   flogf("\n+risePhase()@%s", utlDateTime());
   antStart();
+  ctdStart();
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
@@ -349,7 +350,6 @@ PhaseType dropPhase() {
   time_t dropT;
   MsgType msg;
   flogf("\n+dropPhase()@%s", utlDateTime());
-  antFlush();
   // step1. loop until dropRsp or dropping+timeout
   ngkSend( dropCmd_msg );
   while (true) {

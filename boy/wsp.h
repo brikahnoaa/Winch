@@ -15,9 +15,9 @@ typedef struct WspInfo {
   Serial port;                // same as mpc.port, ant.port
 } WspInfo;
 
-static bool wspRead(void);
+static int wspRead(utlBuf);
 
-bool wspData(void);
 void wspInit(void);
 void wspLog(bool on);
+void wspStart(void);
 void wspStop(void);

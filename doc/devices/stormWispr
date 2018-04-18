@@ -1,0 +1,820 @@
+
+$NLW*,11/28/70,20:45:41,0034,0002*
+
+I
+
+U-Boot 2010.09-00125-g741ba99 (ADI-2011R1-pre) (Oct 11 2011 - 12:57:40)
+
+CPU:   ADSP bf537-0.2 (Detected Rev: 0.3) (bypass boot)
+Board: Bluetechnix CM-BF537E-64SD board
+       Support: http://www.bluetechnix.at/
+Clock: VCO: 525 MHz, Core: 525 MHz, System: 131.250 MHz
+RAM:   64 MiB
+Flash: ERROR: too many flash sectors
+16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+KGDB:  [on serial] ready
+Net:   smc911x: Invalid chip endian 0x0000e100
+bfin_mac
+Hit any key to stop autoboot:  0
+bfin> pc 42
+Unknown command 'pc' - try 'help'
+bfin>
+
+U-Boot 2010.09-00125-g741ba99 (ADI-2011R1-pre) (Oct 11 2011 - 12:57:40)
+
+CPU:   ADSP bf537-0.2 (Detected Rev: 0.3) (bypass boot)
+Board: Bluetechnix CM-BF537E-64SD board
+       Support: http://www.bluetechnix.at/
+Clock: VCO: 525 MHz, Core: 525 MHz, System: 131.250 MHz
+RAM:   64 MiB
+Flash: ERROR: too many flash sectors
+16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+KGDB:  [on serial] ready
+Net:   smc911x: Invalid chip endian 0x0000e100
+bfin_mac
+Hit any key to stop autoboot:  0
+bfin> ls
+Scanning JFFS2 FS:
+
+
+Ack! Something bad happened to the Blackfin!
+
+SEQUENCER STATUS:
+ SEQSTAT: 0000c026  IPEND: 0032  SYSCFG: a5a5a5a5
+  HWERRCAUSE: 0x3: external memory addressing error
+  EXCAUSE   : 0x26: dcplb miss
+ RETE: <0xbda6c953> { ___umulsi3_highpart + 0xb9ac9c0f }
+ RETN: <0x03f5f1a0> /* unknown address */
+ RETX: <0x03f87894> { _memcpy_ASM + 0x2c }
+ RETS: <0x03f8822e> { _memcpy + 0xc2 }
+ RETI: <0x03f87894> { _memcpy_ASM + 0x2c }
+DCPLB_FAULT_ADDR: <0x20c1fff8> { ___umulsi3_highpart + 0x1cc7d2b4 }
+ICPLB_FAULT_ADDR: <0x03f87894> { _memcpy_ASM + 0x2c }
+
+PROCESSOR STATE:
+ R0 : 20c1fff8    R1 : 20c1fff8    R2 : 00000008    R3 : 00000000
+ R4 : 00000000    R5 : 00000000    R6 : 00c1fff8    R7 : 03f61220
+ P0 : 03f61220    P1 : 20c1fff8    P2 : 00000008    P3 : 03f5ff80
+ P4 : 03f5f672    P5 : 03fb0f98    FP : 03f601d4    SP : 03f5f0cc
+ LB0: 03f87896    LT0: 03f87894    LC0: 00000008
+ LB1: 03f86414    LT1: 03f86412    LC1: 00000000
+ B0 : cf9d1c7f    L0 : 00000000    M0 : 2fe27dc9    I0 : 03fbad98
+ B1 : 6b2bb52c    L1 : 00000000    M1 : 3db653bf    I1 : 00000000
+ B2 : 7b96ec96    L2 : 00000000    M2 : 15dbed87    I2 : 0000000f
+ B3 : 5cb47ddd    L3 : 00000000    M3 : 7cb6df33    I3 : 0000001b
+A0.w: 00000068   A0.x: 00000000   A1.w: 00000068   A1.x: 00000000
+USP : e829cf0e  ASTAT: 00000061
+
+Hardware Trace:
+   0 Target : <0x03f805f4> { _bfin_panic + 0x0 }
+     Source : <0x03f80a50> { _evt_default + 0x60 }
+   1 Target : <0x03f809f0> { _evt_default + 0x0 }
+     Source : <0x03f80906> { _trap + 0x116 }
+   2 Target : <0x03f808aa> { _trap + 0xba }
+     Source : <0x03f80864> { _trap + 0x74 }
+   3 Target : <0x03f80860> { _trap + 0x70 }
+     Source : <0x03f807ee> { _trap_c + 0x1de }
+   4 Target : <0x03f80610> { _trap_c + 0x0 }
+     Source : <0x03f8085c> { _trap + 0x6c }
+   5 Target : <0x03f807f0> { _trap + 0x0 }
+     Source : <0x03f80906> { _trap + 0x116 }
+   6 Target : <0x03f808aa> { _trap + 0xba }
+     Source : <0x03f80864> { _trap + 0x74 }
+   7 Target : <0x03f80860> { _trap + 0x70 }
+     Source : <0x03f807ee> { _trap_c + 0x1de }
+   8 Target : <0x03f80610> { _trap_c + 0x0 }
+     Source : <0x03f8085c> { _trap + 0x6c }
+   9 Target : <0x03f807f0> { _trap + 0x0 }
+     Source : <0x03f87892> { _memcpy_ASM + 0x2a }
+  10 Target : <0x03f8787c> { _memcpy_ASM + 0x14 }
+     Source : <0x03f87874> { _memcpy_ASM + 0xc }
+  11 Target : <0x03f87868> { _memcpy_ASM + 0x0 }
+     Source : <0x03f8822a> { _memcpy + 0xbe }
+  12 Target : <0x03f88228> { _memcpy + 0xbc }
+     Source : <0x03f8821e> { _memcpy + 0xb2 }
+  13 Target : <0x03f88208> { _memcpy + 0x9c }
+     Source : <0x03f881c2> { _memcpy + 0x56 }
+  14 Target : <0x03f881ba> { _memcpy + 0x4e }
+     Source : <0x03f88180> { _memcpy + 0x14 }
+  15 Target : <0x03f8816c> { _memcpy + 0x0 }
+     Source : <0x03f9de42> { _get_fl_mem + 0x46 }
+
+### ERROR ### Please RESET the board ###
+
+
+U-Boot 2010.09-00125-g741ba99 (ADI-2011R1-pre) (Oct 11 2011 - 12:57:40)
+
+CPU:   ADSP bf537-0.2 (Detected Rev: 0.3) (bypass boot)
+Board: Bluetechnix CM-BF537E-64SD board
+       Support: http://www.bluetechnix.at/
+Clock: VCO: 525 MHz, Core: 525 MHz, System: 131.250 MHz
+RAM:   64 MiB
+Flash: ERROR: too many flash sectors
+16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+KGDB:  [on serial] ready
+Net:   smc911x: Invalid chip endian 0x0000e100
+bfin_mac
+Hit any key to stop autoboot:  0
+Done.
+## Booting kernel from Legacy Image at 01000000 ...
+   Image Name:   bf537-2.6.34.7-ADI-2010R1
+   Created:      2011-03-06  22:31:54 UTC
+   Image Type:   Blackfin Linux Kernel Image (gzip compressed)
+   Data Size:    3076899 Bytes = 2.9 MiB
+   Load Address: 00001000
+   Entry Point:  001eb514
+   Verifying Checksum ... OK
+   Uncompressing Kernel Image ... OK
+Starting Kernel at = 001eb514
+Linux version 2.6.34.7-ADI-2010R1 (cjones@localhost.localdomain) (gcc version 4.3.5 (ADI-2010R1-RC4) ) #128 Sun Mar 6 14:31:51 PST 2011
+register early platform devices
+bootconsole [early_shadow0] enabled
+bootconsole [early_BFuart0] enabled
+early printk enabled on early_BFuart0
+Board Memory: 64MB
+Kernel Managed Memory: 48MB
+Memory map:
+  fixedcode = 0x00000400-0x00000490
+  text      = 0x00001000-0x0014fe08
+  rodata    = 0x0014fe08-0x001bd9cc
+  bss       = 0x001be000-0x001ce6f8
+  data      = 0x001ce6f8-0x001e0000
+    stack   = 0x001de000-0x001e0000
+  init      = 0x001e0000-0x00600000
+  available = 0x00600000-0x02f00000
+  DMA Zone  = 0x02f00000-0x03000000
+Hardware Trace Active and Enabled
+Boot Mode: 0
+Blackfin support (C) 2004-2010 Analog Devices, Inc.
+Compiled for ADSP-BF537 Rev 0.3
+Blackfin Linux support by http://blackfin.uclinux.org/
+Processor Speed: 500 MHz core clock and 125 MHz System Clock
+NOMPU: setting up cplb tables
+Instruction Cache Enabled for CPU0
+  External memory: cacheable in instruction cache
+Data Cache Enabled for CPU0
+  External memory: cacheable (write-back) in data cache
+Built 1 zonelists in Zone order, mobility grouping off.  Total pages: 11938
+Kernel command line: root=/dev/mtdblock0 rw clkin_hz=25000000 earlyprintk=serial,uart0,115200 mem=48M max_mem=64M$# console=ttyBF0,115200
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory available: 41416k/49152k RAM, (4224k init code, 1339k kernel code, 577k data, 1024k dma, 572k reserved)
+Hierarchical RCU implementation.
+NR_IRQS:138
+Configuring Blackfin Priority Driven Interrupts
+console [ttyBF0] enabled, bootconsole disabled
+console [ttyBF0] enabled, bootconsole disabled
+Calibrating delay loop... 997.37 BogoMIPS (lpj=1994752)
+Mount-cache hash table entries: 512
+Blackfin Scratchpad data SRAM: 4 KB
+Blackfin L1 Data A SRAM: 16 KB (9 KB free)
+Blackfin L1 Data B SRAM: 16 KB (16 KB free)
+Blackfin L1 Instruction SRAM: 48 KB (37 KB free)
+NET: Registered protocol family 16
+Blackfin DMA Controller
+cm_bf537e_init(): registering device resources
+bio: create slab <bio-0> at 0
+SCSI subsystem initialized
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+msgmni has been set to 80
+io scheduler noop registered (default)
+io scheduler cfq registered
+bfin_sport: registered sport0
+bfin_sport: registered sport1
+bfin-uart: Blackfin serial driver
+bfin-uart.0: ttyBF0 at MMIO 0xffc00400 (irq = 18) is a BFIN-UART
+bfin-uart.1: ttyBF1 at MMIO 0xffc02000 (irq = 20) is a BFIN-UART
+brd: module loaded
+scsi0 : pata_platform
+ata1: PATA max PIO0 mmio cmd 0x20314020 ctl 0x2031401c irq 57
+gpio-addr-flash: probing 16-bit flash bus
+gpio-addr-flash: Found 1 x16 devices at 0x0 in 16-bit bank
+NOR chip too large to fit in mapping. Attempting to cope...
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+Using buffer write method
+Using auto-unlock on power-up/resume
+cfi_cmdset_0001: Erase suspend on write enabled
+Reducing visibility of 16384KiB chip to 4096KiB
+RedBoot partition parsing not available
+gpio-addr-flash: Using board partition definition
+Creating 3 MTD partitions on "gpio-addr-flash":
+0x000000000000-0x000000040000 : "bootloader(nor)"
+0x000000040000-0x000000140000 : "linux kernel(nor)"
+0x000000140000-0x000000400000 : "file system(nor)"
+bfin_mii_bus: probed
+bfin_mac: attached PHY driver [Generic PHY] (mii_bus:phy_addr=0:00, irq=-1, mdc_clk=2500000Hz(mdc_div=24)@sclk=125MHz)
+bfin_mac bfin_mac.0: Blackfin on-chip Ethernet MAC driver, Version 1.1
+rtc-bfin rtc-bfin: rtc core: registered rtc-bfin as rtc0
+bfin-wdt: initialized: timeout=20 sec (nowayout=0)
+TCP cubic registered
+NET: Registered protocol family 17
+rtc-bfin rtc-bfin: setting system clock to 1970-11-28 20:34:58 UTC (28672498)
+dma_alloc_init: dma_page @ 0x0146a000 - 256 pages at 0x02f00000
+ata1.00: CFA: LEXAR ATA FLASH CARD, 20131216, max UDMA7
+ata1.00: 1000341504 sectors, multi 0: LBA48
+ata1.00: configured for PIO
+ata1.00: configured for PIO
+ata1: EH complete
+scsi 0:0:0:0: Direct-Access     ATA      LEXAR ATA FLASH  2013 PQ: 0 ANSI: 5
+sd 0:0:0:0: Attached scsi generic sg0 type 0
+sd 0:0:0:0: [sda] 1000341504 512-byte logical blocks: (512 GB/477 GiB)
+sd 0:0:0:0: [sda] Write Protect is off
+sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+ sda: sda1
+sd 0:0:0:0: [sda] Attached SCSI removable disk
+Freeing unused kernel memory: 4224k freed
+                           _____________________________________
+        a8888b.           / Welcome to the uClinux distribution \
+       d888888b.         /       _     _                         \
+       8P"YP"Y88        /       | |   |_|            __  __ (TM)  |
+       8|o||o|88  _____/        | |    _ ____  _   _ \ \/ /       |
+       8'    .88       \        | |   | |  _ \| | | | \  /        |
+       8`._.' Y8.       \       | |__ | | | | | |_| | /  \        |
+      d/      `8b.       \      \____||_|_| |_|\____|/_/\_\       |
+     dP   .    Y8b.       \   For embedded processors including   |
+    d8:'  "  `::88b        \    the Analog Devices Blackfin      /
+   d8"         'Y88b        \___________________________________/
+  :8P    '      :888
+   8a.   :     _a88P         For further information, check out:
+ ._/"Yaa_:   .| 88P|            - http://blackfin.uclinux.org/
+ \    YP"    `| 8P  `.          - http://docs.blackfin.uclinux.org/
+ /     \.___.d|    .'           - http://www.uclinux.org/
+ `--..__)8888P`._.'  jgs/a:f    - http://www.analog.com/blackfin
+
+Have a lot of fun...
+
+
+                            powered by
+         ____  _            _            _           _
+        | __ )| |_   _  ___| |_ ___  ___| |__  _ __ (_)_  __
+        |  _ \| | | | |/ _ \ __/ _ \/ __| '_ \| '_ \| \ \/ /
+        | |_) | | |_| |  __/ ||  __/ (__| | | | | | | |>  <
+        |____/|_|\__,_|\___|\__\___|\___|_| |_|_| |_|_/_/\_\
+
+                        www.bluetechnix.com
+
+--- Embedded Ocean Systems WISPR V1.0 ---
+Starting recording and detection.
+Enter 'q' to stop.
+qqqq
+qqqqqqqMounted /mnt successful
+qqqqq
+70/11/28 20:35:25 WISPR STARTED
+70/11/28 20:35:25 File system: 511969.49 MB of 512046.66 MB (99.98%) available
+70/11/28 20:35:25 Total recording time 568.86 hours
+70/11/28 20:35:25 ADC buffer duration = 7.995392 sec, 999424 samples
+70/11/28 20:35:25 ADC fs = 125000 Hz, gain = 0, bitshift = 8
+70/11/28 20:35:25 sport_adc_alloc_pmem_buffers: adc buffer duration = 7.995392
+70/11/28 20:35:25 sport_adc_alloc_pmem_buffers: 11993088 bytes required for adc buffers
+70/11/28 20:35:25 sport_adc_alloc_pmem_buffers: sysinfo total RAM 0x2c92000
+70/11/28 20:35:25 sport_adc_alloc_pmem_buffers: BFIN_PMEM_START: 0x3000000, BFIN_PMEM_END: 0x3f00000
+70/11/28 20:35:27 RTC message No RTC function, no clock or location set.
+70/11/28 20:35:27 wdt_open: watchdog set with timeout=20 seconds
+70/11/28 20:35:27 ad7766_start_clock: fs=125000, mclk=1000000, rsclk=5000000, sclk=125000000
+70/11/28 20:35:35 sport_adc_read_dma: timestamp 28672535.148
+70/11/28 20:35:35 FLAC Initialized
+70/11/28 20:35:35 wispr_flac_finish: encoder is not initialized
+70/11/28 20:35:35 New file wispr_701128_203535
+70/11/28 20:35:36 wispr_flac_write_int16: 999424 samples written
+70/11/28 20:35:43 sport_adc_read_dma: timestamp 28672535.148
+70/11/28 20:35:44 wispr_flac_write_int16: 999424 samples written
+70/11/28 20:35:51 sport_adc_read_dma: timestamp 28672543.144
+70/11/28 20:35:52 wispr_flac_write_int16: 999424 samples written
+70/11/28 20:35:59 sport_adc_read_dma: timestamp 28672551.140
+70/11/28 20:36:01 wispr_flac_write_int16: 999424 samples written
+70/11/28 20:36:07 sport_adc_read_dma: timestamp 28672559.136
+70/11/28 20:36:08 wispr_flac_write_int16: 999424 samples written
+70/11/28 20:36:15 sport_adc_read_dma: timestamp 28672567.132
+70/11/28 20:36:16 wispr_flac_write_int16: 999424 samples written
+70/11/28 20:36:16 com_parse_msg: EXI
+/bin/umount /mnt returned: 0
+
+
+BusyBox v1.16.2 (2011-03-06 14:29:17 PST) hush - the humble shell
+Enter 'help' for a list of built-in commands.
+
+root:/> qqqqqqqqqqqq
+sh: can't execute 'qqqqqqqqqqqq': No such file or directory
+root:/> mount /dev/sd1 /mnt
+mount: mounting /dev/sd1 on /mnt failed: No such file or directory
+root:/> mount /dev/sda /mnt
+mount: mounting /dev/sda on /mnt failed: Invalid argument
+root:/> mount /dev/sda1 /mnt
+root:/> cd /mnt
+root:/mnt> ls
+clicks.wav                start                     wispr_700101_051948.flac
+com.dtx                   wispr.log                 wispr_700101_052140.flac
+console_prompt            wispr_180402_115439.flac  wispr_701128_203535.flac
+gaintest                  wispr_180402_115631.flac  wispr_710305_073618.flac
+spectrogram8kHz           wispr_180402_115831.flac  wispr_bw
+root:/mnt> vi start
+
+echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+
+# to check it type cat /proc/cpuinfo
+
+sleep 1
+
+# clear cache to free memory
+sync; echo 3 > /proc/sys/vm/drop_caches
+sleep 1
+
+# Start detection/recording
+#echo "WISPR recording and detection started."
+
+cp /mnt/wispr_bw /bin
+cp /mnt/spectrogram8kHz /bin/spectrogram
+#chmod 777 /bin/wispr_bw
+chmod 777 /bin/spectrogram
+#/bin/wispr_bw -T8 -b15 -M2 -F2 -l wispr.log -v2 -r -g0
+#/bin/wispr_bw -T8 -b15 -M2 -F2 -v2 -g0
+#mount /dev/sda1 /mnt
+/bin/spectrogram -T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log
+
+root:/mnt> reboot
+Restarting system.
+
+U-Boot 2010.09-00125-g741ba99 (ADI-2011R1-pre) (Oct 11 2011 - 12:57:40)
+
+CPU:   ADSP bf537-0.2 (Detected Rev: 0.3) (bypass boot)
+Board: Bluetechnix CM-BF537E-64SD board
+       Support: http://www.bluetechnix.at/
+Clock: VCO: 525 MHz, Core: 525 MHz, System: 131.250 MHz
+RAM:   64 MiB
+Flash: ERROR: too many flash sectors
+16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+KGDB:  [on serial] ready
+Net:   smc911x: Invalid chip endian 0x0023e100
+bfin_mac
+Hit any key to stop autoboot:  0
+Done.
+## Booting kernel from Legacy Image at 01000000 ...
+   Image Name:   bf537-2.6.34.7-ADI-2010R1
+   Created:      2011-03-06  22:31:54 UTC
+   Image Type:   Blackfin Linux Kernel Image (gzip compressed)
+   Data Size:    3076899 Bytes = 2.9 MiB
+   Load Address: 00001000
+   Entry Point:  001eb514
+   Verifying Checksum ... OK
+   Uncompressing Kernel Image ... OK
+Starting Kernel at = 001eb514
+Linux version 2.6.34.7-ADI-2010R1 (cjones@localhost.localdomain) (gcc version 4.3.5 (ADI-2010R1-RC4) ) #128 Sun Mar 6 14:31:51 PST 2011
+register early platform devices
+bootconsole [early_shadow0] enabled
+bootconsole [early_BFuart0] enabled
+early printk enabled on early_BFuart0
+Board Memory: 64MB
+Kernel Managed Memory: 48MB
+Memory map:
+  fixedcode = 0x00000400-0x00000490
+  text      = 0x00001000-0x0014fe08
+  rodata    = 0x0014fe08-0x001bd9cc
+  bss       = 0x001be000-0x001ce6f8
+  data      = 0x001ce6f8-0x001e0000
+    stack   = 0x001de000-0x001e0000
+  init      = 0x001e0000-0x00600000
+  available = 0x00600000-0x02f00000
+  DMA Zone  = 0x02f00000-0x03000000
+Hardware Trace Active and Enabled
+Boot Mode: 0
+Reset caused by Software reset
+Blackfin support (C) 2004-2010 Analog Devices, Inc.
+Compiled for ADSP-BF537 Rev 0.3
+Blackfin Linux support by http://blackfin.uclinux.org/
+Processor Speed: 500 MHz core clock and 125 MHz System Clock
+NOMPU: setting up cplb tables
+Instruction Cache Enabled for CPU0
+  External memory: cacheable in instruction cache
+Data Cache Enabled for CPU0
+  External memory: cacheable (write-back) in data cache
+Built 1 zonelists in Zone order, mobility grouping off.  Total pages: 11938
+Kernel command line: root=/dev/mtdblock0 rw clkin_hz=25000000 earlyprintk=serial,uart0,115200 mem=48M max_mem=64M$# console=ttyBF0,115200
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory available: 41416k/49152k RAM, (4224k init code, 1339k kernel code, 577k data, 1024k dma, 572k reserved)
+Hierarchical RCU implementation.
+NR_IRQS:138
+Configuring Blackfin Priority Driven Interrupts
+console [ttyBF0] enabled, bootconsole disabled
+console [ttyBF0] enabled, bootconsole disabled
+Calibrating delay loop... 997.37 BogoMIPS (lpj=1994752)
+Mount-cache hash table entries: 512
+Blackfin Scratchpad data SRAM: 4 KB
+Blackfin L1 Data A SRAM: 16 KB (9 KB free)
+Blackfin L1 Data B SRAM: 16 KB (16 KB free)
+Blackfin L1 Instruction SRAM: 48 KB (37 KB free)
+NET: Registered protocol family 16
+Blackfin DMA Controller
+cm_bf537e_init(): registering device resources
+bio: create slab <bio-0> at 0
+SCSI subsystem initialized
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+msgmni has been set to 80
+io scheduler noop registered (default)
+io scheduler cfq registered
+bfin_sport: registered sport0
+bfin_sport: registered sport1
+bfin-uart: Blackfin serial driver
+bfin-uart.0: ttyBF0 at MMIO 0xffc00400 (irq = 18) is a BFIN-UART
+bfin-uart.1: ttyBF1 at MMIO 0xffc02000 (irq = 20) is a BFIN-UART
+brd: module loaded
+scsi0 : pata_platform
+ata1: PATA max PIO0 mmio cmd 0x20314020 ctl 0x2031401c irq 57
+gpio-addr-flash: probing 16-bit flash bus
+gpio-addr-flash: Found 1 x16 devices at 0x0 in 16-bit bank
+NOR chip too large to fit in mapping. Attempting to cope...
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+Using buffer write method
+Using auto-unlock on power-up/resume
+cfi_cmdset_0001: Erase suspend on write enabled
+Reducing visibility of 16384KiB chip to 4096KiB
+RedBoot partition parsing not available
+gpio-addr-flash: Using board partition definition
+Creating 3 MTD partitions on "gpio-addr-flash":
+0x000000000000-0x000000040000 : "bootloader(nor)"
+0x000000040000-0x000000140000 : "linux kernel(nor)"
+0x000000140000-0x000000400000 : "file system(nor)"
+bfin_mii_bus: probed
+bfin_mac: attached PHY driver [Generic PHY] (mii_bus:phy_addr=0:00, irq=-1, mdc_clk=2500000Hz(mdc_div=24)@sclk=125MHz)
+bfin_mac bfin_mac.0: Blackfin on-chip Ethernet MAC driver, Version 1.1
+rtc-bfin rtc-bfin: rtc core: registered rtc-bfin as rtc0
+bfin-wdt: initialized: timeout=20 sec (nowayout=0)
+TCP cubic registered
+NET: Registered protocol family 17
+rtc-bfin rtc-bfin: setting system clock to 1970-11-28 20:39:09 UTC (28672749)
+dma_alloc_init: dma_page @ 0x0147f000 - 256 pages at 0x02f00000
+ata1.00: CFA: LEXAR ATA FLASH CARD, 20131216, max UDMA7
+ata1.00: 1000341504 sectors, multi 0: LBA48
+ata1.00: configured for PIO
+ata1.00: configured for PIO
+ata1: EH complete
+scsi 0:0:0:0: Direct-Access     ATA      LEXAR ATA FLASH  2013 PQ: 0 ANSI: 5
+sd 0:0:0:0: Attached scsi generic sg0 type 0
+sd 0:0:0:0: [sda] 1000341504 512-byte logical blocks: (512 GB/477 GiB)
+sd 0:0:0:0: [sda] Write Protect is off
+sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+ sda: sda1
+sd 0:0:0:0: [sda] Attached SCSI removable disk
+Freeing unused kernel memory: 4224k freed
+                           _____________________________________
+        a8888b.           / Welcome to the uClinux distribution \
+       d888888b.         /       _     _                         \
+       8P"YP"Y88        /       | |   |_|            __  __ (TM)  |
+       8|o||o|88  _____/        | |    _ ____  _   _ \ \/ /       |
+       8'    .88       \        | |   | |  _ \| | | | \  /        |
+       8`._.' Y8.       \       | |__ | | | | | |_| | /  \        |
+      d/      `8b.       \      \____||_|_| |_|\____|/_/\_\       |
+     dP   .    Y8b.       \   For embedded processors including   |
+    d8:'  "  `::88b        \    the Analog Devices Blackfin      /
+   d8"         'Y88b        \___________________________________/
+  :8P    '      :888
+   8a.   :     _a88P         For further information, check out:
+ ._/"Yaa_:   .| 88P|            - http://blackfin.uclinux.org/
+ \    YP"    `| 8P  `.          - http://docs.blackfin.uclinux.org/
+ /     \.___.d|    .'           - http://www.uclinux.org/
+ `--..__)8888P`._.'  jgs/a:f    - http://www.analog.com/blackfin
+
+Have a lot of fun...
+
+
+                            powered by
+         ____  _            _            _           _
+        | __ )| |_   _  ___| |_ ___  ___| |__  _ __ (_)_  __
+        |  _ \| | | | |/ _ \ __/ _ \/ __| '_ \| '_ \| \ \/ /
+        | |_) | | |_| |  __/ ||  __/ (__| | | | | | | |>  <
+        |____/|_|\__,_|\___|\__\___|\___|_| |_|_| |_|_/_/\_\
+
+                        www.bluetechnix.com
+
+--- Embedded Ocean Systems WISPR V1.0 ---
+Starting recording and detection.
+Enter 'q' to stop.
+70/11/28 20:39:17 Total Kernel RAM 0x2c92000
+70/11/28 20:39:17 BFIN_PMEM_START = 0x3000000
+Mounted /mnt successful
+Logging all messages to /mnt/noise.log
+
+
+BusyBox v1.16.2 (2011-03-06 14:29:17 PST) hush - the humble shell
+Enter 'help' for a list of built-in commands.
+
+root:/> cat /mnt/noise.log
+cat: can't open '/mnt/noise.log': No such file or directory
+root:/> mount /dev/sda1 /mnt
+root:/> cat /mnt/noise.log
+70/11/28 20:39:17 WISPR SPECTROGRAM STARTED
+70/11/28 20:39:17 Fudge factor = 30 dB
+70/11/28 20:39:27 First dma buffer ignored, nsamps = 1249280
+70/11/28 20:39:37 spectrogram: 1219 time bins, 257 frequency bins
+70/11/28 20:39:38 Uncalibrated 8 kHz NL  -92.9 dB re V
+70/11/28 20:39:38 Acoustic NL   35.1 dB re uPa
+70/11/28 20:39:48 Uncalibrated 8 kHz NL  -92.4 dB re V
+70/11/28 20:39:48 Acoustic NL   35.6 dB re uPa
+70/11/28 20:39:58 Uncalibrated 8 kHz NL  -93.2 dB re V
+70/11/28 20:39:58 Acoustic NL   34.8 dB re uPa
+70/11/28 20:40:08 Uncalibrated 8 kHz NL  -91.0 dB re V
+70/11/28 20:40:08 Acoustic NL   37.0 dB re uPa
+70/11/28 20:40:18 Uncalibrated 8 kHz NL  -88.4 dB re V
+70/11/28 20:40:18 Acoustic NL   39.6 dB re uPa
+70/11/28 20:40:28 Uncalibrated 8 kHz NL  -89.4 dB re V
+70/11/28 20:40:28 Acoustic NL   38.6 dB re uPa
+70/11/28 20:40:38 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:40:38 Acoustic NL   34.4 dB re uPa
+70/11/28 20:40:48 Uncalibrated 8 kHz NL  -93.7 dB re V
+70/11/28 20:40:48 Acoustic NL   34.3 dB re uPa
+70/11/28 20:40:58 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:40:58 Acoustic NL   34.4 dB re uPa
+70/11/28 20:41:08 Uncalibrated 8 kHz NL  -93.4 dB re V
+70/11/28 20:41:08 Acoustic NL   34.6 dB re uPa
+70/11/28 20:41:18 Uncalibrated 8 kHz NL  -93.3 dB re V
+70/11/28 20:41:18 Acoustic NL   34.7 dB re uPa
+70/11/28 20:41:28 Uncalibrated 8 kHz NL  -93.7 dB re V
+70/11/28 20:41:28 Acoustic NL   34.3 dB re uPa
+70/11/28 20:41:28 Average noise level 35 dB, Wind Speed 2 m/s
+70/11/28 20:41:28 Wait for 20 sec CF2 inquiry $WS?*
+root:/> reboot
+Restarting system.
+
+U-Boot 2010.09-00125-g741ba99 (ADI-2011R1-pre) (Oct 11 2011 - 12:57:40)
+
+CPU:   ADSP bf537-0.2 (Detected Rev: 0.3) (bypass boot)
+Board: Bluetechnix CM-BF537E-64SD board
+       Support: http://www.bluetechnix.at/
+Clock: VCO: 525 MHz, Core: 525 MHz, System: 131.250 MHz
+RAM:   64 MiB
+Flash: ERROR: too many flash sectors
+16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+KGDB:  [on serial] ready
+Net:   smc911x: Invalid chip endian 0x0024e100
+bfin_mac
+Hit any key to stop autoboot:  0
+Done.
+## Booting kernel from Legacy Image at 01000000 ...
+   Image Name:   bf537-2.6.34.7-ADI-2010R1
+   Created:      2011-03-06  22:31:54 UTC
+   Image Type:   Blackfin Linux Kernel Image (gzip compressed)
+   Data Size:    3076899 Bytes = 2.9 MiB
+   Load Address: 00001000
+   Entry Point:  001eb514
+   Verifying Checksum ... OK
+   Uncompressing Kernel Image ... OK
+Starting Kernel at = 001eb514
+Linux version 2.6.34.7-ADI-2010R1 (cjones@localhost.localdomain) (gcc version 4.3.5 (ADI-2010R1-RC4) ) #128 Sun Mar 6 14:31:51 PST 2011
+register early platform devices
+bootconsole [early_shadow0] enabled
+bootconsole [early_BFuart0] enabled
+early printk enabled on early_BFuart0
+Board Memory: 64MB
+Kernel Managed Memory: 48MB
+Memory map:
+  fixedcode = 0x00000400-0x00000490
+  text      = 0x00001000-0x0014fe08
+  rodata    = 0x0014fe08-0x001bd9cc
+  bss       = 0x001be000-0x001ce6f8
+  data      = 0x001ce6f8-0x001e0000
+    stack   = 0x001de000-0x001e0000
+  init      = 0x001e0000-0x00600000
+  available = 0x00600000-0x02f00000
+  DMA Zone  = 0x02f00000-0x03000000
+Hardware Trace Active and Enabled
+Boot Mode: 0
+Reset caused by Software reset
+Blackfin support (C) 2004-2010 Analog Devices, Inc.
+Compiled for ADSP-BF537 Rev 0.3
+Blackfin Linux support by http://blackfin.uclinux.org/
+Processor Speed: 500 MHz core clock and 125 MHz System Clock
+NOMPU: setting up cplb tables
+Instruction Cache Enabled for CPU0
+  External memory: cacheable in instruction cache
+Data Cache Enabled for CPU0
+  External memory: cacheable (write-back) in data cache
+Built 1 zonelists in Zone order, mobility grouping off.  Total pages: 11938
+Kernel command line: root=/dev/mtdblock0 rw clkin_hz=25000000 earlyprintk=serial,uart0,115200 mem=48M max_mem=64M$# console=ttyBF0,115200
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory available: 41416k/49152k RAM, (4224k init code, 1339k kernel code, 577k data, 1024k dma, 572k reserved)
+Hierarchical RCU implementation.
+NR_IRQS:138
+Configuring Blackfin Priority Driven Interrupts
+console [ttyBF0] enabled, bootconsole disabled
+console [ttyBF0] enabled, bootconsole disabled
+Calibrating delay loop... 997.37 BogoMIPS (lpj=1994752)
+Mount-cache hash table entries: 512
+Blackfin Scratchpad data SRAM: 4 KB
+Blackfin L1 Data A SRAM: 16 KB (9 KB free)
+Blackfin L1 Data B SRAM: 16 KB (16 KB free)
+Blackfin L1 Instruction SRAM: 48 KB (37 KB free)
+NET: Registered protocol family 16
+Blackfin DMA Controller
+cm_bf537e_init(): registering device resources
+bio: create slab <bio-0> at 0
+SCSI subsystem initialized
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+msgmni has been set to 80
+io scheduler noop registered (default)
+io scheduler cfq registered
+bfin_sport: registered sport0
+bfin_sport: registered sport1
+bfin-uart: Blackfin serial driver
+bfin-uart.0: ttyBF0 at MMIO 0xffc00400 (irq = 18) is a BFIN-UART
+bfin-uart.1: ttyBF1 at MMIO 0xffc02000 (irq = 20) is a BFIN-UART
+brd: module loaded
+scsi0 : pata_platform
+ata1: PATA max PIO0 mmio cmd 0x20314020 ctl 0x2031401c irq 57
+gpio-addr-flash: probing 16-bit flash bus
+gpio-addr-flash: Found 1 x16 devices at 0x0 in 16-bit bank
+NOR chip too large to fit in mapping. Attempting to cope...
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+ Intel/Sharp Extended Query Table at 0x010A
+Using buffer write method
+Using auto-unlock on power-up/resume
+cfi_cmdset_0001: Erase suspend on write enabled
+Reducing visibility of 16384KiB chip to 4096KiB
+RedBoot partition parsing not available
+gpio-addr-flash: Using board partition definition
+Creating 3 MTD partitions on "gpio-addr-flash":
+0x000000000000-0x000000040000 : "bootloader(nor)"
+0x000000040000-0x000000140000 : "linux kernel(nor)"
+0x000000140000-0x000000400000 : "file system(nor)"
+bfin_mii_bus: probed
+bfin_mac: attached PHY driver [Generic PHY] (mii_bus:phy_addr=0:00, irq=-1, mdc_clk=2500000Hz(mdc_div=24)@sclk=125MHz)
+bfin_mac bfin_mac.0: Blackfin on-chip Ethernet MAC driver, Version 1.1
+rtc-bfin rtc-bfin: rtc core: registered rtc-bfin as rtc0
+bfin-wdt: initialized: timeout=20 sec (nowayout=0)
+TCP cubic registered
+NET: Registered protocol family 17
+rtc-bfin rtc-bfin: setting system clock to 1970-11-28 20:43:22 UTC (28673002)
+dma_alloc_init: dma_page @ 0x0147f000 - 256 pages at 0x02f00000
+ata1.00: CFA: LEXAR ATA FLASH CARD, 20131216, max UDMA7
+ata1.00: 1000341504 sectors, multi 0: LBA48
+ata1.00: configured for PIO
+ata1.00: configured for PIO
+ata1: EH complete
+scsi 0:0:0:0: Direct-Access     ATA      LEXAR ATA FLASH  2013 PQ: 0 ANSI: 5
+sd 0:0:0:0: Attached scsi generic sg0 type 0
+sd 0:0:0:0: [sda] 1000341504 512-byte logical blocks: (512 GB/477 GiB)
+sd 0:0:0:0: [sda] Write Protect is off
+sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+ sda: sda1
+sd 0:0:0:0: [sda] Attached SCSI removable disk
+Freeing unused kernel memory: 4224k freed
+                           _____________________________________
+        a8888b.           / Welcome to the uClinux distribution \
+       d888888b.         /       _     _                         \
+       8P"YP"Y88        /       | |   |_|            __  __ (TM)  |
+       8|o||o|88  _____/        | |    _ ____  _   _ \ \/ /       |
+       8'    .88       \        | |   | |  _ \| | | | \  /        |
+       8`._.' Y8.       \       | |__ | | | | | |_| | /  \        |
+      d/      `8b.       \      \____||_|_| |_|\____|/_/\_\       |
+     dP   .    Y8b.       \   For embedded processors including   |
+    d8:'  "  `::88b        \    the Analog Devices Blackfin      /
+   d8"         'Y88b        \___________________________________/
+  :8P    '      :888
+   8a.   :     _a88P         For further information, check out:
+ ._/"Yaa_:   .| 88P|            - http://blackfin.uclinux.org/
+ \    YP"    `| 8P  `.          - http://docs.blackfin.uclinux.org/
+ /     \.___.d|    .'           - http://www.uclinux.org/
+ `--..__)8888P`._.'  jgs/a:f    - http://www.analog.com/blackfin
+
+Have a lot of fun...
+
+
+                            powered by
+         ____  _            _            _           _
+        | __ )| |_   _  ___| |_ ___  ___| |__  _ __ (_)_  __
+        |  _ \| | | | |/ _ \ __/ _ \/ __| '_ \| '_ \| \ \/ /
+        | |_) | | |_| |  __/ ||  __/ (__| | | | | | | |>  <
+        |____/|_|\__,_|\___|\__\___|\___|_| |_|_| |_|_/_/\_\
+
+                        www.bluetechnix.com
+
+--- Embedded Ocean Systems WISPR V1.0 ---
+Starting recording and detection.
+Enter 'q' to stop.
+70/11/28 20:43:30 Total Kernel RAM 0x2c92000
+70/11/28 20:43:30 BFIN_PMEM_START = 0x3000000
+Mounted /mnt successful
+Logging all messages to /mnt/noise.log
+
+
+BusyBox v1.16.2 (2011-03-06 14:29:17 PST) hush - the humble shell
+Enter 'help' for a list of built-in commands.
+
+root:/> mount /dev/sda1 /mnt
+root:/> cat /mnt/noise.log
+70/11/28 20:39:17 WISPR SPECTROGRAM STARTED
+70/11/28 20:39:17 Fudge factor = 30 dB
+70/11/28 20:39:27 First dma buffer ignored, nsamps = 1249280
+70/11/28 20:39:37 spectrogram: 1219 time bins, 257 frequency bins
+70/11/28 20:39:38 Uncalibrated 8 kHz NL  -92.9 dB re V
+70/11/28 20:39:38 Acoustic NL   35.1 dB re uPa
+70/11/28 20:39:48 Uncalibrated 8 kHz NL  -92.4 dB re V
+70/11/28 20:39:48 Acoustic NL   35.6 dB re uPa
+70/11/28 20:39:58 Uncalibrated 8 kHz NL  -93.2 dB re V
+70/11/28 20:39:58 Acoustic NL   34.8 dB re uPa
+70/11/28 20:40:08 Uncalibrated 8 kHz NL  -91.0 dB re V
+70/11/28 20:40:08 Acoustic NL   37.0 dB re uPa
+70/11/28 20:40:18 Uncalibrated 8 kHz NL  -88.4 dB re V
+70/11/28 20:40:18 Acoustic NL   39.6 dB re uPa
+70/11/28 20:40:28 Uncalibrated 8 kHz NL  -89.4 dB re V
+70/11/28 20:40:28 Acoustic NL   38.6 dB re uPa
+70/11/28 20:40:38 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:40:38 Acoustic NL   34.4 dB re uPa
+70/11/28 20:40:48 Uncalibrated 8 kHz NL  -93.7 dB re V
+70/11/28 20:40:48 Acoustic NL   34.3 dB re uPa
+70/11/28 20:40:58 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:40:58 Acoustic NL   34.4 dB re uPa
+70/11/28 20:41:08 Uncalibrated 8 kHz NL  -93.4 dB re V
+70/11/28 20:41:08 Acoustic NL   34.6 dB re uPa
+70/11/28 20:41:18 Uncalibrated 8 kHz NL  -93.3 dB re V
+70/11/28 20:41:18 Acoustic NL   34.7 dB re uPa
+70/11/28 20:41:28 Uncalibrated 8 kHz NL  -93.7 dB re V
+70/11/28 20:41:28 Acoustic NL   34.3 dB re uPa
+70/11/28 20:41:28 Average noise level 35 dB, Wind Speed 2 m/s
+70/11/28 20:41:28 Wait for 20 sec CF2 inquiry $WS?*
+70/11/28 20:43:30 WISPR SPECTROGRAM STARTED
+70/11/28 20:43:30 Fudge factor = 30 dB
+70/11/28 20:43:40 First dma buffer ignored, nsamps = 1249280
+70/11/28 20:43:50 spectrogram: 1219 time bins, 257 frequency bins
+70/11/28 20:43:51 Uncalibrated 8 kHz NL  -93.2 dB re V
+70/11/28 20:43:51 Acoustic NL   34.8 dB re uPa
+70/11/28 20:44:01 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:44:01 Acoustic NL   34.4 dB re uPa
+70/11/28 20:44:11 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:44:11 Acoustic NL   34.4 dB re uPa
+70/11/28 20:44:21 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:44:21 Acoustic NL   34.4 dB re uPa
+70/11/28 20:44:31 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:44:31 Acoustic NL   34.4 dB re uPa
+70/11/28 20:44:41 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:44:41 Acoustic NL   34.4 dB re uPa
+70/11/28 20:44:51 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:44:51 Acoustic NL   34.4 dB re uPa
+70/11/28 20:45:01 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:45:01 Acoustic NL   34.4 dB re uPa
+70/11/28 20:45:11 Uncalibrated 8 kHz NL  -93.5 dB re V
+70/11/28 20:45:11 Acoustic NL   34.5 dB re uPa
+70/11/28 20:45:21 Uncalibrated 8 kHz NL  -93.7 dB re V
+70/11/28 20:45:21 Acoustic NL   34.3 dB re uPa
+70/11/28 20:45:31 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:45:31 Acoustic NL   34.4 dB re uPa
+70/11/28 20:45:41 Uncalibrated 8 kHz NL  -93.6 dB re V
+70/11/28 20:45:41 Acoustic NL   34.4 dB re uPa
+70/11/28 20:45:41 Average noise level 34 dB, Wind Speed 2 m/s
+70/11/28 20:45:41 Wait for 20 sec CF2 inquiry $WS?*
+root:/>
+

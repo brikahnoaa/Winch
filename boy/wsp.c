@@ -29,6 +29,28 @@ void wspInit(void) {
 } // wspInit
 
 ///
+// uses: wsp.card
+void wspStart(void) {
+  mpcPamDev(wsp1_pam);
+  len = wspData(utlBuf);
+  //  mpcPamDev(wsp2_pam);
+  //utlNap(20);
+  //len = wspData(utlBuf);
+  mpcPamDev(null_pam);
+} // wspStart
+
+///
+// wsp started. interact.
+int wspRead(char *buf) {
+  int len;
+  utlNap(20);
+  utlWrite(wsp.port, "$WS?*", EOL);
+  len = utlReadWait(wsp.port, buf, 600);
+  flogf("\nwspRead()->'%s'", buf);
+  return len;
+} // wspRead
+
+///
 void wspStop(void){
   mpcPamDev(null_pam);
   if (wsp.log) 

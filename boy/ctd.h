@@ -28,4 +28,5 @@ void ctdAuton(bool auton);
 void ctdGetSamples(void);
 void ctdInit(void);
 void ctdLog(bool on);
+void ctdStart(void);
 void ctdStop(void);

@@ -43,6 +43,11 @@ void ctdInit(void) {
 } // ctdInit
 
 ///
+void ctdStart(void) {
+  mpcPamDev(sbe16_pam);
+}
+
+///
 void ctdStop(void){
   mpcPamDev(null_pam);
   if (ctd.log) 
