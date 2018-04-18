@@ -10,7 +10,7 @@ extern CtdInfo ctd;
 void main(void){
   sysInit();
   mpcInit();
-  ctdInit();
+  // ctdInit();
   wspInit();
   cprintf("\n+dataPhase()@%s", utlDateTime());
   wspStart();
