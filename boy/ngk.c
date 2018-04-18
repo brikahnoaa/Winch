@@ -86,11 +86,11 @@ MsgType ngkRecv() {
   MsgType msg;
   if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
-  flogf("\n+ngkRecv(%s) at %s", utlBuf, utlTime());
+  flogf("\n+ngkRecv(%s)", utlBuf);
   msg = msgParse(utlBuf);
   if (msg!=mangled_msg)
     utlWrite(ngk.port, "OK", EOL);
-  flogf("\n+ngkRecv(%s) at %s", ngk.msgName[msg], utlTime());
+  flogf(" %s %s", ngk.msgName[msg], utlTime());
   if (msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
     return null_msg;

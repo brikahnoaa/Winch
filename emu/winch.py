@@ -108,8 +108,9 @@ def amodInput():
     ser.log( "hearing %s" % l )
     if "OK" in l:
         return
-    if len(l) > 6: 
+    if len(l) > 3: 
         ser.putline( "OK" )
+        ser.flush()
         # this sleep applies to all cases below
         sleep(amodDelay)
     # rise
