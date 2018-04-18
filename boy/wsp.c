@@ -43,19 +43,21 @@ void wspStart(void) {
 // wsp started. interact.
 int wspRead(char *buf) {
   int i, len = 0;
-  for (i=0; i<20; i++) {
+  flogf("\nWISPR storm detection");
+  for (i=0; i<40; i++) {
     cprintf(".");
     utlNap(5);
-  }
-  utlWrite(wsp.port, "$WS?*", EOL);
-  for (i=0; i<20; i++) {
-    if (wspData()) {
-      len = utlReadWait(wsp.port, buf, 10);
-      flogf("\nwspRead()->'%s'", buf);
+    len = utlReadWait(wsp.port, buf, 1);
+    if (len) {
+      flogf(" %d->'%s'", len, buf);
+      utlWrite(wsp.port, "$WS?*", EOL);
+      utlNap(5);
+      len = utlReadWait(wsp.port, buf, 1);
+    }
+    if (len>8) {
+      flogf(" %d->'%s'", len, buf);
       return len;
     }
-    cprintf(".");
-    utlNap(5);
   }
   return len;
 } // wspRead
