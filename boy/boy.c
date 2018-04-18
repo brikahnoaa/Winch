@@ -425,10 +425,13 @@ PhaseType dropPhase() {
     }
   } // while msg
   // step 4: docked?
+  depth = antDepth();
   if (!boyDocked(depth)) {
     // if stop but not docked, cable is stuck
+    utlErr(ngk_err, "dropPhase step 4, we should be docked");
     sysAlarm(cableStuck_alm);
-    return error_pha;
+    err++;
+    // return error_pha;
   }
   // velocity, finish science
   if (err==0) {
