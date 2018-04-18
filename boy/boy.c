@@ -353,6 +353,7 @@ PhaseType dropPhase() {
   flogf("\n+dropPhase() %s", utlTime());
   // step1. loop until dropRsp or dropping+timeout
   step = 1;
+  DBG0("dP:1")
   ngkSend( dropCmd_msg );
   while (step==1) {
     utlX();
@@ -365,6 +366,7 @@ PhaseType dropPhase() {
       dropT = time(0);
       dropD = depth;
       step = 2;
+      DBG0("dP:2")
       break; 
     default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
@@ -377,6 +379,7 @@ PhaseType dropPhase() {
         // odd, we are dropping but no response; log but allow
         flogf(" but dropping"); 
         step = 2;
+        DBG0("dP:2")
         break; // while step1
       } 
       if (++err > errMax[failStage] && ++failStage > failMax) {
@@ -398,6 +401,7 @@ PhaseType dropPhase() {
     if (antMoving()<=0.0)
       step = 3;
   }
+  DBG0("dP:3")
   // step 3: stopCmd Rsp
   tmrStart(winch_tmr, 10);        // ?? this should be ngk.delay
   while (step==3) {
@@ -408,6 +412,7 @@ PhaseType dropPhase() {
     case stopCmd_msg:
       ngkSend(stopRsp_msg);
       step = 4;
+      DBG0("dP:4")
       break;
     default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
@@ -416,6 +421,7 @@ PhaseType dropPhase() {
       flogf(" timeout");
       // ok, we are not dropping (step2)
       step = 4;
+      DBG0("dP:4")
     }
   } // while msg
   // step 4: docked?
