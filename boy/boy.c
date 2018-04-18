@@ -27,6 +27,7 @@ void boyMain() {
   boyInit();
   ctdInit();
   ngkInit();
+  wspInit();
   pwrInit();
   if (starts>1) 
     boy.phase = reboot_pha;

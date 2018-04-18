@@ -149,16 +149,16 @@ def amodOutput():
         e += len(ser.eol)
     else: e = len(b)
     ser.put( b[:e] )
-    # repeat twice
-    i = 2
-    while (i > 0):
-        sleep(1)
-        if ser.in_waiting:
-            amodInput()
-            break
-        else:
-            ser.put( b[:e] )
-            i -= 1
+    # expect OK response, else repeat thrice
+    # i = 2
+    # while (i > 0):
+        # sleep(1)
+        # if ser.in_waiting:
+            # amodInput()
+            # break
+        # else:
+            # ser.put( b[:e] )
+            # i -= 1
     buffOut = b[e:]
 
 def amodPut(s):

@@ -65,15 +65,14 @@ void ngkSend(MsgType msg) {
   utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
-  if (msg==dropCmd_msg || msg==riseCmd_msg 
-   || msg==stopCmd_msg || msg==surfCmd_msg) 
-    tmrStart(winch_tmr, ngk.delay*2+1);
-  str[0] = 0;
-  if (utlReadWait(ngk.port, str, 2)==0)
+  if (utlReadWait(ngk.port, str, 6)==0)
     utlErr(ngk_err, "expected OK, no response");
   // str should include "OK"
   if (strstr(str, "OK")==NULL)
     flogf("\n\t| ngkSend() amodem bad response '%s'", utlNonPrint(str));
+  if (msg==dropCmd_msg || msg==riseCmd_msg 
+   || msg==stopCmd_msg || msg==surfCmd_msg) 
+    tmrStart(winch_tmr, ngk.delay*2+1);
 } // ngkSend
 
 ///

@@ -10,9 +10,9 @@ extern CtdInfo ctd;
 void main(void){
   sysInit();
   mpcInit();
-  ngkInit();
-  cprintf("");
-  while (true) {
+  // ctdInit();
+  wspInit();
+  cprintf("\n+dataPhase()@%s", utlDateTime());
   wspStart();
   wspStop();
 }
