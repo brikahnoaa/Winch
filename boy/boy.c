@@ -396,6 +396,8 @@ PhaseType dropPhase() {
     } // if timeout
   } // while step1
   // step 2: drop til you stop
+  antFlush();
+  utlNap(20);
   while (step==2) {
     utlX();
     depth = antDepth();
@@ -443,8 +445,8 @@ PhaseType dropPhase() {
       boy.dropVFirst = boy.dropVLast;
   }
   // get samples, depends on ant. ctd.logging
-  antGetSamples();
-  ctdGetSamples();
+  // antGetSamples();
+  // ctdGetSamples();
   // turn off ant, clear ngk, clear ctd
   ngkStop();
   ctdStop();

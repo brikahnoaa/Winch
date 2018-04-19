@@ -21,8 +21,8 @@ CtdInfo ctd;
 // sets: ctd.port .ctdPending
 void ctdInit(void) {
   DBG0("ctdInit()")
-  mpcPamDev(sbe16_pam);
   ctd.port = mpcPamPort();
+  ctdStart();
   ctdAuton(false);
   tmrStop(ctd_tmr);
   if (!ctdPrompt())
@@ -40,6 +40,10 @@ void ctdInit(void) {
     strcpy(ctd.sample, "TSSon");
   else
     strcpy(ctd.sample, "TS");
+  utlWrite(ctd.port, "initLogging", EOL);
+  utlWrite(ctd.port, "initLogging", EOL);
+  utlReadWait(ctd.port, utlBuf, 1);
+  ctdStop();
 } // ctdInit
 
 ///
