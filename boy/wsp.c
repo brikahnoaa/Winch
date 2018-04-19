@@ -50,7 +50,8 @@ int wspRead(char *buf) {
     len = utlReadWait(wsp.port, buf, 1);
     if (len) {
       flogf(" %d->'%s'", len, buf);
-      utlWrite(wsp.port, "$WS?*", EOL);
+      if (strstr(buf, "RDY"))
+        utlWrite(wsp.port, "$WS?*", EOL);
       utlNap(5);
       len = utlReadWait(wsp.port, buf, 1);
     }

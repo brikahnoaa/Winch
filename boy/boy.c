@@ -351,6 +351,7 @@ PhaseType dropPhase() {
   time_t dropT;
   MsgType msg;
   flogf("\n+dropPhase() %s", utlTime());
+  antFlush();
   // step1. loop until dropRsp or dropping+timeout
   step = 1;
   DBG0("dP:1")
@@ -403,16 +404,16 @@ PhaseType dropPhase() {
   }
   DBG0("dP:3")
   // step 3: stopCmd Rsp
-  tmrStart(winch_tmr, 10);        // ?? this should be ngk.delay
+  tmrStart(winch_tmr, 300);        // ?? 
   while (step==3) {
     utlX();
+    depth = antDepth();
     msg = ngkRecv();
     switch (msg) {
     case null_msg: break;
     case stopCmd_msg:
       ngkSend(stopRsp_msg);
       step = 4;
-      DBG0("dP:4")
       break;
     default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
@@ -421,13 +422,14 @@ PhaseType dropPhase() {
       flogf(" timeout");
       // ok, we are not dropping (step2)
       step = 4;
-      DBG0("dP:4")
     }
   } // while msg
+  DBG0("dP:4")
   // step 4: docked?
   depth = antDepth();
   if (!boyDocked(depth)) {
     // if stop but not docked, cable is stuck
+    flogf(" not docked at %4.2f", depth);
     utlErr(ngk_err, "dropPhase step 4, we should be docked");
     sysAlarm(cableStuck_alm);
     err++;
