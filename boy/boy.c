@@ -18,7 +18,7 @@ BoyInfo boy;
 // deploy or reboot, then loop over phases data/rise/call/drop
 // sets: boy.phase .phasePrev
 void boyMain() {
-  int starts;
+  int starts, cycle;
   PhaseType phaseNext;
   // boy.phase set by sys.cfg
   starts = sysInit();
@@ -40,7 +40,7 @@ void boyMain() {
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
-      if (boy.cycleLimit && (boy.cycle++ > boy.cycleLimit))
+      if (boy.cycles && (cycle++ > boy.cycles))
         sysStop("cycleLimit");
       break;
     case rise_pha: // Ascend buoy, check for current and ice
