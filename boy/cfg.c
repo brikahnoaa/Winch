@@ -52,7 +52,7 @@ static CfgParam cfgP[] = {
   {"bcX", "boy.currMax",    &boy.currMax,     'f'},
   {"bcf", "boy.callFreq",   &boy.callFreq,    'i'},
   {"bch", "boy.callHour",   &boy.callHour,    'i'},
-  {"bcL", "boy.cycleLimit", &boy.cycleLimit,  'i'},
+  {"bcy", "boy.cycles",     &boy.cycles,      'i'},
   {"bfn", "boy.fileNum",    &boy.fileNum,     'i'},
   {"bph", "boy.phase",      &boy.phase,       'i'},
   {"ccw", "cfg.wild",       &cfg.wild,        'c'},
