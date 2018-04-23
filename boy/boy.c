@@ -40,6 +40,8 @@ void boyMain() {
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
+      if (boy.cycleLimit && (boy.cycle++ > boy.cycleLimit))
+        sysStop("cycleLimit");
       break;
     case rise_pha: // Ascend buoy, check for current and ice
       phaseNext = risePhase();
@@ -165,8 +167,8 @@ bool riseToSurf(void) {
       flogf("\n\t|riseUp() unexpected %s at %4.2f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antMoving()<0.0) {
-        // odd, we are rising but no response; log but ignore
+      if (startD - depth > 2) {       // ?? should be antMoving()
+        // odd, we are rising but no riseRsp - log but ignore
         flogf("\n\t|riseUp() timeout on ngk, but rising so continue...");
         step = 2;
         continue;
@@ -211,7 +213,7 @@ bool riseToSurf(void) {
 // sets: boy.lastRise .firstRise, (*msg) 
 // returns: bool
 bool riseUp(float targetD, int errMax, int delay) {
-  float depth, startD;
+  float depth, startD, stopD;
   MsgType msg;
   int err = 0, step = 1;
   time_t riseT;
@@ -240,7 +242,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antMoving()<0.0) {
+      if (startD - depth > 2) {       // ?? should be antMoving()
         // odd, we are rising but no response; log but ignore
         flogf("\n\t|riseUp() timeout on ngk, but rising so continue..."); 
         step = 2;
@@ -269,6 +271,7 @@ bool riseUp(float targetD, int errMax, int delay) {
     depth = antDepth();
     if (depth<=targetD) {
       ngkSend( stopCmd_msg );
+      stopD = depth;
       step = 3;
     }
     // shouldn't get winch msg in step 2 // ?? utlErr
@@ -295,7 +298,10 @@ bool riseUp(float targetD, int errMax, int delay) {
       flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      if (antMoving()==0.0) {
+      stopD = antDepth();      // ?? should be antMoving
+      utlNap(5);
+      depth = antDepth();
+      if (abs(stopD-depth)<0.5) {   // ?? bad hack
         // odd, we are stopped but no response; log but ignore
         flogf("\n\t|riseUp() stopCmd timeout, but stopped so continue..."); 
         step = 4;
@@ -308,8 +314,8 @@ bool riseUp(float targetD, int errMax, int delay) {
       } else { 
         flogf(", ERR abort"); 
         return false;
-      }
-    } // tmr
+      } // if moving
+    } // if tmr
   } // while step3
   // velocity to target, not to surface
   if (targetD!=0)
@@ -347,11 +353,12 @@ PhaseType dropPhase() {
   int err = 0, step = 1;
   int failStage = 0, failMax = 2;
   int errMax[3] = {5, 10, 20}, delay[3] = {1, 10*60, 60*60};
-  float depth, dropD;
+  float depth, startD, dropD;
   time_t dropT;
   MsgType msg;
   flogf("\n+dropPhase() %s", utlTime());
   antFlush();
+  startD = depth = antDepth();
   // step1. loop until dropRsp or dropping+timeout
   step = 1;
   DBG0("dP:1")
@@ -376,13 +383,13 @@ PhaseType dropPhase() {
     if (tmrExp(winch_tmr)) {
       flogf(" timeout"); 
       // timeout
-      if (antMoving()>0.0) {
+      if (depth - startD > 2) {  // no antMoving close to surface
         // odd, we are dropping but no response; log but allow
         flogf(" but dropping"); 
         step = 2;
         DBG0("dP:2")
         break; // while step1
-      } 
+      } // if depth
       if (++err > errMax[failStage] && ++failStage > failMax) {
         // note: ++err, ++failStage as errs exceed errMax
         flogf("\n\t|dropPhase() too many retries, panic");
@@ -395,6 +402,7 @@ PhaseType dropPhase() {
       ngkSend( dropCmd_msg );
     } // if timeout
   } // while step1
+  /*
   // step 2: drop til you stop
   antFlush();
   utlNap(20);
@@ -404,6 +412,7 @@ PhaseType dropPhase() {
     if (antMoving()<=0.0)
       step = 3;
   }
+   */ step = 3;
   DBG0("dP:3")
   // step 3: stopCmd Rsp
   tmrStart(winch_tmr, 300);        // ?? 
@@ -422,7 +431,6 @@ PhaseType dropPhase() {
     } // switch
     if (tmrExp(winch_tmr)) {
       flogf(" timeout");
-      // ok, we are not dropping (step2)
       step = 4;
     }
   } // while msg
@@ -458,39 +466,47 @@ PhaseType dropPhase() {
 // from ship deck to ocean floor
 // wait until under 10m, watch until not dropping, wait 30s, riseUp()
 PhaseType deployPhase(void) {
+  float depth, lastD;
   antStart();
   antAutoSample(true);
   tmrStart( deploy_tmr, 60*60*2 );
-  flogf("\n+deployPhase()@%s at %4.2f", utlDateTime(), antDepth());
+  depth = antDepth();
+  flogf("\n+deployPhase()@%s %4.2fm", utlDateTime(), depth);
   // wait until under 10m
-  while (antDepth()<10.0) {
-    utlX();
-    flogf("\ndeployPhase() at %4.2f", antDepth());
+  while ((depth = antDepth())<10.0) {
+    flogf("\ndeployPhase() at %4.2fm", depth);
     if (tmrExp(deploy_tmr)) 
       sysStop("deployP() 2 hour timeout");
-    pwrNap(30);
-  }
-  // watch until not moving
-  flogf(">10 so wait until not moving\n");
-  while (antMoving()!=0.0) {
-    utlX();
-    antDepth();
-    if (tmrExp(deploy_tmr)) 
-      sysStop("deployP() 2 hour timeout");
-    pwrNap(3);
+    utlNap(30);
   }
   tmrStop(deploy_tmr);
-  boy.dockD = antDepth();
-  antFlush();             // flush antMoving samples
-  flogf("\n\t| boy.dockD = %4.2f", antDepth());
+  flogf("\n\t| %4.2fm>10 so wait until not moving\n", depth);
+  lastD = depth;
+  utlNap(120);
+  // at most 5 min to descend, already waited 2min
+  tmrStart( deploy_tmr, 60*5 );
+  depth = antDepth();
+  // must drop at least 1m in 10 sec
+  while (depth-lastD>1.0) {
+    utlNap(15);
+    if (tmrExp(deploy_tmr)) 
+      break;
+    lastD = depth;
+    depth = antDepth();
+  }
+  tmrStop(deploy_tmr);
+  // we are docked
+  depth = antDepth();
+  boy.dockD = depth;
+  flogf("\n\t| boy.dockD = %4.2f", boy.dockD);
   flogf("\n\t| go to surface, call home");
-  pwrNap(10);
+  utlNap(10);
   // rise to surface, 5 tries, short delay
   if (riseUp(0.0, 5, 1)) {
-    flogf("\n\t| deployed @ %s", utlDateTime());
+    flogf("\n\t| deployed @ %s", utlTime());
     return call_pha;
   } else {      // drop and sulk
-    flogf("\nErr\t| deployed but riseUp fail @ %s", utlDateTime());
+    flogf("\nErr\t| deployed but riseUp fail @ %s", utlTime());
     return drop_pha;
   }
 } // deployPhase

@@ -226,7 +226,11 @@ void utlErr( ErrType err, char *str) {
 ///
 // nap called often
 void utlNap(int sec) {
-  pwrNap(sec);
+  int i;
+  for (i=0; i<sec; i++) {
+    utlX();
+    pwrNap(1);
+  }
 } // utlNap
 
 ///

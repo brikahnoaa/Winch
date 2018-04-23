@@ -20,6 +20,8 @@ typedef struct BoyInfo {
   float riseVLast;        // Velocity meters/min of the most recent rise 
   int callFreq;           // number of times per day to call (1)
   int callHour;           // 0-23 (midnight-11pm) hour to call home 
+  int cycle;
+  int cycleLimit;         // limit number of cycles, i.e. test deployment
   int fileNum;            // current number for filename ####.dat ####.log
   int log;                // log filehandle
   PhaseType phase;        // deploy, data, rise, call, drop, error
