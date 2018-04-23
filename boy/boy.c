@@ -18,7 +18,7 @@ BoyInfo boy;
 // deploy or reboot, then loop over phases data/rise/call/drop
 // sets: boy.phase .phasePrev
 void boyMain() {
-  int starts, cycle;
+  int starts, cycle=0;
   PhaseType phaseNext;
   // boy.phase set by sys.cfg
   starts = sysInit();
