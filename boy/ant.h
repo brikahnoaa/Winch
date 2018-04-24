@@ -49,6 +49,8 @@ float antTemp(void);
 void antAuton(bool auton);
 void antAutoSample(bool autos);
 void antDevice(DevType dev);
+void antDevPwr(char c, bool on);
+Serial antPort(void);
 void antFlush(void);
 void antGetSamples(void);
 void antInit(void);

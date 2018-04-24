@@ -276,6 +276,23 @@ void antDevice(DevType dev) {
   return;
 } // antDevice
 
+///
+// tell antmod to power dev on/off
+void antDevPwr(char c, bool on) {
+  DevType currDev=ant.dev;
+  antDevice(cf2_dev);
+  if (on)
+    TUTxPutByte(ant.port, 3, false);
+  else
+    TUTxPutByte(ant.port, 4, false);
+  TUTxPutByte(ant.port, c, false);
+  antDevice(currDev);
+} // antDevPwr
+
+Serial antPort(void) {
+  return ant.port;
+} // antPort
+
 void antSwitch(AntType antenna) {
   if (antenna==ant.antenna) return;
   DBG0("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
