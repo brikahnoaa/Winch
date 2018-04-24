@@ -355,6 +355,7 @@ PhaseType dropPhase() {
   int errMax[3] = {5, 10, 20}, delay[3] = {1, 10*60, 60*60};
   float depth, startD, dropD;
   time_t dropT;
+  PhaseType r = data_pha;
   MsgType msg;
   flogf("\n+dropPhase() %s", utlTime());
   antFlush();
@@ -362,6 +363,7 @@ PhaseType dropPhase() {
   // step1. loop until dropRsp or dropping+timeout
   step = 1;
   DBG0("dP:1")
+  ctdAuton(true);
   ngkSend( dropCmd_msg );
   while (step==1) {
     utlX();
@@ -374,7 +376,6 @@ PhaseType dropPhase() {
       dropT = time(0);
       dropD = depth;
       step = 2;
-      DBG0("dP:2")
       break; 
     default:
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
@@ -387,13 +388,14 @@ PhaseType dropPhase() {
         // odd, we are dropping but no response; log but allow
         flogf(" but dropping"); 
         step = 2;
-        DBG0("dP:2")
         break; // while step1
       } // if depth
       if (++err > errMax[failStage] && ++failStage > failMax) {
         // note: ++err, ++failStage as errs exceed errMax
         flogf("\n\t|dropPhase() too many retries, panic");
-        return error_pha;
+        // r = error_pha;
+        step = 6;
+        break; // while step1
       }
       // here: timeout & !dropping & errs<max
       // retry dropCmd, use longer delay after more errs
@@ -402,8 +404,11 @@ PhaseType dropPhase() {
       ngkSend( dropCmd_msg );
     } // if timeout
   } // while step1
-  /*
   // step 2: drop til you stop
+  if (step==2)
+    step = 3;
+  /*
+  DBG0("dP:2")
   antFlush();
   utlNap(20);
   while (step==2) {
@@ -412,7 +417,7 @@ PhaseType dropPhase() {
     if (antMoving()<=0.0)
       step = 3;
   }
-   */ step = 3;
+   */ 
   DBG0("dP:3")
   // step 3: stopCmd Rsp
   tmrStart(winch_tmr, 300);        // ?? 
@@ -430,36 +435,38 @@ PhaseType dropPhase() {
       flogf("\n\t|dropP() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
     if (tmrExp(winch_tmr)) {
-      flogf(" timeout");
+      flogf(" 5min timeout");
       step = 4;
     }
   } // while msg
   DBG0("dP:4")
   // step 4: docked?
-  depth = antDepth();
-  if (!boyDocked(depth)) {
-    // if stop but not docked, cable is stuck
-    flogf(" not docked at %4.2f", depth);
-    utlErr(ngk_err, "dropPhase step 4, we should be docked");
-    sysAlarm(cableStuck_alm);
-    err++;
-    // return error_pha;
-  }
-  // velocity, finish science
-  if (err==0) {
-    // skip if we didn't drop clean
-    boy.dropVLast = (dropD-depth) / (time(0)-dropT);
-    if (boy.dropVFirst==0)
-      boy.dropVFirst = boy.dropVLast;
-  }
+  if (step==4) {
+    depth = antDepth();
+    if (!boyDocked(depth)) {
+      // if stop but not docked, cable is stuck
+      flogf(" not docked at %4.2f", depth);
+      utlErr(ngk_err, "dropPhase step 4, we should be docked");
+      sysAlarm(cableStuck_alm);
+      err++;
+    }
+    // velocity, finish science
+    if (err==0) {
+      // skip if we didn't drop clean
+      boy.dropVLast = (dropD-depth) / (time(0)-dropT);
+      if (boy.dropVFirst==0)
+        boy.dropVFirst = boy.dropVLast;
+    } // if err
+  } // if step4
   // get samples, depends on ant. ctd.logging
   // antGetSamples();
   // ctdGetSamples();
   // turn off ant, clear ngk, clear ctd
-  ngkStop();
+  ctdAuton(false);
   ctdStop();
   antStop();
-  return data_pha;
+  ngkStop();
+  return r;
 } // dropPhase
 
 ///
