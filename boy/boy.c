@@ -5,6 +5,7 @@
 
 #include <ant.h> 
 #include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
 #include <ngk.h>
 #include <pwr.h>
@@ -335,6 +336,7 @@ bool riseUp(float targetD, int errMax, int delay) {
 // read gps date, loc. 
 PhaseType callPhase(void) {
   flogf("\n+callPhase()@%s", utlDateTime());
+  gpsTst();
   return drop_pha;
 } // callPhase
 

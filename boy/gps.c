@@ -9,9 +9,12 @@
 void gpsTst(void){
   char *here;
   int gpsT=90, iridT=120;
-  Serial port=antPort();
+  Serial port;
+  port = antPort();
   // a3laStart()
-  antDevPwr('I', true);
+  antDevice(cf2_dev);
+  TUTxPutByte(port, 3, false);
+  TUTxPutByte(port, 'I', false);
   antDevice(a3la_dev);
   utlExpect(port, utlBuf, "COMMAND", 12);
   DBG1("'%s'", utlBuf)
@@ -23,8 +26,8 @@ void gpsTst(void){
       break;
     if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
       flogf(" Sats=%s", utlStr);
-    if (cgetq() && cgetc()=='Q') break;
     utlNap(3);
+    utlX();
   } // while timer
   // replace crlf
   for (here=utlBuf; *here; here++) 
@@ -45,6 +48,9 @@ void gpsTst(void){
       if (*here=='\r' || *here=='\n')
         *here = '.';
     flogf("%s\n", utlBuf);
-    if (cgetq() && cgetc()=='Q') break;
+    utlX();
   } // while timer
+  antDevice(cf2_dev);
+  TUTxPutByte(port, 3, false);
+  TUTxPutByte(port, 'I', false);
 }

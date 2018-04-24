@@ -4,57 +4,32 @@
 #include <mpc.h>
 #include <sys.h>
 #include <ant.h>
-#include <tmr.h>
 
-#define EOL "\r"
+extern AntInfo ant;
+extern CtdInfo ctd;
 
 void main(void){
-  char *here;
-  Serial port = antPort();
-  int gpsT=90, iridT=120;
+  char c;
   sysInit();
   mpcInit();
   antInit();
-  // ctdInit();
-  // ctdStart();
+  ctdInit();
   antStart();
-  // a3laStart()
-  antDevPwr('I', true);
-  antDevice(a3la_dev);
-  utlExpect(port, utlBuf, "COMMAND", 12);
-  flogf("'%s'", utlBuf);
-  flogf("\nAT+PD\n");
-  tmrStart(ant_tmr, gpsT);
-  while (!tmrExp(ant_tmr)) {
-    utlWrite(port, "AT+PD", EOL);
-    utlExpect(port, utlBuf, "OK", 12);
-    if (!strstr(utlBuf, "Invalid Position"))
-      break;
-    if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
-      flogf(" Sats=%s", utlStr);
-    if (cgetq() && cgetc()=='Q') break;
-    utlNap(3);
-  } // while timer
-  // replace crlf
-  for (here=utlBuf; *here; here++) 
-    if (*here=='\r' || *here=='\n')
-      *here = '.';
-  flogf("\n%s\n%d seconds\n", utlBuf, gpsT-tmrQuery(ant_tmr));
-  // switch to irid
-  antDevice(cf2_dev);
-  antSwitch(irid_ant);
-  antDevice(a3la_dev);
-  flogf("\nCSQ\n");
-  tmrStart(ant_tmr, iridT);
-  while (!tmrExp(ant_tmr)) {
-    utlWrite(port, "AT+CSQ", EOL);
-    utlExpect(port, utlBuf, "OK", 12);
-    // replace crlf
-    for (here=utlBuf; *here; here++) 
-      if (*here=='\r' || *here=='\n')
-        *here = '.';
-    flogf("%s\n", utlBuf);
-    if (cgetq() && cgetc()=='Q') break;
-  } // while timer
-  antDevPwr('I', false);
+  flogf("\nPress any to talk, Q to exit\n");
+  while (!cgetq()) {
+    flogf("antDepth() -> %f\n", antDepth());
+    // flogf("antMoving() -> %f\n", antMoving());
+  }
+  flogf("connected to ant\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ant.port,c,false);
+    }
+    while (TURxQueuedCount(ant.port)) {
+      c=TURxGetByte(ant.port,false);
+      cputc(c);
+    }
+  }
 }

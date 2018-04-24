@@ -25,6 +25,7 @@ void antInit(void) {
     strcpy(ant.samCmd, "TSSon");
   else
     strcpy(ant.samCmd, "TS");
+  antDevice(null_dev);
 } // antInit
 
 ///
@@ -35,17 +36,17 @@ void antStart(void) {
   PIOClear(ANT_PWR);
   utlDelay(200);
   PIOSet(ANT_PWR);
-  PIOSet(ANT_SEL);
   utlNap(4);                        // uMPC has countdown exit = 3
+  // get cf2 startup message
+  if (utlReadWait(ant.port, utlBuf, 1))
+    flogf(" %s", utlBuf);
+  // if (!strstr(utlBuf, "Program:"))
+    // flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
+  // DBG2("-> %s", utlBuf)
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
   antFlush();                      // flush sample buffer
-  // get cf2 startup message
-  utlReadWait(ant.port, utlBuf, 4);
-  // if (!strstr(utlBuf, "Program:"))
-    // flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
-  // DBG2("-> %s", utlBuf)
   antPrompt();
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
@@ -280,6 +281,7 @@ void antDevice(DevType dev) {
 // tell antmod to power dev on/off
 void antDevPwr(char c, bool on) {
   DevType currDev=ant.dev;
+  DBG0("antDevPwr(%c, %d)", c, on)
   antDevice(cf2_dev);
   if (on)
     TUTxPutByte(ant.port, 3, false);

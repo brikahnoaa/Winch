@@ -59,6 +59,7 @@ int utlTrim(char *line) {
 char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
   char *here;
   int len=0;
+  DBG1("utlMatchAfter(%s)", sub)
   out[0] = 0;
   here = strstr(str, sub);
   if (!here) return out;
@@ -77,6 +78,7 @@ char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
 int utlExpect(Serial port, char *buf, char *expect, int wait) {
   char *str=utlRet;
   int sec=0;
+  DBG1("utlExpect(%s)", expect)
   buf[0]=0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
