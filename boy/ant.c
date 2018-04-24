@@ -35,6 +35,8 @@ void antStart(void) {
   antDevice(cf2_dev);
   PIOClear(ANT_PWR);
   utlDelay(200);
+  TURxFlush(ant.port);
+  TUTxFlush(ant.port);
   PIOSet(ANT_PWR);
   utlNap(4);                        // uMPC has countdown exit = 3
   // get cf2 startup message
@@ -67,11 +69,11 @@ void antStop() {
 bool antPrompt() {
   DBG1("antPrompt()")
   TURxFlush(ant.port);
+  // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, ant.delay);
+  utlReadWait(ant.port, utlBuf, 1);
   if (strstr(utlBuf, "Exec"))
     return true;
-  // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
   utlReadWait(ant.port, utlBuf, ant.delay);
   if (strstr(utlBuf, "Exec"))
@@ -100,6 +102,8 @@ void antBreak(void) {
 int antData() {
   int r=TURxQueuedCount(ant.port);
   DBG1("aDa=%d", r)
+  // ?? ?? fails without this, why?
+  utlDelay(100);
   return r;
 } // antData
 
@@ -107,15 +111,15 @@ int antData() {
 // if !tmrOn request sample
 // sets: ant_tmr
 void antSample(void) {
-  int len;
-  DBG1("aSa")
+  DBG1("aSam")
   if (antPending()) return;
+  TURxFlush(ant.port);
   // sleeping?
   if (ant.lastT+SBE_SLEEP<time(0))
     antPrompt();
   utlWrite(ant.port, ant.samCmd, EOL);
-  len = utlReadWait(ant.port, utlBuf, 1);
-  // get echo 
+  // get echo of command
+  utlReadWait(ant.port, utlBuf, 1);
   if (!strstr(utlBuf, ant.samCmd))
     utlErr(ant_err, "antSample: TS command fail");
   else
@@ -124,6 +128,7 @@ void antSample(void) {
 
 ///
 // antRead processes one or more lines of data, stores samples if auton
+// if ant.autoSample then sample, else not pending after read
 // sets: ant.depth .temp 
 bool antRead(void) {
   char *p0, *p1, *p2;
@@ -131,7 +136,8 @@ bool antRead(void) {
   DBG1("antRead()");
   utlRead(ant.port, utlBuf);
   // ?? sanity check
-  // could be multiple lines, ending crlf, len 32 < char < 64
+  // should be multiple lines, ending crlf; ignore <Executed/>
+  // data line len 32 < char < 64
   // read temp, depth and scan ahead for line end
   p0 = utlBuf;
   while (p0) {              // p0 will be null when no more lines
@@ -155,18 +161,17 @@ bool antRead(void) {
 } // antRead
 
 ///
-// antSample wait antRead
-bool antSampleRead(void) {
-  DBG1("aSR")
-  antSample();
+// wait for data or not pending (timeout)
+bool antDataWait(void) {
+  DBG1("aDW")
   // err if timeout ?? count?
   while (antPending())
     if (antData()) 
-      return (antRead());
+      return true;
     utlX;
-  // error 
+  // error, prob timeout
   return false;
-} // antSampleRead
+} // antDataWait
 
 ///
 // data read recently
@@ -196,18 +201,18 @@ bool antPending(void) {
     
 ///
 // if !data&&fresh, return. if !pending, sample. wait for data. read.
+// if data, read. if !pending, sample. if !fresh, wait.
 float antDepth(void) {
-  int d = antData();
-  DBG1("antDepth()")
-  if (!d && antFresh()) 
-    return ant.depth;
-  // data || !fresh
-  else if (d && antRead())
-    return ant.depth;
-  else if (antSampleRead())
-    return ant.depth;
-  // timeout
-  return 0.0;
+  DBG1("aDep")
+  if (antData())
+    antRead();
+  if (!antPending())
+    antSample();
+  if (!antFresh()) {
+    antDataWait();
+    antRead();
+  }
+  return ant.depth;
 } // antDepth
 
 float antTemp(void) {
@@ -224,9 +229,12 @@ float antTemp(void) {
 float antMoving(void) {
   float d;
   DBG1("antMoving()")
-  // got samples? fill FIFO buffer
-  while (ant.samCnt<ant.samLen) 
-    antSampleRead();
+  // got samples? fill FIFO buffer  ?? needs timeout
+  while (ant.samCnt<ant.samLen) {
+    antSample();
+    antDataWait();
+    antRead();
+  }
   // got delta?
   d = ant.depth-ant.samQue[ant.samCnt];
   DBG4("aM=%4.2f", d)

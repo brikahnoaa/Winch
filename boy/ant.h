@@ -35,7 +35,7 @@ static bool antFresh(void);
 static bool antPending(void);
 static bool antPrompt(void);
 static bool antRead(void);
-static bool antSampleRead(void);
+static bool antDataWait(void);
 static int antData(void);
 static void antBreak(void);
 static void antMovSam(void);
