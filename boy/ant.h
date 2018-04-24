@@ -40,7 +40,6 @@ static int antData(void);
 static void antBreak(void);
 static void antMovSam(void);
 static void antSample(void);
-static void antSwitch(AntType antenna);
 
 bool antSurf(void);
 float antDepth(void);
@@ -55,3 +54,4 @@ void antGetSamples(void);
 void antInit(void);
 void antStart(void);
 void antStop(void);
+void antSwitch(AntType antenna);
