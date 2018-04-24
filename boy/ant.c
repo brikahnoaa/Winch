@@ -43,9 +43,9 @@ void antStart(void) {
   antFlush();                      // flush sample buffer
   // get cf2 startup message
   utlReadWait(ant.port, utlBuf, 4);
-  if (!strstr(utlBuf, "Program:"))
-    flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
-  DBG2("-> %s", utlBuf)
+  // if (!strstr(utlBuf, "Program:"))
+    // flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
+  // DBG2("-> %s", utlBuf)
   antPrompt();
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());

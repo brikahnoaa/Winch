@@ -9,6 +9,7 @@ typedef enum {
   data_tmr,         // rise to surface, send data
   init_tmr,         // init components
   rudics_tmr,       // max time to spend on the phone
+  utl_tmr,
   winch_tmr,        // win.pending amodem command response
   wsp_tmr,          // wispr duty cycle
   sizeof_tmr

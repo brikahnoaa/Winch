@@ -3,6 +3,9 @@
 #ifndef SYS_H
 #include <sys.h>
 #endif
+#ifndef TMR_H
+#include <tmr.h>
+#endif
 #ifndef PWR_H
 #include <pwr.h>
 #endif
@@ -50,6 +53,42 @@ int utlTrim(char *line) {
   c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
   return len;
 }
+
+///
+// search str for sub, then return string that matches set
+char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
+  char *here;
+  int len=0;
+  out[0] = 0;
+  here = strstr(str, sub);
+  if (!here) return out;
+  // skip substring
+  here += strlen(sub);
+  len = strspn(here, set);
+  if (len)
+    strncpy(out, here, len);
+  out[len] = 0;
+  return out;
+} // utlStrMatchAfter
+
+///
+// keep reading until we get the expected string or timeout
+// ret: how many secs we waited
+int utlExpect(Serial port, char *buf, char *expect, int wait) {
+  char *str=utlRet;
+  int sec=0;
+  buf[0]=0;
+  tmrStart(utl_tmr, wait);
+  // loop until expected or timeout
+  while (!strstr(buf, expect)) {
+    if (tmrExp(utl_tmr)) break;
+    if (utlReadWait(port, str, 1))
+      strcat(buf, str);
+  }
+  sec = wait-tmrQuery(utl_tmr);
+  tmrStop(utl_tmr);
+  return sec;
+} // utlExpect
 
 ///
 // put string to serial; queue, don't block, it should all buffer

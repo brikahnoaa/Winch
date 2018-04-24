@@ -77,7 +77,9 @@ char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeBrief(void);
 char *utlNonPrint (char *in);        // format unprintable string
+char *utlMatchAfter(char *out, char *str, char *sub, char *set);
 char *utlTime(void);
+int utlExpect(Serial port, char *buf, char *expect, int wait);
 int utlLogFile(char *fname);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);
