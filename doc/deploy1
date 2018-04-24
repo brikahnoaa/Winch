@@ -7,4 +7,8 @@ gps query
 terminate after how many? BUOY response
 aM fail less than x meters
 
+initlogging x 2
+
+ctd16 auton
+
 seasick pills
