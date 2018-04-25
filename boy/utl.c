@@ -238,9 +238,10 @@ void utlPet() { TickleSWSR(); }              // pet the watchdog
 // rets: fileID
 int utlLogFile(char *fname) {
   int log;
-  char *path[64];
-  DBG0("utlLogFile")
-  strcpy(path, "log\\");
+  char path[64];
+  DBG0("utlLogFile(%s)", fname)
+  path[0]=0;
+  strcat(path, "log\\");
   strcat(path, fname);
   strcat(path, ".log");
   DBG1("(%s)", path)

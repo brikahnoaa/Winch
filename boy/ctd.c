@@ -183,12 +183,14 @@ void ctdAuton(bool auton) {
     utlReadWait(ctd.port, utlBuf, 1);
     utlWrite(ctd.port, "startnow", EOL);
     utlReadWait(ctd.port, utlBuf, 1);
-    if (!strstr(utlBuf, "Start logging"))
+    if (!strstr(utlBuf, "start logging"))
       utlErr(ctd_err, "ctdAuton: expected 'Start logging' header");
   } else {
     utlWrite(ctd.port, "stop", EOL);
-    // utlNap(2+ctd.delay);
     utlReadWait(ctd.port, utlBuf, 1);
+    utlWrite(ctd.port, "stop", EOL);
+    utlReadWait(ctd.port, utlBuf, 1);
+    // utlNap(2+ctd.delay);
   } // if auton
   tmrStop(ctd_tmr);
   ctd.auton = auton;

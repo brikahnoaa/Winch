@@ -1,34 +1,40 @@
-// antTst.c
+// ctdTst.c
 #include <utl.h>
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
-#include <ant.h>
 
-extern AntInfo ant;
 extern CtdInfo ctd;
 
 void main(void){
   char c;
   sysInit();
   mpcInit();
-  antInit();
   ctdInit();
-  antStart();
-  flogf("\nPress any to talk, Q to exit\n");
-  while (!cgetq()) {
-    flogf("antDepth() -> %f\n", antDepth());
-    // flogf("antMoving() -> %f\n", antMoving());
-  }
-  flogf("connected to ant\n");
+  ctdStart();
+  flogf("ctdDepth %4.2f\n", ctdDepth());
+  flogf("ctdDepth %4.2f\n", ctdDepth());
+  flogf(" press a key to move on, Q to quit\n");
+  while (!cgetq()) {}
+  c=cgetc();
+  if (c=='Q') exit(0);
+  ctdAuton(true);
+  flogf("\nautonomous mode:");
+  flogf(" press a key to move on, Q to quit\n");
+  while (!cgetq()) {}
+  c=cgetc();
+  if (c=='Q') exit(0);
+  ctdAuton(false);
+  ctdGetSamples();
+  flogf("\nPress Q to exit\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      TUTxPutByte(ant.port,c,false);
+      TUTxPutByte(ctd.port,c,false);
     }
-    while (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
       cputc(c);
     }
   }

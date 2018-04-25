@@ -365,7 +365,7 @@ PhaseType dropPhase() {
   // step1. loop until dropRsp or dropping+timeout
   step = 1;
   DBG0("dP:1")
-  ctdAuton(true);
+  // ctdAuton(true);
   ngkSend( dropCmd_msg );
   while (step==1) {
     utlX();
