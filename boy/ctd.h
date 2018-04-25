@@ -5,6 +5,7 @@
 typedef struct CtdInfo {
   bool auton;
   bool logging;
+  bool on;
   char logFile[32];
   char sample[32];
   float depth;

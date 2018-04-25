@@ -12,8 +12,8 @@ void main(void){
   mpcInit();
   ctdInit();
   ctdStart();
-  flogf("ctdDepth %4.2f\n", ctdDepth());
-  flogf("ctdDepth %4.2f\n", ctdDepth());
+  flogf("\nctdDepth %4.2f\n", ctdDepth());
+  flogf("\nctdDepth %4.2f\n", ctdDepth());
   flogf(" press a key to move on, Q to quit\n");
   while (!cgetq()) {}
   c=cgetc();
@@ -26,7 +26,8 @@ void main(void){
   if (c=='Q') exit(0);
   ctdAuton(false);
   ctdGetSamples();
-  flogf("\nPress Q to exit\n");
+  flogf("\nsbe16 prompt:");
+  flogf("Press Q to exit\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();

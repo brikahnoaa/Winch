@@ -73,23 +73,24 @@ char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
 } // utlStrMatchAfter
 
 ///
-// keep reading until we get the expected string or timeout
-// ret: how many secs we waited
-int utlExpect(Serial port, char *buf, char *expect, int wait) {
-  char *str=utlRet;
-  int sec=0;
+// readWait(1) until we get the expected string (or timeout)
+// in: port, buf for content, expect to watch for, wait timeout
+// ret: how many secs we waited, -1 if timeout
+bool utlExpect(Serial port, char *buf, char *expect, int wait) {
+  char str[1024];
   DBG1("utlExpect(%s)", expect)
-  buf[0]=0;
+  buf[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
   while (!strstr(buf, expect)) {
-    if (tmrExp(utl_tmr)) break;
+    if (tmrExp(utl_tmr)) 
+      return false;
     if (utlReadWait(port, str, 1))
       strcat(buf, str);
   }
-  sec = wait-tmrQuery(utl_tmr);
+  // timeout?
   tmrStop(utl_tmr);
-  return sec;
+  return true;
 } // utlExpect
 
 ///
@@ -203,7 +204,7 @@ char *utlDateTimeBrief(void) {
   time_t secs;
   time(&secs);
   tim = localtime(&secs);
-  sprintf(utlRet, "%02d%02d%04d%02d%02d%02d", tim->tm_mon,
+  sprintf(utlRet, "%02d%02d%04d%02d%02d%02d", tim->tm_mon+1,
           tim->tm_mday, tim->tm_year + 1900, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
   return utlRet;

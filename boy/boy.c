@@ -36,13 +36,15 @@ void boyMain() {
     
   while (true) {
     utlX();
+    flogf("\n!boyMain(): cycle %d of %d\n", cycle, boy.cycles);
+    if (boy.cycles && (cycle >= boy.cycles))
+      sysStop("cycleLimit");
     sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
-      if (boy.cycles && (cycle++ > boy.cycles))
-        sysStop("cycleLimit");
+      cycle++;
       break;
     case rise_pha: // Ascend buoy, check for current and ice
       phaseNext = risePhase();

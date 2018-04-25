@@ -16,6 +16,7 @@ CtdInfo ctd;
 // wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
 // pause between ts\r\n and result = 4.32s
 // sbe16 response is just over 3sec in sync, well over 4sec in command
+// NOTE - sbe16 does not echo while logging, must get prompt before STOP
 
 ///
 // sets: ctd.port .ctdPending
@@ -23,32 +24,33 @@ void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcPamPort();
   ctdStart();
+  // sbe16 gets quirky when logging, best to STOP even if it flags error
   ctdAuton(false);
   tmrStop(ctd_tmr);
   if (!ctdPrompt())
     utlErr(ctd_err, "ctd: no prompt");
-  // sbe16 gets quirky when logging, best to STOP even if it flags error
-  utlWrite(ctd.port, "stop", EOL);
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
+  utlReadWait(ctd.port, utlBuf, 1);   // echo
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ctd.port, utlStr, EOL);
-  utlRead(ctd.port,utlBuf);
-  DBG2("\nctd>>%s", utlBuf)
+  utlReadWait(ctd.port, utlBuf, 1);   // echo
+  utlWrite(ctd.port, "initLogging", EOL);
+  utlExpect(ctd.port, utlBuf, "verify", 2);
+  utlWrite(ctd.port, "initLogging", EOL);
+  utlExpect(ctd.port, utlBuf, "S>", 2);
   if (strlen(ctd.logFile))
     ctd.log = utlLogFile(ctd.logFile);
   if (ctd.logging)
     strcpy(ctd.sample, "TSSon");
   else
     strcpy(ctd.sample, "TS");
-  utlWrite(ctd.port, "initLogging", EOL);
-  utlWrite(ctd.port, "initLogging", EOL);
-  utlReadWait(ctd.port, utlBuf, 1);
   ctdStop();
 } // ctdInit
 
 ///
 void ctdStart(void) {
   mpcPamDev(sbe16_pam);
+  ctd.on = true;
 }
 
 ///
@@ -57,24 +59,26 @@ void ctdStop(void){
   if (ctd.log) 
     close(ctd.log);
   ctd.log = 0;
+  ctd.on = false;
 } // ctdStop
 
 ///
 // sbe16
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
+  bool s;
   DBG1("ctdPrompt()")
   TURxFlush(ctd.port);
   utlWrite(ctd.port, "", EOL);
-  utlReadWait(ctd.port, utlBuf, 2+ctd.delay);
   // looking for S> at end
-  if (strstr(utlBuf, "S>"))
+  s = utlExpect(ctd.port, utlBuf, "S>", 5);
+  if (s)
     return true;
   // try again after break
   ctdBreak();
   utlWrite(ctd.port, "", EOL);
-  utlReadWait(ctd.port, utlBuf, 2+ctd.delay);
-  if (strstr(utlBuf, "S>"))
+  s = utlExpect(ctd.port, utlBuf, "S>", 5);
+  if (s)
     return true;
   return false;
 } // ctdPrompt
@@ -171,6 +175,7 @@ float ctdDepth(void) {
 } // ctdDepth
 
 ///
+// NOTE - sbe16 does not echo while logging, must get prompt before STOP
 // turn autonomous on/off.
 void ctdAuton(bool auton) {
   DBG0("ctdAuton(%d)", auton)
@@ -186,13 +191,11 @@ void ctdAuton(bool auton) {
     if (!strstr(utlBuf, "start logging"))
       utlErr(ctd_err, "ctdAuton: expected 'Start logging' header");
   } else {
+    ctdPrompt();
     utlWrite(ctd.port, "stop", EOL);
-    utlReadWait(ctd.port, utlBuf, 1);
-    utlWrite(ctd.port, "stop", EOL);
-    utlReadWait(ctd.port, utlBuf, 1);
+    utlReadWait(ctd.port, utlBuf, 1);   // response
     // utlNap(2+ctd.delay);
   } // if auton
-  tmrStop(ctd_tmr);
   ctd.auton = auton;
 } // ctdAuton
 
@@ -217,8 +220,8 @@ void ctdGetSamples(void) {
   } // while ==
   close(ctd.log);
   utlWrite(ctd.port, "initLogging", EOL);
+  utlExpect(ctd.port, utlBuf, "verify", 2);
   utlWrite(ctd.port, "initLogging", EOL);
-  utlReadWait(ctd.port, utlBuf, 1);
+  utlExpect(ctd.port, utlBuf, "S>", 2);
   flogf(" = %d bytes to %s", total, ctd.logFile);
 } // ctdGetSamples
-

@@ -4,122 +4,182 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-ANT_PWR	com.h	79;"	d
-AlarmType	sys.h	/^} AlarmType;$/;"	t	typeref:enum:__anon5
+ANT_BAUD	ant.h	4;"	d
+ANT_H	ant.h	2;"	d
+ANT_PWR	utl.h	14;"	d
+ANT_RX	utl.h	24;"	d
+ANT_SEL	utl.h	15;"	d
+ANT_TX	utl.h	23;"	d
+AlarmType	sys.h	/^} AlarmType;$/;"	t	typeref:enum:__anon6
 AntInfo	ant.h	/^typedef struct AntInfo {$/;"	s
 AntInfo	ant.h	/^} AntInfo;$/;"	t	typeref:struct:AntInfo
-BITSHIFT	pwr.h	20;"	d
-BUFSZ	utl.h	3;"	d
+AntType	ant.h	/^typedef enum { null_ant, gps_ant, irid_ant } AntType;$/;"	t	typeref:enum:__anon2
+BITSHIFT	pwr.h	22;"	d
+BOY_H	boy.h	2;"	d
+BUFSZ	utl.h	5;"	d
 BUOY_ID	ngk.c	7;"	d	file:
 BoyInfo	boy.h	/^typedef struct BoyInfo {$/;"	s
 BoyInfo	boy.h	/^} BoyInfo;$/;"	t	typeref:struct:BoyInfo
-CHAR_DELAY	utl.c	6;"	d	file:
-COM1SELECT	com.h	80;"	d
-COM1_BAUD	mpc.h	6;"	d
-COM1_RX	com.h	87;"	d
-COM1_TX	com.h	86;"	d
-C_DRV	utl.h	5;"	d
+CFG_H	cfg.h	2;"	d
+CHAR_DELAY	utl.c	14;"	d	file:
+CHAR_DELAY	utl.h	10;"	d
+CTD_H	ctd.h	3;"	d
+C_DRV	utl.h	6;"	d
 CfgInfo	cfg.h	/^typedef struct CfgInfo {$/;"	s
 CfgInfo	cfg.h	/^} CfgInfo;$/;"	t	typeref:struct:CfgInfo
 CfgParam	cfg.c	/^typedef struct CfgParam {$/;"	s	file:
 CfgParam	cfg.c	/^} CfgParam;$/;"	t	typeref:struct:CfgParam	file:
-ComInfo	com.h	/^typedef struct ComInfo {$/;"	s
-ComInfo	com.h	/^} ComInfo;$/;"	t	typeref:struct:ComInfo
 CtdInfo	ctd.h	/^typedef struct CtdInfo {$/;"	s
 CtdInfo	ctd.h	/^} CtdInfo;$/;"	t	typeref:struct:CtdInfo
 CustomSYPCR	mpc.c	/^short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;$/;"	v
-DBG	com.h	54;"	d
-DBG	com.h	56;"	d
-DBG0	com.h	60;"	d
-DBG0	com.h	62;"	d
-DBG1	com.h	66;"	d
-DBG1	com.h	68;"	d
-DBG2	com.h	72;"	d
-DBG2	com.h	74;"	d
-DEBUG	com.h	48;"	d
-DEBUG0	com.h	49;"	d
-DEBUG1	com.h	50;"	d
-DEBUG2	com.h	51;"	d
-DFRPWR	com.h	83;"	d
-DevType	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	t	typeref:enum:__anon3
-EOL	ctd.c	13;"	d	file:
+DBG0	dbg.h	42;"	d
+DBG0	dbg.h	44;"	d
+DBG1	dbg.h	48;"	d
+DBG1	dbg.h	50;"	d
+DBG2	dbg.h	54;"	d
+DBG2	dbg.h	56;"	d
+DBG3	dbg.h	60;"	d
+DBG3	dbg.h	62;"	d
+DBG4	dbg.h	66;"	d
+DBG4	dbg.h	68;"	d
+DBGX	dbg.h	36;"	d
+DBGX	dbg.h	38;"	d
+DBG_H	dbg.h	2;"	d
+DEBUG0	dbg.h	29;"	d
+DEBUG1	dbg.h	30;"	d
+DEBUG2	dbg.h	31;"	d
+DEBUG3	dbg.h	32;"	d
+DEBUG4	dbg.h	33;"	d
+DEBUGX	dbg.h	28;"	d
+DbgInfo	dbg.h	/^typedef struct DbgInfo {$/;"	s
+DbgInfo	dbg.h	/^} DbgInfo;$/;"	t	typeref:struct:DbgInfo
+DevType	ant.h	/^typedef enum { null_dev, cf2_dev, a3la_dev } DevType;$/;"	t	typeref:enum:__anon1
+EOL	ant.c	7;"	d	file:
+EOL	ctd.c	7;"	d	file:
+EOL	gps.c	7;"	d	file:
 EOL	ngk.c	9;"	d	file:
+EOL	wsp.c	7;"	d	file:
+ErrType	utl.h	/^    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;$/;"	t	typeref:enum:__anon9
 ExtFinishPulseRuptHandler	sys.c	/^IEV_C_PROTO(ExtFinishPulseRuptHandler);$/;"	v
-FCHAN	pwr.h	7;"	d
-INITIAL_BATTERY_CAPACITY	pwr.h	16;"	d
+FCHAN	pwr.h	9;"	d
+GPS_H	gps.h	2;"	d
+HPSENS	utl.h	18;"	d
+INITIAL_BATTERY_CAPACITY	pwr.h	18;"	d
 IRQ4_ISR	mpc.c	/^static void IRQ4_ISR(void) {$/;"	f	file:
 IRQ5_ISR	mpc.c	/^static void IRQ5_ISR(void) {$/;"	f	file:
 MDM_BAUD	ngk.c	6;"	d	file:
-MDM_PWR	com.h	78;"	d
-MDM_RX	com.h	88;"	d
-MDM_RX_TTL	com.h	92;"	d
-MDM_TX	com.h	89;"	d
-MDM_TX_TTL	com.h	93;"	d
-MINIMUM_BATTERY_CAPACITY	pwr.h	17;"	d
-MIN_BATTERY_VOLTAGE	pwr.h	14;"	d
-ModType	ant.h	/^} ModType;$/;"	t	typeref:enum:__anon1
+MDM_PWR	utl.h	13;"	d
+MDM_RX	utl.h	25;"	d
+MDM_RX_TTL	utl.h	29;"	d
+MDM_TX	utl.h	26;"	d
+MDM_TX_TTL	utl.h	30;"	d
+MINIMUM_BATTERY_CAPACITY	pwr.h	19;"	d
+MIN_BATTERY_VOLTAGE	pwr.h	16;"	d
+MPC_H	mpc.h	2;"	d
 MpcInfo	mpc.h	/^typedef struct MpcInfo {$/;"	s
 MpcInfo	mpc.h	/^} MpcInfo;$/;"	t	typeref:struct:MpcInfo
-MsgType	ngk.h	/^} MsgType;$/;"	t	typeref:enum:__anon4
-NCHAN	pwr.h	8;"	d
+MsgType	ngk.h	/^} MsgType;$/;"	t	typeref:enum:__anon5
+NCHAN	pwr.h	10;"	d
+NGK_H	ngk.h	2;"	d
 NgkInfo	ngk.h	/^typedef struct NgkInfo {$/;"	s
 NgkInfo	ngk.h	/^} NgkInfo;$/;"	t	typeref:struct:NgkInfo
-PITPERIOD	pwr.h	10;"	d
-PITRATE	pwr.h	9;"	d
-POWERERROR	pwr.h	12;"	d
-PhaseType	boy.h	/^} PhaseType;$/;"	t	typeref:enum:__anon2
+PAM_BAUD	mpc.h	6;"	d
+PAM_RX	utl.h	20;"	d
+PAM_TX	utl.h	19;"	d
+PITPERIOD	pwr.h	12;"	d
+PITRATE	pwr.h	11;"	d
+POWERERROR	pwr.h	14;"	d
+PWR_H	pwr.h	2;"	d
+PamDevType	mpc.h	/^typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;$/;"	t	typeref:enum:__anon4
+PhaseType	boy.h	/^} PhaseType;$/;"	t	typeref:enum:__anon3
 PwrInfo	pwr.h	/^typedef struct PwrInfo {$/;"	s
 PwrInfo	pwr.h	/^} PwrInfo;$/;"	t	typeref:struct:PwrInfo
-RS232_SETTLE	utl.h	4;"	d
-STARTS	sys.h	3;"	d
-STARTS_MAX	sys.h	4;"	d
-SYSCLK	mpc.h	4;"	d
-SYS_CFG	cfg.h	2;"	d
-SYS_LOG	sys.h	5;"	d
+RS232_SETTLE	utl.h	8;"	d
+SBE_16	utl.h	17;"	d
+SBE_PAM	utl.h	16;"	d
+SBE_SLEEP	ant.c	8;"	d	file:
+STARTS	sys.h	4;"	d
+STARTS_MAX	sys.h	5;"	d
+STRSZ	utl.h	4;"	d
+SYSCLK	mpc.h	5;"	d
+SYS_CFG	cfg.h	4;"	d
+SYS_H	sys.h	2;"	d
+SYS_LOG	sys.h	6;"	d
 Serial	utl.h	/^typedef TUPort * Serial;$/;"	t
 SysInfo	sys.h	/^typedef struct SysInfo {$/;"	s
 SysInfo	sys.h	/^} SysInfo;$/;"	t	typeref:struct:SysInfo
-TmrType	tmr.h	/^  } TmrType;$/;"	t	typeref:enum:__anon7
+TMR_H	tmr.h	2;"	d
+TmrType	tmr.h	/^  } TmrType;$/;"	t	typeref:enum:__anon8
+UTL_H	utl.h	2;"	d
+UtlInfo	utl.h	/^typedef struct UtlInfo {$/;"	s
+UtlInfo	utl.h	/^} UtlInfo;$/;"	t	typeref:struct:UtlInfo
 WINCH_ID	ngk.c	8;"	d	file:
-WISPR1	com.h	84;"	d
-WISPR2	com.h	85;"	d
-WISPR3	com.h	81;"	d
-WISPR4	com.h	82;"	d
-WISPR_PWR_OFF	com.h	91;"	d
-WISPR_PWR_ON	com.h	90;"	d
-WSP_BAUD	wsp.h	3;"	d
-WTMODE	mpc.h	3;"	d
+WISPR_PWR_OFF	utl.h	28;"	d
+WISPR_PWR_ON	utl.h	27;"	d
+WSP_12	utl.h	22;"	d
+WSP_BAUD	wispr.h	4;"	d
+WSP_H	wispr.h	2;"	d
+WSP_H	wsp.h	3;"	d
+WSP_PAM	utl.h	21;"	d
+WTMODE	mpc.h	4;"	d
+WspInfo	wispr.h	/^typedef struct WspInfo {$/;"	s
+WspInfo	wispr.h	/^} WspInfo;$/;"	t	typeref:struct:WspInfo
 WspInfo	wsp.h	/^typedef struct WspInfo {$/;"	s
 WspInfo	wsp.h	/^} WspInfo;$/;"	t	typeref:struct:WspInfo
+a3la_dev	ant.h	/^typedef enum { null_dev, cf2_dev, a3la_dev } DevType;$/;"	e	enum:__anon1
 alarm	sys.h	/^  int alarm[sizeof_alm];$/;"	m	struct:SysInfo
 amps	pwr.h	/^  float amps;$/;"	m	struct:PwrInfo
 ant	ant.c	/^AntInfo ant;$/;"	v
 ant2tip	boy.h	/^  float ant2tip;          \/\/ meters from antmod ctd to antenna tip$/;"	m	struct:BoyInfo
+antAutoSample	ant.c	/^void antAutoSample(bool autos) {$/;"	f
+antAuton	ant.c	/^void antAuton(bool auton) {$/;"	f
+antBreak	ant.c	/^void antBreak(void) {$/;"	f
+antData	ant.c	/^int antData() {$/;"	f
+antDataWait	ant.c	/^bool antDataWait(void) {$/;"	f
 antDepth	ant.c	/^float antDepth(void) {$/;"	f
-antDropping	ant.c	/^bool antDropping(void) {$/;"	f
+antDevPwr	ant.c	/^void antDevPwr(char c, bool on) {$/;"	f
+antDevice	ant.c	/^void antDevice(DevType dev) {$/;"	f
+antFlush	ant.c	/^void antFlush(void) {$/;"	f
+antFresh	ant.c	/^bool antFresh(void) {$/;"	f
+antGetSamples	ant.c	/^void antGetSamples(void) {$/;"	f
 antInit	ant.c	/^void antInit(void) {$/;"	f
-antMode	ant.c	/^ModType antMode(ModType mod) {$/;"	f
-antRising	ant.c	/^bool antRising(void) {$/;"	f
-antSteady	ant.c	/^bool antSteady(void) {$/;"	f
-antStop	ant.c	/^void antStop() {}$/;"	f
-ant_dev	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	e	enum:__anon3
+antMovSam	ant.c	/^void antMovSam(void) {$/;"	f
+antMoving	ant.c	/^float antMoving(void) {$/;"	f
+antPending	ant.c	/^bool antPending(void) {$/;"	f
+antPort	ant.c	/^Serial antPort(void) {$/;"	f
+antPrompt	ant.c	/^bool antPrompt() {$/;"	f
+antRead	ant.c	/^bool antRead(void) {$/;"	f
+antSample	ant.c	/^void antSample(void) {$/;"	f
+antStart	ant.c	/^void antStart(void) {$/;"	f
+antStop	ant.c	/^void antStop() {$/;"	f
+antSurfMaxD	ant.c	/^float antSurfMaxD(void) {$/;"	f
+antSwitch	ant.c	/^void antSwitch(AntType antenna) {$/;"	f
+antTemp	ant.c	/^float antTemp(void) {$/;"	f
+ant_err	utl.h	/^typedef enum {ant_err, ctd_err, log_err, file_err, $/;"	e	enum:__anon9
+ant_tmr	tmr.h	/^  ant_tmr,          \/\/ sbe39$/;"	e	enum:__anon8
+antenna	ant.h	/^  AntType antenna;$/;"	m	struct:AntInfo
+autoSample	ant.h	/^  bool autoSample;            \/\/ antSample after antRead$/;"	m	struct:AntInfo
+auton	ant.h	/^  bool auton;                 \/\/ autonomous mode$/;"	m	struct:AntInfo
+auton	ctd.h	/^  bool auton;$/;"	m	struct:CtdInfo
 batCap	pwr.h	/^  long batCap;          \/\/ for lithium$/;"	m	struct:PwrInfo
-board	wsp.h	/^  int board;    \/\/ active board$/;"	m	struct:WspInfo
-bottomCurr_alm	sys.h	/^  bottomCurr_alm,$/;"	e	enum:__anon5
+board	wispr.h	/^  int board;    \/\/ active board$/;"	m	struct:WspInfo
+bottomCurr_alm	sys.h	/^  bottomCurr_alm,$/;"	e	enum:__anon6
 boy	boy.c	/^BoyInfo boy;$/;"	v
 boy2ant	boy.h	/^  float boy2ant;          \/\/ meters from buoy ctd to ant ctd under still water$/;"	m	struct:BoyInfo
 boyDocked	boy.c	/^bool boyDocked(float depth) {$/;"	f
 boyFlush	boy.c	/^void boyFlush(void) {} \/\/ ??$/;"	f
 boyInit	boy.c	/^void boyInit(void) {$/;"	f
-boyMain	boy.c	/^void boyMain(int starts) {$/;"	f
+boyMain	boy.c	/^void boyMain() {$/;"	f
 boyStop	boy.c	/^void boyStop(void) {} \/\/ ??$/;"	f
-buoyCmd_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon4
-buoyRsp_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon4
+buf	utl.h	/^  char *buf;$/;"	m	struct:UtlInfo
+buoyCmd_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon5
+buoyRsp_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon5
+cableStuck_alm	sys.h	/^  cableStuck_alm,$/;"	e	enum:__anon6
 callFreq	boy.h	/^  int callFreq;           \/\/ number of times per day to call (1)$/;"	m	struct:BoyInfo
 callHour	boy.h	/^  int callHour;           \/\/ 0-23 (midnight-11pm) hour to call home $/;"	m	struct:BoyInfo
 callPhase	boy.c	/^PhaseType callPhase(void) {$/;"	f
-call_mod	ant.h	/^  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod $/;"	e	enum:__anon1
-call_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon2
+call_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon3
+cf2_dev	ant.h	/^typedef enum { null_dev, cf2_dev, a3la_dev } DevType;$/;"	e	enum:__anon1
 cfg	cfg.c	/^CfgInfo cfg;$/;"	v
 cfgCmp	cfg.c	/^bool cfgCmp(char *a, char*b) {$/;"	f
 cfgDump	cfg.c	/^void cfgDump() {$/;"	f
@@ -128,93 +188,127 @@ cfgP	cfg.c	/^static CfgParam cfgP[] = {$/;"	v	file:
 cfgRead	cfg.c	/^int cfgRead(char *file) {$/;"	f
 cfgSet	cfg.c	/^static void cfgSet( void *ptr, char type, char *val ) {$/;"	f	file:
 cfgString	cfg.c	/^bool cfgString(char *str){$/;"	f
-cfgVee	cfg.c	/^void cfgVee() {$/;"	f
+cfgVee	cfg.c	/^void cfgVee(void) {$/;"	f
 charge	pwr.h	/^  float charge;         \/\/ minimum system capacity to run$/;"	m	struct:PwrInfo
 chargeMin	pwr.h	/^  float chargeMin;      \/\/ minimum system capacity to run$/;"	m	struct:PwrInfo
 checkVitals	sys.c	/^int checkVitals(void) {$/;"	f
-com	com.c	/^ComInfo com;$/;"	v
-comInit	com.c	/^void comInit(void) {$/;"	f
-count	wsp.h	/^  int count;    \/\/ number of DATA Boards$/;"	m	struct:WspInfo
+count	wispr.h	/^  int count;    \/\/ number of DATA Boards$/;"	m	struct:WspInfo
 ctd	ctd.c	/^CtdInfo ctd;$/;"	v
+ctdAuton	ctd.c	/^void ctdAuton(bool auton) {$/;"	f
 ctdBreak	ctd.c	/^void ctdBreak(void) {$/;"	f
-ctdData	ctd.c	/^void ctdData() {$/;"	f
-ctdDepth	ctd.c	/^float ctdDepth() {$/;"	f
-ctdFlush	ctd.c	/^void ctdFlush(void){$/;"	f
+ctdData	ctd.c	/^bool ctdData() {$/;"	f
+ctdDepth	ctd.c	/^float ctdDepth(void) {$/;"	f
+ctdFresh	ctd.c	/^bool ctdFresh(void) {$/;"	f
+ctdGetSamples	ctd.c	/^void ctdGetSamples(void) {$/;"	f
 ctdInit	ctd.c	/^void ctdInit(void) {$/;"	f
+ctdPending	ctd.c	/^bool ctdPending(void) {$/;"	f
 ctdPrompt	ctd.c	/^bool ctdPrompt(void) {$/;"	f
-ctdReady	ctd.c	/^bool ctdReady() {$/;"	f
+ctdRead	ctd.c	/^bool ctdRead(void) {$/;"	f
 ctdSample	ctd.c	/^void ctdSample(void) {$/;"	f
-ctdSetDate	ctd.c	/^void ctdSetDate(void) {$/;"	f
+ctdStart	ctd.c	/^void ctdStart(void) {$/;"	f
 ctdStop	ctd.c	/^void ctdStop(void){$/;"	f
-ctdSyncmode	ctd.c	/^void ctdSyncmode(void) {$/;"	f
-ctd_dev	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	e	enum:__anon3
-ctd_tmr	tmr.h	/^  ctd_tmr,          \/\/ ctd.pending waiting for ctd response$/;"	e	enum:__anon7
+ctd_err	utl.h	/^typedef enum {ant_err, ctd_err, log_err, file_err, $/;"	e	enum:__anon9
+ctd_tmr	tmr.h	/^  ctd_tmr,          \/\/ ctd.pending waiting for ctd response$/;"	e	enum:__anon8
 currChkD	boy.h	/^  float currChkD;         \/\/ stop at this depth to check ocean current$/;"	m	struct:BoyInfo
 currMax	boy.h	/^  float currMax;          \/\/ too much ocean current$/;"	m	struct:BoyInfo
+cycles	boy.h	/^  int cycles;             \/\/ limit number of cycles, i.e. test deployment$/;"	m	struct:BoyInfo
 dataPhase	boy.c	/^PhaseType dataPhase(void) {$/;"	f
-data_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon2
-data_tmr	tmr.h	/^  data_tmr,         \/\/ rise to surface, send data$/;"	e	enum:__anon7
-dbg0	com.h	/^  bool dbg0;$/;"	m	struct:ComInfo
-dbg1	com.h	/^  bool dbg1;$/;"	m	struct:ComInfo
-dbg2	com.h	/^  bool dbg2;$/;"	m	struct:ComInfo
-delay	ctd.h	/^  int delay;                  \/\/ Delay seconds between polled samples$/;"	m	struct:CtdInfo
+data_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon3
+data_tmr	tmr.h	/^  data_tmr,         \/\/ rise to surface, send data$/;"	e	enum:__anon8
+dbg	dbg.c	/^DbgInfo dbg;$/;"	v
+dbg0	dbg.c	/^void dbg0(bool on) {$/;"	f
+dbg0	dbg.h	/^  bool dbg0;$/;"	m	struct:DbgInfo
+dbg1	dbg.c	/^void dbg1(bool on) {$/;"	f
+dbg1	dbg.h	/^  bool dbg1;$/;"	m	struct:DbgInfo
+dbg2	dbg.c	/^void dbg2(bool on) {$/;"	f
+dbg2	dbg.h	/^  bool dbg2;$/;"	m	struct:DbgInfo
+dbg3	dbg.c	/^void dbg3(bool on) {$/;"	f
+dbg3	dbg.h	/^  bool dbg3;$/;"	m	struct:DbgInfo
+dbg4	dbg.h	/^  bool dbg4;$/;"	m	struct:DbgInfo
+dbgInit	dbg.c	/^void dbgInit(void) {$/;"	f
+dbgLevel	dbg.c	/^void dbgLevel(int i) {$/;"	f
+dbgx	dbg.c	/^void dbgx(bool on) {$/;"	f
+dbgx	dbg.h	/^  bool dbgx;$/;"	m	struct:DbgInfo
+delay	ant.h	/^  int delay;$/;"	m	struct:AntInfo
+delay	ctd.h	/^  int delay;                  \/\/ Delay seconds expected between polled samples$/;"	m	struct:CtdInfo
 delay	ngk.h	/^  int delay;                    \/\/ modem talk delay (7s)$/;"	m	struct:NgkInfo
 deployPhase	boy.c	/^PhaseType deployPhase(void) {$/;"	f
 deployT	boy.h	/^  time_t deployT;         \/\/ startup time$/;"	m	struct:BoyInfo
-deploy_pha	boy.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon2
-deploy_tmr	tmr.h	/^  deploy_tmr,       \/\/ steps during deploy phase0$/;"	e	enum:__anon7
+deploy_pha	boy.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon3
+deploy_tmr	tmr.h	/^  deploy_tmr,       \/\/ steps during deploy phase0$/;"	e	enum:__anon8
 depth	ant.h	/^  float depth;$/;"	m	struct:AntInfo
-depth	ctd.h	/^  float depth;                \/\/ most recent$/;"	m	struct:CtdInfo
-detInt	wsp.h	/^  int detInt;   \/\/-D      \/\/Minutes   \/\/DATA DET INTERVAL$/;"	m	struct:WspInfo
-detMax	wsp.h	/^  int detMax;   \/\/ Maximum Number of Detections to return$/;"	m	struct:WspInfo
-detOff	wsp.h	/^  int detOff;   \/\/ sleep$/;"	m	struct:WspInfo
-device	mpc.h	/^  DevType device;$/;"	m	struct:MpcInfo
+depth	ctd.h	/^  float depth;$/;"	m	struct:CtdInfo
+detInt	wispr.h	/^  int detInt;   \/\/-D      \/\/Minutes   \/\/DATA DET INTERVAL$/;"	m	struct:WspInfo
+detMax	wispr.h	/^  int detMax;   \/\/ Maximum Number of Detections to return$/;"	m	struct:WspInfo
+detMax	wsp.h	/^  int detMax;                 \/\/ stop detections at max; 0 means no limit$/;"	m	struct:WspInfo
+detOff	wispr.h	/^  int detOff;   \/\/ sleep$/;"	m	struct:WspInfo
+dev	ant.h	/^  DevType dev;$/;"	m	struct:AntInfo
 diskFree	mpc.h	/^  long diskFree;$/;"	m	struct:MpcInfo
 diskFree	sys.h	/^  long diskFree;$/;"	m	struct:SysInfo
 diskSize	mpc.h	/^  long diskSize;$/;"	m	struct:MpcInfo
 diskSize	sys.h	/^  long diskSize;$/;"	m	struct:SysInfo
 dockD	boy.h	/^  float dockD;            \/\/ Depth when docked in winch$/;"	m	struct:BoyInfo
-dropCmd_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon4
+dropCmd_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon5
 dropPhase	boy.c	/^PhaseType dropPhase() {$/;"	f
-dropRsp_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon4
+dropRsp_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon5
 dropVFirst	boy.h	/^  float dropVFirst;       \/\/ Velocity meters\/min of the first drop (descent)$/;"	m	struct:BoyInfo
 dropVLast	boy.h	/^  float dropVLast;        \/\/ Velocity meters\/min of the most recent drop $/;"	m	struct:BoyInfo
-drop_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon2
-duty	wsp.h	/^  int duty;     \/\/ duty cycle$/;"	m	struct:WspInfo
+drop_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon3
+duty	wispr.h	/^  int duty;     \/\/ duty cycle$/;"	m	struct:WspInfo
+duty	wsp.h	/^  int duty;                   \/\/ duty cycle = percent of each hour to run$/;"	m	struct:WspInfo
+errCnt	utl.h	/^  int errCnt[sizeof_err];$/;"	m	struct:UtlInfo
+errName	utl.h	/^  char *errName[sizeof_err];$/;"	m	struct:UtlInfo
 errorPhase	boy.c	/^PhaseType errorPhase(void) {$/;"	f
-error_pha	boy.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon2
+error_pha	boy.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon3
+exp	tmr.c	/^  time_t exp[sizeof_tmr];$/;"	m	struct:__anon7	file:
 file	cfg.h	/^  char file[32];$/;"	m	struct:CfgInfo
 fileNum	boy.h	/^  int fileNum;            \/\/ current number for filename ####.dat ####.log$/;"	m	struct:BoyInfo
-gain	wsp.h	/^  int gain;     \/\/-g 0-3$/;"	m	struct:WspInfo
-gpsLat	ant.h	/^  char gpsLat[32];      \/\/ 45:67.8900 N$/;"	m	struct:AntInfo
-gpsLong	ant.h	/^  char gpsLong[32];     \/\/ 123:45.6789 W$/;"	m	struct:AntInfo
-gps_mod	ant.h	/^  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod $/;"	e	enum:__anon1
-ice_alm	sys.h	/^  ice_alm,$/;"	e	enum:__anon5
+file_err	utl.h	/^typedef enum {ant_err, ctd_err, log_err, file_err, $/;"	e	enum:__anon9
+fresh	ant.h	/^  int fresh;                  \/\/ time()-ant.time < fresh is usable$/;"	m	struct:AntInfo
+fresh	ctd.h	/^  int fresh;$/;"	m	struct:CtdInfo
+gain	wispr.h	/^  int gain;     \/\/-g 0-3$/;"	m	struct:WspInfo
+gain	wsp.h	/^  int gain;                   \/\/ param$/;"	m	struct:WspInfo
+gpsLat	ant.h	/^  char gpsLat[32];            \/\/ 45:67.8900N$/;"	m	struct:AntInfo
+gpsLong	ant.h	/^  char gpsLong[32];           \/\/ 123:45.6789W$/;"	m	struct:AntInfo
+gpsTst	gps.c	/^void gpsTst(void){$/;"	f
+gps_ant	ant.h	/^typedef enum { null_ant, gps_ant, irid_ant } AntType;$/;"	e	enum:__anon2
+ice_alm	sys.h	/^  ice_alm,$/;"	e	enum:__anon6
 id	cfg.c	/^  char *id;$/;"	m	struct:CfgParam	file:
-idle_mod	ant.h	/^  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod $/;"	e	enum:__anon1
+init_tmr	tmr.h	/^  init_tmr,         \/\/ init components$/;"	e	enum:__anon8
 interval	pwr.h	/^  short interval;       \/\/ deciSecs for PIT timer interrupt$/;"	m	struct:PwrInfo
+irid_ant	ant.h	/^typedef enum { null_ant, gps_ant, irid_ant } AntType;$/;"	e	enum:__anon2
 lastRecv	ngk.h	/^  MsgType lastRecv;$/;"	m	struct:NgkInfo
 lastSend	ngk.h	/^  MsgType lastSend;$/;"	m	struct:NgkInfo
+lastT	ant.h	/^  time_t lastT;                \/\/ time() of last sample$/;"	m	struct:AntInfo
 len	cfg.h	/^  int len;$/;"	m	struct:CfgInfo
+log	ant.h	/^  int log;$/;"	m	struct:AntInfo
 log	boy.h	/^  int log;                \/\/ log filehandle$/;"	m	struct:BoyInfo
-log	ctd.h	/^  int log;$/;"	m	struct:CtdInfo
+log	ctd.h	/^  int log;                    \/\/ log fileid$/;"	m	struct:CtdInfo
 log	pwr.h	/^  int log;              \/\/ log filehandle$/;"	m	struct:PwrInfo
 log	sys.h	/^  int log;              \/\/ log filehandle$/;"	m	struct:SysInfo
-log	wsp.h	/^  int log;$/;"	m	struct:WspInfo
+log	wispr.h	/^  int log;$/;"	m	struct:WspInfo
+log	wsp.h	/^  int log;                    \/\/ log fileid$/;"	m	struct:WspInfo
+logFile	ant.h	/^  char logFile[64];$/;"	m	struct:AntInfo
 logFile	boy.h	/^  char logFile[32];       \/\/ log file$/;"	m	struct:BoyInfo
 logFile	ctd.h	/^  char logFile[32];$/;"	m	struct:CtdInfo
 logFile	pwr.h	/^  char logFile[32];     \/\/ log file$/;"	m	struct:PwrInfo
 logFile	sys.h	/^  char logFile[32];$/;"	m	struct:SysInfo
+logFile	wispr.h	/^  char logFile[32];$/;"	m	struct:WspInfo
 logFile	wsp.h	/^  char logFile[32];$/;"	m	struct:WspInfo
 logInit	sys.c	/^void logInit(char *file) {$/;"	f
-main	lar.c	/^void main(void) {$/;"	f
-mangled_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon4
-midwayCurr_alm	sys.h	/^  midwayCurr_alm,$/;"	e	enum:__anon5
+log_err	utl.h	/^typedef enum {ant_err, ctd_err, log_err, file_err, $/;"	e	enum:__anon9
+logging	ant.h	/^  bool logging;               \/\/ use TS or TSSon$/;"	m	struct:AntInfo
+logging	ctd.h	/^  bool logging;$/;"	m	struct:CtdInfo
+logging	wsp.h	/^  bool logging;$/;"	m	struct:WspInfo
+logic_err	utl.h	/^    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;$/;"	e	enum:__anon9
+main	main.c	/^void main(void) {$/;"	f
+mangled_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon5
+midwayCurr_alm	sys.h	/^  midwayCurr_alm,$/;"	e	enum:__anon6
 mpc	mpc.c	/^MpcInfo mpc;$/;"	v
-mpcCom1Dev	mpc.c	/^DevType mpcCom1Dev(void) { return mpc.device; }$/;"	f
-mpcCom1Port	mpc.c	/^Serial mpcCom1Port(void) { return mpc.port; }$/;"	f
-mpcDevice	mpc.c	/^void mpcDevice(DevType dev) {$/;"	f
 mpcInit	mpc.c	/^void mpcInit(void) {$/;"	f
+mpcPamDev	mpc.c	/^void mpcPamDev(PamDevType pam) {$/;"	f
+mpcPamPort	mpc.c	/^Serial mpcPamPort(void) {$/;"	f
+mpcPamPulse	mpc.c	/^void mpcPamPulse(int pin) {$/;"	f
 mpcSleep	mpc.c	/^void mpcSleep(void) {$/;"	f
 mpcStop	mpc.c	/^void mpcStop(){}$/;"	f
 msgName	ngk.h	/^  char * msgName[sizeof_msg];   \/\/ for logs$/;"	m	struct:NgkInfo
@@ -224,33 +318,39 @@ ngk	ngk.c	/^NgkInfo ngk = {$/;"	v
 ngkBuoyRsp	ngk.c	/^void ngkBuoyRsp(void) {$/;"	f
 ngkInit	ngk.c	/^void ngkInit(void) {$/;"	f
 ngkMsgName	ngk.c	/^char * ngkMsgName(MsgType msg) {$/;"	f
+ngkParse_err	utl.h	/^    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;$/;"	e	enum:__anon9
 ngkRecv	ngk.c	/^MsgType ngkRecv() {$/;"	f
 ngkSend	ngk.c	/^void ngkSend(MsgType msg) {$/;"	f
 ngkStop	ngk.c	/^void ngkStop(void){$/;"	f
-ngkTimeout_alm	sys.h	/^  ngkTimeout_alm,$/;"	e	enum:__anon5
-null	com.h	95;"	d
-null_alm	sys.h	/^  null_alm=0,$/;"	e	enum:__anon5
-null_dev	mpc.h	/^typedef enum { null_dev, ant_dev, ctd_dev } DevType;$/;"	e	enum:__anon3
-null_mod	ant.h	/^  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod $/;"	e	enum:__anon1
-null_msg	ngk.h	/^  null_msg=0,$/;"	e	enum:__anon4
-null_tmr	tmr.h	/^  null_tmr=0,$/;"	e	enum:__anon7
+ngkTimeout_alm	sys.h	/^  ngkTimeout_alm,$/;"	e	enum:__anon6
+ngk_err	utl.h	/^    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;$/;"	e	enum:__anon9
+null	utl.h	7;"	d
+null_alm	sys.h	/^  null_alm=0,$/;"	e	enum:__anon6
+null_ant	ant.h	/^typedef enum { null_ant, gps_ant, irid_ant } AntType;$/;"	e	enum:__anon2
+null_dev	ant.h	/^typedef enum { null_dev, cf2_dev, a3la_dev } DevType;$/;"	e	enum:__anon1
+null_msg	ngk.h	/^  null_msg=0,$/;"	e	enum:__anon5
+null_pam	mpc.h	/^typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;$/;"	e	enum:__anon4
+null_tmr	tmr.h	/^  null_tmr=0,$/;"	e	enum:__anon8
+num	wsp.h	/^  int num;                    \/\/ number of wspr cards$/;"	m	struct:WspInfo
 oceanCurr	boy.c	/^float oceanCurr() {$/;"	f
 oceanCurrChk	boy.c	/^bool oceanCurrChk() {$/;"	f
-on	ant.h	/^  bool on;$/;"	m	struct:AntInfo
+on	ctd.h	/^  bool on;$/;"	m	struct:CtdInfo
 on	pwr.h	/^  bool on;              \/\/ track and log battery capacity$/;"	m	struct:PwrInfo
-on	tmr.c	/^  bool on[sizeof_tmr];$/;"	m	struct:__anon6	file:
+on	tmr.c	/^  bool on[sizeof_tmr];$/;"	m	struct:__anon7	file:
+on	wispr.h	/^  bool on;$/;"	m	struct:WspInfo
 on	wsp.h	/^  bool on;$/;"	m	struct:WspInfo
-pending	ctd.h	/^  bool pending;                \/\/ request pending, expect response$/;"	m	struct:CtdInfo
+pamDev	mpc.h	/^  PamDevType pamDev;             \/\/ wsp_1,_2,_3, sbe_16$/;"	m	struct:MpcInfo
+pamPort	mpc.h	/^  Serial pamPort;$/;"	m	struct:MpcInfo
 phase	boy.h	/^  PhaseType phase;        \/\/ deploy, data, rise, call, drop, error$/;"	m	struct:BoyInfo
 phasePrev	boy.h	/^  PhaseType phasePrev;    \/\/ deploy, data, rise, call, drop, error$/;"	m	struct:BoyInfo
 phaseT	boy.h	/^  time_t phaseT;          \/\/ time this phase started$/;"	m	struct:BoyInfo
 platform	sys.h	/^  char platform[32];    \/\/ rudicsland$/;"	m	struct:SysInfo
-port	ant.h	/^  Serial port;          \/\/ same as mpc.port, ctd.port$/;"	m	struct:AntInfo
+port	ant.h	/^  Serial port;$/;"	m	struct:AntInfo
 port	boy.h	/^  Serial port;            \/\/ sbe16 or ant mod$/;"	m	struct:BoyInfo
 port	ctd.h	/^  Serial port;                \/\/ same as mpc.port, ant.port$/;"	m	struct:CtdInfo
-port	mpc.h	/^  Serial port;$/;"	m	struct:MpcInfo
 port	ngk.h	/^  Serial port;$/;"	m	struct:NgkInfo
-port	wsp.h	/^  Serial port;$/;"	m	struct:WspInfo
+port	wispr.h	/^  Serial port;$/;"	m	struct:WspInfo
+port	wsp.h	/^  Serial port;                \/\/ same as mpc.port, ant.port$/;"	m	struct:WspInfo
 preRun	sys.c	/^void preRun(int delay) {$/;"	f
 program	sys.h	/^  char program[32];$/;"	m	struct:SysInfo
 project	sys.h	/^  char project[32];     \/\/ rudicsland$/;"	m	struct:SysInfo
@@ -261,34 +361,41 @@ pwrInit	pwr.c	/^void pwrInit(void){}$/;"	f
 pwrNap	pwr.c	/^void pwrNap(int sec) {$/;"	f
 pwrStop	pwr.c	/^void pwrStop(void){}$/;"	f
 rebootPhase	boy.c	/^PhaseType rebootPhase(void) {$/;"	f
-reboot_pha	boy.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon2
+reboot_pha	boy.h	/^  deploy_pha=0, reboot_pha, error_pha,$/;"	e	enum:__anon3
 recv	ngk.h	/^  int recv[sizeof_msg];         \/\/ count$/;"	m	struct:NgkInfo
-riseCmd_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon4
+riseCmd_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon5
 risePhase	boy.c	/^PhaseType risePhase(void) {$/;"	f
-riseRsp_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon4
+riseRsp_msg	ngk.h	/^  buoyCmd_msg, buoyRsp_msg, dropCmd_msg, dropRsp_msg, riseCmd_msg, riseRsp_msg,$/;"	e	enum:__anon5
+riseToSurf	boy.c	/^bool riseToSurf(void) {$/;"	f
 riseUp	boy.c	/^bool riseUp(float targetD, int errMax, int delay) {$/;"	f
 riseVFirst	boy.h	/^  float riseVFirst;       \/\/ Velocity meters\/min of the first rise (ascent)$/;"	m	struct:BoyInfo
 riseVLast	boy.h	/^  float riseVLast;        \/\/ Velocity meters\/min of the most recent rise $/;"	m	struct:BoyInfo
-rise_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon2
-rudics_tmr	tmr.h	/^  rudics_tmr,       \/\/ max time to spend on the phone$/;"	e	enum:__anon7
+rise_pha	boy.h	/^  data_pha, rise_pha, call_pha, drop_pha$/;"	e	enum:__anon3
+rudics_tmr	tmr.h	/^  rudics_tmr,       \/\/ max time to spend on the phone$/;"	e	enum:__anon8
+samCmd	ant.h	/^  char samCmd[32];            \/\/ TS or TSSon$/;"	m	struct:AntInfo
+samCnt	ant.h	/^  int samCnt;                 \/\/ sam in samQue$/;"	m	struct:AntInfo
+samLen	ant.h	/^  int samLen;                 \/\/ sizeof samQue$/;"	m	struct:AntInfo
+samQue	ant.h	/^  float samQue[32];          \/\/ depth measurement during auto_mod$/;"	m	struct:AntInfo
+samRes	ant.h	/^  float samRes;            \/\/ accuracy - change greater than this to count$/;"	m	struct:AntInfo
+sample	ctd.h	/^  char sample[32];$/;"	m	struct:CtdInfo
 sampleReady	pwr.h	/^  bool sampleReady;     \/\/ sample should be saved, until written$/;"	m	struct:PwrInfo
-scratch	utl.c	/^char scratch[BUFSZ];            \/\/ used by other modules$/;"	v
+sbe16_pam	mpc.h	/^typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;$/;"	e	enum:__anon4
 send	ngk.h	/^  int send[sizeof_msg];         \/\/ count$/;"	m	struct:NgkInfo
-sizeof_alm	sys.h	/^  sizeof_alm$/;"	e	enum:__anon5
-sizeof_msg	ngk.h	/^  sizeof_msg$/;"	e	enum:__anon4
-sizeof_tmr	tmr.h	/^  sizeof_tmr$/;"	e	enum:__anon7
+sizeof_alm	sys.h	/^  sizeof_alm$/;"	e	enum:__anon6
+sizeof_err	utl.h	/^    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;$/;"	e	enum:__anon9
+sizeof_msg	ngk.h	/^  sizeof_msg$/;"	e	enum:__anon5
+sizeof_tmr	tmr.h	/^  sizeof_tmr$/;"	e	enum:__anon8
 spur_ISR	mpc.c	/^static void spur_ISR(void) {$/;"	f	file:
 startCheck	sys.c	/^int startCheck(void) {$/;"	f
 starts	sys.h	/^  int starts;$/;"	m	struct:SysInfo
-statCmd_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon4
-statRsp_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon4
-stopCmd_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon4
-stopRsp_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon4
-stop_mod	ant.h	/^  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod $/;"	e	enum:__anon1
-str	utl.c	/^static char str[BUFSZ];         \/\/ used by utl funcs that return *str $/;"	v	file:
-surfCmd_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon4
-surfD	ant.h	/^  float surfD;       \/\/ depth of CTD when ant is floating$/;"	m	struct:AntInfo
-syncmode	ctd.h	/^  bool syncmode;              \/\/ currently in syncmode$/;"	m	struct:CtdInfo
+statCmd_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon5
+statRsp_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon5
+stopCmd_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon5
+stopRsp_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon5
+str	utl.h	/^  char *str;$/;"	m	struct:UtlInfo
+surf	ant.h	/^  bool surf;                  \/\/ on surface$/;"	m	struct:AntInfo
+surfCmd_msg	ngk.h	/^  statCmd_msg, statRsp_msg, stopCmd_msg, stopRsp_msg, surfCmd_msg, mangled_msg,$/;"	e	enum:__anon5
+surfD	ant.h	/^  float surfD;                \/\/ depth of CTD when ant is floating$/;"	m	struct:AntInfo
 sys	sys.c	/^SysInfo sys;$/;"	v
 sysAlarm	sys.c	/^void sysAlarm(AlarmType alm) { $/;"	f
 sysDiskFree	sys.c	/^long sysDiskFree(void) {$/;"	f
@@ -296,37 +403,60 @@ sysFlush	sys.c	/^void sysFlush(void) {$/;"	f
 sysInit	sys.c	/^int sysInit(void) {$/;"	f
 sysSleep	sys.c	/^void sysSleep(void) {$/;"	f
 sysStop	sys.c	/^void sysStop(char *out) {$/;"	f
-td_mod	ant.h	/^  null_mod, idle_mod, td_mod, gps_mod, call_mod, stop_mod $/;"	e	enum:__anon1
+temp	ant.h	/^  float temp;$/;"	m	struct:AntInfo
+time	ctd.h	/^  time_t time;$/;"	m	struct:CtdInfo
+time	wsp.h	/^  time_t time;$/;"	m	struct:WspInfo
 timeout	ngk.h	/^  int timeout[sizeof_msg];      \/\/ count$/;"	m	struct:NgkInfo
-timer	tmr.c	/^  time_t timer[sizeof_tmr];$/;"	m	struct:__anon6	file:
-tmr	tmr.c	/^} tmr;$/;"	v	typeref:struct:__anon6	file:
+tmr	tmr.c	/^} tmr;$/;"	v	typeref:struct:__anon7	file:
 tmrAnyExp	tmr.c	/^TmrType tmrAnyExp(void) {$/;"	f
 tmrExp	tmr.c	/^bool tmrExp(TmrType tim) {$/;"	f
+tmrOff	tmr.c	/^bool tmrOff(TmrType tim) {$/;"	f
+tmrOn	tmr.c	/^bool tmrOn(TmrType tim) {$/;"	f
 tmrQuery	tmr.c	/^int tmrQuery(TmrType tim) {$/;"	f
 tmrStart	tmr.c	/^void tmrStart(TmrType tim, int secs) {$/;"	f
 tmrStop	tmr.c	/^void tmrStop(TmrType tim) {$/;"	f
-transferFiles	boy.c	/^void transferFiles(void) {} \/\/ ??$/;"	f
 type	cfg.c	/^  char type;                \/\/ b, c, f, i, l, s$/;"	m	struct:CfgParam	file:
+utl	utl.c	/^UtlInfo utl;$/;"	v
+utlBuf	utl.c	/^char *utlBuf, *utlStr, *utlRet;     $/;"	v
 utlDate	utl.c	/^char *utlDate(void) {$/;"	f
+utlDateTime	utl.c	/^char *utlDateTime(void) {$/;"	f
+utlDateTimeBrief	utl.c	/^char *utlDateTimeBrief(void) {$/;"	f
 utlDelay	utl.c	/^void utlDelay(int x) { $/;"	f
+utlErr	utl.c	/^void utlErr( ErrType err, char *str) {$/;"	f
+utlExpect	utl.c	/^int utlExpect(Serial port, char *buf, char *expect, int wait) {$/;"	f
+utlInit	utl.c	/^void utlInit(void) {$/;"	f
 utlLogFile	utl.c	/^int utlLogFile(char *fname) {$/;"	f
+utlMatchAfter	utl.c	/^char *utlMatchAfter(char *out, char *str, char *sub, char *set) {$/;"	f
+utlNap	utl.c	/^void utlNap(int sec) {$/;"	f
 utlNonPrint	utl.c	/^char *utlNonPrint (char *in) {$/;"	f
 utlPet	utl.c	/^void utlPet() { TickleSWSR(); }              \/\/ pet the watchdog$/;"	f
 utlRead	utl.c	/^int utlRead(Serial port, char *in) {$/;"	f
 utlReadWait	utl.c	/^int utlReadWait(Serial port, char *in, int wait) {$/;"	f
-utlShutdown	utl.c	/^void utlShutdown(char *out) {$/;"	f
+utlRet	utl.c	/^char *utlBuf, *utlStr, *utlRet;     $/;"	v
+utlStop	utl.c	/^void utlStop(char *out) {$/;"	f
+utlStr	utl.c	/^char *utlBuf, *utlStr, *utlRet;     $/;"	v
 utlTime	utl.c	/^char *utlTime(void) {$/;"	f
-utlTimeDate	utl.c	/^char *utlTimeDate(void) {$/;"	f
 utlTrim	utl.c	/^int utlTrim(char *line) {$/;"	f
 utlWrite	utl.c	/^void utlWrite(Serial port, char *out, char *eol) {$/;"	f
+utlX	utl.c	/^void utlX(void) {$/;"	f
+utl_tmr	tmr.h	/^  utl_tmr,$/;"	e	enum:__anon8
 var	cfg.c	/^  char *var;$/;"	m	struct:CfgParam	file:
 version	sys.h	/^  char version[32];$/;"	m	struct:SysInfo
 volts	pwr.h	/^  float volts;          \/\/ minimum system voltage to run$/;"	m	struct:PwrInfo
 voltsMin	pwr.h	/^  float voltsMin;       \/\/ minimum system voltage to run$/;"	m	struct:PwrInfo
 wild	cfg.h	/^  char wild[32];$/;"	m	struct:CfgInfo
-winch_tmr	tmr.h	/^  winch_tmr,        \/\/ win.pending amodem command response$/;"	e	enum:__anon7
-wispr_tmr	tmr.h	/^  wispr_tmr,        \/\/ wispr duty cycle$/;"	e	enum:__anon7
+winch_tmr	tmr.h	/^  winch_tmr,        \/\/ win.pending amodem command response$/;"	e	enum:__anon8
+wsp	wispr.c	/^WspInfo wsp;$/;"	v
 wsp	wsp.c	/^WspInfo wsp;$/;"	v
-wspFlush	wsp.c	/^void wspFlush(void){}$/;"	f
-wspInit	wsp.c	/^void wspInit(int board) {$/;"	f
-wspStop	wsp.c	/^void wspStop(void){}$/;"	f
+wsp1_pam	mpc.h	/^typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;$/;"	e	enum:__anon4
+wsp2_pam	mpc.h	/^typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;$/;"	e	enum:__anon4
+wsp3_pam	mpc.h	/^typedef enum { null_pam, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } PamDevType;$/;"	e	enum:__anon4
+wspData	wsp.c	/^bool wspData() {$/;"	f
+wspFlush	wispr.c	/^void wspFlush(void){}$/;"	f
+wspInit	wispr.c	/^void wspInit(int board) {$/;"	f
+wspInit	wsp.c	/^void wspInit(void) {$/;"	f
+wspRead	wsp.c	/^int wspRead(char *buf) {$/;"	f
+wspStart	wsp.c	/^void wspStart(void) {$/;"	f
+wspStop	wispr.c	/^void wspStop(void){}$/;"	f
+wspStop	wsp.c	/^void wspStop(void){$/;"	f
+wsp_tmr	tmr.h	/^  wsp_tmr,          \/\/ wispr duty cycle$/;"	e	enum:__anon8

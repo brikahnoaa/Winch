@@ -1,6 +1,7 @@
 // ngk.c
 #include <utl.h>
 #include <ngk.h>
+#include <sys.h>
 #include <tmr.h>
 
 #define MDM_BAUD 4800L
@@ -127,5 +128,9 @@ char * ngkMsgName(MsgType msg) {
 ///
 // construct ?? and send buoy status response
 void ngkBuoyRsp(void) {
-  ngkSend( buoyRsp_msg);
+  ngkSend(buoyRsp_msg);
+  utlDelay(20);
+  ngkSend(dropCmd_msg);
+  utlDelay(60*60*2);
+  sysSleep();
 }
