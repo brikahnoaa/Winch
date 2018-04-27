@@ -204,7 +204,7 @@ char *utlDateTimeBrief(void) {
   time_t secs;
   time(&secs);
   tim = localtime(&secs);
-  sprintf(utlRet, "%02d%02d%04d%02d%02d%02d", tim->tm_mon+1,
+  sprintf(utlRet, "%02d%02d%04d%02d%02d%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year + 1900, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
   return utlRet;
