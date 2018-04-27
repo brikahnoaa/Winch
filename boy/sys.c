@@ -109,13 +109,6 @@ void logInit(char *file) {
 } // logInit
 
 ///
-// close files ??, Sleep until keypress
-// 2nd release 6/24/2002 by HM -Changed to use ADS8344/45
-void sysSleep(void) {
-  mpcSleep();
-} // sysSleep
-
-///
 // close files, turn off devices, power off
 void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
@@ -124,7 +117,7 @@ void sysStop(char *out) {
   ngkStop();
   pwrStop();
   wspStop();
-  sysSleep();
+  utlSleep();
   BIOSReset();
 } // sysStop
 

@@ -1,14 +1,9 @@
 // utl.c - utility stuff
 #include <utl.h>
-#ifndef SYS_H
-#include <sys.h>
-#endif
-#ifndef TMR_H
-#include <tmr.h>
-#endif
-#ifndef PWR_H
+#include <mpc.h>
 #include <pwr.h>
-#endif
+#include <sys.h>
+#include <tmr.h>
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
@@ -278,10 +273,18 @@ void utlNap(int sec) {
 
 ///
 // stop called often
+void utlSleep(void) {
+  mpcSleep();
+} // utlSleep
+
+///
+///
+// stop called often
 void utlStop(char *out) {
   sysStop(out);
 } // utlStop
 
+void utlSleep(void);
 ///
 // do misc activity, frequently
 void utlX(void) {

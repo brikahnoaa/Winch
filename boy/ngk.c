@@ -126,11 +126,10 @@ char * ngkMsgName(MsgType msg) {
 }
 
 ///
-// construct ?? and send buoy status response
+// buoyRsp, drop and shutdown
 void ngkBuoyRsp(void) {
   ngkSend(buoyRsp_msg);
   utlDelay(20);
   ngkSend(dropCmd_msg);
-  utlDelay(60*60*2);
-  sysSleep();
+  utlSleep();
 }

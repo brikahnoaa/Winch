@@ -40,5 +40,4 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt);
 void sysAlarm(AlarmType alm);
 void sysInfo(char *out);
 void sysStop(char *out);
-void sysSleep(void);
 void sysFlush(void);

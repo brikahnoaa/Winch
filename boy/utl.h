@@ -89,6 +89,7 @@ void utlErr( ErrType err, char *str);
 void utlInit(void);
 void utlNap(int sec);
 void utlPet(void);
+void utlSleep(void);
 void utlStop(char *out);
 void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
