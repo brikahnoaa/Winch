@@ -112,6 +112,7 @@ PhaseType risePhase(void) {
   flogf("\n+risePhase()@%s", utlDateTime());
   antStart();
   ctdStart();
+  ngkStart();
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
@@ -478,6 +479,7 @@ PhaseType dropPhase() {
 // wait until under 10m, watch until not dropping, wait 30s, riseUp()
 PhaseType deployPhase(void) {
   float depth, lastD;
+  ngkStart();
   antStart();
   antAutoSample(true);
   tmrStart( deploy_tmr, 60*60*2 );
