@@ -1,0 +1,161 @@
++logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Apr 25 2018 09:18:35
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 04-26-18 09:24:26
+---   ---
+cfgRead(SYS.CFG)
+Err	|cfgString() ant.samMin=2.0
++cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
++antInit()
++boyInit()
++utlLogFile(boy)
++ctdInit()
++mpcPamDev(4)
++ctdAuton(0)
++utlLogFile(ctd)
++mpcPamDev(0)
++ngkInit()
++wspInit()
++mpcPamDev(1)
++utlLogFile(wsp)
+boyMain(): starting with phase 0
+!boyMain(): cycle 0 of 3
+
++antStart() 04-26-18 09:24:30
++antDevice(cf2) Press [SPACE] key to exit. 3 seconds, 2 1 0
+ok
+
++deployPhase()@04-26-18 09:24:37 0.00m
+deployPhase() at 0.00m
+deployPhase() at 0.00m
+deployPhase() at 0.00m
+deployPhase() at 0.01m
+deployPhase() at 0.01m
+deployPhase() at 0.00m
+deployPhase() at 0.01m
+deployPhase() at -0.02m
+deployPhase() at 0.03m
+deployPhase() at -0.01m
+deployPhase() at -0.02m
+deployPhase() at -0.00m
+deployPhase() at -0.01m
+deployPhase() at 0.00m
+deployPhase() at 0.01m
+deployPhase() at 0.01m
+deployPhase() at 0.00m
+deployPhase() at 0.00m
+deployPhase() at 0.01m
+deployPhase() at -0.01m
+deployPhase() at -0.01m
+deployPhase() at 0.23m
+deployPhase() at 0.86m
+deployPhase() at 1.20m
+deployPhase() at 0.96m
+deployPhase() at 1.02m
+deployPhase() at 1.17m
+deployPhase() at 1.17m
+deployPhase() at 1.00m
+deployPhase() at 1.01m
+deployPhase() at 1.05m
+deployPhase() at 1.09m
+deployPhase() at 1.20m
+deployPhase() at 1.18m
+deployPhase() at 1.31m
+deployPhase() at 1.16m
+	| 12.20m>10 so wait until not moving
+
+	| boy.dockD = 22.87
+	| go to surface, call home
++riseToSurf()
++ngkSend(#R,01,03) at 09:45:17
++ngkRecv(%R,02,00
+) riseRsp 09:45:28
++ngkRecv(%F,02,00
+) dropRsp 09:54:40
+	|riseUp() unexpected dropRsp at 0.9 m
++ngkRecv(#S,02,00
+) stopCmd 09:56:52
++ngkSend(%S,01,00) at 09:56:52
+	| deployed @ 09:56:52
+!boyMain(): cycle 0 of 3
+
++callPhase()@04-26-18 09:56:52
++antDevice(cf2)
++antDevice(a3la) Sats=00 Sats=00 Sats=00 Sats=00 Sats=00 Sats=00 Sats=00 Sats=00 Sats=08 Sats=08
+AT+PD...+PD:..UTC Date=04-26-2018..Satellites Used=08....OK..
+30 seconds
+
++antDevice(cf2)
++antSwitch(irid)
++antDevice(a3la)
+CSQ
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+AT+CSQ...+CSQ:5....OK..
+
++antDevice(cf2)
+!boyMain(): cycle 0 of 3
+
++dropPhase() 09:59:30
++dP:1
++ngkSend(#F,01,00) at 09:59:32
++ngkRecv(%F,02,00
+) dropRsp 09:59:44
++dP:3
++ngkRecv(%F,02,00
+) dropRsp 10:01:58
+	|dropP() unexpected dropRsp at 1.3 m
++ngkRecv(#S,02,00
+) stopCmd 10:18:15
++ngkSend(%S,01,00) at 10:18:15
++dP:4 not docked at 1.21
+-Err(ngk)	|0| 10:18:15 dropPhase step 4, we should be docked
++ctdAuton(0)
++mpcPamDev(0)
+!boyMain(): cycle 0 of 3
+
++dataPhase()@04-26-18 10:18:34
++mpcPamDev(2)
+WISPR storm detection 2->'' 6->'$RDY*
+' 35->'$NLW*,12/16/26,05:00:51,0048,0006*
+'
++mpcPamDev(0)
+!boyMain(): cycle 1 of 3
+
++risePhase()@04-26-18 10:21:05
++antStart() 04-26-18 10:21:05
++antDevice(cf2)
++mpcPamDev(4)
+	| oceanCurrChk()  @1.0=16.0 too strong, cancel ascent
++riseUp(16420m)
++ngkSend(#R,01,03) at 10:21:16
+-Err(ngk)	|1| 10:21:22 expected OK, no response
+	| ngkSend() amodem bad response ''
