@@ -1,0 +1,10 @@
++ngkSend(#R,01,03) at 09:45:17
++ngkRecv(%R,02,00) riseRsp 09:45:28
++ngkRecv(%F,02,00) dropRsp 09:54:40
++ngkRecv(#S,02,00) stopCmd 09:56:52
++ngkSend(%S,01,00) at 09:56:52
++ngkSend(#F,01,00) at 09:59:32
++ngkRecv(%F,02,00) dropRsp 09:59:44
++ngkRecv(%F,02,00) dropRsp 10:01:58
++ngkRecv(#S,02,00) stopCmd 10:18:15
++ngkSend(%S,01,00) at 10:18:15

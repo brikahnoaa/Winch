@@ -7,10 +7,12 @@ v gps query
 v terminate after how many? BUOY response
 v aM fail less than x meters
 
-v initlogging x 2
+ initlogging after successful store, not at start
+ ctdauton during deploy
 
 v ctd16 auton
 
 ! cheap hack, delay in aDat to work
 
-seasick pills
+        |riseUp() stopCmd timeout, but stopped so continue...
+        | riseUp() to depth 16369

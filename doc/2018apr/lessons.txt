@@ -1,0 +1,16 @@
+.1 If the buoy rises in current, the winch may not detect slack at surface
+.. watch antenna module depth while surfacing, call STOP
+.2 If the buoy rises in current, then later reduced current or wave action over some minutes may allow the buoy to surface next to ant mod
+.. watch buoy depth after antmod surfacing and FALL if needed to avoid surface
+.3 If the buoy reaches surface, the line may be too slack to start winch
+.. see .2, and also patiently retry FALL if not descending
+.. don't trust winch to notify STOP if not descending due to slack, test this
+.4 At surface, ant mod depth varied by half the wave depth
+.. don't trust antMoving() function within 4 meters of surface (a setting)
+.5 Some winch behavior does not compute
+.. winch tests
+... winch behavior if slack before or during FALL
+... if winch stops during FALL, does it retry later?
+... winch maximum pull kg
+... winch actual surface slack
+... possible false slack indications if tension varies or if tilted
