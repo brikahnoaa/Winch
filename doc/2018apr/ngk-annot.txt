@@ -74,12 +74,14 @@
 +ngkSend(%S,01,00) at 09:56:52
 # buoy checks GPS/IRID, enters drop phase after 2:40
 +ngkSend(#F,01,00) at 09:59:32
+# (( note - graph of depth shows more variation from here until 10:10:49 ))
 # response from winch to buoy
 +ngkRecv(%F,02,00) dropRsp 09:59:44
 # we send another drop cmd from deck unit, buoy sees winch response
 +ngkRecv(%F,02,00) dropRsp 10:01:58
 # we query winch status, get code 04 = normal, slack
-# not dropping even under manual cmd, so we open acoustic release (@+2:00 ?)
+# not dropping even under manual cmd, so we open acoustic release (@+5:00 ?)
+# (( note - graph gives a clue, probably released at 10:10:49 ))
 # !!! somehow the winch wound cable back in after release ??
 +ngkRecv(#S,02,00) stopCmd 10:18:15
 +ngkSend(%S,01,00) at 10:18:15
