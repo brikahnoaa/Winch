@@ -11,8 +11,6 @@ typedef struct AntInfo {
   bool autoSample;            // antSample after antRead
   bool logging;               // use TS or TSSon
   bool surf;                  // on surface
-  char gpsLong[32];           // 123:45.6789W
-  char gpsLat[32];            // 45:67.8900N
   char logFile[64];
   char samCmd[32];            // TS or TSSon
   float depth;
