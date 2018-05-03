@@ -16,23 +16,22 @@ int gpsInit(void){
   gps.port = antPort();
   // a3laStart()
   antDevice(cf2_dev);
-  TUTxPutByte(port, 3, false);
-  TUTxPutByte(port, 'I', false);
+  TUTxPutByte(gps.port, 3, false);
+  TUTxPutByte(gps.port, 'I', false);
   antDevice(a3la_dev);
-  utlExpect(port, utlBuf, "COMMAND", 12);
+  utlExpect(gps.port, utlBuf, "COMMAND", 12);
   gpsSats();
 } // gpsInit
   
 int gpsSats(void){
   char *here;
   int gpsT=90, iridT=120;
-  Serial port;
   gpsInit();
   DBG1("'%s'", utlBuf)
   tmrStart(ant_tmr, gpsT);
   while (!tmrExp(ant_tmr)) {
-    utlWrite(port, "AT+PD", EOL);
-    utlExpect(port, utlBuf, "OK", 12);
+    utlWrite(gps.port, "AT+PD", EOL);
+    utlExpect(gps.port, utlBuf, "OK", 12);
     if (!strstr(utlBuf, "Invalid Position"))
       break;
     if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
@@ -58,8 +57,8 @@ int gpsISig(void) {
   flogf("\nCSQ\n");
   tmrStart(ant_tmr, iridT);
   while (!tmrExp(ant_tmr)) {
-    utlWrite(port, "AT+CSQ", EOL);
-    utlExpect(port, utlBuf, "OK", 12);
+    utlWrite(gps.port, "AT+CSQ", EOL);
+    utlExpect(gps.port, utlBuf, "OK", 12);
     // replace crlf
     for (here=utlBuf; *here; here++) 
       if (*here=='\r' || *here=='\n')

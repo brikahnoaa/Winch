@@ -5,7 +5,7 @@
 #define BUFSZ 4096
 #define C_DRV ('C'-'A')
 #define null NULL
-#define RS232_SETTLE 100
+#define SETTLE 100
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 

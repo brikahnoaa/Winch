@@ -28,4 +28,5 @@ MsgType ngkRecv(void);
 void ngkInit(void);
 char * ngkMsgName(MsgType msg);
 void ngkSend(MsgType msg);
+void ngkStart(void);
 void ngkStop(void);
