@@ -33,10 +33,10 @@ void ngkInit(void) {
   mdmTX = TPUChanFromPin(MDM_TX);
   PIORead(MDM_RX_TTL);              // tpu->rs232 is pin 33->48->47
   // Power up the DC-DC for the Acoustic Modem Port
-  PIOClear(MDM_PWR);
-  utlDelay(RS232_SETTLE);
-  PIOSet(MDM_PWR);
-  utlDelay(RS232_SETTLE);
+  ngkStop();
+  utlDelay(SETTLE);
+  ngkStart();
+  utlDelay(SETTLE);
   // PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
   p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
   if (p == 0)
@@ -48,9 +48,17 @@ void ngkInit(void) {
   ngk.port = p;
 } // ngkInit
 
+///
+// power on
+void ngkStart(void){
+  PIOSet(MDM_PWR);
+} // ngkStart
+
+///
+// power off
 void ngkStop(void){
   PIOClear(MDM_PWR);
-}
+} // ngkStop
 
 ///
 // send message to winch via amodem

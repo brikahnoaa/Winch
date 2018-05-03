@@ -5,7 +5,7 @@
 #define BUFSZ 4096
 #define C_DRV ('C'-'A')
 #define null NULL
-#define RS232_SETTLE 100
+#define SETTLE 100
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
@@ -22,8 +22,8 @@
 #define WSP_12 30   // 29&!30 -> wsp1, 29&30 -> wsp2
 #define ANT_TX 31   // com1: ant mod, uMPC and A3LA
 #define ANT_RX 32   // // selected by 23
-#define MDM_RX 33
-#define MDM_TX 35
+#define MDM_RX 33   // acoustic modem
+#define MDM_TX 35   // 
 #define WISPR_PWR_ON 37
 #define WISPR_PWR_OFF 42
 #define MDM_RX_TTL 48

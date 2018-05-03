@@ -1,13 +1,20 @@
 // ant.c - for working with antenna module
 #include <utl.h>
 #include <ant.h>
-#include <mpc.h>
 #include <tmr.h>
 
 #define EOL "\r"
 #define SBE_SLEEP 20
 
 AntInfo ant;
+
+typedef struct Node {
+  float depth;
+  time_t time;
+  struct Node *next;
+} Node;
+
+static Node *ring;
 
 ///
 // turn on antenna module, wait until ant responds
@@ -278,7 +285,7 @@ void antDevice(DevType dev) {
     PIOClear(ANT_SEL);
   else
     return;
-  utlDelay(RS232_SETTLE);
+  utlDelay(SETTLE);
   TUTxFlush(ant.port);
   TURxFlush(ant.port);
   utlPet();
