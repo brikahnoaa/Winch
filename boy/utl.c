@@ -278,13 +278,11 @@ void utlSleep(void) {
 } // utlSleep
 
 ///
-///
 // stop called often
 void utlStop(char *out) {
   sysStop(out);
 } // utlStop
 
-void utlSleep(void);
 ///
 // do misc activity, frequently
 void utlX(void) {

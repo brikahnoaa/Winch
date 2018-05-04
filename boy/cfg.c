@@ -5,6 +5,7 @@
 #include <ant.h>
 #include <boy.h>
 #include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
 #include <ngk.h>
 #include <pwr.h>
@@ -16,6 +17,7 @@ CfgInfo cfg;
 extern AntInfo ant;
 extern BoyInfo boy;
 extern CtdInfo ctd;
+extern GpsInfo gps;
 extern MpcInfo mpc;
 extern NgkInfo ngk;
 extern PwrInfo pwr;
@@ -37,14 +39,11 @@ typedef struct CfgParam {
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
   {"alg", "ant.logging",    &ant.logging,     'b'},
-  {"aln", "ant.gpsLong",    &ant.gpsLong,     'c'},
-  {"alt", "ant.gpsLat",     &ant.gpsLat,      'c'},
   {"alF", "ant.logFile",    &ant.logFile,     'c'},
+  {"asD", "ant.subD",       &ant.subD,        'f'},
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
-  {"asR", "ant.samRes",     &ant.samRes,      'f'},
   {"ady", "ant.delay",      &ant.delay,       'i'},
   {"afr", "ant.fresh",      &ant.fresh,       'i'},
-  {"asC", "ant.samLen",     &ant.samLen,      'i'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},
@@ -60,6 +59,8 @@ static CfgParam cfgP[] = {
   {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
   {"cdy", "ctd.delay",      &ctd.delay,       'i'},
   {"cfr", "ctd.fresh",      &ctd.fresh,       'i'},
+  {"gln", "gps.longitude",  &gps.longitude,   'c'},
+  {"glt", "gps.latitude",   &gps.latitude,    'c'},
   {"ndy", "ngk.delay",      &ngk.delay,       'i'},
   {"pon", "pwr.on",         &pwr.on,          'b'},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c'},

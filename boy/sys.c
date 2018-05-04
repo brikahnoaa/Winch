@@ -158,6 +158,6 @@ long sysDiskFree(void) {
 void sysFlush(void) {
   boyFlush();
   pwrFlush();
-  antFlush();
+  // antFlush();
   // ctdFlush();
 } // sysFlush

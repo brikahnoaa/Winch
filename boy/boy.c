@@ -163,7 +163,7 @@ bool riseToSurf(void) {
       continue; // while
     case stopCmd_msg:     // stopped by winch
       ngkSend(stopRsp_msg);
-      if (depth<=antSurfMaxD())
+      if (antSurf())
         return true;
       else
         flogf(", stopCmd at %4.2fm riseToSurf() step 1", depth);
@@ -206,7 +206,7 @@ bool riseToSurf(void) {
       flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
     } // switch
   } // while step2
-  if (depth>antSurfMaxD())
+  if (!antSurf())
     flogf("\n\t|riseToSurf() too deep at %4.2f", depth);
   return true;
 } // riseToSurf
@@ -339,7 +339,7 @@ bool riseUp(float targetD, int errMax, int delay) {
 // read gps date, loc. 
 PhaseType callPhase(void) {
   flogf("\n+callPhase()@%s", utlDateTime());
-  gpsTst();
+  // ?? gpsTst();
   return drop_pha;
 } // callPhase
 
@@ -363,7 +363,7 @@ PhaseType dropPhase() {
   PhaseType r = data_pha;
   MsgType msg;
   flogf("\n+dropPhase() %s", utlTime());
-  antFlush();
+  antRingClear();
   startD = depth = antDepth();
   // step1. loop until dropRsp or dropping+timeout
   step = 1;

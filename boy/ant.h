@@ -6,26 +6,30 @@
 typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
+typedef struct AntNode {
+  float depth;
+  time_t sampT;
+  struct AntNode *next;
+} AntNode;
+
 typedef struct AntInfo {
   bool auton;                 // autonomous mode
   bool autoSample;            // antSample after antRead
   bool logging;               // use TS or TSSon
   bool surf;                  // on surface
-  char gpsLong[32];           // 123:45.6789W
-  char gpsLat[32];            // 45:67.8900N
   char logFile[64];
   char samCmd[32];            // TS or TSSon
   float depth;
-  float surfD;                // depth of CTD when ant is floating
-  float samQue[32];          // depth measurement during auto_mod
-  float samRes;            // accuracy - change greater than this to count
+  float subD;                 // subsurfaceD; ant.surfD + boy.ant2tip
+  float surfD;                // surfaceDepth of CTD when ant is floating
   float temp;
   int delay;
   int fresh;                  // time()-ant.time < fresh is usable
   int log;
-  int samCnt;                 // sam in samQue
-  int samLen;                 // sizeof samQue
-  time_t lastT;                // time() of last sample
+  int ringFresh;              // ant.fresh * ant.ringSize
+  int ringSize;               // number of nodes in the (depth,time) ring
+  time_t sampT;               // time() of last sample
+  AntNode *ring;               // nodes in the (depth,time) ring
   AntType antenna;
   DevType dev;
   Serial port;
@@ -42,9 +46,8 @@ static void antMovSam(void);
 static void antSample(void);
 
 bool antSurf(void);
+bool antVelo(float *velo);
 float antDepth(void);
-float antMoving(void);
-float antSurfMaxD(void);
 float antTemp(void);
 void antAuton(bool auton);
 void antAutoSample(bool autos);
@@ -53,6 +56,7 @@ void antDevPwr(char c, bool on);
 Serial antPort(void);
 void antFlush(void);
 void antGetSamples(void);
+void antRingClear(void);
 void antInit(void);
 void antStart(void);
 void antStop(void);
