@@ -1,35 +1,34 @@
 # emulator. v3
-# import winch, sbe16, sbe39, floats, ant
 from design import *
-import winch, sbe16, sbe39, floats
+import winch, sbe16, sbe39, ant, floats
 
 def init():
     "init all"
     sbe16.init()
     winch.init()
-    sbe39.init()
-    # ant.init()
+    # sbe39.init()
+    ant.init()
 
 def start():
     "start all"
     sbe16.start()
     winch.start()
-    sbe39.start()
-    # ant.start()
+    # sbe39.start()
+    ant.start()
 
 def stop():
     "stop all"
     sbe16.stop()
     winch.stop()
-    sbe39.stop()
-    # ant.stop()
+    # sbe39.stop()
+    ant.stop()
 
 def info():
     "info all"
     sbe16.info()
     winch.info()
-    sbe39.info()
-    # ant.info()
+    # sbe39.info()
+    ant.info()
     
 def restart():
     "stop init start"
