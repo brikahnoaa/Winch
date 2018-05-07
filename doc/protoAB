@@ -35,11 +35,12 @@ Serial interface program to connect sbe39, control Iridium/GPS.
 Buoy is connected to com4 at 9600 BAUD
  ^A Antenna G|I 
  ^B Break
- ^C Connect (power) I|S 
+ ^C Connect (powerup) I|S 
  ^D powerDown I|S
- ^E binary lEngth
- ^F binary 2bytes (TBD)
+ ^E exit to pico
+ ^F status
  ^G unused 
+ ^H help
 On console (com1): s=status x=exit *=this message
 status: 
 "antenna:G iridgps:off sbe:on command:1"

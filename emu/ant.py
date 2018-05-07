@@ -1,11 +1,52 @@
 # emulate antenna mod using sbe39 v3
 import time
 from random import random
-from laraSer import Serial
 from serial.tools.list_ports import comports
 from threading import Thread, Event
 from design import *
 import winch
+import laraSer
+
+class Serial(serial.Serial):
+    "extra method to look for ^A-^H commands to CF2"
+    def antgetline(self, echo=0):
+        "Get full lines from serial, keep eol; partial to self.buff"
+        # returns a full line, partial returns '', no input returns None
+        eol = self.eol
+        eol_out = self.eol_out
+        # read chars
+        if self.in_waiting:
+            c = ''
+            # read single chars and accumulate
+            while self.in_waiting:
+                b = self.read(1)
+                if b>8:
+                    c += b
+                else:
+                    # CF2 command ^A - ^H, discard
+                    if b in (1, 3, 4):
+                        # G|I|S argument
+                        self.read(1)
+            b = self.buff + c
+            if echo:
+                if eol_out and (eol in c):
+                    # translate eol for echo
+                    c = join(split(c, eol), eol_out)
+                self.write(c)
+                self.flush()
+            if eol in b:
+                i = b.find(eol) + len(eol)
+                r = b[:i]
+                self.buff = b[i:]
+                self.logIn(r)
+                return r
+            else:
+                # partial
+                self.buff = b
+                return ''
+
+
+# extension to sbe39, ignoring ^A-^H commands to CF2
 
 # globals set in init(), start()
 
@@ -96,7 +137,7 @@ def serThread():
                         sleepMode = False
                 else: # not sync or sleep. command line
                     # upper case is standard for commands, but optional
-                    l = ser.getline(echo=1).upper()
+                    l = ser.antgetline(echo=1).upper()
                     if l:
                         l = l[:-len(ser.eol)]
                         if 'TS' in l:
