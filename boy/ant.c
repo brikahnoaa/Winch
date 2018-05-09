@@ -310,15 +310,25 @@ Serial antPort(void) {
   return ant.port;
 } // antPort
 
+///
+// switch antenna; do not change ant.dev
+// sets: ant.antenna
 void antSwitch(AntType antenna) {
+  DevType prev;
   if (antenna==ant.antenna) return;
   DBG0("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
+  if (ant.dev!=cf2_dev) {
+    prev = ant.dev;
+    antDev(cf2_dev);
+  }
   TUTxPutByte(ant.port, 1, false);        // ^A
   if (antenna==gps_ant) 
     TUTxPutByte(ant.port, 'G', false);
   else
     TUTxPutByte(ant.port, 'I', false);
   ant.antenna = antenna;
+  if (prev!=cf2_dev)
+    antDev(prev);
 } // antSwitch
     
 ///
