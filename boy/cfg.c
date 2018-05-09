@@ -40,11 +40,10 @@ typedef struct CfgParam {
 static CfgParam cfgP[] = {
   {"alg", "ant.logging",    &ant.logging,     'b'},
   {"alF", "ant.logFile",    &ant.logFile,     'c'},
+  {"asD", "ant.subD",       &ant.subD,        'f'},
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
-  {"asR", "ant.samRes",     &ant.samRes,      'f'},
   {"ady", "ant.delay",      &ant.delay,       'i'},
   {"afr", "ant.fresh",      &ant.fresh,       'i'},
-  {"asC", "ant.samLen",     &ant.samLen,      'i'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},

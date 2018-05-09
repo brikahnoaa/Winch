@@ -51,6 +51,8 @@ int utlTrim(char *line) {
 
 ///
 // search str for sub, then return string that matches set
+// out = matched string, or null string if no match
+// sets: *out, rets: out
 char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
   char *here;
   int len=0;
@@ -278,13 +280,11 @@ void utlSleep(void) {
 } // utlSleep
 
 ///
-///
 // stop called often
 void utlStop(char *out) {
   sysStop(out);
 } // utlStop
 
-void utlSleep(void);
 ///
 // do misc activity, frequently
 void utlX(void) {

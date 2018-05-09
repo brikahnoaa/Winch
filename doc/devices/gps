@@ -1,0 +1,38 @@
+Running Self Test...Passed
+ENCRYPTION DISABLED THIS POWER CYCLE
+
+COMMAND MODE
+at+pt
++PT:
+UTC Time=22:48:45.000
+Invalid Position Fix
+Satellites Used=00
+
+OK
+at+pt
++PT:
+UTC Time=22:48:51.000
+Invalid Position Fix
+Satellites Used=00
+
+OK
+at+pt
++PT:
+UTC Time=22:49:17.000
+Satellites Used=06
+
+OK
+at+pd
++PD:
+UTC Date=05-08-2018
+Satellites Used=07
+
+OK
+at+pl
++PL:
+Latitude=44:37.2549 North
+Longitude=124:02.6505 West
+Altitude=5.8 meters
+Satellites Used=09
+
+OK

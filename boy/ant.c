@@ -20,7 +20,7 @@ static Node *ring;
 // turn on antenna module, wait until ant responds
 // sets: ant.mode .port
 void antInit(void) {
-  short rx, tx;
+  short rx, tx, i;
   DBG0("antInit()")
   // port
   rx = TPUChanFromPin(ANT_RX);
@@ -33,6 +33,13 @@ void antInit(void) {
   else
     strcpy(ant.samCmd, "TS");
   antDevice(null_dev);
+  // alloc bloc to store depth values for moving/velo
+  ant.ring = (AntNode *) calloc(ant.ringSize, sizeof(AntNode));
+  // to string the nodes into a ring, access like an array
+  ant.ring[ant.ringSize-1].next = ant.ring;
+  for (i=0; i<ant.ringSize-1; i++) 
+    ant.ring[i].next = &ant.ring[i+1];
+  ant.ringFresh = ant.fresh * ant.ringSize;
 } // antInit
 
 ///
@@ -55,7 +62,7 @@ void antStart(void) {
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
-  antFlush();                      // flush sample buffer
+  antRingClear();                      // flush sample buffer
   antPrompt();
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
@@ -122,7 +129,7 @@ void antSample(void) {
   if (antPending()) return;
   TURxFlush(ant.port);
   // sleeping?
-  if (ant.lastT+SBE_SLEEP<time(0))
+  if (ant.sampT+SBE_SLEEP<time(0))
     antPrompt();
   utlWrite(ant.port, ant.samCmd, EOL);
   // get echo of command
@@ -134,34 +141,49 @@ void antSample(void) {
 } // antSample
 
 ///
-// antRead processes one or more lines of data, stores samples if auton
-// if ant.autoSample then sample, else not pending after read
-// sets: ant.depth .temp 
+// antRead processes most recent sample, could be multiple
+// after: if ant.autoSample then antSample(), else not pending after read
+// sets: ant.temp .depth .sampT .ring->depth .ring->sampT
 bool antRead(void) {
   char *p0, *p1, *p2;
   if (!antData()) return false;
   DBG1("antRead()");
   utlRead(ant.port, utlBuf);
   // ?? sanity check
-  // should be multiple lines, ending crlf; ignore <Executed/>
+  // should be multiple lines, ending crlf
   // data line len 32 < char < 64
   // read temp, depth and scan ahead for line end
   p0 = utlBuf;
-  while (p0) {              // p0 will be null when no more lines
-    p1 = strtok(p0, "\r\n#, ");
-    if (!p1) continue;
-    p2 = strtok(NULL, ", ");
-    if (!p2) continue;
-    antMovSam();
-    ant.temp = atof(p1);
-    ant.depth = atof(p2);
-    DBG1("= %4.2f, %4.2f", ant.temp, ant.depth)
-    // ?? range check
-    // loop until no more line ends in buf
-    p0 = strstr(p0, "\r");
-  } // while 
+  // trim expected trailing EOL<Executed/>EOL
+  p1 = strrchr(p0, '\r');
+  if (p1)
+    *p1 = 0;
+  p1 = strrchr(p0, '\r');
+  if (!strstr(p1, "<Exec"))
+    return false;
+  if (p1)
+    *p1 = 0;
+  // skip any leading lines
+  p1 = strrchr(p0, '\r');
+  if (p1)
+    p0 = p1;
+  // parse two numeric csv
+  p1 = strtok(p0, "\r\n#, ");
+  if (!p1) 
+    return false;
+  p2 = strtok(NULL, ", ");
+  if (!p2) 
+    return false;
+  // save samples
+  ant.ring->depth = ant.depth;
+  ant.ring->sampT = ant.sampT;
+  // new values
+  ant.temp = atof(p1);
+  ant.depth = atof(p2);
+  ant.sampT = time(0);
+  //
+  DBG1("= %4.2f, %4.2f", ant.temp, ant.depth)
   tmrStop(ant_tmr);
-  ant.lastT = time(0);
   if (ant.autoSample)
     antSample();
   return true;
@@ -183,7 +205,7 @@ bool antDataWait(void) {
 ///
 // data read recently
 bool antFresh(void) {
-  bool fresh = (time(0)-ant.lastT)<ant.fresh;
+  bool fresh = (time(0)-ant.sampT)<ant.fresh;
   DBG1("aFr=%d", fresh)
   return fresh;
 }
@@ -228,50 +250,53 @@ float antTemp(void) {
 } // antTemp
 
 ///
-// checks recent depth against previous
-// returns delta change in depth 
-// fills sample buffer if not enough samples, takes several seconds
-// uses: ant.samLen .samRes .depth
-// rets: -rise | +drop | 0.0stop
-float antMoving(void) {
-  float d;
-  DBG1("antMoving()")
-  // got samples? fill FIFO buffer  ?? needs timeout
-  while (ant.samCnt<ant.samLen) {
-    antSample();
-    antDataWait();
-    antRead();
+// checks recent depth against previous, computes velocity m/s
+// false if oldest recent depth is very old
+// sets *velo 0.0 if depths go up and down
+// uses: ant.ring ringFresh
+// sets: *velo ant.ring->depth ->time returns bool
+bool antVelo(float *velo) {
+  short dir;
+  float v;
+  AntNode *n;
+  DBG1("antVelo()")
+  // got samples? 
+  if (ant.sampT - ant.ring->sampT > ant.ringFresh) return false;
+  // candidate velo
+  v = (ant.depth - ant.ring->depth) / (ant.sampT - ant.ring->sampT);
+  // direction - check all samples for consistent direction
+  dir = (v>0) ? 1 : -1;
+  n = ant.ring; 
+  while (true) {
+    if (dir==1) // fall
+      if (n->depth < n->next->depth)
+        dir = 0;
+    if (dir==-1) // rise
+      if (n->depth > n->next->depth)
+        dir = 0;
+    if (dir==0) break;
+    n=n->next;
+    if (n==ant.ring) break;
   }
-  // got delta?
-  d = ant.depth-ant.samQue[ant.samCnt];
-  DBG4("aM=%4.2f", d)
-  if (abs(d)<ant.samRes) 
-    return 0.0;
-  // got depth? wave motion
-  if (ant.depth<antSurfMaxD())
-    return 0.0;
-  // delta
-  return d;
-} // antMoving
+  if (dir) *velo = v;
+  else *velo = 0.0;
+  DBG2("aM=%4.2f", *velo)
+  return true;
+} // antVelo
 
 ///
-// shift sample in samQue, used by antMoving
-// sets: ant.samQue[] .samCnt
-void antMovSam(void) {
-  int i;
-  // samples[] for antMoving - shift samples in array
-  for (i=0; i<ant.samCnt; i++)
-    ant.samQue[i+1] = ant.samQue[i];
-  if (ant.samCnt<ant.samLen)
-    ant.samCnt++;
-  ant.samQue[0] = ant.depth;
-} // antMovSam
-
-///
-// clear samples used by antMoving, call this when winch stops
-void antFlush(void) {
-  ant.samCnt = 0;
-}
+// clear sample times used by antVelo, call this when winch stops
+// could be replaced with free(), calloc()
+// sets: ant.ring->sampT;
+void antRingClear(void) {
+  AntNode *n;
+  n = ant.ring; 
+  while (true) {
+    n->sampT = 0;
+    n = n->next;
+    if (n==ant.ring) break;
+  } // while
+} // antRingClear
 
 ///
 // antmod uMPC cf2 and iridium A3LA
@@ -388,6 +413,6 @@ void antGetSamples(void) {
   flogf("\nantGetSamples(): %d bytes to %s", total, ant.logFile);
 } // antGetSamples
 
-float antSurfMaxD(void) {
-  return ant.surfD+ant.samRes;
-} // antSurfMaxD
+bool antSurf(void) {
+  return (ant.depth<(ant.surfD+2));
+}

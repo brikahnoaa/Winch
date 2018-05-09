@@ -1,57 +1,75 @@
-# emulate antenna module v4
+# emulate antenna mod using sbe39 v3
 import time
-from laraSer import Serial
+from random import random
 from serial.tools.list_ports import comports
-from threading import Thread, Event, Timer
+from threading import Thread, Event
 from design import *
 import winch
+import laraSer
+
+class Serial(serial.Serial):
+    "extra method to look for ^A-^H commands to CF2"
+    def antgetline(self, echo=0):
+        "Get full lines from serial, keep eol; partial to self.buff"
+        # returns a full line, partial returns '', no input returns None
+        eol = self.eol
+        eol_out = self.eol_out
+        # read chars
+        if self.in_waiting:
+            c = ''
+            # read single chars and accumulate
+            while self.in_waiting:
+                b = self.read(1)
+                if b>8:
+                    c += b
+                else:
+                    # CF2 command ^A - ^H, discard
+                    if b in (1, 3, 4):
+                        # G|I|S argument
+                        self.read(1)
+            b = self.buff + c
+            if echo:
+                if eol_out and (eol in c):
+                    # translate eol for echo
+                    c = join(split(c, eol), eol_out)
+                self.write(c)
+                self.flush()
+            if eol in b:
+                i = b.find(eol) + len(eol)
+                r = b[:i]
+                self.buff = b[i:]
+                self.logIn(r)
+                return r
+            else:
+                # partial
+                self.buff = b
+                return ''
+
+
+# extension to sbe39, ignoring ^A-^H commands to CF2
 
 # globals set in init(), start()
 
-name = 'ant'
+name = 'sbe39'
 portSelect = 1      # select port 0-n of multiport serial
 baudrate = 9600
 
 CTD_DELAY = 0.53
 CTD_WAKE = 0.78
 
-flags = {}           # watch sbe depth/temp
-value = {}          # depth/temp
-setting = {}        # algorithm settings
 serThreadObj = None
 
-flagsInit = { 
-    'depth': False,
-    'ice': False, 
-    'log': False,
-    'surface': False, 
-    'target': False, 
-    'temp': False,
-    'velocity': False,
-    }
-
-valueInit ={
-    'ice': -1.3,
-    'surface': 1.5,
-    }
-
 def info():
-    "globals which may be externally set"
-    print "(go:%s)   syncMode=%s   syncModePending=%s   sleepMode=%s" % \
-        (go.isSet(), syncMode, syncModePending, sleepMode)
+    "info about what's up"
+    print "sbe39:  go=%s  depth=%s temper=%s  sleepMode=%s" % \
+        (go.isSet(), depth(), temper(), sleepMode)
 
 def init():
     "set globals to defaults"
-    global mooring__line, mooring, buoyLine, floatsLine, antLine
-    mooring__line = mooring-(buoyLine+floatsLine+antLine)
-    global go, phase, flags, value
+    global go, sleepMode, syncMode, syncModePending, timeOff
+    sleepMode = syncMode = syncModePending = False
+    timeOff = 0
     go = Event()
-    flags = flagsInit.copy()
-    value = valueInit.copy()
-    phase = 2
-    print "phase %s flags %s" % (phase, flagsSet[phase])
-    for k in flagsSet[phase]:        # flags for this phase
-        flags[k] = True
 
 def start(portSel=portSelect):
     "start I/O thread"
@@ -66,6 +84,7 @@ def start(portSel=portSelect):
     except: 
         print "no serial for %s" % name
         ser = None
+        return
     serThreadObj = Thread(target=serThread)
     serThreadObj.daemon = True
     serThreadObj.name = name
@@ -83,174 +102,122 @@ def stop():
 
 def serThread():
     "thread: loop looks for serial input; to stop set sergo=0"
-    global go, ser
+    global go, ser, syncMode, sleepMode
+    stamp = time.time()
     if not ser.is_open: ser.open()
     ser.buff = ''
-    while go.isSet():
-        l = ser.getline()
-        if l: buoyProcess(l)
+    try:
+        while go.isSet():
+            if not sleepMode and not syncMode:
+                if (time.time()-stamp)>120:
+                    ser.put("<Timeout msg='2 min inactivity timeout, "
+                        "returning to sleep'/>\r\n")
+                    gotoSleepMode()
+            # CTD. syncMode, sample, settings
+            if ser.in_waiting:
+                stamp = time.time()
+                # syncMode is pending until sleepMode
+                # syncMode is special, a trigger not a command
+                if syncMode:
+                    c = ser.get()
+                    if '\x00' in c:
+                        # serial break, python cannot really see it
+                        ser.log( "break; syncMode off, flushing %r" % ser.buff )
+                        syncMode = False
+                        sleepMode = False
+                    else:
+                        ctdOut()
+                elif sleepMode:
+                    c = ser.get()
+                    if '\r' in c:
+                        # wake
+                        ser.log( "waking, flushing %r" % ser.buff )
+                        time.sleep(CTD_WAKE)
+                        ser.put('<Executed/>\r\n')
+                        sleepMode = False
+                else: # not sync or sleep. command line
+                    # upper case is standard for commands, but optional
+                    l = ser.antgetline(echo=1).upper()
+                    if l:
+                        l = l[:-len(ser.eol)]
+                        if 'TS' in l:
+                            ctdOut()
+                        elif 'DATE' in l:
+                            # trim up to =
+                            dt = l[l.find('=')+1:]
+                            setDateTime(dt)
+                            ser.log( "set date time %s -> %s" % 
+                                (dt, sbe39DateTime()) )
+                        elif 'SYNCMODE=Y' in l:
+                            syncModePending = True
+                            ser.log( "syncMode pending (when ctd sleeps)")
+                        elif 'QS' in l:
+                            gotoSleepMode()
+                        if sleepMode != True:
+                            ser.put('<Executed/>\r\n')
+        # while go:
+    except IOError, e:
+        print "IOError on serial, calling ant.stop() ..."
+        stop()
     if ser.is_open: ser.close()
-#serThread
 
-def buoyProcess(l):
-    "process serial input (from buoy)"
-    global flags, value, phase
-    ls = l.split()
-    if len(ls)==0: return
-    cmd = ls[0][0]
-    if 'echo'==cmd or cmd=='e':
-        flags['echo'] = true
-    elif 'mntr'==cmd or cmd=='m':
-        flags['mntr'] = true
-    elif 'quit'==cmd or cmd=='q':
-        exit
-    elif 'data'==cmd or cmd=='d':    
-        print "data: %s %s" % sbeReadWait()
-    elif 'halt'==cmd or cmd=='h':
-    elif 'file'==cmd or cmd=='f':
-    elif 'gpst'==cmd or cmd=='g':
-    elif 'levl'==cmd or cmd=='l':
-    elif 'irid'==cmd or cmd=='i':
-    elif 'cnfg'==cmd or cmd=='c':
-    elif 'stat'==cmd or cmd=='s':
-    elif 'pico'==cmd or cmd=='p':
-#buoyProcess
+def gotoSleepMode():
+    "CTD enters sleep mode, due to timeout or QS command"
+    global ser, sleepMode, syncMode, syncModePending
+    ser.log(ser.name + " ctd sleepMode")
+    if syncModePending:
+        ser.log(ser.name + " ctd syncMode")
+        syncModePending = False
+        syncMode = True
+    sleepMode = True
 
-def velocity(c=0):
-    "c>0 start average, c<0 end average, else continue average"
-    global flags
-    d = sbe.depth
-    if c>0:
-        # start average
-        velocity.time = time.time()
-        velocity.depth = d
-        velocity.count = c-1
-        sbe.req()
-    elif c<0 or velocity.count==0:
-        # done. down is positive velocity, increasing depth
-        v = (d - velocity.depth) / (time.time() - velocity.time)
-        ser.putline("velocity %.2f" % v)
-        flags['velocity'] = False
-    else:
-        # more data
-        velocity.count -= 1
-        sbe.req()
-# static var
-velocity.time=0
-velocity.depth=0
-velocity.count=0
-#end def velocity(d):
+def setDateTime(dt):
+    "set ctdClock global timeOff from command in seabird format"
+    global timeOff
+    # datetime=mmddyyyyhhmmss to python time struct
+    pyTime = time.strptime(dt,"%m%d%Y%H%M%S")
+    # python time struct to UTC
+    utc = time.mktime(pyTime)
+    # offset between emulated ctd and this PC clock
+    timeOff = time.time()-utc
 
-def phaseChange(p):
-    "phase transition, reset flags and values"
-    global phase, flags, flagsInit, flagsSet, value, valueInit, ser
-    phase = p
-    ser.putline("phase %d" % phase)
-    ser.log("phase %d" % phase)
-    if flags['velocity']:        # terminate pending velo
-        velocity(-1)
-    flags = flagsInit.copy()
-    value = valueInit.copy()
-    ser.log( flagsSet[p] )
-    for k in flagsSet[p]:        # flags for this phase
-        flags[k] = True
-    #
-    if p==1:        # docked
-        None
-    elif p==2:        # ascend
-        None
-    elif p==3:        # surface
-        gpsIrid()
-    elif p==4:        # descend
-        None
-    if any( flags.values() ):
-        sbe.req()
-#end def phaseChange(p):
+def sbe39DateTime():
+    "use global timeOff set by setDateTime() to make a date"
+    global timeOff
+    # sbe16 has no comma, sbe39 has one
+    f='%d %b %Y, %H:%M:%S'
+    return time.strftime(f,time.localtime(time.time()-timeOff))
 
-class sbe():
-    "used as a collection, not a class"
+def ctdDelay():
+    "Delay for response. TBD, variance"
+    global CTD_DELAY
+    return CTD_DELAY
 
-    ctdDelay = CTD_DELAY
-    pending = False
-    depth = 0.0
-    temp = 0.0
-    timer = None
+# Temp, conductivity, depth, fluromtr, PAR, salinity, time
+# 16.7301,  0.00832,    0.243, 0.0098, 0.0106,   0.0495, 14 May 2017 23:18:20
+def ctdOut():
+    "instrument sample"
+    # "\r\n  t.t, c.c, d.d, f.f, p.p, s.s,  dd Mmm yyyy, hh:mm:ss\r\n"
 
-    @staticmethod
-    def req():
-        "poke sbe to return data after a little time"
-        global flags
-        if sbe.pending: return
-        sbe.pending = True
-        sbe.timer = Timer(sbe.ctdDelay, sbe.process)
-        sbe.timer.start()
-
-    @staticmethod
-    def process():
-        "called when sbe.event.isSet(), consume pseudo-data from sbe"
-        global ser, value, flags, phase
-        sbe.pending = False  # set True in sbe.req()
-        sbe.depth = d = depth()
-        sbe.temp = t = temp()
-        #
-        if flags['log']:
-            ser.log("d %.2f, t %.2f" % (d, t)) # log to file in antmod.c
-        if flags['velocity']:
-            velocity(0)         # calls sbe.req() if not done
-        #
-        if flags['depth']:
-            flags['depth'] = False
-            ser.putline("depth %.2f" % d)
-        if flags['temp']:
-            flags['temp'] = False
-            ser.putline("temp %.2f" % d)
-        # 
-        if flags['target']:
-            if d<value['target']:
-                flags['target'] = False
-                ser.putline("target %.2f" % d)
-        if flags['ice']:
-            if t<value['ice']:
-                flags['ice'] = False
-                ser.putline("ice %.2f" % d)
-        if flags['surface']:
-            if d<=value['surface']:
-                flags['surface'] = False
-                ser.putline("surfaced %.2f" % sbe.depth)
-                phaseChange(3)
-        if any( flags.values() ):
-            sbe.req()
-    #end def sbe.process():
-#end class sbe():
-
-from datetime import datetime
-def gpsIrid():
-    "pretend to send files"
-    # UTC Time=20:25:44.000
-    t=datetime.now()
-    s=t.strftime("gps %H:%M:%S.%f")
-    ser.putline(s[:-3])
-    time.sleep(1)
-    ser.putline("signal 5")
-    time.sleep(1)
-    ser.putline("connected")
-    time.sleep(1)
-    ser.putline("sent %d/%d %d" % (4,6,12345))
-    time.sleep(1)
-    ser.putline("done")
-    time.sleep(1)
+    # ctd delay to process, nominal 3.5 sec. Add variance?
+    time.sleep(ctdDelay())
+    ###
+    # note: modify temp for ice simulation
+    #  24.2544,    0.182, 24 Oct 2017, 00:21:43
+    #''24.2544,''''0.182,'24'Oct'2017,'00:21:43
+    ser.put("%8.4f, %8.3f, %s\r\n" % (temper(), depth(), sbe39DateTime() ))
 
 def depth():
-    "mooring-(cable+buoyL+floatsL+antL). always below surface, max antSBEpos"
-    global mooring__line, antSBEpos
-    dep = mooring__line-winch.cable()
-    if dep<antSBEpos: return antSBEpos
-    else: return dep
+    "mooring-(cable+buoyL+floatsL+antL), but always below surface"
+    dep=mooring - (winch.cable()+buoyLine+floatsLine+antLine)
+    if dep>antSBEpos: 
+        return dep
+    else: # at surface
+        wave = (.8 * random()) - .4
+        return antSBEpos + wave
 
-def temp():
+def temper():
     "return 20.1 unless we emulate ice at a certain depth"
     return 20.1
 
 init()
-
-# pseudo OO: obj_func()==obj.func() obj['var']==obj.var
