@@ -51,6 +51,8 @@ int utlTrim(char *line) {
 
 ///
 // search str for sub, then return string that matches set
+// out = matched string, or null string if no match
+// sets: *out, rets: out
 char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
   char *here;
   int len=0;
