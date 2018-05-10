@@ -11,22 +11,22 @@ def init():
 
 def start():
     "start all"
-    sbe16.start()
-    winch.start()
-    # sbe39.start()
-    ant.start()
+    winch.start(3)
+    sbe16.start(2)
+    # sbe39.start(1)
+    ant.start(1)
 
 def stop():
     "stop all"
-    sbe16.stop()
     winch.stop()
+    sbe16.stop()
     # sbe39.stop()
     ant.stop()
 
 def info():
     "info all"
-    sbe16.info()
     winch.info()
+    sbe16.info()
     # sbe39.info()
     ant.info()
     

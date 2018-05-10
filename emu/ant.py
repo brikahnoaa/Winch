@@ -7,7 +7,20 @@ from design import *
 import winch
 import laraSer
 
-class Serial(serial.Serial):
+# extension to sbe39, ignoring ^A-^H commands to CF2
+
+# globals set in init(), start()
+
+name = 'ant'
+portSelect = 1      # select port 0-n of multiport serial
+baudrate = 9600
+
+CTD_DELAY = 0.53
+CTD_WAKE = 0.78
+
+serThreadObj = None
+
+class Serial(laraSer.Serial):
     "extra method to look for ^A-^H commands to CF2"
     def antgetline(self, echo=0):
         "Get full lines from serial, keep eol; partial to self.buff"
@@ -45,19 +58,6 @@ class Serial(serial.Serial):
                 self.buff = b
                 return ''
 
-
-# extension to sbe39, ignoring ^A-^H commands to CF2
-
-# globals set in init(), start()
-
-name = 'sbe39'
-portSelect = 1      # select port 0-n of multiport serial
-baudrate = 9600
-
-CTD_DELAY = 0.53
-CTD_WAKE = 0.78
-
-serThreadObj = None
 
 def info():
     "info about what's up"
