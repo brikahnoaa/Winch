@@ -10,7 +10,8 @@ typedef enum {
   init_tmr,         // init components
   rudics_tmr,       // max time to spend on the phone
   utl_tmr,
-  winch_tmr,        // win.pending amodem command response
+  ngk_tmr,          // amodem command response
+  motion_tmr,        // waiting for motion
   wsp_tmr,          // wispr duty cycle
   sizeof_tmr
   } TmrType;

@@ -3,7 +3,7 @@
 
 typedef enum {
   deploy_pha=0, reboot_pha, error_pha,
-  data_pha, rise_pha, call_pha, drop_pha
+  data_pha, rise_pha, irid_pha, fall_pha
 } PhaseType;
 
 // boy
@@ -14,26 +14,27 @@ typedef struct BoyInfo {
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch
-  float dropVFirst;       // Velocity meters/min of the first drop (descent)
-  float dropVLast;        // Velocity meters/min of the most recent drop 
-  float riseVFirst;       // Velocity meters/min of the first rise (ascent)
-  float riseVLast;        // Velocity meters/min of the most recent rise 
-  int callFreq;           // number of times per day to call (1)
-  int callHour;           // 0-23 (midnight-11pm) hour to call home 
-  int cycles;             // limit number of cycles, i.e. test deployment
+  float fallVFirst;       // meters/min of the first fall
+  float fallVLast;        // meters/min of the most recent fall 
+  float riseVFirst;       // meters/min of the first rise 
+  float riseVLast;        // meters/min of the most recent rise 
+  int iridFreq;           // number of times per day to call (1)
+  int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
+  int cycleMax;           // limit number of cycles, i.e. test deployment
   int fileNum;            // current number for filename ####.dat ####.log
   int log;                // log filehandle
-  PhaseType phase;        // deploy, data, rise, call, drop, error
-  PhaseType phasePrev;    // deploy, data, rise, call, drop, error
+  int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
+  PhaseType phase;        // deploy, data, rise, irid, fall, error
+  PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
   Serial port;            // sbe16 or ant mod
   time_t deployT;         // startup time
   time_t phaseT;          // time this phase started
 } BoyInfo;
 
-static PhaseType callPhase(void);
+static PhaseType iridPhase(void);
 static PhaseType dataPhase(void);
 static PhaseType deployPhase(void);
-static PhaseType dropPhase(void);
+static PhaseType fallPhase(void);
 static PhaseType errorPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);

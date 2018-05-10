@@ -54,7 +54,7 @@ void antStart(void) {
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
-  antRingClear();                      // flush sample buffer
+  antVeloReset();                      // flush sample buffer
   antPrompt();
   // utlWrite(ant.port, "OutputFormat=1", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
@@ -280,7 +280,7 @@ bool antVelo(float *velo) {
 // clear sample times used by antVelo, call this when winch stops
 // could be replaced with free(), calloc()
 // sets: ant.ring->sampT;
-void antRingClear(void) {
+void antVeloReset(void) {
   AntNode *n;
   n = ant.ring; 
   while (true) {
@@ -288,7 +288,7 @@ void antRingClear(void) {
     n = n->next;
     if (n==ant.ring) break;
   } // while
-} // antRingClear
+} // antVeloReset
 
 ///
 // antmod uMPC cf2 and iridium A3LA

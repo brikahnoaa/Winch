@@ -12,12 +12,11 @@
 NgkInfo ngk = {
   { "null",
     // ngk.msgStr[] as if sent to buoy; change ID before sending to winch
-    // %B and %W are shorter, last two digits are status
-    "#B,02,00", "%B,02,", "#F,02,00", "%F,02,00", "#R,02,03", "%R,02,00",
-    "#W,02,00", "%W,02,", "#S,02,00", "%S,02,00", "#R,02,00", "mangled",
+    "#B,02,00", "%B,02,00", "#F,02,00", "%F,02,00", "#R,02,03", "%R,02,00",
+    "#W,02,00", "%W,02,00", "#S,02,00", "%S,02,00", "#R,02,00", "mangled",
   },
   { "null",
-    "buoyCmd", "buoyRsp", "dropCmd", "dropRsp", "riseCmd", "riseRsp",
+    "buoyCmd", "buoyRsp", "fallCmd", "fallRsp", "riseCmd", "riseRsp",
     "statCmd", "statRsp", "stopCmd", "stopRsp", "surfCmd", "mangled",
   }
 }; // remainder of struct is 0 filled
@@ -79,9 +78,6 @@ void ngkSend(MsgType msg) {
   // str should include "OK"
   if (strstr(str, "OK")==NULL)
     flogf("\n\t| ngkSend() amodem bad response '%s'", utlNonPrint(str));
-  if (msg==dropCmd_msg || msg==riseCmd_msg 
-   || msg==stopCmd_msg || msg==surfCmd_msg) 
-    tmrStart(winch_tmr, ngk.delay*2+1);
 } // ngkSend
 
 ///
@@ -103,8 +99,6 @@ MsgType ngkRecv() {
     ngkBuoyRsp();
     return null_msg;
   }
-  if (msg==dropRsp_msg || msg==riseRsp_msg || msg==stopRsp_msg) 
-    tmrStop(winch_tmr);
   return msg;
 } // ngkRecv
 
@@ -134,10 +128,10 @@ char * ngkMsgName(MsgType msg) {
 }
 
 ///
-// buoyRsp, drop and shutdown
+// buoyRsp buoyRsp, fall and shutdown ??
 void ngkBuoyRsp(void) {
   ngkSend(buoyRsp_msg);
   utlDelay(20);
-  ngkSend(dropCmd_msg);
+  ngkSend(fallCmd_msg);
   utlSleep();
 }

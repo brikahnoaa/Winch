@@ -6,6 +6,7 @@
 typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
+// nodes in a ant.ring store previous depth/time values
 typedef struct AntNode {
   float depth;
   time_t sampT;
@@ -56,7 +57,7 @@ void antDevPwr(char c, bool on);
 Serial antPort(void);
 void antFlush(void);
 void antGetSamples(void);
-void antRingClear(void);
+void antVeloReset(void);
 void antInit(void);
 void antStart(void);
 void antStop(void);
