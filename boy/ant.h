@@ -7,11 +7,11 @@ typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
 // nodes in a ant.ring store previous depth/time values
-typedef struct AntNode {
+typedef struct RingNode {
   float depth;
   time_t sampT;
-  struct AntNode *next;
-} AntNode;
+  struct RingNode *next;
+} RingNode;
 
 typedef struct AntInfo {
   bool auton;                 // autonomous mode
@@ -30,7 +30,7 @@ typedef struct AntInfo {
   int ringFresh;              // ant.fresh * ant.ringSize
   int ringSize;               // number of nodes in the (depth,time) ring
   time_t sampT;               // time() of last sample
-  AntNode *ring;               // nodes in the (depth,time) ring
+  RingNode *ring;             // nodes in the (depth,time) ring
   AntType antenna;
   DevType dev;
   Serial port;
@@ -46,6 +46,10 @@ static void antBreak(void);
 static void antMovSam(void);
 static void antSample(void);
 
+int ringDir(float v);
+void ringPrint(void);
+void ringSamp(void);
+
 bool antSurf(void);
 bool antVelo(float *velo);
 float antDepth(void);
@@ -54,11 +58,11 @@ void antAuton(bool auton);
 void antAutoSample(bool autos);
 void antDevice(DevType dev);
 void antDevPwr(char c, bool on);
-Serial antPort(void);
 void antFlush(void);
 void antGetSamples(void);
-void antVeloReset(void);
 void antInit(void);
+void antRingReset(void);
 void antStart(void);
 void antStop(void);
 void antSwitch(AntType antenna);
+Serial antPort(void);

@@ -34,10 +34,6 @@ void ctdInit(void) {
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ctd.port, utlStr, EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
-  utlWrite(ctd.port, "initLogging", EOL);
-  utlExpect(ctd.port, utlBuf, "verify", 2);
-  utlWrite(ctd.port, "initLogging", EOL);
-  utlExpect(ctd.port, utlBuf, "S>", 2);
   if (strlen(ctd.logFile))
     ctd.log = utlLogFile(ctd.logFile);
   if (ctd.logging)

@@ -2,6 +2,7 @@
 import time
 from random import random
 from serial.tools.list_ports import comports
+from string import split, join
 from threading import Thread, Event
 from design import *
 import winch
@@ -199,7 +200,7 @@ def ctdOut():
     "instrument sample"
     # "\r\n  t.t, c.c, d.d, f.f, p.p, s.s,  dd Mmm yyyy, hh:mm:ss\r\n"
 
-    # ctd delay to process, nominal 3.5 sec. Add variance?
+    # ctd delay to process, nominal .5 sec. Add variance?
     time.sleep(ctdDelay())
     ###
     # note: modify temp for ice simulation

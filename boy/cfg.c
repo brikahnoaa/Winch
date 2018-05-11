@@ -22,6 +22,7 @@ extern MpcInfo mpc;
 extern NgkInfo ngk;
 extern PwrInfo pwr;
 extern SysInfo sys;
+extern UtlInfo utl;
 extern WspInfo wsp;
 
 typedef struct CfgParam {
@@ -44,6 +45,7 @@ static CfgParam cfgP[] = {
   {"asD", "ant.surfD",      &ant.surfD,       'f'},
   {"ade", "ant.delay",      &ant.delay,       'i'},
   {"afr", "ant.fresh",      &ant.fresh,       'i'},
+  {"arS", "ant.ringSize",   &ant.ringSize,    'i'},
   {"blF", "boy.logFile",    &boy.logFile,     'c'},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},
@@ -71,6 +73,7 @@ static CfgParam cfgP[] = {
   {"spg", "sys.program",    &sys.program,     'c'},
   {"spj", "sys.project",    &sys.project,     'c'},
   {"sve", "sys.version",    &sys.version,     'c'},
+  {"uiC", "utl.ignoreCon",  &utl.ignoreCon,   'b'},
   {"wlF", "wsp.logFile",    &wsp.logFile,     'c'},
   {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
   {"wdu", "wsp.duty",       &wsp.duty,        'i'},

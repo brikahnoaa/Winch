@@ -292,13 +292,15 @@ void utlX(void) {
   // ?? pwrChk();
   // ?? utlPet();
   // console?
-  if (cgetq()) {
-    c = cgetc();
-    switch (c) {
-    case 'q':
-    case 'x':
-      utlStop("user quit");
-      break;
+  if (!utl.ignoreCon) {
+    if (cgetq()) {
+      c = cgetc();
+      switch (c) {
+      case 'q':
+      case 'x':
+        utlStop("user quit");
+        break;
+      }
     }
   }
-}
+} // utlX

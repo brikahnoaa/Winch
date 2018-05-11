@@ -361,7 +361,7 @@ PhaseType fallPhase() {
   PhaseType r = data_pha;
   MsgType msg;
   flogf("\n+fallPhase() %s", utlTime());
-  antVeloReset();
+  antRingReset();
   startD = depth = antDepth();
   // step1. loop until fallRsp or falling+timeout
   step = 1;

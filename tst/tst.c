@@ -4,29 +4,39 @@
 #include <mpc.h>
 #include <sys.h>
 #include <ant.h>
+#include <tmr.h>
 
 extern AntInfo ant;
 extern CtdInfo ctd;
 
 void main(void){
+  bool b=false;
   char c;
-  float v;
+  float f;
   sysInit();
   mpcInit();
   antInit();
   ctdInit();
   antStart();
-  flogf("\nPress any to talk, Q to exit\n");
+  tmrStart(ngk_tmr, 3);
+  flogf("\nPress [space] to pause, Q to exit\n");
   while (true) {
+    utlNap(1);
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') exit(0);
-      else break;
+      if (c==' ') {
+        b = !b;
+        ringPrint();
+      }
     }
-    utlDelay(3);
-    flogf("antDepth() -> %f\n", antDepth());
-    if (antVelo(&v))
-      flogf("antVelo() -> %f\n", v);
+    if (b) continue; // pause
+    antDepth();
+    if (tmrExp(ngk_tmr)) {
+      if (antVelo(&f)) 
+        flogf("antVelo() -> %f\n", f);
+      tmrStart(ngk_tmr, 3);
+    }
   }
   flogf("connected to ant\n");
   while (true) {
