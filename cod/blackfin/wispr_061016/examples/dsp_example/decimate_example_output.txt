@@ -1,0 +1,24 @@
+ # /bin/decimate_example -v3 -T10 -C1 -W -R2
+70/01/01 06:10:00 Total Kernel RAM 0x2c92000
+70/01/01 06:10:00 BFIN_PMEM_START = 0x3000000
+70/01/01 06:10:00 Mounted /mnt successful
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: adc buffer duration = 9.994240
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: adc nblks = 305, nsamps = 1249280
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: 14991360 bytes required for adc buffers
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: sysinfo total RAM 0x2c92000
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: adc buffer[0] = 0x3000000 - 0x34c4fff
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: adc buffer[1] = 0x34c5000 - 0x3989fff
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: adc buffer[2] = 0x398a000 - 0x3e4efff
+70/01/01 06:10:00 sport_adc_alloc_pmem_buffers: BFIN_PMEM_START: 0x3000000, BFIN_PMEM_END: 0x3f00000
+70/01/01 06:10:00 ad7766_start_clock: fs=125000, mclk=1000000, rsclk=5000000, sclk=125000000
+70/01/01 06:10:00 ad7766_start_clock: rsclk period=25, width=12
+70/01/01 06:10:00 sport_adc_start_dma: xcount = 62464, ycount=20
+70/01/01 06:10:00 New file wispr_700101_061000.wav
+70/01/01 06:10:00 wave_test_init: 1250000 samples, 16 bit, 125000 Hz,
+70/01/01 06:10:10 sport_adc_read_dma: timestamp 22210.272
+70/01/01 06:10:10 First dma buffer ignored, nsamps = 1249280
+70/01/01 06:10:20 sport_adc_read_dma: timestamp 22210.272
+70/01/01 06:10:20 wave_test_read: Read total of 1249280 samples from wave file
+70/01/01 06:10:20 wave_test_read: file reset, nrd = 1249280
+70/01/01 06:10:20 FIR Decimation: new buffer 624640 samples (62500 Hz) processed in 0.120000 seconds
+70/01/01 06:10:20 wav_write: 624640 samples written

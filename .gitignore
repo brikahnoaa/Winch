@@ -7,5 +7,6 @@ cod/war/
 # tmp
 *~
 *.swp
+*.swo
 # log or *.log
 *.log

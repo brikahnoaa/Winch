@@ -50,7 +50,7 @@ void mpcInit(void) {
 ///
 // pam port shares rx/tx between com3, com4
 // switch between devices on pam port, clear 
-void mpcPamDev(PamDevType pam) {
+void mpcPamDev(MpcPamType pam) {
   if (pam==mpc.pamDev) return;
   DBG0("mpcPamDev(%d)", pam)
   // was this, turn down

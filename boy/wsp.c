@@ -1,4 +1,4 @@
-// wsp.c sbe16
+// wsp.c 
 #include <utl.h>
 #include <wsp.h>
 #include <mpc.h>
@@ -7,15 +7,6 @@
 #define EOL "\r"
 
 WspInfo wsp;
-
-// general note: wsp wants \r only for input, outputs \r\n
-// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
-//
-// \r input, echos input.  \r\n before next output.
-// pause 0.33s between \rn and s> prompt.
-// wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
-// pause between ts\r\n and result = 4.32s
-// sbe16 response is just over 3sec in sync, well over 4sec in command
 
 ///
 // sets: wsp.port .wspPending
@@ -29,15 +20,43 @@ void wspInit(void) {
 } // wspInit
 
 ///
-// uses: wsp.card
-void wspStart(void) {
-  int len;
-  // mpcPamDev(wsp1_pam);
-  // utlNap(20);
-  // len = wspRead(utlBuf);
-  mpcPamDev(wsp2_pam);
-  len = wspRead(utlBuf);
+// turn on, disk free > wsp.freeMin
+// sets: wsp.card
+int wspStart(int pam) {
+  int i;
+  float disk;
+  char *s;
+  DBG0("wspStart()")
+  // select, power on
+  mpcPamDev(pam);
+  utlNap(30);
+  TURxFlush(wsp.port);
+  for (i=0; i<10; i++) {
+    utlWrite(wsp.port, "$DFP*", EOL);
+    if (utlReadWait(wsp.port, utlBuf, 2)) break;
+  } // try 10 times
+  if (!(s = strtok(utlBuf, ","))) {
+    utlErr(wsp_err, "no disk avail");
+    return 1;
+  }
+  disk = atof(s);
+  flogf("\nwspStart() %4.1f%% free", disk);
+  if (disk<wsp.freeMin) 
+    return 2;
+  wsp.pam =  pam;
+  return 0;
 } // wspStart
+
+///
+// stop current card
+void wspStop(void) {
+  wsp.pam = null_pam;
+  mpcPamDev(null_pam);
+  if (wsp.log) {
+    close(wsp.log);
+    wsp.log = 0;
+  }
+} // wspStop
 
 ///
 // wsp started. interact.
@@ -62,14 +81,6 @@ int wspRead(char *buf) {
   }
   return len;
 } // wspRead
-
-///
-void wspStop(void){
-  mpcPamDev(null_pam);
-  if (wsp.log) 
-    close(wsp.log);
-  wsp.log = 0;
-} // wspStop
 
 ///
 // data waiting

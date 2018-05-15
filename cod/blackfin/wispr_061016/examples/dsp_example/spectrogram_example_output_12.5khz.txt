@@ -1,0 +1,26 @@
+# /bin/spectrogram_example -v3 -C2
+37/04/14 00:03:48 Total Kernel RAM 0x2c92000
+37/04/14 00:03:48 BFIN_PMEM_START = 0x3000000
+37/04/14 00:03:50 Mounted /mnt successful
+37/04/14 00:03:50 WISPR PSD EXAMPLE STARTED
+37/04/14 00:03:50 spectrogram_init: fft size = 256, overlap = 128
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: adc buffer duration = 9.994240
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: adc nblks = 305, nsamps = 1249280
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: 14991360 bytes required for adc buffers
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: sysinfo total RAM 0x2c92000
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: adc buffer[0] = 0x3000000 - 0x34c4fff
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: adc buffer[1] = 0x34c5000 - 0x3989fff
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: adc buffer[2] = 0x398a000 - 0x3e4efff
+37/04/14 00:03:50 sport_adc_alloc_pmem_buffers: BFIN_PMEM_START: 0x3000000, BFIN_PMEM_END: 0x3f00000
+37/04/14 00:03:50 ad7766_start_clock: fs=125000, mclk=1000000, rsclk=5000000, sclk=125000000
+37/04/14 00:03:50 ad7766_start_clock: rsclk period=25, width=12
+37/04/14 00:03:50 sport_adc_start_dma: xcount = 62464, ycount=20
+37/04/14 00:04:00 sport_adc_read_dma: timestamp 2123280240.884
+37/04/14 00:04:00 First dma buffer ignored, nsamps = 1249280
+37/04/14 00:04:10 sport_adc_read_dma: timestamp 2123280240.884
+37/04/14 00:04:10 spectrogram: 2439 time bins, 129 frequency bins
+37/04/14 00:04:11 Spectrogram: 0.550000 seconds to process
+37/04/14 00:04:11 spectrogram_wriet_pgm: creating image file /mnt/psd_370414_000400.pgm
+37/04/14 00:04:20 sport_adc_read_dma: timestamp 2123280250.880
+37/04/14 00:04:21 Spectrogram: 0.550000 seconds to process
+37/04/14 00:04:21 spectrogram_wriet_pgm: creating image file /mnt/psd_370414_000410.pgm

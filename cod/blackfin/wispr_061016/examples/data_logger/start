@@ -1,0 +1,49 @@
+#!/bin/sh
+# WISPR startup script.
+# This script will run automatically on boot.
+# Copy this script to the CF card mounted on the directory /mnt
+# along with any other programs that you call from this script
+# such as the executable named 'console_prompt'.
+# 
+
+#mount -t devpts devpts /dev/pts
+
+/bin/ifconfig eth0 192.168.0.20
+#dhcpcd &
+
+cp /mnt/console_prompt /bin
+chmod 777 /bin/console_prompt
+count=10
+quit='q'
+echo " "
+echo "--- Embedded Ocean Systems WISPR V1.0 ---"
+echo "Starting recording and detection."
+echo "Enter 'q' to stop."
+while [ "$count" -gt 0 ]
+do
+    val=`console_prompt -t 100`
+    if [ "$val" = "$quit" ]; then
+       exit 1
+    fi
+    count=`expr "$count" - 1`
+done
+
+# Uncomment these to cut cpu freq in half
+#echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+#echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+
+sleep 1
+
+# clear cache to free memory
+sync; echo 3 > /proc/sys/vm/drop_caches
+sleep 1
+
+# Start detection/recording 
+#echo "WISPR recording and detection started."
+
+# copy your application to /bin and run it 
+cp /mnt/wispr_data_logger /bin
+chmod 777 /bin/wispr_data_logger
+/bin/wispr_data_logger -T8 -F2 -L 
+
+

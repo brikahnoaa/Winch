@@ -98,7 +98,7 @@ PhaseType rebootPhase(void) {
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
   flogf("\n+dataPhase()@%s", utlDateTime());
-  wspStart();
+  wspStart(wsp2_pam);
   wspStop();
   return rise_pha;
 } // dataPhase

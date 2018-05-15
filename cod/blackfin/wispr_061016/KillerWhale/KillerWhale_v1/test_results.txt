@@ -1,0 +1,580 @@
+This file compares the Matlab detection simulations with the WISPR detection 
+run on the same Killer Whale wave file.
+
+The primary difference between the results is due to the bandpass filter calculations.
+Matlab does the filter multiplication using double precision floating points values
+compared to fixed point 16 bit integers used on the WISPR.
+
+This is the output of the Matlab simulation using detect_kw_hk.m:
+
+detect: mean_high=0.005832, mean_low=0.019603, ratio_thresh=99.550541
+DTX,56,162.459,99.551,15.703,0.050
+detect: mean_high=0.004976, mean_low=0.014315, ratio_thresh=92.180131
+DTX,68,157.460,92.180,15.626,0.039
+detect: mean_high=0.004978, mean_low=0.020753, ratio_thresh=101.014398
+DTX,25,147.925,101.014,14.768,0.056
+detect: mean_high=0.005829, mean_low=0.013734, ratio_thresh=91.289711
+DTX,123,184.399,91.290,14.434,0.055
+detect: mean_high=0.004886, mean_low=0.016930, ratio_thresh=95.971977
+DTX,34,154.349,95.972,13.432,0.059
+detect: mean_high=0.005814, mean_low=0.014983, ratio_thresh=93.180904
+DTX,43,138.293,93.181,14.190,0.047
+detect: mean_high=0.004861, mean_low=0.012392, ratio_thresh=89.152365
+DTX,63,165.860,89.152,15.800,0.049
+detect: mean_high=0.005413, mean_low=0.014762, ratio_thresh=92.853381
+DTX,39,153.432,92.853,14.962,0.046
+detect: mean_high=0.004186, mean_low=0.014068, ratio_thresh=91.804824
+DTX,18,161.591,91.805,15.070,0.025
+detect: mean_high=0.003868, mean_low=0.012320, ratio_thresh=89.033404
+DTX,35,156.032,89.033,15.539,0.023
+504 total detections found in file
+
+Here is the output of the wispr_kw (main_all_modes_kw.c):
+
+detect: mean_high=0.00635, mean_low=0.01952, ratio_thresh=99.4446
+DTX,57,160.988,99.445,15.677,0.051
+detect: mean_high=0.00551, mean_low=0.01425, ratio_thresh=92.0890
+DTX,69,153.113,92.089,15.614,0.037
+detect: mean_high=0.00549, mean_low=0.02066, ratio_thresh=100.8966
+DTX,29,142.372,100.897,14.472,0.046
+detect: mean_high=0.00637, mean_low=0.01369, ratio_thresh=91.2237
+DTX,128,185.211,91.224,14.548,0.054
+detect: mean_high=0.00544, mean_low=0.01684, ratio_thresh=95.8480
+DTX,38,155.722,95.848,13.716,0.056
+detect: mean_high=0.00634, mean_low=0.01491, ratio_thresh=93.0684
+DTX,43,137.363,93.068,13.947,0.045
+detect: mean_high=0.00538, mean_low=0.01236, ratio_thresh=89.0920
+DTX,64,159.510,89.092,15.389,0.045
+detect: mean_high=0.00595, mean_low=0.01470, ratio_thresh=92.7569
+DTX,36,153.540,92.757,14.728,0.054
+detect: mean_high=0.00473, mean_low=0.01401, ratio_thresh=91.7213
+DTX,15,168.104,91.721,15.081,0.050
+detect: mean_high=0.00444, mean_low=0.01228, ratio_thresh=88.9643
+DTX,36,148.048,88.964,14.956,0.025
+total 515 detections found
+
+
+This is the full printout of the wispr_kw test:
+
+# /bin/wispr_kw -C100 -W -v3 -M2
+70/01/01 00:07:11 Total Kernel RAM 0x2c92000
+70/01/01 00:07:11 BFIN_PMEM_START = 0x3000000
+70/01/01 00:07:11 Mounted /mnt successful
+70/01/01 00:07:11 sport_adc_alloc_buffers: adc buffer duration = 9.961472
+70/01/01 00:07:11 sport_adc_alloc_buffers: adc nblks = 228, nsamps = 933888
+70/01/01 00:07:11 sport_adc_alloc_buffers: 11206656 bytes required for adc buffers
+70/01/01 00:07:11 sport_adc_alloc_buffers: adc buffer[0] = 0x3000000 - 0x3390fff
+70/01/01 00:07:11 sport_adc_alloc_buffers: adc buffer[1] = 0x3391000 - 0x3721fff
+70/01/01 00:07:11 sport_adc_alloc_buffers: adc buffer[2] = 0x3722000 - 0x3ab2fff
+70/01/01 00:07:11 sport_adc_alloc_buffers: BFIN_PMEM_START: 0x3000000, BFIN_PMEM_END: 0x3f00000
+70/01/01 00:07:12 RTC message No RTC function, no clock or location set.
+70/01/01 00:07:12 WISPR_KillerWhale STARTED
+70/01/01 00:07:12 File system: 63866.44 MB of 63985.17 MB (99.81%) available
+70/01/01 00:07:12 Total recording time 94.62 hours
+70/01/01 00:07:12 ADC buffer duration = 9.994240 sec, 936960 samples
+70/01/01 00:07:12 ADC fs = 93750 Hz, gain = 0, bitshift = 8
+70/01/01 00:07:12 wdt_open: watchdog set with timeout=20 seconds
+70/01/01 00:07:12 init_detect: winsize = 512, nwins = 10944
+70/01/01 00:07:12 ad7766_start_clock: fs=93750, mclk=753012, rsclk=3765060, sclk=125000000
+70/01/01 00:07:12 ad7766_start_clock: rsclk period=33, width=16
+70/01/01 00:07:12 sport_adc_start_dma: xcount = 58368, ycount=16
+70/01/01 00:07:22 sport_adc_read_dma: sec=442, nsec=764000000
+70/01/01 00:07:22 First dma buffer ignored, nsamps = 933888
+70/01/01 00:07:32 sport_adc_read_dma: sec=442, nsec=764000000
+70/01/01 00:07:32 wave_test_init: Subchunk2Size 112500000 / 16 BitsPerSample = 56250000 samples
+70/01/01 00:07:32 wave_test_init: wave buffer = 0x38ea000 - 0x3c7a000
+70/01/01 00:07:32 wave_test_read: Read total of 933888 samples from wave file
+70/01/01 00:07:33 flac_finish: encoder is not initialized
+70/01/01 00:07:33 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:07:33 flac_init_file: metadata set ok
+70/01/01 00:07:33 New file wispr_700101_000722, 0.19% fs used
+70/01/01 00:07:33 com_write_msg: 12, $DFP,99.81*
+70/01/01 00:07:38 flac_write: 933888 samples written.
+70/01/01 00:07:38 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:07:42 sport_adc_read_dma: sec=452, nsec=684000000
+70/01/01 00:07:42 wave_test_read: Read total of 1867776 samples from wave file
+70/01/01 00:07:48 flac_write: 933888 samples written.
+70/01/01 00:07:48 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:07:52 sport_adc_read_dma: sec=462, nsec=604000000
+70/01/01 00:07:52 wave_test_read: Read total of 2801664 samples from wave file
+70/01/01 00:07:58 flac_write: 933888 samples written.
+70/01/01 00:07:58 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:08:02 sport_adc_read_dma: sec=472, nsec=528000000
+70/01/01 00:08:02 wave_test_read: Read total of 3735552 samples from wave file
+70/01/01 00:08:08 flac_write: 933888 samples written.
+70/01/01 00:08:08 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:08:12 sport_adc_read_dma: sec=482, nsec=448000000
+70/01/01 00:08:12 wave_test_read: Read total of 4669440 samples from wave file
+70/01/01 00:08:18 flac_write: 933888 samples written.
+70/01/01 00:08:18 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:08:22 sport_adc_read_dma: sec=492, nsec=372000000
+70/01/01 00:08:22 wave_test_read: Read total of 5603328 samples from wave file
+70/01/01 00:08:28 flac_write: 933888 samples written.
+70/01/01 00:08:28 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:08:28 detect: mean_high=0.00635, mean_low=0.01952, ratio_thresh=99.4446
+70/01/01 00:08:28 DTX,01/01/70,00:08:12,57,160.988,99.445,15.677,0.051
+70/01/01 00:08:32 sport_adc_read_dma: sec=502, nsec=292000000
+70/01/01 00:08:32 wave_test_read: Read total of 6537216 samples from wave file
+70/01/01 00:08:37 flac_write: 933888 samples written.
+70/01/01 00:08:38 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:08:42 sport_adc_read_dma: sec=512, nsec=212000000
+70/01/01 00:08:42 wave_test_read: Read total of 7471104 samples from wave file
+70/01/01 00:08:47 flac_write: 933888 samples written.
+70/01/01 00:08:48 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:08:52 sport_adc_read_dma: sec=522, nsec=136000000
+70/01/01 00:08:52 wave_test_read: Read total of 8404992 samples from wave file
+70/01/01 00:08:57 flac_write: 933888 samples written.
+70/01/01 00:08:57 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:09:01 sport_adc_read_dma: sec=532, nsec=56000000
+70/01/01 00:09:02 wave_test_read: Read total of 9338880 samples from wave file
+70/01/01 00:09:07 flac_write: 933888 samples written.
+70/01/01 00:09:07 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:09:11 sport_adc_read_dma: sec=541, nsec=980000000
+70/01/01 00:09:12 wave_test_read: Read total of 10272768 samples from wave file
+70/01/01 00:09:12 flac_finish: encoder finish
+70/01/01 00:09:12 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:09:12 flac_init_file: metadata set ok
+70/01/01 00:09:12 New file wispr_700101_000901, 0.19% fs used
+70/01/01 00:09:12 com_write_msg: 12, $DFP,99.81*
+70/01/01 00:09:18 flac_write: 933888 samples written.
+70/01/01 00:09:18 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:09:21 sport_adc_read_dma: sec=551, nsec=900000000
+70/01/01 00:09:22 wave_test_read: Read total of 11206656 samples from wave file
+70/01/01 00:09:27 flac_write: 933888 samples written.
+70/01/01 00:09:27 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:09:27 detect: mean_high=0.00551, mean_low=0.01425, ratio_thresh=92.0890
+70/01/01 00:09:27 DTX,01/01/70,00:09:11,69,153.113,92.089,15.614,0.037
+70/01/01 00:09:31 sport_adc_read_dma: sec=561, nsec=820000000
+70/01/01 00:09:32 wave_test_read: Read total of 12140544 samples from wave file
+70/01/01 00:09:37 flac_write: 933888 samples written.
+70/01/01 00:09:37 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:09:41 sport_adc_read_dma: sec=571, nsec=744000000
+70/01/01 00:09:41 wave_test_read: Read total of 13074432 samples from wave file
+70/01/01 00:09:47 flac_write: 933888 samples written.
+70/01/01 00:09:48 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:09:51 sport_adc_read_dma: sec=581, nsec=664000000
+70/01/01 00:09:51 wave_test_read: Read total of 14008320 samples from wave file
+70/01/01 00:09:57 flac_write: 933888 samples written.
+70/01/01 00:09:57 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:10:01 sport_adc_read_dma: sec=591, nsec=588000000
+70/01/01 00:10:01 wave_test_read: Read total of 14942208 samples from wave file
+70/01/01 00:10:07 flac_write: 933888 samples written.
+70/01/01 00:10:07 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:10:11 sport_adc_read_dma: sec=601, nsec=508000000
+70/01/01 00:10:11 wave_test_read: Read total of 15876096 samples from wave file
+70/01/01 00:10:17 flac_write: 933888 samples written.
+70/01/01 00:10:17 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:10:21 sport_adc_read_dma: sec=611, nsec=432000000
+70/01/01 00:10:21 wave_test_read: Read total of 16809984 samples from wave file
+70/01/01 00:10:27 flac_write: 933888 samples written.
+70/01/01 00:10:27 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:10:27 detect: mean_high=0.00549, mean_low=0.02066, ratio_thresh=100.8966
+70/01/01 00:10:27 DTX,01/01/70,00:10:11,29,142.372,100.897,14.472,0.046
+70/01/01 00:10:31 sport_adc_read_dma: sec=621, nsec=352000000
+70/01/01 00:10:31 wave_test_read: Read total of 17743872 samples from wave file
+70/01/01 00:10:37 flac_write: 933888 samples written.
+70/01/01 00:10:37 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:10:41 sport_adc_read_dma: sec=631, nsec=272000000
+70/01/01 00:10:41 wave_test_read: Read total of 18677760 samples from wave file
+70/01/01 00:10:46 flac_write: 933888 samples written.
+70/01/01 00:10:47 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:10:51 sport_adc_read_dma: sec=641, nsec=196000000
+70/01/01 00:10:51 wave_test_read: Read total of 19611648 samples from wave file
+70/01/01 00:10:51 flac_finish: encoder finish
+70/01/01 00:10:51 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:10:51 flac_init_file: metadata set ok
+70/01/01 00:10:51 New file wispr_700101_001041, 0.20% fs used
+70/01/01 00:10:51 com_write_msg: 12, $DFP,99.80*
+70/01/01 00:10:57 flac_write: 933888 samples written.
+70/01/01 00:10:57 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:11:01 sport_adc_read_dma: sec=651, nsec=116000000
+70/01/01 00:11:01 wave_test_read: Read total of 20545536 samples from wave file
+70/01/01 00:11:06 flac_write: 933888 samples written.
+70/01/01 00:11:06 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:11:10 sport_adc_read_dma: sec=661, nsec=40000000
+70/01/01 00:11:11 wave_test_read: Read total of 21479424 samples from wave file
+70/01/01 00:11:16 flac_write: 933888 samples written.
+70/01/01 00:11:16 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:11:20 sport_adc_read_dma: sec=670, nsec=960000000
+70/01/01 00:11:21 wave_test_read: Read total of 22413312 samples from wave file
+70/01/01 00:11:27 flac_write: 933888 samples written.
+70/01/01 00:11:27 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:11:27 detect: mean_high=0.00637, mean_low=0.01369, ratio_thresh=91.2237
+70/01/01 00:11:27 DTX,01/01/70,00:11:10,128,185.211,91.224,14.548,0.054
+70/01/01 00:11:30 sport_adc_read_dma: sec=680, nsec=880000000
+70/01/01 00:11:31 wave_test_read: Read total of 23347200 samples from wave file
+70/01/01 00:11:36 flac_write: 933888 samples written.
+70/01/01 00:11:36 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:11:40 sport_adc_read_dma: sec=690, nsec=804000000
+70/01/01 00:11:41 wave_test_read: Read total of 24281088 samples from wave file
+70/01/01 00:11:46 flac_write: 933888 samples written.
+70/01/01 00:11:46 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:11:50 sport_adc_read_dma: sec=700, nsec=724000000
+70/01/01 00:11:50 wave_test_read: Read total of 25214976 samples from wave file
+70/01/01 00:11:56 flac_write: 933888 samples written.
+70/01/01 00:11:56 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:12:00 sport_adc_read_dma: sec=710, nsec=648000000
+70/01/01 00:12:00 wave_test_read: Read total of 26148864 samples from wave file
+70/01/01 00:12:06 flac_write: 933888 samples written.
+70/01/01 00:12:06 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:12:10 sport_adc_read_dma: sec=720, nsec=568000000
+70/01/01 00:12:10 wave_test_read: Read total of 27082752 samples from wave file
+70/01/01 00:12:16 flac_write: 933888 samples written.
+70/01/01 00:12:16 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:12:20 sport_adc_read_dma: sec=730, nsec=488000000
+70/01/01 00:12:20 wave_test_read: Read total of 28016640 samples from wave file
+70/01/01 00:12:26 flac_write: 933888 samples written.
+70/01/01 00:12:26 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:12:26 detect: mean_high=0.00544, mean_low=0.01684, ratio_thresh=95.8480
+70/01/01 00:12:26 DTX,01/01/70,00:12:10,38,155.722,95.848,13.716,0.056
+70/01/01 00:12:30 sport_adc_read_dma: sec=740, nsec=412000000
+70/01/01 00:12:30 wave_test_read: Read total of 28950528 samples from wave file
+70/01/01 00:12:30 flac_finish: encoder finish
+70/01/01 00:12:30 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:12:30 flac_init_file: metadata set ok
+70/01/01 00:12:30 New file wispr_700101_001220, 0.21% fs used
+70/01/01 00:12:30 com_write_msg: 12, $DFP,99.79*
+70/01/01 00:12:36 flac_write: 933888 samples written.
+70/01/01 00:12:36 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:12:40 sport_adc_read_dma: sec=750, nsec=332000000
+70/01/01 00:12:40 wave_test_read: Read total of 29884416 samples from wave file
+70/01/01 00:12:45 flac_write: 933888 samples written.
+70/01/01 00:12:46 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:12:50 sport_adc_read_dma: sec=760, nsec=256000000
+70/01/01 00:12:50 wave_test_read: Read total of 30818304 samples from wave file
+70/01/01 00:12:55 flac_write: 933888 samples written.
+70/01/01 00:12:56 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:13:00 sport_adc_read_dma: sec=770, nsec=176000000
+70/01/01 00:13:00 wave_test_read: Read total of 31752192 samples from wave file
+70/01/01 00:13:06 flac_write: 933888 samples written.
+70/01/01 00:13:06 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:13:10 sport_adc_read_dma: sec=780, nsec=100000000
+70/01/01 00:13:10 wave_test_read: Read total of 32686080 samples from wave file
+70/01/01 00:13:15 flac_write: 933888 samples written.
+70/01/01 00:13:15 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:13:19 sport_adc_read_dma: sec=790, nsec=20000000
+70/01/01 00:13:20 wave_test_read: Read total of 33619968 samples from wave file
+70/01/01 00:13:25 flac_write: 933888 samples written.
+70/01/01 00:13:25 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:13:25 detect: mean_high=0.00634, mean_low=0.01491, ratio_thresh=93.0684
+70/01/01 00:13:25 DTX,01/01/70,00:13:10,43,137.363,93.068,13.947,0.045
+70/01/01 00:13:29 sport_adc_read_dma: sec=799, nsec=940000000
+70/01/01 00:13:30 wave_test_read: Read total of 34553856 samples from wave file
+70/01/01 00:13:35 flac_write: 933888 samples written.
+70/01/01 00:13:36 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:13:39 sport_adc_read_dma: sec=809, nsec=864000000
+70/01/01 00:13:40 wave_test_read: Read total of 35487744 samples from wave file
+70/01/01 00:13:45 flac_write: 933888 samples written.
+70/01/01 00:13:45 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:13:49 sport_adc_read_dma: sec=819, nsec=784000000
+70/01/01 00:13:49 wave_test_read: Read total of 36421632 samples from wave file
+70/01/01 00:13:55 flac_write: 933888 samples written.
+70/01/01 00:13:55 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:13:59 sport_adc_read_dma: sec=829, nsec=708000000
+70/01/01 00:13:59 wave_test_read: Read total of 37355520 samples from wave file
+70/01/01 00:14:05 flac_write: 933888 samples written.
+70/01/01 00:14:05 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:14:09 sport_adc_read_dma: sec=839, nsec=628000000
+70/01/01 00:14:09 wave_test_read: Read total of 38289408 samples from wave file
+70/01/01 00:14:09 flac_finish: encoder finish
+70/01/01 00:14:09 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:14:09 flac_init_file: metadata set ok
+70/01/01 00:14:09 New file wispr_700101_001359, 0.22% fs used
+70/01/01 00:14:09 com_write_msg: 12, $DFP,99.78*
+70/01/01 00:14:15 flac_write: 933888 samples written.
+70/01/01 00:14:15 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:14:19 sport_adc_read_dma: sec=849, nsec=548000000
+70/01/01 00:14:19 wave_test_read: Read total of 39223296 samples from wave file
+70/01/01 00:14:25 flac_write: 933888 samples written.
+70/01/01 00:14:25 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:14:25 detect: mean_high=0.00538, mean_low=0.01236, ratio_thresh=89.0920
+70/01/01 00:14:25 DTX,01/01/70,00:14:09,64,159.510,89.092,15.389,0.045
+70/01/01 00:14:29 sport_adc_read_dma: sec=859, nsec=472000000
+70/01/01 00:14:29 wave_test_read: Read total of 40157184 samples from wave file
+70/01/01 00:14:35 flac_write: 933888 samples written.
+70/01/01 00:14:35 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:14:39 sport_adc_read_dma: sec=869, nsec=392000000
+70/01/01 00:14:39 wave_test_read: Read total of 41091072 samples from wave file
+70/01/01 00:14:45 flac_write: 933888 samples written.
+70/01/01 00:14:45 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:14:49 sport_adc_read_dma: sec=879, nsec=316000000
+70/01/01 00:14:49 wave_test_read: Read total of 42024960 samples from wave file
+70/01/01 00:14:54 flac_write: 933888 samples written.
+70/01/01 00:14:55 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:14:59 sport_adc_read_dma: sec=889, nsec=236000000
+70/01/01 00:14:59 wave_test_read: Read total of 42958848 samples from wave file
+70/01/01 00:15:04 flac_write: 933888 samples written.
+70/01/01 00:15:05 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:15:09 sport_adc_read_dma: sec=899, nsec=156000000
+70/01/01 00:15:09 wave_test_read: Read total of 43892736 samples from wave file
+70/01/01 00:15:14 flac_write: 933888 samples written.
+70/01/01 00:15:14 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:15:19 sport_adc_read_dma: sec=909, nsec=80000000
+70/01/01 00:15:19 wave_test_read: Read total of 44826624 samples from wave file
+70/01/01 00:15:24 flac_write: 933888 samples written.
+70/01/01 00:15:24 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:15:24 detect: mean_high=0.00595, mean_low=0.01470, ratio_thresh=92.7569
+70/01/01 00:15:24 DTX,01/01/70,00:15:09,36,153.540,92.757,14.728,0.054
+70/01/01 00:15:28 sport_adc_read_dma: sec=919, nsec=0
+70/01/01 00:15:29 wave_test_read: Read total of 45760512 samples from wave file
+70/01/01 00:15:34 flac_write: 933888 samples written.
+70/01/01 00:15:34 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:15:38 sport_adc_read_dma: sec=928, nsec=924000000
+70/01/01 00:15:39 wave_test_read: Read total of 46694400 samples from wave file
+70/01/01 00:15:44 flac_write: 933888 samples written.
+70/01/01 00:15:44 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:15:48 sport_adc_read_dma: sec=938, nsec=844000000
+70/01/01 00:15:49 wave_test_read: Read total of 47628288 samples from wave file
+70/01/01 00:15:49 flac_finish: encoder finish
+70/01/01 00:15:49 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:15:49 flac_init_file: metadata set ok
+70/01/01 00:15:49 New file wispr_700101_001538, 0.23% fs used
+70/01/01 00:15:49 com_write_msg: 12, $DFP,99.77*
+PHY: 0:00 - Link is Up - 100/Half
+70/01/01 00:15:54 flac_write: 933888 samples written.
+70/01/01 00:15:55 detect: 5472 filter windows processed of 10944 total
+PHY: 0:00 - Link is Up - 100/Full
+70/01/01 00:15:58 sport_adc_read_dma: sec=948, nsec=768000000
+70/01/01 00:15:58 wave_test_read: Read total of 48562176 samples from wave file
+70/01/01 00:16:04 flac_write: 933888 samples written.
+70/01/01 00:16:04 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:16:08 sport_adc_read_dma: sec=958, nsec=688000000
+70/01/01 00:16:08 wave_test_read: Read total of 49496064 samples from wave file
+70/01/01 00:16:14 flac_write: 933888 samples written.
+70/01/01 00:16:14 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:16:18 sport_adc_read_dma: sec=968, nsec=608000000
+70/01/01 00:16:18 wave_test_read: Read total of 50429952 samples from wave file
+70/01/01 00:16:24 flac_write: 933888 samples written.
+70/01/01 00:16:24 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:16:24 detect: mean_high=0.00473, mean_low=0.01401, ratio_thresh=91.7213
+70/01/01 00:16:24 DTX,01/01/70,00:16:08,15,168.104,91.721,15.081,0.050
+70/01/01 00:16:28 sport_adc_read_dma: sec=978, nsec=532000000
+70/01/01 00:16:28 wave_test_read: Read total of 51363840 samples from wave file
+70/01/01 00:16:34 flac_write: 933888 samples written.
+70/01/01 00:16:34 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:16:38 sport_adc_read_dma: sec=988, nsec=452000000
+70/01/01 00:16:38 wave_test_read: Read total of 52297728 samples from wave file
+70/01/01 00:16:44 flac_write: 933888 samples written.
+70/01/01 00:16:44 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:16:48 sport_adc_read_dma: sec=998, nsec=376000000
+70/01/01 00:16:48 wave_test_read: Read total of 53231616 samples from wave file
+70/01/01 00:16:54 flac_write: 933888 samples written.
+70/01/01 00:16:54 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:16:58 sport_adc_read_dma: sec=1008, nsec=296000000
+70/01/01 00:16:58 wave_test_read: Read total of 54165504 samples from wave file
+70/01/01 00:17:04 flac_write: 933888 samples written.
+70/01/01 00:17:04 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:17:08 sport_adc_read_dma: sec=1018, nsec=216000000
+70/01/01 00:17:08 wave_test_read: Read total of 55099392 samples from wave file
+70/01/01 00:17:13 flac_write: 933888 samples written.
+70/01/01 00:17:13 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:17:18 sport_adc_read_dma: sec=1028, nsec=140000000
+70/01/01 00:17:18 wave_test_read: Read total of 56033280 samples from wave file
+70/01/01 00:17:18 wave file reset, nrd = 56033280
+70/01/01 00:17:23 flac_write: 933888 samples written.
+70/01/01 00:17:23 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:17:23 detect: mean_high=0.00444, mean_low=0.01228, ratio_thresh=88.9643
+70/01/01 00:17:23 DTX,01/01/70,00:17:08,36,148.048,88.964,14.956,0.025
+70/01/01 00:17:27 sport_adc_read_dma: sec=1038, nsec=60000000
+70/01/01 00:17:28 wave_test_read: Read total of 933888 samples from wave file
+70/01/01 00:17:28 flac_finish: encoder finish
+70/01/01 00:17:28 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:17:28 flac_init_file: metadata set ok
+70/01/01 00:17:28 New file wispr_700101_001718, 0.24% fs used
+70/01/01 00:17:28 com_write_msg: 12, $DFP,99.76*
+70/01/01 00:17:34 flac_write: 933888 samples written.
+70/01/01 00:17:34 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:17:37 sport_adc_read_dma: sec=1047, nsec=984000000
+70/01/01 00:17:38 wave_test_read: Read total of 1867776 samples from wave file
+70/01/01 00:17:43 flac_write: 933888 samples written.
+70/01/01 00:17:43 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:17:47 sport_adc_read_dma: sec=1057, nsec=904000000
+70/01/01 00:17:48 wave_test_read: Read total of 2801664 samples from wave file
+70/01/01 00:17:53 flac_write: 933888 samples written.
+70/01/01 00:17:53 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:17:57 sport_adc_read_dma: sec=1067, nsec=824000000
+70/01/01 00:17:58 wave_test_read: Read total of 3735552 samples from wave file
+70/01/01 00:18:03 flac_write: 933888 samples written.
+70/01/01 00:18:03 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:18:07 sport_adc_read_dma: sec=1077, nsec=748000000
+70/01/01 00:18:07 wave_test_read: Read total of 4669440 samples from wave file
+70/01/01 00:18:13 flac_write: 933888 samples written.
+70/01/01 00:18:13 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:18:17 sport_adc_read_dma: sec=1087, nsec=668000000
+70/01/01 00:18:17 wave_test_read: Read total of 5603328 samples from wave file
+70/01/01 00:18:23 flac_write: 933888 samples written.
+70/01/01 00:18:23 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:18:23 detect: mean_high=0.00635, mean_low=0.01952, ratio_thresh=99.4446
+70/01/01 00:18:23 DTX,01/01/70,00:18:07,57,160.988,99.445,15.677,0.051
+70/01/01 00:18:27 sport_adc_read_dma: sec=1097, nsec=592000000
+70/01/01 00:18:27 wave_test_read: Read total of 6537216 samples from wave file
+70/01/01 00:18:33 flac_write: 933888 samples written.
+70/01/01 00:18:33 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:18:37 sport_adc_read_dma: sec=1107, nsec=512000000
+70/01/01 00:18:37 wave_test_read: Read total of 7471104 samples from wave file
+70/01/01 00:18:43 flac_write: 933888 samples written.
+70/01/01 00:18:43 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:18:47 sport_adc_read_dma: sec=1117, nsec=436000000
+70/01/01 00:18:47 wave_test_read: Read total of 8404992 samples from wave file
+70/01/01 00:18:53 flac_write: 933888 samples written.
+70/01/01 00:18:53 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:18:57 sport_adc_read_dma: sec=1127, nsec=356000000
+70/01/01 00:18:57 wave_test_read: Read total of 9338880 samples from wave file
+70/01/01 00:19:02 flac_write: 933888 samples written.
+70/01/01 00:19:03 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:19:07 sport_adc_read_dma: sec=1137, nsec=276000000
+70/01/01 00:19:07 wave_test_read: Read total of 10272768 samples from wave file
+70/01/01 00:19:07 flac_finish: encoder finish
+70/01/01 00:19:07 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:19:07 flac_init_file: metadata set ok
+70/01/01 00:19:07 New file wispr_700101_001857, 0.25% fs used
+70/01/01 00:19:07 com_write_msg: 12, $DFP,99.75*
+70/01/01 00:19:13 flac_write: 933888 samples written.
+70/01/01 00:19:13 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:19:17 sport_adc_read_dma: sec=1147, nsec=200000000
+70/01/01 00:19:17 wave_test_read: Read total of 11206656 samples from wave file
+70/01/01 00:19:22 flac_write: 933888 samples written.
+70/01/01 00:19:23 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:19:23 detect: mean_high=0.00551, mean_low=0.01425, ratio_thresh=92.0890
+70/01/01 00:19:23 DTX,01/01/70,00:19:07,69,153.113,92.089,15.614,0.037
+70/01/01 00:19:27 sport_adc_read_dma: sec=1157, nsec=120000000
+70/01/01 00:19:27 wave_test_read: Read total of 12140544 samples from wave file
+70/01/01 00:19:32 flac_write: 933888 samples written.
+70/01/01 00:19:32 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:19:36 sport_adc_read_dma: sec=1167, nsec=44000000
+70/01/01 00:19:37 wave_test_read: Read total of 13074432 samples from wave file
+70/01/01 00:19:43 flac_write: 933888 samples written.
+70/01/01 00:19:43 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:19:46 sport_adc_read_dma: sec=1176, nsec=964000000
+70/01/01 00:19:47 wave_test_read: Read total of 14008320 samples from wave file
+70/01/01 00:19:52 flac_write: 933888 samples written.
+70/01/01 00:19:52 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:19:56 sport_adc_read_dma: sec=1186, nsec=884000000
+70/01/01 00:19:57 wave_test_read: Read total of 14942208 samples from wave file
+70/01/01 00:20:02 flac_write: 933888 samples written.
+70/01/01 00:20:02 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:20:06 sport_adc_read_dma: sec=1196, nsec=808000000
+70/01/01 00:20:06 wave_test_read: Read total of 15876096 samples from wave file
+70/01/01 00:20:12 flac_write: 933888 samples written.
+70/01/01 00:20:12 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:20:16 sport_adc_read_dma: sec=1206, nsec=728000000
+70/01/01 00:20:17 wave_test_read: Read total of 16809984 samples from wave file
+70/01/01 00:20:23 flac_write: 933888 samples written.
+70/01/01 00:20:23 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:20:23 detect: mean_high=0.00549, mean_low=0.02066, ratio_thresh=100.8966
+70/01/01 00:20:23 DTX,01/01/70,00:20:06,29,142.372,100.897,14.472,0.046
+70/01/01 00:20:26 sport_adc_read_dma: sec=1216, nsec=652000000
+70/01/01 00:20:26 wave_test_read: Read total of 17743872 samples from wave file
+70/01/01 00:20:32 flac_write: 933888 samples written.
+70/01/01 00:20:32 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:20:36 sport_adc_read_dma: sec=1226, nsec=572000000
+70/01/01 00:20:36 wave_test_read: Read total of 18677760 samples from wave file
+70/01/01 00:20:42 flac_write: 933888 samples written.
+70/01/01 00:20:42 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:20:46 sport_adc_read_dma: sec=1236, nsec=492000000
+70/01/01 00:20:46 wave_test_read: Read total of 19611648 samples from wave file
+70/01/01 00:20:46 flac_finish: encoder finish
+70/01/01 00:20:46 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:20:46 flac_init_file: metadata set ok
+70/01/01 00:20:46 New file wispr_700101_002036, 0.26% fs used
+70/01/01 00:20:46 com_write_msg: 12, $DFP,99.74*
+70/01/01 00:20:52 flac_write: 933888 samples written.
+70/01/01 00:20:52 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:20:56 sport_adc_read_dma: sec=1246, nsec=416000000
+70/01/01 00:20:56 wave_test_read: Read total of 20545536 samples from wave file
+70/01/01 00:21:02 flac_write: 933888 samples written.
+70/01/01 00:21:02 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:21:06 sport_adc_read_dma: sec=1256, nsec=336000000
+70/01/01 00:21:06 wave_test_read: Read total of 21479424 samples from wave file
+70/01/01 00:21:11 flac_write: 933888 samples written.
+70/01/01 00:21:12 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:21:16 sport_adc_read_dma: sec=1266, nsec=260000000
+70/01/01 00:21:16 wave_test_read: Read total of 22413312 samples from wave file
+70/01/01 00:21:22 flac_write: 933888 samples written.
+70/01/01 00:21:22 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:21:22 detect: mean_high=0.00637, mean_low=0.01369, ratio_thresh=91.2237
+70/01/01 00:21:22 DTX,01/01/70,00:21:06,128,185.211,91.224,14.548,0.054
+70/01/01 00:21:26 sport_adc_read_dma: sec=1276, nsec=180000000
+70/01/01 00:21:26 wave_test_read: Read total of 23347200 samples from wave file
+70/01/01 00:21:31 flac_write: 933888 samples written.
+70/01/01 00:21:31 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:21:36 sport_adc_read_dma: sec=1286, nsec=104000000
+70/01/01 00:21:36 wave_test_read: Read total of 24281088 samples from wave file
+70/01/01 00:21:41 flac_write: 933888 samples written.
+70/01/01 00:21:41 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:21:45 sport_adc_read_dma: sec=1296, nsec=24000000
+70/01/01 00:21:46 wave_test_read: Read total of 25214976 samples from wave file
+70/01/01 00:21:52 flac_write: 933888 samples written.
+70/01/01 00:21:52 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:21:55 sport_adc_read_dma: sec=1305, nsec=944000000
+70/01/01 00:21:56 wave_test_read: Read total of 26148864 samples from wave file
+70/01/01 00:22:01 flac_write: 933888 samples written.
+70/01/01 00:22:01 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:22:05 sport_adc_read_dma: sec=1315, nsec=868000000
+70/01/01 00:22:06 wave_test_read: Read total of 27082752 samples from wave file
+70/01/01 00:22:11 flac_write: 933888 samples written.
+70/01/01 00:22:11 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:22:15 sport_adc_read_dma: sec=1325, nsec=788000000
+70/01/01 00:22:15 wave_test_read: Read total of 28016640 samples from wave file
+70/01/01 00:22:21 flac_write: 933888 samples written.
+70/01/01 00:22:22 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:22:22 detect: mean_high=0.00544, mean_low=0.01684, ratio_thresh=95.8480
+70/01/01 00:22:22 DTX,01/01/70,00:22:05,38,155.722,95.848,13.716,0.056
+70/01/01 00:22:25 sport_adc_read_dma: sec=1335, nsec=712000000
+70/01/01 00:22:25 wave_test_read: Read total of 28950528 samples from wave file
+70/01/01 00:22:25 flac_finish: encoder finish
+70/01/01 00:22:25 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:22:25 flac_init_file: metadata set ok
+70/01/01 00:22:26 New file wispr_700101_002215, 0.27% fs used
+70/01/01 00:22:26 com_write_msg: 12, $DFP,99.73*
+70/01/01 00:22:31 flac_write: 933888 samples written.
+70/01/01 00:22:31 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:22:35 sport_adc_read_dma: sec=1345, nsec=632000000
+70/01/01 00:22:35 wave_test_read: Read total of 29884416 samples from wave file
+70/01/01 00:22:41 flac_write: 933888 samples written.
+70/01/01 00:22:41 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:22:45 sport_adc_read_dma: sec=1355, nsec=552000000
+70/01/01 00:22:45 wave_test_read: Read total of 30818304 samples from wave file
+70/01/01 00:22:51 flac_write: 933888 samples written.
+70/01/01 00:22:51 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:22:55 sport_adc_read_dma: sec=1365, nsec=476000000
+70/01/01 00:22:55 wave_test_read: Read total of 31752192 samples from wave file
+70/01/01 00:23:01 flac_write: 933888 samples written.
+70/01/01 00:23:01 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:23:05 sport_adc_read_dma: sec=1375, nsec=396000000
+70/01/01 00:23:05 wave_test_read: Read total of 32686080 samples from wave file
+70/01/01 00:23:11 flac_write: 933888 samples written.
+70/01/01 00:23:11 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:23:15 sport_adc_read_dma: sec=1385, nsec=320000000
+70/01/01 00:23:15 wave_test_read: Read total of 33619968 samples from wave file
+70/01/01 00:23:20 flac_write: 933888 samples written.
+70/01/01 00:23:21 detect: 10944 filter windows processed of 10944 total
+70/01/01 00:23:21 detect: mean_high=0.00634, mean_low=0.01491, ratio_thresh=93.0684
+70/01/01 00:23:21 DTX,01/01/70,00:23:05,43,137.363,93.068,13.947,0.045
+70/01/01 00:23:25 sport_adc_read_dma: sec=1395, nsec=240000000
+70/01/01 00:23:25 wave_test_read: Read total of 34553856 samples from wave file
+70/01/01 00:23:30 flac_write: 933888 samples written.
+70/01/01 00:23:31 detect: 1824 filter windows processed of 10944 total
+70/01/01 00:23:35 sport_adc_read_dma: sec=1405, nsec=160000000
+70/01/01 00:23:35 wave_test_read: Read total of 35487744 samples from wave file
+70/01/01 00:23:41 flac_write: 933888 samples written.
+70/01/01 00:23:41 detect: 3648 filter windows processed of 10944 total
+70/01/01 00:23:45 sport_adc_read_dma: sec=1415, nsec=84000000
+70/01/01 00:23:45 wave_test_read: Read total of 36421632 samples from wave file
+70/01/01 00:23:50 flac_write: 933888 samples written.
+70/01/01 00:23:50 detect: 5472 filter windows processed of 10944 total
+70/01/01 00:23:54 sport_adc_read_dma: sec=1425, nsec=4000000
+70/01/01 00:23:55 wave_test_read: Read total of 37355520 samples from wave file
+^C70/01/01 00:24:00 flac_write: 933888 samples written.
+70/01/01 00:24:00 detect: 7296 filter windows processed of 10944 total
+70/01/01 00:24:04 sport_adc_read_dma: sec=1434, nsec=928000000
+70/01/01 00:24:05 wave_test_read: Read total of 38289408 samples from wave file
+70/01/01 00:24:05 flac_finish: encoder finish
+70/01/01 00:24:05 flac_init_file: comp_level 4, fs 93750, bps 16, total nsamps 9338880
+70/01/01 00:24:05 flac_init_file: metadata set ok
+70/01/01 00:24:05 New file wispr_700101_002354, 0.28% fs used
+70/01/01 00:24:05 com_write_msg: 12, $DFP,99.72*
+70/01/01 00:24:10 flac_write: 933888 samples written.
+70/01/01 00:24:10 detect: 9120 filter windows processed of 10944 total
+70/01/01 00:24:11 com_write_msg: 6, $FIN*
+/ #

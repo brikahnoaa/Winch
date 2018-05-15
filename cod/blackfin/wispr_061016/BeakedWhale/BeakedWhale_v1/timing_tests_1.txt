@@ -1,0 +1,164 @@
+
+The following is the out put of FLAC comp level to 2 and running the cpu clock at 250MHz.
+
+# echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+# /bin/wispr -M2 -W -T8 -F2 -x -C10
+Mounted /mnt successful
+70/01/01 13:40:51 WISPR STARTED
+70/01/01 13:40:51 File system: 127741.23 MB of 127970.34 MB (99.82%) available
+70/01/01 13:40:51 Total recording time 141.93 hours
+70/01/01 13:40:51 ADC buffer duration = 7.995392 sec, 999424 samples
+70/01/01 13:40:51 ADC fs = 125000 Hz, gain = 0, bitshift = 8
+70/01/01 13:40:52 wdt_open: watchdog set with timeout=20 seconds
+8.000000 seconds for adc read cycle
+0.110000 seconds for wave test read
+70/01/01 13:41:00 New file wispr_700101_134100
+1.480000 seconds for flac write
+0.340000 seconds for detection
+7.980000 seconds for adc read cycle
+0.120000 seconds for wave test read
+1.460000 seconds for flac write
+0.340000 seconds for detection
+7.990000 seconds for adc read cycle
+0.120000 seconds for wave test read
+1.690000 seconds for flac write
+0.350000 seconds for detection
+7.730000 seconds for adc read cycle
+0.130000 seconds for wave test read
+1.460000 seconds for flac write
+0.340000 seconds for detection
+8.000000 seconds for adc read cycle
+0.130000 seconds for wave test read
+1.640000 seconds for flac write
+70/01/01 13:41:34 DTX,01/01/70,13:41:24,92,165.807,85.752,12.581,0.100
+0.350000 seconds for detection
+7.930000 seconds for adc read cycle
+0.110000 seconds for wave test read
+1.450000 seconds for flac write
+0.350000 seconds for detection
+7.990000 seconds for adc read cycle
+0.120000 seconds for wave test read
+1.450000 seconds for flac write
+0.350000 seconds for detection
+7.990000 seconds for adc read cycle
+0.120000 seconds for wave test read
+1.750000 seconds for flac write
+0.340000 seconds for detection
+7.840000 seconds for adc read cycle
+0.110000 seconds for wave test read
+1.460000 seconds for flac write
+0.350000 seconds for detection
+7.990000 seconds for adc read cycle
+0.130000 seconds for wave test read
+1.580000 seconds for flac write
+70/01/01 13:42:14 DTX,01/01/70,13:42:04,124,184.330,85.724,13.282,0.103
+0.490000 seconds for detection
+
+The following is the out put of FLAC comp level to 4 and running the cpu clock at 500MHz.
+
+# echo 500000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+# /bin/wispr -M2 -W -T8 -F4 -x -C10
+Mounted /mnt successful
+70/01/01 13:45:06 WISPR STARTED
+70/01/01 13:45:06 File system: 127712.66 MB of 127970.34 MB (99.80%) available
+70/01/01 13:45:06 Total recording time 141.90 hours
+70/01/01 13:45:06 ADC buffer duration = 7.995392 sec, 999424 samples
+70/01/01 13:45:06 ADC fs = 125000 Hz, gain = 0, bitshift = 8
+70/01/01 13:45:07 wdt_open: watchdog set with timeout=20 seconds
+7.990000 seconds for adc read cycle
+0.090000 seconds for wave test read
+70/01/01 13:45:15 New file wispr_700101_134515
+5.760000 seconds for flac write
+0.180000 seconds for detection
+7.990000 seconds for adc read cycle
+0.080000 seconds for wave test read
+5.730000 seconds for flac write
+0.180000 seconds for detection
+7.990000 seconds for adc read cycle
+0.090000 seconds for wave test read
+5.730000 seconds for flac write
+0.180000 seconds for detection
+7.990000 seconds for adc read cycle
+0.090000 seconds for wave test read
+5.950000 seconds for flac write
+0.170000 seconds for detection
+7.780000 seconds for adc read cycle
+0.080000 seconds for wave test read
+5.730000 seconds for flac write
+70/01/01 13:45:53 DTX,01/01/70,13:45:39,92,165.807,85.752,12.581,0.100
+0.180000 seconds for detection
+7.980000 seconds for adc read cycle
+0.090000 seconds for wave test read
+5.940000 seconds for flac write
+0.180000 seconds for detection
+7.830000 seconds for adc read cycle
+0.090000 seconds for wave test read
+5.720000 seconds for flac write
+0.180000 seconds for detection
+8.000000 seconds for adc read cycle
+0.080000 seconds for wave test read
+5.730000 seconds for flac write
+0.180000 seconds for detection
+7.990000 seconds for adc read cycle
+0.090000 seconds for wave test read
+5.930000 seconds for flac write
+0.170000 seconds for detection
+7.810000 seconds for adc read cycle
+0.090000 seconds for wave test read
+5.740000 seconds for flac write
+70/01/01 13:46:33 DTX,01/01/70,13:46:19,124,184.330,85.724,13.282,0.103
+0.180000 seconds for detection
+
+
+The size of the file is about the same idicating that FLAC levl 4 is not much better than level 2.
+
+# ls -l mnt
+-rwxr-xr-x    1 root     root      13697765 Jan  1 13:42 wispr_700101_134100.flac
+-rwxr-xr-x    1 root     root      13365080 Jan  1 13:46 wispr_700101_134515.flac
+
+
+
+The following is an example of what doesn't work.
+Here the adc read cycle is longer than the adc buffer duration, so the buffers will overflow.
+This is caused by dsetting the FLAC comp level to 4 and running the cpu clock at 250MHz.
+
+# echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+# /bin/wispr -M2 -W -T8 -F4 -x
+Mounted /mnt successful
+70/01/01 13:34:17 WISPR STARTED
+70/01/01 13:34:17 File system: 127450.51 MB of 127970.34 MB (99.59%) available
+70/01/01 13:34:17 Total recording time 141.61 hours
+70/01/01 13:34:17 ADC buffer duration = 7.995392 sec, 999424 samples
+70/01/01 13:34:17 ADC fs = 125000 Hz, gain = 0, bitshift = 8
+70/01/01 13:34:18 wdt_open: watchdog set with timeout=20 seconds
+7.990000 seconds for adc read cycle
+0.130000 seconds for wave test read
+70/01/01 13:34:26 New file wispr_700101_133426
+11.090000 seconds for flac write
+0.350000 seconds for detection
+11.570000 seconds for adc read cycle
+0.130000 seconds for wave test read
+11.060000 seconds for flac write
+0.360000 seconds for detection
+11.550000 seconds for adc read cycle
+0.110000 seconds for wave test read
+11.190000 seconds for flac write
+0.360000 seconds for detection
+11.670000 seconds for adc read cycle
+0.120000 seconds for wave test read
+10.920000 seconds for flac write
+0.360000 seconds for detection
+11.400000 seconds for adc read cycle
+0.130000 seconds for wave test read
+11.220000 seconds for flac write
+70/01/01 13:35:24 DTX,01/01/70,13:34:50,57,97.314,75.893,10.467,0.093
+0.360000 seconds for detection
+70/01/01 13:35:24 sport_adc_read_dma: Buffer Overrun
+11.710000 seconds for adc read cycle
+0.120000 seconds for wave test read
+11.050000 seconds for flac write
+0.340000 seconds for detection
+70/01/01 13:35:35 sport_adc_read_dma: Buffer Overrun
+/ #
+
+

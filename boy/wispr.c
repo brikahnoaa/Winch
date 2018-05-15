@@ -10,7 +10,6 @@ void wspInit(int board) {
 void wspStop(void){}
 void wspFlush(void){}
 
-/*
 //
 // Incoming wsp ASCII Communication. Looks for certain commands starting with
 // '$' and ending with '*'
@@ -244,11 +243,10 @@ void wspDet(int dtx) {
   TUTxWaitCompletion(PAMPort);
 
   utlDelay(500);
-
 } // wspDet
+
 // This is where we send the GPS Time and Location to wsp Board at startup
 void wspGPS(void) {
-
   float minutes;
   float decimal;
   float LAT, LONG;
@@ -275,8 +273,8 @@ void wspGPS(void) {
   TUTxWaitCompletion(PAMPort);
 
   SendwspGPS = true;
-
 } // wspGPS
+
 // We can update the gain parameters for the wsp Board.
 // Might want to do this at the start up of wsp Program when wsp Requests
 // for gain values.
@@ -290,8 +288,8 @@ void wspGain(short c) {
   TUTxPrintf(PAMPort, "$NGN,%d*\n", c);
   TUTxWaitCompletion(PAMPort);
   utlDelay(2);
-
 } // wspGain
+
 void wspDFP(void) {
 
   DBG0("\t|wspDFP(%d)", wsp.NUM)
@@ -300,8 +298,8 @@ void wspDFP(void) {
   TUTxPrintf(PAMPort, "$DFP*\n");
   TUTxWaitCompletion(PAMPort);
   utlDelay(250);
-
 } // wspDFP
+
 void wspTFP(void) {
 
   DBG0("\t|wspTFP(%d)", wsp.NUM)
@@ -310,8 +308,8 @@ void wspTFP(void) {
   TUTxPrintf(PAMPort, "$TFP*\n");
   TUTxWaitCompletion(PAMPort);
   utlDelay(250);
-
 } // wspDFP
+
 bool wspExit(void) {
 
   flogf("\n\t|wspExit()");
@@ -329,8 +327,8 @@ bool wspExit(void) {
     return true;
   } else
     return false;
-
 } // wspExit
+
 // 1. Gets incoming serial data from ActivePAM on MPC
 // 2. If it is -1 it breaks and exits, once it sees a '*' it stops taking serial
 // 3. Look for the appropriate wsp Command (DFP, EXI, DXN, DTX)
@@ -856,4 +854,3 @@ bool wspExpectedReturn(short expected, bool reboot) {
 } // wspExpectedReturn //
 
  // all comments
-*/ 

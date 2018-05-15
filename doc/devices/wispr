@@ -1,3 +1,27 @@
+Mon, May 14, 2018  9:05:11 AM
+code.
+"$DX?,%d*\n", dtx   call to the wsp board with max_detections
+responds with a $DXN...* com line then lists each actual detection
+afterward with a $DTX...* com line. Each are up to ~60 bytes per line
+
+$DFP*
+$DFP,99.99*
+$DX?,2*
+$DXN,0001,24/04/76,17:54:43,00045,00193,00082,00013,27,000*
+$DTX,24/04/76,17:54:11,45,193.005,82.104,13.695,0.278*
+$DX?,2*
+$DXN,0007,24/04/76,18:02:23,00333,00194,00082,00013,27,000*
+$DTX,24/04/76,17:58:11,45,193.005,82.104,13.695,0.278*
+$DTX,24/04/76,17:58:51,54,196.200,82.060,13.793,0.270*
+$DX?,2*
+$DXN,0000,24/04/76,18:02:47,00000,00000,00000,00000,00,000*
+$EXI*
+$FIN*
+
+with empty CF card, no response to DFP for 20 secs
+with full CF card, no response to DFP for 20 secs
+
+---
 print_help()
 WISPR Data Logger/Detector 
 Version X.X 
@@ -32,7 +56,7 @@ Modes:
            to monitor noise levels regularly).
 
  - Wave Test Mode:
-           Test mode that reads data from a wave file and 
+           Test mode that reads data from bw_test.wav and 
            overwrites the adc buffer before processing the buffer.
 
 getopt()
@@ -56,3 +80,17 @@ M:T:s:g:C:i:n:b:m:f:F:o:l:p:v:rLhWx
    's': // bit shift I
    'v': // verbose I
    'x': // do_clock_cycle_count 1
+
+---
+
+/bin/wispr –l wispr.log -v2 –T8 –b15 -M2 -F2 –g0 –r
+mount /dev/sda1 /mnt
+/bin/spectrogram –T10 –C12 –v1 –n512 –o256 –g0 -t20 – l noise.log
+
+The third line from the bottom is the logging program. Once the logging program begins, it continues logging until either the data storage spaces runs out or it receives $EXI* from CF2 to COM1 to stop logging. 
+
+To run the wispr program in a simulated mode, change /bin/wispr .... line in the start file.
+/bin/wispr -l wispr.log -v2 -T8 -b15 -M2 -FR -g0 -W
+The last option, W runs the same program which injects a simulated beaked whale call, records the the data and reports the detection to CF2. If your program passes this test, it will work in the field.
+-Haru
+
