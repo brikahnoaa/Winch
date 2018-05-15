@@ -2,6 +2,8 @@
 *.exe
 a.out
 *.pyc
+*.o
+*.a
 # codewar
 cod/war/
 # tmp
