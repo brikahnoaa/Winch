@@ -2,11 +2,12 @@
 #include <utl.h>
 #include <mpc.h>
 #include <sys.h>
+#include <wsp.h>
 
 void main(void){
   sysInit();
   mpcInit();
   wspInit();
-  wspStart(wsp1_pam);
+  wspStart(wsp2_pam);
   wspStop();
 }

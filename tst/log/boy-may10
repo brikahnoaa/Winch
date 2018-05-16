@@ -1,0 +1,180 @@
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 1, max 50
++logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: May 10 2018 18:01:56
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Project:   Platform:   Starts: 1
+Started: 08-20--86 22:07:41
+---   ---
+cfgRead(SYS.CFG)
++cfgVee()
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
++antInit()
++boyInit()
++utlLogFile(boy)
++ctdInit()
++mpcPamDev(4)
++ctdAuton(0)
++utlLogFile(ctd)
++mpcPamDev(0)
++ngkInit()
++wspInit()
++mpcPamDev(1)
++utlLogFile(wsp)
+boyMain(): starting with phase 0
+!boyMain(): cycle 0 of 3
+
++antStart() 08-20--86 22:07:44
++antDevice(cf2)
++antRingReset()
++deployPhase()@08-20--86 22:07:51 0.91m
+deployPhase() at 0.91m
+deployPhase() at 0.93m
+deployPhase() at 2.70m
+deployPhase() at 8.78m
+	| 14.86m>10 so wait until not moving
+
+-Err(ant)	|0| 22:11:53 ant: timer expired
+	| boy.dockD = 24.00
+	| go to surface, call home
++riseToSurf()
++ngkSend(#R,01,03) at 22:12:21
++ngkRecv(%R,02,00) riseRsp 22:12:32
++ngkRecv(#S,02,00
+
+) stopCmd 22:13:44
++ngkSend(%S,01,00) at 22:13:44
+	| deployed @ 22:13:45
+!boyMain(): cycle 0 of 3
+
++iridPhase()@08-20--86 22:13:45
+!boyMain(): cycle 0 of 3
+
++fallPhase() 22:13:45
++antRingReset()
++dP:1
++ngkSend(#F,01,00) at 22:13:45
++ngkRecv(%F,02,00) fallRsp 22:14:01
++dP:3
++ngkRecv(#S,02,00
+
+) stopCmd 22:16:00
++ngkSend(%S,01,00) at 22:16:00
++dP:4
++ctdAuton(0)
++mpcPamDev(0)
+!boyMain(): cycle 0 of 3
+
++dataPhase()@08-20--86 22:16:19
++mpcPamDev(2)
+WISPR storm detection. 2->''....................... 6->'$RDY*
+' 35->'$NLW*,04/20/76,21:55:51,0034,0002*
+'
++mpcPamDev(0)
+!boyMain(): cycle 1 of 3
+
++risePhase()@08-20--86 22:18:52
++antStart() 08-20--86 22:18:52
++antDevice(cf2)
++antRingReset()
++mpcPamDev(4)
+	| oceanCurrChk() 
+-Err()	|0| 22:19:05 oceanCurr invalid value
++riseUp(10.0m)
++ngkSend(#R,01,03) at 22:19:05
++ngkRecv(%R,02,00) riseRsp 22:19:18
++ngkSend(#S,01,00) at 22:19:54
++ngkRecv(%S,02,00) stopRsp 22:20:06
+	| riseUp() to depth 16415
+	| oceanCurrChk() 
+-Err()	|1| 22:20:11 oceanCurr invalid value
++riseToSurf()
++ngkSend(#R,01,03) at 22:20:11
++ngkRecv(%R,02,00) riseRsp 22:20:22
++ngkRecv(#S,02,00
+
+) stopCmd 22:20:45
++ngkSend(%S,01,00) at 22:20:45
+!boyMain(): cycle 1 of 3
+
++iridPhase()@08-20--86 22:20:46
+!boyMain(): cycle 1 of 3
+
++fallPhase() 22:20:46
++antRingReset()
++dP:1
++ngkSend(#F,01,00) at 22:20:46
++ngkRecv(%F,02,00) fallRsp 22:21:02
++dP:3
++ngkRecv(#S,02,00
+
+) stopCmd 22:23:01
++ngkSend(%S,01,00) at 22:23:01
++dP:4
++ctdAuton(0)
++mpcPamDev(0)
+!boyMain(): cycle 1 of 3
+
++dataPhase()@08-20--86 22:23:03
++mpcPamDev(2)
+WISPR storm detection......................... 6->'$RDY*
+' 35->'$NLW*,04/20/76,22:02:35,0034,0002*
+'
++mpcPamDev(0)
+!boyMain(): cycle 2 of 3
+
++risePhase()@08-20--86 22:25:36
++antStart() 08-20--86 22:25:36
++antDevice(cf2)
++antRingReset()
++mpcPamDev(4)
+	| oceanCurrChk() 
+-Err()	|2| 22:25:49 oceanCurr invalid value
++riseUp(10.0m)
++ngkSend(#R,01,03) at 22:25:49
++ngkRecv(%R,02,00) riseRsp 22:26:02
++ngkSend(#S,01,00) at 22:26:38
++ngkRecv(%S,02,00) stopRsp 22:26:50
+	| riseUp() to depth 16415
+	| oceanCurrChk() 
+-Err()	|3| 22:26:55 oceanCurr invalid value
++riseToSurf()
++ngkSend(#R,01,03) at 22:26:55
++ngkRecv(%R,02,00) riseRsp 22:27:06
++ngkRecv(#S,02,00
+
+) stopCmd 22:27:29
++ngkSend(%S,01,00) at 22:27:29
+!boyMain(): cycle 2 of 3
+
++iridPhase()@08-20--86 22:27:30
+!boyMain(): cycle 2 of 3
+
++fallPhase() 22:27:30
++antRingReset()
++dP:1
++ngkSend(#F,01,00) at 22:27:30
++ngkRecv(%F,02,00) fallRsp 22:27:46
++dP:3
++ngkRecv(#S,02,00
+
+) stopCmd 22:29:45
++ngkSend(%S,01,00) at 22:29:45
++dP:4
++ctdAuton(0)
++mpcPamDev(0)
+!boyMain(): cycle 2 of 3
+
++dataPhase()@08-20--86 22:29:47
++mpcPamDev(2)
+WISPR storm detection......................... 6->'$RDY*
+' 35->'$NLW*,04/20/76,22:09:18,0034,0002*
+'
++mpcPamDev(0)
+!boyMain(): cycle 3 of 3
+
+mpcSleep() at 08-20--86 22:32:20

@@ -53,40 +53,30 @@ void mpcInit(void) {
 void mpcPamDev(MpcPamType pam) {
   if (pam==mpc.pamDev) return;
   DBG0("mpcPamDev(%d)", pam)
-  // was this, turn down
-  switch (mpc.pamDev) {
-  case wsp1_pam:
-  case wsp2_pam:
-    mpcPamPulse(WISPR_PWR_OFF);
-    PIOClear(WSP_PAM);
-    PIOClear(WSP_12);
-    break;
-  case sbe16_pam:
-    PIOClear(SBE_PAM);
-    PIOClear(SBE_16);
-    break;
-  } // switch
-  // now this, turn up
   switch (pam) {
   case wsp1_pam:
-    PIOSet(WSP_PAM);
-    PIOClear(WSP_12);
-    mpcPamPulse(WISPR_PWR_ON);
+    PIOClear(PAM_34);
+    PIOSet(PAM_12);
+    PIOClear(PAM_2);
     break;
   case wsp2_pam:
-    PIOSet(WSP_PAM);
-    PIOSet(WSP_12);
-    mpcPamPulse(WISPR_PWR_ON);
+    PIOClear(PAM_34);
+    PIOSet(PAM_12);
+    PIOSet(PAM_2);
+    break;
+  case wsp3_pam:
+    PIOClear(PAM_12);
+    PIOSet(PAM_34);
+    PIOClear(PAM_4);
     break;
   case sbe16_pam:
-    PIOSet(SBE_PAM);
-    PIOSet(SBE_16);
+    PIOClear(PAM_12);
+    PIOSet(PAM_34);
+    PIOSet(PAM_4);
     break;
   case null_pam:
-    PIOClear(WSP_PAM);
-    PIOClear(WSP_12);
-    PIOClear(SBE_PAM);
-    PIOClear(SBE_16);
+    PIOClear(PAM_12);
+    PIOClear(PAM_34);
     break;
   } // switch
   TUTxFlush(mpc.pamPort);

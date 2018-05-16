@@ -12,8 +12,10 @@ WspInfo wsp;
 // sets: wsp.port .wspPending
 void wspInit(void) {
   DBG0("wspInit()")
-  mpcPamDev(wsp1_pam);
   wsp.port = mpcPamPort();
+  PIOClear(PAM_12);
+  PIOClear(PAM_34);
+  mpcPamPulse(WISPR_PWR_OFF);
   tmrStop(wsp_tmr);
   if (strlen(wsp.logFile))
     wsp.log = utlLogFile(wsp.logFile);
@@ -29,14 +31,20 @@ int wspStart(int pam) {
   DBG0("wspStart()")
   // select, power on
   mpcPamDev(pam);
-  utlNap(30);
-  TURxFlush(wsp.port);
+  mpcPamPulse(WISPR_PWR_ON);
+  wsp.pam =  pam;
+  utlExpect(wsp.port, utlBuf, "/mnt", 40);
+  flogf("\ndf\n%s\n", utlBuf);
   for (i=0; i<10; i++) {
     utlWrite(wsp.port, "$DFP*", EOL);
     if (utlReadWait(wsp.port, utlBuf, 2)) break;
+    utlNap(3);
   } // try 10 times
-  if (!(s = strtok(utlBuf, ","))) {
-    utlErr(wsp_err, "no disk avail");
+  DBG2("%s", utlBuf)
+  s = strtok(utlBuf, ",");
+  s = strtok(NULL, "*");
+  if (!s) {
+    utlErr(wsp_err, "no wispr commun");
     return 1;
   }
   disk = atof(s);
@@ -50,6 +58,9 @@ int wspStart(int pam) {
 ///
 // stop current card
 void wspStop(void) {
+  utlWrite(wsp.port, "$EXI*", EOL);
+  utlExpect(wsp.port, utlBuf, "FIN", 20);
+  mpcPamPulse(WISPR_PWR_OFF);
   wsp.pam = null_pam;
   mpcPamDev(null_pam);
   if (wsp.log) {

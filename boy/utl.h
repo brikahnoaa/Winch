@@ -13,15 +13,15 @@
 #define MDM_PWR 21
 #define ANT_PWR 22  // antenna module Power pin (1=ON, 0=OFF)
 #define ANT_SEL 23  // set = antMod cf2, clear = a3la
-#define SBE_PAM 24   // 24 cannot be on with 29
-#define SBE_16 25   // 24&25 -> sbe16
+#define PAM_34 24   // 24 cannot be on with 29
+#define PAM_4 25    // 24&25 -> pam4 (sbe16)
 #define HPSENS 26   // power for pressure sensor
 #define PAM_TX 27   // com2,3: (pam_12)(pam_34) 
-#define PAM_RX 28   // // selected by 24, 29
-#define WSP_PAM 29   // 24 cannot be on with 29
-#define WSP_12 30   // 29&!30 -> wsp1, 29&30 -> wsp2
+#define PAM_RX 28   // selected by 24, 29
+#define PAM_12 29   // 24 cannot be on with 29
+#define PAM_2 30    // 29&30 -> wsp2
 #define ANT_TX 31   // com1: ant mod, uMPC and A3LA
-#define ANT_RX 32   // // selected by 23
+#define ANT_RX 32   // selected by 23
 #define MDM_RX 33   // acoustic modem
 #define MDM_TX 35   // 
 #define WISPR_PWR_ON 37

@@ -1,21 +1,13 @@
-// antTst.c
+// wspTst.c
 #include <utl.h>
-#include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
-#include <ant.h>
-#include <boy.h>
-
-extern AntInfo ant;
-extern CtdInfo ctd;
+#include <wsp.h>
 
 void main(void){
   sysInit();
   mpcInit();
-  // antInit();
-  // ctdInit();
-  // antStart();
-  cprintf("\n");
-  mpcPamDev();
-
+  wspInit();
+  wspStart(wsp2_pam);
+  wspStop();
 }

@@ -14,12 +14,12 @@ typedef struct MpcInfo {
   Serial pamPort;
 } MpcInfo;
 
-static void mpcPamPulse(int pin);
 static void spur_ISR(void);
 static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
 
 void mpcPamDev(MpcPamType pam);
+void mpcPamPulse(int pin);
 void mpcInit(void);
 void mpcSleep(void);
 void mpcStop(void);

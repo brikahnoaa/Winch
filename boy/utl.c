@@ -33,7 +33,6 @@ void utlInit(void) {
 }
 
 void utlDelay(int x) { 
-  DBG2("utlDelay()")
   RTCDelayMicroSeconds((long)x*1000); 
 }
 
@@ -72,9 +71,9 @@ char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
 ///
 // readWait(1) until we get the expected string (or timeout)
 // in: port, buf for content, expect to watch for, wait timeout
+// uses: utl.buf
 // ret: how many secs we waited, -1 if timeout
 bool utlExpect(Serial port, char *buf, char *expect, int wait) {
-  char str[1024];
   DBG1("utlExpect(%s)", expect)
   buf[0] = 0;
   tmrStart(utl_tmr, wait);
@@ -82,8 +81,8 @@ bool utlExpect(Serial port, char *buf, char *expect, int wait) {
   while (!strstr(buf, expect)) {
     if (tmrExp(utl_tmr)) 
       return false;
-    if (utlReadWait(port, str, 1))
-      strcat(buf, str);
+    if (utlReadWait(port, utl.buf, 1))
+      strcat(buf, utl.buf);
   }
   // timeout?
   tmrStop(utl_tmr);
@@ -267,6 +266,7 @@ void utlErr( ErrType err, char *str) {
 // nap called often
 void utlNap(int sec) {
   int i;
+  DBG0("utlNap(%d)", sec)
   for (i=0; i<sec; i++) {
     utlX();
     pwrNap(1);
