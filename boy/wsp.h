@@ -1,9 +1,4 @@
 // wsp.h
-/*
-#ifndef MPC_H
-#include <mpc.h>
-#endif
-*/
 
 #define WSP_H
 
@@ -22,10 +17,9 @@ typedef struct WspInfo {
   Serial port;                // same as mpc.port, ant.port
 } WspInfo;
 
-static int wspRead(char *buf);
-static bool wspData(void);
-
+int wspDetect(void);
 int wspStart(int pam);
 void wspInit(void);
 void wspLog(bool on);
 void wspStop(void);
+int wspStorm(char *buf);

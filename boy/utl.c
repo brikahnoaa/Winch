@@ -72,7 +72,6 @@ char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
 // readWait(1) until we get the expected string (or timeout)
 // in: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf
-// ret: how many secs we waited, -1 if timeout
 bool utlExpect(Serial port, char *buf, char *expect, int wait) {
   DBG1("utlExpect(%s)", expect)
   buf[0] = 0;
@@ -83,6 +82,7 @@ bool utlExpect(Serial port, char *buf, char *expect, int wait) {
       return false;
     if (utlReadWait(port, utl.buf, 1))
       strcat(buf, utl.buf);
+    utlX();
   }
   // timeout?
   tmrStop(utl_tmr);
