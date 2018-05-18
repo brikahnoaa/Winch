@@ -7,7 +7,10 @@ typedef enum {
   ctd_tmr,          // ctd.pending waiting for ctd response
   deploy_tmr,       // steps during deploy phase0
   data_tmr,         // rise to surface, send data
+  day_tmr,
+  hour_tmr,
   init_tmr,         // init components
+  minute_tmr,
   rudics_tmr,       // max time to spend on the phone
   utl_tmr,
   ngk_tmr,          // amodem command response

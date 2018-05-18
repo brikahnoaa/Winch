@@ -12,8 +12,6 @@ WspInfo wsp;
 // sets: wsp.port .wspPending
 void wspInit(void) {
   DBG0("wspInit()")
-  mpcPamPulse(WISPR_PWR_OFF);
-  utlDelay(100);
   wsp.port = mpcPamPort();
   PIOClear(PAM_12);
   PIOClear(PAM_34);
@@ -25,17 +23,23 @@ void wspInit(void) {
 ///
 // turn on, disk free > wsp.freeMin
 // sets: wsp.card
-int wspStart(int pam) {
+int wspStart(int card) {
   DBG0("wspStart()")
+  mpcPamDev(wsp1_pam);
+  mpcPamPulse(WISPR_PWR_OFF);
+  mpcPamDev(wsp2_pam);
+  mpcPamPulse(WISPR_PWR_OFF);
+  mpcPamDev(wsp3_pam);
+  mpcPamPulse(WISPR_PWR_OFF);
   // select, power on
-  mpcPamDev(pam);
-  wsp.pam =  pam;
+  mpcPamDev(card);
   mpcPamPulse(WISPR_PWR_ON);
-  utlDelay(100);
+  wsp.card =  card;
   // expect df output
   utlExpect(wsp.port, utlBuf, "/mnt", 40);
+  // ?? check free disk, maybe increment card
   flogf("\n%s\n", utlBuf);
-  return 0;
+  return card;
 } // wspStart
 
 ///
@@ -43,7 +47,7 @@ int wspStart(int pam) {
 void wspStop(void) {
   mpcPamPulse(WISPR_PWR_OFF);
   utlDelay(100);
-  wsp.pam = null_pam;
+  wsp.card = null_pam;
   mpcPamDev(null_pam);
   if (wsp.log) {
     close(wsp.log);
@@ -63,29 +67,62 @@ int wspStorm(char *buf) {
 } // wspStorm
 
 ///
-// data waiting
-int wspDetect(void) {
+// ?? replace with log to wsp.log
+void wspLog(char *str) {
+  flogf("%s\n", str);
+} // wspLog
+
+///
+// log up to .detMax detections every .query minutes
+// while .duty% * .cycle minutes
+// return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
+// sets: *detections
+int wspDetect(int *detections) {
   float disk;
+  char *s, query[32];
+  int d=0, r=0;  // r==0 means no err
+  tmrStart(minute_tmr, (int) 60*(wsp.duty/100)*wsp.cycle); // (50, 60)
+  // while no err and duty cycle
+  while (!r && !tmrExp(minute_tmr)) {
+    // nap for a time
+    utlNap(60*wsp.query);         // (10)
+    // detections
+    TURxFlush(wsp.port);
+    sprintf(query, "$DX?,%d*", wsp.detMax);
+    utlWrite(wsp.port, query, EOL);
+    utlReadWait(wsp.port, utlBuf, 2);
+    wspLog(utlBuf);
+    // total det
+    s = strtok(utlBuf, "$,");
+    if (!strstr(s, "DXN")) r = 3;
+    s = strtok(NULL, ",");
+    d += atoi(s);
+    // check disk space
+    if (wspSpace(&disk)) r = 2;     // fail
+    if (disk<wsp.freeMin) r = 1;
+  } // while duty cycle
+  if (r) tmrStop(minute_tmr);       // err
+  utlWrite(wsp.port, "$EXI*", EOL);
+  utlExpect(wsp.port, utlBuf, "FIN", 5);
+  *detections = d;
+  return r;
+} // wspDetect
+
+///
+// wispr detection program, query disk space
+int wspSpace(float *disk) {
   char *s;
-  int i;
-  for (i=0; i<10; i++) {
-    utlWrite(wsp.port, "$DFP*", EOL);
-    if (utlReadWait(wsp.port, utlBuf, 2)) break;
-    utlNap(3);
-  } // try 10 times
+  utlWrite(wsp.port, "$DFP*", EOL);
+  if (utlReadWait(wsp.port, utlBuf, 2)==0) {
+    // fail
+    utlErr(wsp_err, "no response to disk query");
+    *disk = 0.0;
+    return 1;
+  } // readwait
   DBG2("%s", utlBuf)
   s = strtok(utlBuf, ",");
   s = strtok(NULL, "*");
-  if (!s) {
-    utlErr(wsp_err, "no wispr commun");
-    return 1;
-  }
-  disk = atof(s);
-  flogf("\nwspStart() %4.1f%% free", disk);
-  if (disk<wsp.freeMin) 
-    return 2;
-  utlWrite(wsp.port, "$EXI*", EOL);
-  utlExpect(wsp.port, utlBuf, "FIN", 5);
+  *disk = atof(s);
   return 0;
-} // wspData
+} // wspChkCF
 
