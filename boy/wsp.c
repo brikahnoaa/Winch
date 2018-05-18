@@ -78,10 +78,13 @@ void wspLog(char *str) {
 // return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
 // sets: *detections
 int wspDetect(int *detections) {
-  float disk;
   char *s, query[32];
-  int d=0, r=0;  // r==0 means no err
-  tmrStart(minute_tmr, (int) 60*(wsp.duty/100)*wsp.cycle); // (50, 60)
+  float free;
+  int dc, det=0, r=0;  // r==0 means no err
+  DBG0("wspDetect()")
+  dc = (int) 60*wsp.duty/100*wsp.cycle; // (50, 60)
+  DBG2("dutycycle %d", dc)
+  tmrStart(minute_tmr, dc);
   // while no err and duty cycle
   while (!r && !tmrExp(minute_tmr)) {
     // nap for a time
@@ -96,33 +99,34 @@ int wspDetect(int *detections) {
     s = strtok(utlBuf, "$,");
     if (!strstr(s, "DXN")) r = 3;
     s = strtok(NULL, ",");
-    d += atoi(s);
+    det += atoi(s);
+    DBG1("detected %d", det)
     // check disk space
-    if (wspSpace(&disk)) r = 2;     // fail
-    if (disk<wsp.freeMin) r = 1;
+    if (wspSpace(&free)) r = 2;     // fail
+    if (free*wsp.cfSize<wsp.freeMin) r = 1;
   } // while duty cycle
   if (r) tmrStop(minute_tmr);       // err
   utlWrite(wsp.port, "$EXI*", EOL);
   utlExpect(wsp.port, utlBuf, "FIN", 5);
-  *detections = d;
+  *detections = det;
   return r;
 } // wspDetect
 
 ///
 // wispr detection program, query disk space
-int wspSpace(float *disk) {
+int wspSpace(float *free) {
   char *s;
   utlWrite(wsp.port, "$DFP*", EOL);
   if (utlReadWait(wsp.port, utlBuf, 2)==0) {
     // fail
     utlErr(wsp_err, "no response to disk query");
-    *disk = 0.0;
+    *free = 0.0;
     return 1;
   } // readwait
   DBG2("%s", utlBuf)
   s = strtok(utlBuf, ",");
   s = strtok(NULL, "*");
-  *disk = atof(s);
+  *free = atof(s);
   return 0;
 } // wspChkCF
 

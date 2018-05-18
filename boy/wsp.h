@@ -6,12 +6,13 @@ typedef struct WspInfo {
   bool on;                    // run wispr
   bool logging;
   char logFile[32];
-  float freeMin;              // free disk minimum, else go on to new wispr
   int card;                   // current wispr card in use
   int cards;                  // number of cards installed
+  int cfSize;                 // size of CF card
   int cycle;                  // (60 min)
   int detMax;                 // max detections to be logged
   int duty;                   // percent of cycle to run wispr
+  int freeMin;                // free disk min GB, else go on to new wispr
   int gain;                   // mic sensitivity
   int log;                    // log fileid
   int query;                  // how often to log detections (10 min)

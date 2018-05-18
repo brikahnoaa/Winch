@@ -7,7 +7,6 @@
 
 void main(void){
   char c;
-  int detect=0;
   Serial port;
   sysInit();
   mpcInit();
@@ -15,8 +14,6 @@ void main(void){
   wspInit();
   // mpcPamDev(wsp2_pam);
   wspStart(wsp2_pam);
-  wspDetect(&detect);
-  flogf("wspDetect(%d)", detect);
   flogf("\nPress Q to exit\n");
   while (true) {
     if (cgetq()) {
