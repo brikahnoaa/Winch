@@ -14,10 +14,8 @@ typedef struct WspInfo {
   int duty;                   // percent of cycle to run wispr
   int gain;                   // mic sensitivity
   int log;                    // log fileid
-  int num;                    // number of wspr cards
   int query;                  // how often to log detections (10 min)
-  time_t time;
-  Serial port;                // port for all pam science
+  Serial port;                // mpcPamPort()
 } WspInfo;
 
 int wspDetect(int *detections);

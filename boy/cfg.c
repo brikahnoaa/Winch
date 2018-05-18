@@ -74,11 +74,17 @@ static CfgParam cfgP[] = {
   {"spj", "sys.project",    &sys.project,     'c'},
   {"sve", "sys.version",    &sys.version,     'c'},
   {"uiC", "utl.ignoreCon",  &utl.ignoreCon,   'b'},
+  {"won", "wsp.on",         &wsp.on,          'b'},
+  {"wlo", "wsp.logging",    &wsp.logging,     'b'},
   {"wlF", "wsp.logFile",    &wsp.logFile,     'c'},
+  {"wfM", "wsp.freeMin",    &wsp.freeMin,     'f'},
+  {"wca", "wsp.card",       &wsp.card,        'i'},
+  {"wcs", "wsp.cards",      &wsp.cards,       'i'},
+  {"wcy", "wsp.cycle",      &wsp.cycle,       'i'},
   {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
   {"wdu", "wsp.duty",       &wsp.duty,        'i'},
   {"wga", "wsp.gain",       &wsp.gain,        'i'},
-  {"wnu", "wsp.num",        &wsp.num,         'i'},
+  {"wqu", "wsp.query",      &wsp.query,       'i'},
 };
 
 
