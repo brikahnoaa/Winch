@@ -83,7 +83,7 @@ int wspDetect(int *detections) {
   int dc, det=0, r=0;  // r==0 means no err
   DBG0("wspDetect()")
   dc = (int) 60*wsp.duty/100*wsp.cycle; // (50, 60)
-  DBG2("dutycycle %d", dc)
+  DBG1("\ndutycycle %d %s", dc, utlTime())
   tmrStart(minute_tmr, dc);
   // while no err and duty cycle
   while (!r && !tmrExp(minute_tmr)) {
@@ -93,7 +93,7 @@ int wspDetect(int *detections) {
     TURxFlush(wsp.port);
     sprintf(query, "$DX?,%d*", wsp.detMax);
     utlWrite(wsp.port, query, EOL);
-    utlReadWait(wsp.port, utlBuf, 2);
+    utlReadWait(wsp.port, utlBuf, 16);
     wspLog(utlBuf);
     // total det
     s = strtok(utlBuf, "$,");
@@ -104,6 +104,7 @@ int wspDetect(int *detections) {
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
+    DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
   } // while duty cycle
   if (r) tmrStop(minute_tmr);       // err
   utlWrite(wsp.port, "$EXI*", EOL);
@@ -116,15 +117,13 @@ int wspDetect(int *detections) {
 // wispr detection program, query disk space
 int wspSpace(float *free) {
   char *s;
+  *free = 0.0;
   utlWrite(wsp.port, "$DFP*", EOL);
-  if (utlReadWait(wsp.port, utlBuf, 2)==0) {
-    // fail
-    utlErr(wsp_err, "no response to disk query");
-    *free = 0.0;
-    return 1;
-  } // readwait
+  if (!utlReadWait(wsp.port, utlBuf, 2)) return 2;
   DBG2("%s", utlBuf)
-  s = strtok(utlBuf, ",");
+  s = strstr(utlBuf, "DFP");
+  if (!s) return 1;
+  strtok(s, ",");
   s = strtok(NULL, "*");
   *free = atof(s);
   return 0;

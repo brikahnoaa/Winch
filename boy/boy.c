@@ -89,7 +89,6 @@ PhaseType rebootPhase(void) {
 } // reboot()
 
 ///
-// ??
 // wispr recording and detecting, buoy is docked to ngk
 // data is gathered for about 24hours (data_tmr)
 // wsp powers down for % of each hour (wispr_tmr)
@@ -97,14 +96,18 @@ PhaseType rebootPhase(void) {
 // sleep needs a lot of optimizing to be worth the trouble
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
+  int detect;
   flogf("\n+dataPhase()@%s", utlDateTime());
   wspStart(wsp2_pam);
+  wspDetect(&detect);
+  flogf("\ndataPhase detections: %d", detect);
+  wspStorm(utlBuf);
+  flogf("\nstorm: %s", utlBuf);
   wspStop();
   return rise_pha;
 } // dataPhase
 
 ///
-// turn on ant, free space check, transfer files from buoy to antmod
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
 PhaseType risePhase(void) {
