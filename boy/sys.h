@@ -17,9 +17,7 @@ typedef enum {
 
 typedef struct SysInfo {
   char logFile[32];
-  char platform[32];    // rudicsland
   char program[32];
-  char project[32];     // rudicsland
   char version[32];
   int alarm[sizeof_alm];
   int log;              // log filehandle
