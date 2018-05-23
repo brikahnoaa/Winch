@@ -1,7 +1,8 @@
 at+csq
 +CSQ:5
 
-OK # signal
+OK # signal, up to 8 secs
+
 at+cpas
 +CPAS:000
 
@@ -15,4 +16,24 @@ at+clcc
 
 OK #A.8.77 +CLCC - Request Current Call Status
 
+at+chup
+OK # call hangup
+atd0088160000519
+CONNECT 9600
+
++++
+OK # no crlf after +++, wait for OK
+at+clcc
++CLCC:000
+
+OK # still in call
+ath0
+OK
+at+clcc
++CLCC:006
+
+OK # not in call
+ - or -
+NO CARRIER
 at*p
+OK
