@@ -340,7 +340,10 @@ bool riseUp(float targetD, int errMax, int delay) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  // ?? gpsTst();
+  gpsStart();
+  gpsStats();
+  iridSig();
+  gpsStop();
   return fall_pha;
 } // iridPhase
 

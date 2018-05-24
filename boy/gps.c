@@ -13,12 +13,19 @@ GpsInfo gps;
 
 ///
 // set up for gps, call this after gpsInit
-// sets: gps.mode .port
+// sets: gps.port .projHdr[]
 void gpsInit(void) {
+  int cs;
   DBG0("gpsInit()")
   gps.port = antPort();
   if (!gps.port)
     utlErr(logic_err, "no gps.port, was gpsInit called before antInit?");
+  // sets projHdr to 13 char project header, 0 in byte 14
+  sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
+  cs = iridCRC(gps.projHdr+5, 8);
+  // poke in cs high and low bytes
+  gps.projHdr[3] = (char) (cs >> 8) & 0x00FF;
+  gps.projHdr[4] = (char) (cs & 0x00FF);
 } // gpsInit
 
 ///
@@ -31,13 +38,13 @@ void gpsStart(void) {
   TUTxPutByte(gps.port, 3, false);
   TUTxPutByte(gps.port, 'I', false);
   antDevice(a3la_dev);
-  utlExpect(gps.port, utlBuf, "COMMAND", 12);
-  gpsSats();
+  utlExpect(gps.port, utlBuf, "COMMAND MODE", 12);
 } // gpsStart
 
 ///
 // turn off power to gpsmod
-void gpsStop() {
+void gpsStop(void) {
+  DBG0("gpsStop()")
   if (gps.log)
     close(gps.log);
   gps.log = 0;
@@ -50,153 +57,116 @@ void gpsStop() {
 
 ///
 // return: 0 success
-int gpsPrompt() {
+int iridPrompt() {
   TURxFlush(gps.port);
   utlWrite(gps.port, "at", EOL);
   if (utlExpect(gps.port, utlBuf, "OK", 4))
     return 0;
   else
     return 1;
-} // gpsPrompt
+} // iridPrompt
 
 ///
-// get gps info; date, time, long, lat
-// sets: .date .time .long .lat
+// get gps info; date, time, lon, lat
+// sets: .date .time .lon .lat
 // return: how many satellites
 int gpsStats(void){
+  int r=0;
   antSwitch(gps_ant);
   antDevice(cf2_dev);
   DBG0("gpsStats()")
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
-    utlWrite(gps.port, "AT+PD", EOL);
+    utlWrite(gps.port, "at+pd", EOL);
     utlExpect(gps.port, utlBuf, "OK", 12);
-    if (!strstr(utlBuf, "Invalid Position"))
+    if (!strstr(utlBuf, "Invalid Position") && strstr(utlBuf, "Used="))
       break;
   } // while timeout
-  tmrStop(gps_tmr);
-  if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
+  if (tmrOn(gps_tmr))
+    tmrStop(gps_tmr);
+  else r++;
+  if (utlMatchAfter(utlStr, utlBuf, "Used=", "0123456789")) 
     flogf(" Sats=%s", utlStr);
+  else r++;
   gps.sats = atoi(utlStr);
-  ////
-  if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
-    flogf(" Sats=%s", utlStr);
-  utlWrite(gps.port, "AT+PT", EOL);
+  // date
+  if (utlMatchAfter(utlStr, utlBuf, "Date=", "-0123456789")) 
+    flogf(" Date=%s", utlStr);
+  else r++;
+  strcpy(gps.date, utlStr);
+  // time
+  utlWrite(gps.port, "at+pt", EOL);
   utlExpect(gps.port, utlBuf, "OK", 12);
-  utlWrite(gps.port, "AT+PD", EOL);
+  if (utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789"))
+    flogf(" Time=%s", utlStr);
+  else r++;
+  strcpy(gps.time, utlStr);
+  // lat
+  utlWrite(gps.port, "at+pl", EOL);
   utlExpect(gps.port, utlBuf, "OK", 12);
-  return 0;
+  if (utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS"))
+    flogf(" Lat=%s", utlStr);
+  else r++;
+  strcpy(gps.lat, utlStr);
+  // lon
+  utlWrite(gps.port, "at+pl", EOL);
+  utlExpect(gps.port, utlBuf, "OK", 12);
+  if (utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS"))
+    flogf(" Lon=%s", utlStr);
+  else r++;
+  strcpy(gps.lon, utlStr);
+  return r;
 } // gpsStats
 
-/// ?? chatty
-// gpsISig ??
-int gpsISig(void) {
+/// 
+// sets: gps.signal
+int iridSig(void) {
+  int r=0;
+  DBG0("iridSig()")
   // switch to irid
   antDevice(cf2_dev);
   antSwitch(irid_ant);
   antDevice(a3la_dev);
-  flogf("\nCSQ\n");
-  tmrStart(ant_tmr, iridT);
-  while (!tmrExp(ant_tmr)) {
-    utlWrite(gps.port, "AT+CSQ", EOL);
+  tmrStart(gps_tmr, gps.timeout);
+  while (!tmrExp(gps_tmr)) {
+    utlWrite(gps.port, "at+csq", EOL);
     utlExpect(gps.port, utlBuf, "OK", 12);
-    // replace crlf
-    for (here=utlBuf; *here; here++) 
-      if (*here=='\r' || *here=='\n')
-        *here = '.';
-    flogf("%s\n", utlBuf);
-    utlX();
   } // while timer
-  return 0;
-} // gpsISig
+  if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789"))
+    flogf(" csq=%s", utlStr);
+  else r++;
+  gps.signal = atoi(utlStr);
+  return r;
+} // iridSig
 
 ///
-//
-int iridHdr(char *buf) {
-  bool Ack = false;
-  short Num_ACK = 0;
-  short AckMax = 20;
-  short Status = 0;
-  int crc, crc1, crc2;
-  // need an extra char for null terminated
-  unsigned char buf[16], proj[12], bmode[4];
-
-  // Flush IO Buffers
-  TUTxFlush(devicePort); TURxFlush(devicePort);
-
-  // note - sprintf is zero terminated, strncpy is not
-  sprintf(proj, "%4s%4s", gps.project, gps.platform);
-  DBG0(flogf("\n%s|SendProjHdr(%s)", Time(NULL), proj);)
-  crc = Calc_Crc(proj, 8);
-  crc1 = crc;
-  crc2 = crc;
-  sprintf(buf, "???%c%c%c%c%c%c%c%c%c%c%c%c", 
-    (char)((crc1 >> 8) & 0x00FF), (char)(crc2 & 0x00FF), 
-    proj[0], proj[1], proj[2], proj[3], 
-    proj[4], proj[5], proj[6], proj[7]);
-
-  // antMod blockmode for header // ^B, 2 byte length
-  sprintf(bmode, "%c%c%c", (char)2, (char)0, (char)13 );
-
-  while (Ack == false && Num_ACK < AckMax) { // Repeat
-    AD_Check();
-    TUTxPutBlock(devicePort, bmode, 3, 10000);
-    TUTxPutBlock(devicePort, buf, 13, 10000); // 13 bytes + crlf
-    DelayTX(16);
-    // give rudics a chance to reply
-    Delayms(500);
-    TickleSWSR(); // another reprieve
-
-    Status = GetIRIDInput("ACK", 3, NULL, NULL);
-    if (Status == 1) {
-      flogf("\n\t|ACK Received");
-      LostConnect = false;
-      Ack = true;
-    } else {
-      if (Status == -1) { // NO CARRIER
-        flogf("\n\t|ACK Failed");
-        LostConnect = true;
-      }
+int iridCRC(char *buf, int cnt) {
+  long accum=0x00000000;
+  int i, j;
+  DBG0("iridCRC()")
+  if (cnt <= 0) return 0;
+  while (cnt--) {
+    accum |= *buf++ & 0xFF;
+    for (i = 0; i < 8; i++) {
+      accum <<= 1;
+      if (accum & 0x01000000)
+        accum ^= 0x00102100;
     }
-    Num_ACK++;
   }
+  // compatibility with XMODEM CRC
+  for (j = 0; j < 2; j++) {
+    accum |= 0 & 0xFF;
+    for (i = 0; i < 8; i++) {
+      accum <<= 1;
+      if (accum & 0x01000000)
+        accum ^= 0x00102100;
+    }
+  }
+  return (accum >> 8);
+} // iridCRC
 
-  if (Num_ACK >= AckMax && Status != 1) {
-    flogf("\n\t|ACK inquirey reached max = %d", AckMax);
-    cdrain();
-    if (LostConnect) {
-      flogf("\n\t|LostConnection");
-      cdrain();
-      StatusCheck();
-      Delayms(20);
-    } else {
-      TUTxFlush(devicePort);
-      TURxFlush(devicePort);
 
-      // Exit in-call data mode to check phone status.
-      TUTxPrintf(devicePort, "+++");  // ??
-      TUTxWaitCompletion(devicePort);
-      Delayms(25);
-      if (GetIRIDInput("OK", 2, NULL, NULL) == 1) {
-        StatusCheck();
-        HangUp();
-        // StatusCheck(); //deal with phone status
-        // if(CallStatus()==4){//enter back into the call?
-      } else StatusCheck(); // What happens in this scenario?
-    } // LostConnect
-
-    AD_Check();
-    flogf("\n%s|SendProjHdr() PLATFORM ID TX FAILED.", Time(NULL));
-    putflush();
-    CIOdrain();
-    TX_Success = -1;
-    Delayms(20);
-  } // Num_ACK >= AckMax
-  Delayms(10);
-  return Ack;
-
-} // SendProjHdr
-
+/*
 ///
 //
 short Send_File(bool FileExist, long filelength) {
@@ -377,14 +347,12 @@ int Send_Blocks(char *bitmap, uchar NumOfBlks, ushort BlockLength,
       buf[7] = 'T'; // Data type
       buf[8] = (uchar)BlkNum;
       buf[9] = (uchar)NumOfBlks;
-      crc_calc = Calc_Crc(buf + 5, blklen); // PMEL site crc include first 5
+      crc_calc = iridCRC(buf + 5, blklen); // PMEL site crc include first 5
       buf[0] = '@';
       buf[1] = '@';
       buf[2] = '@';
       buf[3] = (uchar)((crc_calc & 0xFF00) >> 8);
       buf[4] = (uchar)((crc_calc & 0x00FF));
-
-      // TUTxFlush(devicePort);
       // TURxFlush(devicePort);
       // antMod blockmode for header // ^B, 2 byte length
       sprintf(bmode, "%c%c%c", (uchar)2, 
@@ -392,74 +360,19 @@ int Send_Blocks(char *bitmap, uchar NumOfBlks, ushort BlockLength,
       TUTxPutBlock(devicePort, bmode, (long) 3, 1000);
       TUTxPutBlock(devicePort, buf, mlength, 10000);
       DelayTX(mlength);
-
       AD_Check();
     } // if bitmap[]
     // pause that refreshes
-
-#ifdef DEBUG1
-    blklen=tgetq(devicePort);
-    if (blklen) {
-      cprintf("\n%d+", blklen);
-      // blklen=0;
-      // while ((scratch[blklen++]=TURxGetByteWithTimeout(devicePort, 1)) >= 0) {}
-      // printsafe( (long) blklen, scratch);
-        
-      memset( scratch, 0, BUFSZ );
-      printsafe( (long) TURxGetBlock(devicePort, scratch, 
-                          (long) BUFSZ, (short) 1),
-        scratch);
-    }
-#else
     TURxFlush(devicePort);
     cdrain();
-#endif
     Delayms(2000);
   }
-
   if (close(IRIDFileHandle) != 0)
     flogf("\nERROR  |Send_Blocks: File Close error: %d", errno);
   free(buf);
   return 0;
-
 } // Send_Blocks
 
-
-///
-//
-int Calc_Crc(uchar *buf, int cnt) {
-  long accum;
-  int i, j;
-  accum = 0x00000000;
-
-  if (cnt <= 0)
-    return 0;
-  while (cnt--) {
-    accum |= *buf++ & 0xFF;
-
-    for (i = 0; i < 8; i++) {
-      accum <<= 1;
-
-      if (accum & 0x01000000)
-        accum ^= 0x00102100;
-    }
-  }
-
-  /* The next 2 lines forces compatibility with XMODEM CRC */
-  for (j = 0; j < 2; j++) {
-    accum |= 0 & 0xFF;
-
-    for (i = 0; i < 8; i++) {
-      accum <<= 1;
-
-      if (accum & 0x01000000)
-        accum ^= 0x00102100;
-    }
-  }
-
-  return (accum >> 8);
-
-} // Calc_Crc
 
 void Convert_BitMap_To_CharBuf(ulong val0, ulong val1, char *bin_str) {
   ulong remainder;
@@ -498,3 +411,4 @@ void Convert_BitMap_To_CharBuf(ulong val0, ulong val1, char *bin_str) {
   // debug end
 
 } // Convert_BitMap_To_CharBuf
+*/

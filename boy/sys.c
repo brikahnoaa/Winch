@@ -98,8 +98,8 @@ void logInit(char *file) {
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
         BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
-  flogf("\nProgram: %s  Version: %s  Project: %s  Platform: %s  Starts: %d",
-    sys.program, sys.version, sys.project, sys.platform, sys.starts);
+  flogf("\nProgram: %s  Version: %s  Starts: %d",
+    sys.program, sys.version, sys.starts);
   flogf("\nStarted: %s", utlDateTime());
   flogf("\n---   ---");
   fflush(NULL);               // ??
