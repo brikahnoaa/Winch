@@ -12,19 +12,6 @@ GpsInfo gps;
 
 
 ///
-// tell antmod to turn on a3la
-int gpsInit(void){
-  gps.port = antPort();
-  // a3laStart()
-  antDevice(cf2_dev);
-  TUTxPutByte(gps.port, 3, false);
-  TUTxPutByte(gps.port, 'I', false);
-  antDevice(a3la_dev);
-  utlExpect(gps.port, utlBuf, "COMMAND", 12);
-  gpsSats();
-} // gpsInit
-  
-///
 // set up for gps, call this after gpsInit
 // sets: gps.mode .port
 void gpsInit(void) {
@@ -39,8 +26,13 @@ void gpsInit(void) {
 // requires: antStart
 void gpsStart(void) {
   DBG0("gpsStart() %s", utlDateTime())
+  antDevice(cf2_dev);
+  // power up a3la
+  TUTxPutByte(gps.port, 3, false);
+  TUTxPutByte(gps.port, 'I', false);
   antDevice(a3la_dev);
-  antSwitch(gps_ant);
+  utlExpect(gps.port, utlBuf, "COMMAND", 12);
+  gpsSats();
 } // gpsStart
 
 ///
@@ -61,8 +53,7 @@ void gpsStop() {
 int gpsPrompt() {
   TURxFlush(gps.port);
   utlWrite(gps.port, "at", EOL);
-  utlReadWait(gps.port, utlBuf, gps.delay);
-  if (strstr(utlBuf, "OK"))
+  if (utlExpect(gps.port, utlBuf, "OK", 4))
     return 0;
   else
     return 1;
@@ -73,29 +64,33 @@ int gpsPrompt() {
 // sets: .date .time .long .lat
 // return: how many satellites
 int gpsStats(void){
-  int gpsT=90, iridT=120;
+  antSwitch(gps_ant);
+  antDevice(cf2_dev);
   DBG0("gpsStats()")
-  tmrStart(ant_tmr, gpsT);
-  while (!tmrExp(ant_tmr)) {
+  tmrStart(gps_tmr, gps.timeout);
+  while (!tmrExp(gps_tmr)) {
     utlWrite(gps.port, "AT+PD", EOL);
     utlExpect(gps.port, utlBuf, "OK", 12);
-    if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
-      flogf(" Sats=%s", utlStr);
     if (!strstr(utlBuf, "Invalid Position"))
       break;
-    utlX();
-  } // while timer
+  } // while timeout
+  tmrStop(gps_tmr);
+  if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
+    flogf(" Sats=%s", utlStr);
+  gps.sats = atoi(utlStr);
+  ////
+  if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
+    flogf(" Sats=%s", utlStr);
+  utlWrite(gps.port, "AT+PT", EOL);
+  utlExpect(gps.port, utlBuf, "OK", 12);
+  utlWrite(gps.port, "AT+PD", EOL);
+  utlExpect(gps.port, utlBuf, "OK", 12);
   return 0;
 } // gpsStats
 
 /// ?? chatty
 // gpsISig ??
 int gpsISig(void) {
-  // replace crlf
-  for (here=utlBuf; *here; here++) 
-    if (*here=='\r' || *here=='\n')
-      *here = '.';
-  flogf("\n%s\n%d seconds\n", utlBuf, gpsT-tmrQuery(ant_tmr));
   // switch to irid
   antDevice(cf2_dev);
   antSwitch(irid_ant);

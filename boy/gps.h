@@ -10,6 +10,7 @@ typedef struct GpsInfo {
   char project[32];         // rudicsland
   char time[32];
   char logFile[64];
+  int timeout;
   int log;
   int sats;
   Serial port;
