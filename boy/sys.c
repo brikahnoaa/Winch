@@ -31,14 +31,14 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 // uses: sys.starts
 int sysInit(void) {
   TUChParams *params;
-  short qsize = 16*BUFSZ;
+  short qsize = 64*1024;
   preRun(10);
   sys.starts = startCheck();
   dbgInit();              // common init: dbg0,1,2
   utlInit();              // malloc global utlStr
   logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
   cfgInit();
-  // make serial queues larger (16K)
+  // make serial queues larger = 64K (rudics max block size)
   params = TUGetDefaultParams();
   params->rxqsz = qsize;
   params->txqsz = qsize;
