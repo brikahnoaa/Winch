@@ -18,9 +18,10 @@ typedef struct GpsInfo {
   Serial port;
 } GpsInfo;
 
+int gpsSats(void);
+int gpsStart(void);
 int gpsStats(void);
 void gpsInit(void);
-void gpsStart(void);
 void gpsStop(void);
 int iridCRC(char *buf, int cnt);
 int iridSig(void);

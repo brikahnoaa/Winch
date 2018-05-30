@@ -31,14 +31,15 @@ void gpsInit(void) {
 ///
 // turn on, clean, set params, talk to sbe39
 // requires: antStart
-void gpsStart(void) {
+int gpsStart(void) {
   DBG0("gpsStart() %s", utlDateTime())
   antDevice(cf2_dev);
   // power up a3la
   TUTxPutByte(gps.port, 3, false);
   TUTxPutByte(gps.port, 'I', false);
   antDevice(a3la_dev);
-  utlExpect(gps.port, utlBuf, "COMMAND MODE", 12);
+  if (!utlExpect(gps.port, utlBuf, "COMMAND MODE", 12)) return 1;
+  return 0;
 } // gpsStart
 
 ///
@@ -50,6 +51,7 @@ void gpsStop(void) {
   gps.log = 0;
   antDevice(a3la_dev);
   utlWrite(gps.port, "at*p", EOL);
+  utlExpect(gps.port, utlBuf, "OK", 2);
   antDevice(cf2_dev);
   TUTxPutByte(gps.port, 4, false);      // ^D powerdown
   TUTxPutByte(gps.port, 'I', false);      // S | I
@@ -69,59 +71,57 @@ int iridPrompt() {
 ///
 // get gps info; date, time, lon, lat
 // sets: .date .time .lon .lat
-// return: how many satellites
+// return: 0=success
 int gpsStats(void){
-  int r=0;
-  antSwitch(gps_ant);
-  antDevice(cf2_dev);
   DBG0("gpsStats()")
-  tmrStart(gps_tmr, gps.timeout);
-  while (!tmrExp(gps_tmr)) {
-    utlWrite(gps.port, "at+pd", EOL);
-    utlExpect(gps.port, utlBuf, "OK", 12);
-    if (!strstr(utlBuf, "Invalid Position") && strstr(utlBuf, "Used="))
-      break;
-  } // while timeout
-  if (tmrOn(gps_tmr))
-    tmrStop(gps_tmr);
-  else r++;
-  if (utlMatchAfter(utlStr, utlBuf, "Used=", "0123456789")) 
-    flogf(" Sats=%s", utlStr);
-  else r++;
-  gps.sats = atoi(utlStr);
+  if (gpsSats()) return 1;
   // date
-  if (utlMatchAfter(utlStr, utlBuf, "Date=", "-0123456789")) 
-    flogf(" Date=%s", utlStr);
-  else r++;
+  utlWrite(gps.port, "at+pd", EOL);
+  if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 2;
+  utlMatchAfter(utlStr, utlBuf, "Date=", "-0123456789");
+  flogf(" Date=%s", utlStr);
   strcpy(gps.date, utlStr);
   // time
   utlWrite(gps.port, "at+pt", EOL);
-  utlExpect(gps.port, utlBuf, "OK", 12);
-  if (utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789"))
-    flogf(" Time=%s", utlStr);
-  else r++;
+  if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 3;
+  utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789");
+  flogf(" Time=%s", utlStr);
   strcpy(gps.time, utlStr);
-  // lat
+  // lat lon
   utlWrite(gps.port, "at+pl", EOL);
-  utlExpect(gps.port, utlBuf, "OK", 12);
-  if (utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS"))
-    flogf(" Lat=%s", utlStr);
-  else r++;
+  if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
+  utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS");
+  flogf(" Lat=%s", utlStr);
   strcpy(gps.lat, utlStr);
-  // lon
-  utlWrite(gps.port, "at+pl", EOL);
-  utlExpect(gps.port, utlBuf, "OK", 12);
-  if (utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS"))
-    flogf(" Lon=%s", utlStr);
-  else r++;
+  utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS");
+  flogf(" Lon=%s", utlStr);
   strcpy(gps.lon, utlStr);
-  return r;
+  return 0;
 } // gpsStats
+
+///
+// sets: gps.sats
+// rets: 0=success
+int gpsSats(void){
+  tmrStart(gps_tmr, gps.timeout);
+  while (!tmrExp(gps_tmr)) {
+    utlDelay(1000);
+    utlWrite(gps.port, "at+pd", EOL);
+    if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 1;
+    if (!strstr(utlBuf, "Invalid Position") && strstr(utlBuf, "Used=")) {
+      tmrStop(gps_tmr);
+      utlMatchAfter(utlStr, utlBuf, "Used=", "0123456789");
+      flogf("\nGPS Sats=%s", utlStr);
+      gps.sats = atoi(utlStr);
+      return 0;
+    }
+  } // while timeout
+  return 2;
+} // gpsSats
 
 /// 
 // sets: gps.signal
 int iridSig(void) {
-  int r=0;
   DBG0("iridSig()")
   // switch to irid
   antDevice(cf2_dev);
@@ -130,13 +130,14 @@ int iridSig(void) {
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlWrite(gps.port, "at+csq", EOL);
-    utlExpect(gps.port, utlBuf, "OK", 12);
+    if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 1;
+    if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789")) {
+      gps.signal = atoi(utlStr);
+      if (gps.signal>1) flogf(" csq=%s", utlStr);
+      if (gps.signal>2) break;
+    } // if CSQ
   } // while timer
-  if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789"))
-    flogf(" csq=%s", utlStr);
-  else r++;
-  gps.signal = atoi(utlStr);
-  return r;
+  return 0;
 } // iridSig
 
 ///

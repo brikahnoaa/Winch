@@ -1,0 +1,24 @@
+C:\>set dbg1=
++antInit()
++gpsInit()
++iridCRC()
++antStart() 09-10--86 18:56:21
++utlNap(4)
++antRingReset()
++gpsStart() 09-10--86 18:56:27
++utlExpect(COMMAND MODE, 12) timeout
++gpsStats()
+mpcSleep() at 09-10--86 18:56:46
+
++++
+
+C:\>set dbg1=1
++antInit()
++gpsInit()
++iridCRC()
++antStart() 09-10--86 18:58:32 antDevice(cf2)
++utlNap(4)
++antRingReset() antPrompt() >>=1 <<(1)=15 >>=24 <<(1)=91
++gpsStart() 09-10--86 18:58:37 antDevice(cf2) antDevice(a3la) utlExpect(COMMAND MODE, 12) <<(1)=176 <<(1)=16
++gpsStats() >>=6 utlExpect(OK, 12) <<(1)=83 >>=6 utlExpect(OK, 12) <<(1)=83 
+
