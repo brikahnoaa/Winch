@@ -65,6 +65,7 @@ static CfgParam cfgP[] = {
   {"gph", "gps.phoneNum",   &gps.phoneNum,    'c'},
   {"gpl", "gps.platform",   &gps.platform,    'c'},
   {"gpr", "gps.project",    &gps.project,     'c'},
+  {"grR", "gps.rudRespSec", &gps.rudRespSec,  'i'},
   {"gto", "gps.timeout",    &gps.timeout,     'i'},
   {"pon", "pwr.on",         &pwr.on,          'b'},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c'},

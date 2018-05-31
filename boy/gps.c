@@ -7,6 +7,7 @@
 // gps and iridium routines have a lot of ways to fail, so return 0 or errcode
 //
 #define EOL "\r"
+#define CALL_DELAY 20
 
 GpsInfo gps;
 
@@ -22,8 +23,8 @@ void gpsInit(void) {
     utlErr(logic_err, "no gps.port, was gpsInit called before antInit?");
   // sets projHdr to 13 char project header, 0 in byte 14
   sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
-  cs = iridCRC(gps.projHdr+5, 8);
   // poke in cs high and low bytes
+  cs = iridCRC(gps.projHdr+5, 8);
   gps.projHdr[3] = (char) (cs >> 8) & 0x00FF;
   gps.projHdr[4] = (char) (cs & 0x00FF);
 } // gpsInit
@@ -62,10 +63,8 @@ void gpsStop(void) {
 int iridPrompt() {
   TURxFlush(gps.port);
   utlWrite(gps.port, "at", EOL);
-  if (utlExpect(gps.port, utlBuf, "OK", 4))
-    return 0;
-  else
-    return 1;
+  if (!utlExpect(gps.port, utlBuf, "OK", 4)) return 1;
+  else return 0;
 } // iridPrompt
 
 ///
@@ -165,6 +164,62 @@ int iridCRC(char *buf, int cnt) {
   }
   return (accum >> 8);
 } // iridCRC
+
+///
+// call home
+// uses: utlStr
+// rets: 0=success
+int iridDial(void) {
+  char str[32];
+  DBG0("iridDial")
+  utlWrite(gps.port, "at+cpas", EOL);
+  if (!utlExpect(gps.port, utlStr, "OK", 5)) return 1;
+  utlMatchAfter(str, utlStr, "+CLCC:", "0123456789");
+  if (!strcmp(str, "006")==0) 
+    utlWrite(gps.port, "at+chup", EOL);
+  sprintf(utlStr, "atd%s", gps.phoneNum);
+  utlWrite(gps.port, utlStr, EOL);
+  if (!utlExpect(gps.port, utlStr, "CONNECT 9600", CALL_DELAY)) {
+    utlErr(gps_err, "call failed");
+    return 2;
+  }
+  return 0;
+} // iridDial
+
+///
+// create a block of zero, send
+// uses: utlBuf=zero utlRet=comm
+int iridSendTest(void) {
+  int i=0, hdr1=13, hdr2=10, hdrTry=8, hdrPause=3, msgLen=BUFSZ/2;
+  int cs, bufLen;
+  DBG0("iridSendTest()")
+  bufLen = msgLen+hdr2;
+  memset(utlBuf, 0, bufLen);
+  // make data
+  // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
+  // 2 bytes of crc checksum;
+  // 2 bytes of message length;
+  // 1 byte of message type;  (‘T’ or ‘I’ =Text,‘B’= Binary, ‘Z’ = Zip 
+  // 1 byte block number;
+  // 1 byte number of blocks.
+  sprintf(utlBuf, "@@@cs%c%cT%c%c", bufLen>>8, bufLen&&0xFF, 1, 1);
+  // poke in cs high and low bytes
+  cs = iridCRC(utlBuf+5, bufLen-5);
+  utlBuf[3] = (char) (cs >> 8) & 0x00FF;
+  utlBuf[4] = (char) (cs & 0x00FF);
+  // land ho!
+  if (iridDial()) return 1;
+  while (hdrTry-- > 0) {
+    utlWriteBlock(gps.port, gps.projHdr, hdr1);
+    if (!utlExpect(gps.port, utlBuf, "ACK", hdrPause)) break;
+  }
+  if (hdrTry < 0) return 2;
+  // send data
+  utlWriteBlock(gps.port, utlBuf, bufLen);
+  utlReadWait(gps.port, utlBuf, gps.rudRespSec);
+  flogf("\nland->%s", utlNonPrint(utlBuf));
+  return 0;
+} // iridSendTest
 
 
 /*

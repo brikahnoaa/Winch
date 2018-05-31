@@ -56,7 +56,7 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, ctd_err, log_err, file_err, wsp_err,
+typedef enum {ant_err, ctd_err, log_err, file_err, wsp_err, gps_err,
     ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;
 
 typedef struct UtlInfo {
@@ -79,9 +79,9 @@ char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeBrief(void);
 char *utlNonPrint (char *in);        // format unprintable string
-char *utlMatchAfter(char *out, char *str, char *sub, char *set);
 char *utlTime(void);
 int utlLogFile(char *fname);
+int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);
 int utlReadWait(Serial port, char *in, int wait);
@@ -94,3 +94,4 @@ void utlSleep(void);
 void utlStop(char *out);
 void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
+void utlWriteBlock(Serial port, char *out, int len);

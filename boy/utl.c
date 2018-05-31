@@ -52,20 +52,20 @@ int utlTrim(char *line) {
 // search str for sub, then return string that matches set
 // out = matched string, or null string if no match
 // sets: *out, rets: out
-char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
+int utlMatchAfter(char *out, char *str, char *sub, char *set) {
   char *here;
   int len=0;
   DBG1("utlMatchAfter(%s)", sub)
   out[0] = 0;
   here = strstr(str, sub);
-  if (!here) return out;
+  if (here==NULL) return 0;
   // skip substring
   here += strlen(sub);
   len = strspn(here, set);
   if (len)
     strncpy(out, here, len);
   out[len] = 0;
-  return out;
+  return len;
 } // utlStrMatchAfter
 
 ///
@@ -94,6 +94,20 @@ bool utlExpect(Serial port, char *buf, char *expect, int wait) {
 } // utlExpect
 
 ///
+// put block to serial; queue, don't block, it should all buffer
+// uses: utl.str
+void utlWriteBlock(Serial port, char *out, int len) {
+  int delay, sent;
+  strncpy(utl.str, out, len);
+  delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
+  sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
+  DBG1(">>=%d", sent)
+  DBG3(">>'%s'", utlNonPrint(utl.str))
+  if (len!=sent)
+    flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
+} // utlWriteBlock
+
+///
 // put string to serial; queue, don't block, it should all buffer
 // uses: utl.str
 void utlWrite(Serial port, char *out, char *eol) {
@@ -108,7 +122,7 @@ void utlWrite(Serial port, char *out, char *eol) {
   DBG3(">>'%s'", utlNonPrint(utl.str))
   if (len!=sent) 
     flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
-}
+} // utlWrite
 
 ///
 // read all the chars on the port, with a normal char delay
@@ -126,7 +140,7 @@ int utlRead(Serial port, char *in) {
   DBG1("<<=%d", len)
   DBG3("<<'%s'", utlNonPrint(in))
   return len;
-}
+} // utlRead
 
 ///
 // delay up to wait seconds for first char, null terminate
