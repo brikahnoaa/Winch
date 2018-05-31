@@ -72,14 +72,18 @@ char *utlMatchAfter(char *out, char *str, char *sub, char *set) {
 // readWait(1) until we get the expected string (or timeout)
 // in: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf
+// rets: false:timeout *buf
 bool utlExpect(Serial port, char *buf, char *expect, int wait) {
-  DBG1("utlExpect(%s)", expect)
+  DBG1("utlExpect(%s, %d)", expect, wait)
   buf[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
   while (!strstr(buf, expect)) {
-    if (tmrExp(utl_tmr)) 
+    if (tmrExp(utl_tmr)) {
+      DBG0("utlExpect(%s, %d) timeout", expect, wait)
+      DBG1("->'%s'", buf);
       return false;
+    }
     if (utlReadWait(port, utl.buf, 1))
       strcat(buf, utl.buf);
     utlX();
@@ -265,9 +269,8 @@ void utlErr( ErrType err, char *str) {
 ///
 // nap called often
 void utlNap(int sec) {
-  int i;
-  DBG0("utlNap(%d)", sec)
-  for (i=0; i<sec; i++) {
+  DBG1("utlNap(%d)", sec)
+  while(sec-- > 0) {
     utlX();
     pwrNap(1);
   }

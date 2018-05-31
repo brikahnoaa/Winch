@@ -45,19 +45,14 @@ void antStart(void) {
   TURxFlush(ant.port);
   TUTxFlush(ant.port);
   PIOSet(ANT_PWR);
-  utlNap(4);                        // uMPC has countdown exit = 3
   // get cf2 startup message
-  if (utlReadWait(ant.port, utlBuf, 1))
-    flogf(" %s", utlBuf);
-  // if (!strstr(utlBuf, "Program:"))
-    // flogf("\nErr\t| expected ant startup message, got '%s'", utlBuf);
-  // DBG2("-> %s", utlBuf)
+  utlExpect(ant.port, utlBuf, "ok", 6);
+  DBG1("%s", utlBuf)
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
   antRingReset();                   // flush sample buffer
   antPrompt();
-  // utlWrite(ant.port, "OutputFormat=1", EOL);
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
   utlReadWait(ant.port, utlBuf, 1);
@@ -312,7 +307,6 @@ void antRingReset(void) {
   DBG0("antRingReset()")
   n = ant.ring; 
   while (true) {
-    DBG2("%ld", n)
     n->sampT = 0;
     n = n->next;
     if (n==ant.ring) break;
@@ -324,7 +318,8 @@ void antRingReset(void) {
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
   if (dev==ant.dev) return;
-  DBG0("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
+  utlDelay(SETTLE);
+  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
   if (dev==cf2_dev)
     PIOSet(ANT_SEL);
   else if (dev==a3la_dev)
@@ -358,7 +353,7 @@ Serial antPort(void) {
 
 void antSwitch(AntType antenna) {
   if (antenna==ant.antenna) return;
-  DBG0("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
+  DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
   TUTxPutByte(ant.port, 1, false);        // ^A
   if (antenna==gps_ant) 
     TUTxPutByte(ant.port, 'G', false);

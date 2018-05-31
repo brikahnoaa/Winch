@@ -8,6 +8,7 @@ typedef enum {
   deploy_tmr,       // steps during deploy phase0
   data_tmr,         // rise to surface, send data
   day_tmr,
+  gps_tmr,
   hour_tmr,
   init_tmr,         // init components
   minute_tmr,

@@ -1,22 +1,49 @@
-// ctdTst.c
+// gpsTst.c
 #include <utl.h>
-#include <wsp.h>
+#include <gps.h>
 #include <mpc.h>
+#include <ant.h>
 #include <sys.h>
 
+extern GpsInfo gps;
 
 void main(void){
-  int detect=0;
-  Serial port;
+  // Serial port;
+  // char c;
   sysInit();
   mpcInit();
-  port = mpcPamPort();
-  wspInit();
-  // mpcPamDev(wsp2_pam);
-  wspStart(wsp2_pam);
-  wspDetect(&detect);
-  flogf("\n wspDetect(): %d", detect);
-  wspStorm(utlBuf);
-  flogf("\nstorm: %s", utlBuf);
-  wspStop();
+  antInit();
+  gpsInit();
+  //
+  antStart();
+  gpsStart();
+  gpsStats();
+  iridSig();
+  /*
+  port = gps.port;
+  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
+  while (true) {
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      if (c=='C') {
+        antDevice(cf2_dev);
+        continue;
+      }
+      if (c=='A') {
+        antDevice(a3la_dev);
+        continue;
+      }
+      cputc(c);
+      TUTxPutByte(port,c,false);
+    }
+  }
+  */
+
+  gpsStop();
+  antStop();
 }
