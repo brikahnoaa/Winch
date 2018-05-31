@@ -45,5 +45,5 @@ void main(void){
   */
 
   gpsStop();
-  utlStop("good");
+  antStop();
 }

@@ -52,7 +52,7 @@ void antStart(void) {
   ant.auton = false;
   tmrStop(ant_tmr);
   antRingReset();                   // flush sample buffer
-  // ?? antPrompt();
+  antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
   utlReadWait(ant.port, utlBuf, 1);
@@ -318,6 +318,7 @@ void antRingReset(void) {
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
   if (dev==ant.dev) return;
+  utlDelay(SETTLE);
   DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
   if (dev==cf2_dev)
     PIOSet(ANT_SEL);
