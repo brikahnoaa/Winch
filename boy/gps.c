@@ -33,7 +33,7 @@ void gpsInit(void) {
 // turn on, clean, set params, talk to sbe39
 // requires: antStart
 int gpsStart(void) {
-  DBG0("gpsStart() %s", utlDateTime())
+  DBG0("gpsStart() %s", utlTime())
   antDevice(cf2_dev);
   // power up a3la
   TUTxPutByte(gps.port, 3, false);
@@ -174,7 +174,7 @@ int iridCRC(char *buf, int cnt) {
 int iridDial(void) {
   char str[32];
   int i;
-  flogf("\niridDial()@%s", utlDateTime);
+  flogf("\niridDial() %s", utlTime());
   utlWrite(gps.port, "at+cpas", EOL);
   if (!utlExpect(gps.port, utlStr, "OK", 5)) return 2;
   utlWrite(gps.port, "at+clcc", EOL);
@@ -189,8 +189,10 @@ int iridDial(void) {
     utlWrite(gps.port, str, EOL);
     utlReadWait(gps.port, utlStr, CALL_DELAY);
     DBG1("%s", utlStr);
-    if (strstr(utlStr, "NO CARRIER")) continue;
-    if (strstr(utlStr, "CONNECT 9600")) return 0;
+    if (strstr(utlStr, "CONNECT 9600")) {
+      flogf(" CONNECT 9600");
+      return 0;
+    }
     flogf(" (%d)", i);
   }
   utlErr(gps_err, "call retry exceeded");
@@ -201,13 +203,14 @@ int iridDial(void) {
 // create a block of zero, send
 // uses: utlBuf=zero utlRet=comm
 int iridSendTest(int msgLen) {
-  int i=0, hdr1=13, hdr2=10, hdrTry=8, hdrPause=16;
-  int cs, bufLen;
+  int hdr1=13, hdr2=10, hdrTry=8, hdrPause=20;
+  int cs, bufLen, x;
   char land[128];
   DBG0("iridSendTest()")
-  bufLen = msgLen+5;
+  bufLen = msgLen+hdr2;
+  msgLen += 5;
   memset(utlBuf, 0, bufLen);
-  DBG4("%s", utlNonPrint(gps.projHdr))
+  DBG2("%s", utlNonPrint(gps.projHdr))
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
   // 2 bytes of crc checksum;
@@ -216,26 +219,60 @@ int iridSendTest(int msgLen) {
   // 1 byte block number;
   // 1 byte number of blocks.
   sprintf(utlBuf, "@@@cs%c%cT%c%c", 
-    (char) bufLen>>8, (char) bufLen & 0xFF, (char) 1, (char) 1);
-  DBG4("%s", utlNonPrint(utlBuf))
+    (char) msgLen>>8, (char) msgLen & 0xFF, (char) 1, (char) 1);
   // poke in cs high and low bytes
   cs = iridCRC(utlBuf+5, bufLen-5);
   utlBuf[3] = (char) (cs >> 8);
   utlBuf[4] = (char) (cs & 0xFF);
-  DBG4("%s", utlNonPrint(utlBuf))
-  // land ho!
+  DBG2("%s", utlNonPrint(utlBuf))
   if (iridDial()) return 1;
-  while (hdrTry-- > 0) {
+  while (hdrTry--) {
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
-    if (utlExpect(gps.port, land, "ACK", hdrPause)) break;
+    x = utlExpect(gps.port, land, "ACK", hdrPause);
+    if (x) {
+      DBG4("(%d)", x)
+      break;
+    }
   }
   if (hdrTry < 0) return 2;
   // send data
-  utlWriteBlock(gps.port, utlBuf, bufLen+2);
-  utlReadWait(gps.port, utlBuf, gps.rudResp);
+  utlWriteBlock(gps.port, utlBuf, bufLen);
+  // land ho!
+  utlBuf[0] = 0;
+  tmrStart(rudics_tmr, gps.rudResp);
+  while (!tmrExp(rudics_tmr)) {
+    // ACK is only for projheader, may be leftover, skip
+    if (strstr(utlBuf, "ACK\n")) {
+      strcpy(utlBuf, utlBuf+4);
+      continue;
+    }
+    if (strstr(utlBuf, "done"))
+      utlWriteBlock(gps.port, "done", 4);
+    if (strstr(utlBuf, "cmds"))
+      utlWriteBlock(gps.port, "done", 4);
+    x = utlReadWait(gps.port, utlBuf, 1);
+    if (x) {
+      DBG4("%s", utlNonPrintBlock(utlBuf, x))
+    }
+  }
+  tmrStop(rudics_tmr);
   flogf("\nland->%s", utlNonPrint(utlBuf));
   return 0;
 } // iridSendTest
+
+///
+// call done
+void iridHup(void) {
+  int try=3;
+  while (try--) {
+    utlWriteBlock(gps.port, "+++", 3);
+    utlDelay(500);
+    utlWrite(gps.port, "at", EOL);
+    if (utlExpect(gps.port, utlBuf, "OK", 5)) break;
+  }
+  utlWrite(gps.port, "at+chup", EOL);
+  utlExpect(gps.port, utlBuf, "OK", 5);
+} // iridHup
 
 
 /*

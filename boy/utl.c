@@ -9,8 +9,8 @@
 #define CHAR_DELAY 50
 
 // the globals below are used by all modules, malloc'd in utlInit()
-// utlRet is returned by some char *utlFuncs()
-char *utlBuf, *utlStr, *utlRet;     
+// utl.ret is returned by some char *utlFuncs()
+char *utlBuf, *utlStr;     
 
 UtlInfo utl;
 
@@ -20,9 +20,9 @@ void utlInit(void) {
   DBG2("utlInit()")
   utl.buf = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
+  utl.ret = malloc(BUFSZ);
   utlBuf = malloc(BUFSZ);
   utlStr = malloc(BUFSZ);
-  utlRet = malloc(BUFSZ);
   utl.errName[ant_err] = "ant";
   utl.errName[ctd_err] = "ctd";
   utl.errName[log_err] = "log";
@@ -73,7 +73,8 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
 // in: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf
 // rets: false:timeout *buf
-bool utlExpect(Serial port, char *buf, char *expect, int wait) {
+int utlExpect(Serial port, char *buf, char *expect, int wait) {
+  int r;
   DBG1("utlExpect(%s, %d)", expect, wait)
   buf[0] = 0;
   tmrStart(utl_tmr, wait);
@@ -82,15 +83,16 @@ bool utlExpect(Serial port, char *buf, char *expect, int wait) {
     if (tmrExp(utl_tmr)) {
       DBG0("utlExpect(%s, %d) timeout", expect, wait)
       DBG1("->'%s'", buf);
-      return false;
+      return 0;
     }
     if (utlReadWait(port, utl.buf, 1))
       strcat(buf, utl.buf);
     utlX();
   }
   // timeout?
+  r = tmrQuery(utl_tmr);
   tmrStop(utl_tmr);
-  return true;
+  return r;
 } // utlExpect
 
 ///
@@ -100,7 +102,7 @@ void utlWriteBlock(Serial port, char *out, int len) {
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG1(">>=%d", sent)
-  DBG3(">>'%s'", utlNonPrint(out))
+  DBG3(">>'%s'", utlNonPrintBlock(out, len))
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock
@@ -168,65 +170,65 @@ int utlReadWait(Serial port, char *in, int wait) {
 
 ///
 // HH:MM:SS now
-// returns: global static char *utlRet
+// returns: global static char *utl.ret
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
 
   time(&secs);
   tim = localtime(&secs);
-  sprintf(utlRet, "%02d:%02d:%02d",
+  sprintf(utl.ret, "%02d:%02d:%02d",
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return utlRet;
+  return utl.ret;
 } // utlTime
 
 ///
 // Date String // MM-DD-YY 
-// returns: global static char *utlRet
+// returns: global static char *utl.ret
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
   
   time(&secs);
   tim = localtime(&secs);
-  sprintf(utlRet, "%02d-%02d-%02d", tim->tm_mon,
+  sprintf(utl.ret, "%02d-%02d-%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year - 100);
-  return utlRet;
+  return utl.ret;
 } // utlDate
 
 ///
 // MM-DD-YY HH:MM:SS 
-// returns: global static char *utlRet
+// returns: global static char *utl.ret
 char *utlDateTime(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = localtime(&secs);
-  sprintf(utlRet, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon,
+  sprintf(utl.ret, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
-  return utlRet;
+  return utl.ret;
 } // utlDateTime
 
 ///
 // MMDDYYYYHHMMSS 
-// returns: global static char *utlRet
+// returns: global static char *utl.ret
 char *utlDateTimeBrief(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = localtime(&secs);
-  sprintf(utlRet, "%02d%02d%04d%02d%02d%02d", tim->tm_mon,
+  sprintf(utl.ret, "%02d%02d%04d%02d%02d%02d", tim->tm_mon,
           tim->tm_mday, tim->tm_year + 1900, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
-  return utlRet;
+  return utl.ret;
 } // utlDateTimeBrief
 
 ///
 // format non-printable string; null terminate
-// returns: global static char *utlRet
+// returns: global static char *utl.ret
 char *utlNonPrint (char *in) {
-  char ch, *out = utlRet;
+  char ch, *out = utl.ret;
   int i, o;
   // walk thru input until 0 or BUFSZ
   i = o = 0;
@@ -241,7 +243,28 @@ char *utlNonPrint (char *in) {
   }
   out[o] = 0;
   return (out);
-} // printsafe
+} // utlNonPrint
+
+///
+// format non-printable string; null terminate
+// returns: global static char *utl.ret
+char *utlNonPrintBlock (char *in, int len) {
+  char ch, *out = utl.ret;
+  int i, o;
+  // copy len bytes
+  i = o = 0;
+  while (len--) {
+    ch = in[i++];
+    if ((ch<32)||(ch>126)) {
+      // non printing char
+      sprintf(out+o, " x%02X ", ch);
+      o += 5;     // five char hex ' x1A '
+    } else 
+      out[o++] = ch;
+  }
+  out[o] = 0;
+  return (out);
+} // utlNonPrintBlock
 
 void utlPet() { TickleSWSR(); }              // pet the watchdog
 

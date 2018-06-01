@@ -24,10 +24,11 @@ typedef struct GpsInfo {
 static int gpsSats(void);
 int gpsStart(void);
 int gpsStats(void);
-void gpsInit(void);
-void gpsStop(void);
 int iridCRC(char *buf, int cnt);
 int iridDial(void);
 int iridPrompt(void);
-int iridSendTest(void);
+int iridSendTest(int msgLen);
 int iridSig(void);
+void gpsInit(void);
+void gpsStop(void);
+void iridHup(void);
