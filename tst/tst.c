@@ -8,8 +8,8 @@
 extern GpsInfo gps;
 
 void main(void){
-  // Serial port;
-  // char c;
+  Serial port;
+  char c;
   sysInit();
   mpcInit();
   antInit();
@@ -17,9 +17,10 @@ void main(void){
   //
   antStart();
   gpsStart();
-  gpsStats();
+  // gpsStats();
   iridSig();
-  /*
+  iridSendTest();
+  /**/
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");
   while (true) {
@@ -42,7 +43,7 @@ void main(void){
       TUTxPutByte(port,c,false);
     }
   }
-  */
+  /**/
 
   gpsStop();
   antStop();

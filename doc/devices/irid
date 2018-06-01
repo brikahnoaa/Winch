@@ -14,7 +14,7 @@ OK #echo
 at+clcc
 +CLCC:006
 
-OK #A.8.77 +CLCC - Request Current Call Status
+OK #A.8.77 +CLCC - Request Current Call Status, :000 = in call
 
 at+chup
 OK # call hangup
@@ -37,3 +37,8 @@ OK # not in call
 NO CARRIER
 at*p
 OK
+
+
+atd0088160000519
+atd0088160000519
+atd0088160000519

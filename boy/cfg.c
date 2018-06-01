@@ -65,7 +65,9 @@ static CfgParam cfgP[] = {
   {"gph", "gps.phoneNum",   &gps.phoneNum,    'c'},
   {"gpl", "gps.platform",   &gps.platform,    'c'},
   {"gpr", "gps.project",    &gps.project,     'c'},
-  {"grR", "gps.rudRespSec", &gps.rudRespSec,  'i'},
+  {"gsM", "gps.signalMin",  &gps.signalMin,   'i'},
+  {"gre", "gps.redial",     &gps.redial,      'i'},
+  {"grR", "gps.rudResp",    &gps.rudResp,     'i'},
   {"gto", "gps.timeout",    &gps.timeout,     'i'},
   {"pon", "pwr.on",         &pwr.on,          'b'},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c'},
@@ -229,8 +231,8 @@ void cfgVee(void) {
       strcpy(cfgstr, name);
       strcat(cfgstr, "=");
       strcat(cfgstr, val);
+      flogf("\nVEE: %s", cfgstr);
       cfgString(cfgstr);
-      DBG1("%s", cfgstr);
     }
     vv = VEEFetchNext(vv);
   }

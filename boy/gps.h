@@ -11,15 +11,17 @@ typedef struct GpsInfo {
   char projHdr[16];         // ???csProjPlat
   char time[16];
   char logFile[64];
-  int rudRespSec;           // wait secs for rudics to respond to a block
+  int redial;               // how many calls to make
+  int rudResp;              // wait secs for rudics to respond to a block
   int signal;
+  int signalMin;
   int timeout;
   int log;
   int sats;
   Serial port;
 } GpsInfo;
 
-int gpsSats(void);
+static int gpsSats(void);
 int gpsStart(void);
 int gpsStats(void);
 void gpsInit(void);
@@ -27,5 +29,5 @@ void gpsStop(void);
 int iridCRC(char *buf, int cnt);
 int iridDial(void);
 int iridPrompt(void);
-int iridSig(void);
 int iridSendTest(void);
+int iridSig(void);
