@@ -95,14 +95,12 @@ bool utlExpect(Serial port, char *buf, char *expect, int wait) {
 
 ///
 // put block to serial; queue, don't block, it should all buffer
-// uses: utl.str
 void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
-  strncpy(utl.str, out, len);
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
-  sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
+  sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG1(">>=%d", sent)
-  DBG3(">>'%s'", utlNonPrint(utl.str))
+  DBG3(">>'%s'", utlNonPrint(out))
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock

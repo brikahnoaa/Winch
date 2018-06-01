@@ -200,13 +200,14 @@ int iridDial(void) {
 ///
 // create a block of zero, send
 // uses: utlBuf=zero utlRet=comm
-int iridSendTest(void) {
-  int i=0, hdr1=13, hdr2=10, hdrTry=8, hdrPause=6, msgLen=10;
+int iridSendTest(int msgLen) {
+  int i=0, hdr1=13, hdr2=10, hdrTry=8, hdrPause=16;
   int cs, bufLen;
   char land[128];
   DBG0("iridSendTest()")
   bufLen = msgLen+5;
   memset(utlBuf, 0, bufLen);
+  DBG4("%s", utlNonPrint(gps.projHdr))
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
   // 2 bytes of crc checksum;
@@ -214,11 +215,14 @@ int iridSendTest(void) {
   // 1 byte of message type;  (‘T’ or ‘I’ =Text,‘B’= Binary, ‘Z’ = Zip 
   // 1 byte block number;
   // 1 byte number of blocks.
-  sprintf(utlBuf, "@@@cs%c%cT%c%c", bufLen>>8, bufLen & 0xFF, 1, 1);
+  sprintf(utlBuf, "@@@cs%c%cT%c%c", 
+    (char) bufLen>>8, (char) bufLen & 0xFF, (char) 1, (char) 1);
+  DBG4("%s", utlNonPrint(utlBuf))
   // poke in cs high and low bytes
   cs = iridCRC(utlBuf+5, bufLen-5);
-  utlBuf[3] = (char) (cs >> 8) & 0x00FF;
-  utlBuf[4] = (char) (cs & 0x00FF);
+  utlBuf[3] = (char) (cs >> 8);
+  utlBuf[4] = (char) (cs & 0xFF);
+  DBG4("%s", utlNonPrint(utlBuf))
   // land ho!
   if (iridDial()) return 1;
   while (hdrTry-- > 0) {

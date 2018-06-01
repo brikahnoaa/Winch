@@ -19,7 +19,7 @@ void main(void){
   gpsStart();
   // gpsStats();
   iridSig();
-  iridSendTest();
+  iridSendTest(12);
   /**/
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");
