@@ -1,5 +1,5 @@
 // cfgTst.c
-#include <com.h>
+#include <utl.h>
 #include <cfg.h>
 #include <sys.h>
 

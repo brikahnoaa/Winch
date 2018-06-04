@@ -66,7 +66,7 @@ static CfgParam cfgP[] = {
   {"gpl", "gps.platform",   &gps.platform,    'c',  "LR01"},
   {"gpr", "gps.project",    &gps.project,     'c',  "QUEH"},
   {"gre", "gps.redial",     &gps.redial,      'i',  "5"},
-  {"grR", "gps.rudResp",    &gps.rudResp,     'i',  "16"},
+  {"grR", "gps.rudResp",    &gps.rudResp,     'i',  "30"},
   {"gsM", "gps.signalMin",  &gps.signalMin,   'i',  "4"},
   {"gto", "gps.timeout",    &gps.timeout,     'i',  "120"},
   {"pon", "pwr.on",         &pwr.on,          'b',  "false"},
@@ -112,13 +112,16 @@ void cfgInit(void) {
 // sets: *.*
 // rets: # of successful sets
 void cfgDefault(void) {
-  CfgParam *param=cfgP;
-  int i=cfg.cnt;
+  CfgParam *param;
+  int i;
+  DBG0("cfgDefault()")
+  param=cfgP;
+  i=cfg.cnt;
   while (i--) {
     DBG1("%s", param->id)
     // default value
-    if (cfgP->def[0])
-      cfgSet(cfgP->ptr, cfgP->type, cfgP->def);
+    if (param->def[0])
+      cfgSet(param->ptr, param->type, param->def);
     param++;
   }
 } // cfgDefault
