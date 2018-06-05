@@ -56,13 +56,14 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, ctd_err, log_err, file_err, wsp_err,
+typedef enum {ant_err, ctd_err, log_err, file_err, wsp_err, gps_err,
     ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;
 
 typedef struct UtlInfo {
   bool ignoreCon;             // ignore console input
   char *buf;
   char *errName[sizeof_err];
+  char *ret;
   char *str;
   int errCnt[sizeof_err];
 } UtlInfo;
@@ -74,14 +75,15 @@ extern char *utlBuf;
 extern char *utlStr;
 extern char *utlRet;      // returned by some char *utlFuncs()
 
-bool utlExpect(Serial port, char *buf, char *expect, int wait);
 char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeBrief(void);
 char *utlNonPrint (char *in);        // format unprintable string
-char *utlMatchAfter(char *out, char *str, char *sub, char *set);
+char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
+int utlExpect(Serial port, char *buf, char *expect, int wait);
 int utlLogFile(char *fname);
+int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);
 int utlReadWait(Serial port, char *in, int wait);
@@ -94,3 +96,4 @@ void utlSleep(void);
 void utlStop(char *out);
 void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
+void utlWriteBlock(Serial port, char *out, int len);

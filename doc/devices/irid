@@ -14,7 +14,7 @@ OK #echo
 at+clcc
 +CLCC:006
 
-OK #A.8.77 +CLCC - Request Current Call Status
+OK #A.8.77 +CLCC - Request Current Call Status, :000 = in call
 
 at+chup
 OK # call hangup
@@ -37,3 +37,40 @@ OK # not in call
 NO CARRIER
 at*p
 OK
+
+iridDial() 15:31:28 
+>>'at+cpas x0D ' 
+<<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' 
+>>'at+clcc x0D ' 
+<<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' 
+>>'atd0088160000519 x0D ' 
+<<' x0D  x0A CONNECT 9600 x0D  x0A ' 
+>>'??? x17 4QUEHLR01' 
+<<'ACK x0A ' (3) 
+>>'@@@J x1D ' 
+<<'cmds x0A ' 
+>>'done' 
+<<'@@@y' <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A '
+<<' x0D done x0A '  
+>>'done' 
+<<'@@@y' <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A '
+<<' x0D done x0A ' 
+>>'done' 
+<<'@@@y' <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A '
+<<' x0D done x0A '  
+>>'done' 
+<<' x0D  x0A NO CARRIER x0D  x0A '
+
+
+iridDial() 15:53:58 
+>>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' 
+>>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' 
+>>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' 
+>>'??? x17 4QUEHLR01' <<'ACK x0A ' 
+>>'@@@J x1D  x00  x11 T x01  x01  x00  x00  x00  x00  x00  x00  x00  x00  x00  x00  x00  x00 ' <<'cmds x0A ' 
+>>'done' <<'@@@y' <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A ' <<' x0D done x0A '
+>>'done' <<'@@@y' <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A ' <<' x0D done x0A ' 
+>>'done' <<'@@@y' <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A ' <<' x0D done x0A '  
+>>'done' <<' x0D  x0A NO CARRIER x0D  x0A '  
+land-> >>'+++' >>'at x0D ' <<' x0D  x0A OK x0D  x0A ' >>'at+chup x0D ' <<' x0D  x0A OK x0D  x0A '
+

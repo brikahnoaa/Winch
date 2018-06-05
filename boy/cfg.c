@@ -30,6 +30,7 @@ typedef struct CfgParam {
   char *var;
   void *ptr;
   char type;                // b, c, f, i, l, s
+  char *def;
 } CfgParam;
 // 
 // static CfgParam cfgP[] = array of {id, var, ptr, type}
@@ -39,74 +40,97 @@ typedef struct CfgParam {
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
-  {"alg", "ant.logging",    &ant.logging,     'b'},
-  {"alF", "ant.logFile",    &ant.logFile,     'c'},
-  {"asD", "ant.subD",       &ant.subD,        'f'},
-  {"asD", "ant.surfD",      &ant.surfD,       'f'},
-  {"ade", "ant.delay",      &ant.delay,       'i'},
-  {"afr", "ant.fresh",      &ant.fresh,       'i'},
-  {"arS", "ant.ringSize",   &ant.ringSize,    'i'},
-  {"blF", "boy.logFile",    &boy.logFile,     'c'},
-  {"bat", "boy.ant2tip",    &boy.ant2tip,     'f'},
-  {"bba", "boy.boy2ant",    &boy.boy2ant,     'f'},
-  {"bcD", "boy.currChkD",   &boy.currChkD,    'f'},
-  {"bcX", "boy.currMax",    &boy.currMax,     'f'},
-  {"biF", "boy.iridFreq",   &boy.iridFreq,    'i'},
-  {"biH", "boy.iridHour",   &boy.iridHour,    'i'},
-  {"bcX", "boy.cycleMax",   &boy.cycleMax,    'i'},
-  {"bfN", "boy.fileNum",    &boy.fileNum,     'i'},
-  {"bnD", "boy.ngkDelay",   &boy.ngkDelay,    'i'},
-  {"bph", "boy.phase",      &boy.phase,       'i'},
-  {"cwi", "cfg.wild",       &cfg.wild,        'c'},
-  {"clg", "ctd.logging",    &ctd.logging,     'b'},
-  {"clF", "ctd.logFile",    &ctd.logFile,     'c'},
-  {"cde", "ctd.delay",      &ctd.delay,       'i'},
-  {"cfr", "ctd.fresh",      &ctd.fresh,       'i'},
-  {"gph", "gps.phoneNum",   &gps.phoneNum,    'c'},
-  {"gpl", "gps.platform",   &gps.platform,    'c'},
-  {"gpr", "gps.project",    &gps.project,     'c'},
-  {"gto", "gps.timeout",    &gps.timeout,     'i'},
-  {"pon", "pwr.on",         &pwr.on,          'b'},
-  {"plF", "pwr.logFile",    &pwr.logFile,     'c'},
-  {"pch", "pwr.charge",     &pwr.charge,      'f'},
-  {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f'},
-  {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f'},
-  {"spg", "sys.program",    &sys.program,     'c'},
-  {"sve", "sys.version",    &sys.version,     'c'},
-  {"uiC", "utl.ignoreCon",  &utl.ignoreCon,   'b'},
-  {"won", "wsp.on",         &wsp.on,          'b'},
-  {"wlo", "wsp.logging",    &wsp.logging,     'b'},
-  {"wlF", "wsp.logFile",    &wsp.logFile,     'c'},
-  {"wca", "wsp.card",       &wsp.card,        'i'},
-  {"wcs", "wsp.cards",      &wsp.cards,       'i'},
-  {"wcf", "wsp.cfSize",     &wsp.cfSize,      'i'},
-  {"wcy", "wsp.cycle",      &wsp.cycle,       'i'},
-  {"wdX", "wsp.detMax",     &wsp.detMax,      'i'},
-  {"wdu", "wsp.duty",       &wsp.duty,        'i'},
-  {"wfM", "wsp.freeMin",    &wsp.freeMin,     'i'},
-  {"wga", "wsp.gain",       &wsp.gain,        'i'},
-  {"wqu", "wsp.query",      &wsp.query,       'i'},
+  {"alg", "ant.logging",    &ant.logging,     'b',  ""},
+  {"alF", "ant.logFile",    &ant.logFile,     'c',  ""},
+  {"asD", "ant.subD",       &ant.subD,        'f',  "3.49"},
+  {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
+  {"ade", "ant.delay",      &ant.delay,       'i',  ""},
+  {"afr", "ant.fresh",      &ant.fresh,       'i',  ""},
+  {"arS", "ant.ringSize",   &ant.ringSize,    'i',  ""},
+  {"blF", "boy.logFile",    &boy.logFile,     'c',  "boy"},
+  {"bat", "boy.ant2tip",    &boy.ant2tip,     'f',  "2.35"},
+  {"bba", "boy.boy2ant",    &boy.boy2ant,     'f',  "14.29"},
+  {"bcD", "boy.currChkD",   &boy.currChkD,    'f',  "10.0"},
+  {"bcX", "boy.currMax",    &boy.currMax,     'f',  "3.0"},
+  {"biF", "boy.iridFreq",   &boy.iridFreq,    'i',  "1"},
+  {"biH", "boy.iridHour",   &boy.iridHour,    'i',  "1"},
+  {"bcX", "boy.cycleMax",   &boy.cycleMax,    'i',  "0"},
+  {"bfN", "boy.fileNum",    &boy.fileNum,     'i',  "1"},
+  {"bnD", "boy.ngkDelay",   &boy.ngkDelay,    'i',  "7"},
+  {"bph", "boy.phase",      &boy.phase,       'i',  "2"},
+  {"clg", "ctd.logging",    &ctd.logging,     'b',  "true"},
+  {"clF", "ctd.logFile",    &ctd.logFile,     'c',  "ctd"},
+  {"cde", "ctd.delay",      &ctd.delay,       'i',  "5"},
+  {"cfr", "ctd.fresh",      &ctd.fresh,       'i',  "3"},
+  {"gph", "gps.phoneNum",   &gps.phoneNum,    'c',  "0088160000519"},
+  {"gpl", "gps.platform",   &gps.platform,    'c',  "LR01"},
+  {"gpr", "gps.project",    &gps.project,     'c',  "QUEH"},
+  {"gre", "gps.redial",     &gps.redial,      'i',  "5"},
+  {"grR", "gps.rudResp",    &gps.rudResp,     'i',  "30"},
+  {"gsM", "gps.signalMin",  &gps.signalMin,   'i',  "4"},
+  {"gto", "gps.timeout",    &gps.timeout,     'i',  "120"},
+  {"pon", "pwr.on",         &pwr.on,          'b',  "false"},
+  {"plF", "pwr.logFile",    &pwr.logFile,     'c',  "pwr"},
+  {"pch", "pwr.charge",     &pwr.charge,      'f',  "12000.0"},
+  {"pcM", "pwr.chargeMin",  &pwr.chargeMin,   'f',  "200.0"},
+  {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f',  "12.5"},
+  {"spg", "sys.program",    &sys.program,     'c',  "LARA"},
+  {"sve", "sys.version",    &sys.version,     'c',  "4.0"},
+  {"uiC", "utl.ignoreCon",  &utl.ignoreCon,   'b',  "false"},
+  {"won", "wsp.on",         &wsp.on,          'b',  "true"},
+  {"wlo", "wsp.logging",    &wsp.logging,     'b',  "true"},
+  {"wlF", "wsp.logFile",    &wsp.logFile,     'c',  "wsp"},
+  {"wca", "wsp.card",       &wsp.card,        'i',  "1"},
+  {"wcs", "wsp.cards",      &wsp.cards,       'i',  "2"},
+  {"wcf", "wsp.cfSize",     &wsp.cfSize,      'i',  "512"},
+  {"wcy", "wsp.cycle",      &wsp.cycle,       'i',  "60"},
+  {"wdX", "wsp.detMax",     &wsp.detMax,      'i',  "10"},
+  {"wdu", "wsp.duty",       &wsp.duty,        'i',  "50"},
+  {"wfM", "wsp.freeMin",    &wsp.freeMin,     'i',  "5"},
+  {"wga", "wsp.gain",       &wsp.gain,        'i',  "1"},
+  {"wqu", "wsp.query",      &wsp.query,       'i',  "10"},
 };
 
 
 ///
 // read config from CONFIG_FILE
 void cfgInit(void) {
-  cfg.len = sizeof(cfgP) / sizeof(CfgParam);
+  cfg.cnt = sizeof(cfgP) / sizeof(CfgParam);
   strcpy(cfg.file, VEEFetchStr( "SYS_CFG", SYS_CFG ));
+  cfgDefault();
   cfgRead(cfg.file);
-  if (cfg.wild) {
+  // if (cfg.wild) {
     // wildcard match for config files
     // ??
-  }
+  // }
   cfgVee();
 } // configFile
+
+///
+// set default parameters
+// uses: cfgParam
+// sets: *.*
+// rets: # of successful sets
+void cfgDefault(void) {
+  CfgParam *param;
+  int i;
+  DBG0("cfgDefault()")
+  param=cfgP;
+  i=cfg.cnt;
+  while (i--) {
+    DBG1("%s", param->id)
+    // default value
+    if (param->def[0])
+      cfgSet(param->ptr, param->type, param->def);
+    param++;
+  }
+} // cfgDefault
 
 ///
 // input line is short or long name, =, value
 // find setVar with id or name, call cfgSet()
 // OK to have leading space and #comments
-// uses: cfgP[] cfg.len
+// uses: cfgP[] cfg.cnt
 bool cfgString(char *str){
   char *p, *ptr, *ref, *val, *var, *id, type;
   char s[128];
@@ -124,7 +148,7 @@ bool cfgString(char *str){
   *p = 0;
   val = p+1;
   // find matching name
-  for (i=0; i<cfg.len; i++) {
+  for (i=0; i<cfg.cnt; i++) {
     id = cfgP[i].id;
     var = cfgP[i].var;
     ptr = cfgP[i].ptr;
@@ -180,10 +204,9 @@ static void cfgSet( void *ptr, char type, char *val ) {
   }
 } // cfgSet
 
-//
+///
 // read cfg strings from a file
 // returns: number of cfg lines
-//
 int cfgRead(char *file) {
   char *buf, *ptr;
   int r, fh;
@@ -191,7 +214,7 @@ int cfgRead(char *file) {
   //
   flogf("\ncfgRead(%s)", file);
   if (stat(file, &finfo) < 0) {
-    flogf("\t|ERR cannot stat()");
+    flogf("\t| file not found");
     return 0;
   }
   fh = open(file, O_RDONLY);
@@ -228,8 +251,8 @@ void cfgVee(void) {
       strcpy(cfgstr, name);
       strcat(cfgstr, "=");
       strcat(cfgstr, val);
+      flogf("\nVEE: %s", cfgstr);
       cfgString(cfgstr);
-      DBG1("%s", cfgstr);
     }
     vv = VEEFetchNext(vv);
   }
@@ -243,7 +266,7 @@ void cfgDump() {
   char val[128], buff[4096];
   buff[0] = 0;
   // buffer output to make file writing easier
-  for (i=0; i<cfg.len; i++) {
+  for (i=0; i<cfg.cnt; i++) {
     switch (cfgP[i].type) {
     case 'b':
       sprintf(val, "=%d", *(bool *)cfgP[i].ptr);
@@ -268,8 +291,8 @@ void cfgDump() {
     strcat(buff, cfgP[i].var);
     strcat(buff, val);
     strcat(buff, "\r\n");
-  } // for i<cfg.len
-  flogf("\ncfgDump() %d items", cfg.len);
+  } // for i<cfg.cnt
+  flogf("\ncfgDump() %d items", cfg.cnt);
   flogf("\n---\n");
   flogf("%s", buff);
 } // cfgDump
