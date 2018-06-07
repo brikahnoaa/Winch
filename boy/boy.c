@@ -98,6 +98,7 @@ PhaseType rebootPhase(void) {
 PhaseType dataPhase(void) {
   int detect;
   flogf("\n+dataPhase()@%s", utlDateTime());
+  if (!boy.useGps) return rise_pha;
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -131,8 +132,8 @@ PhaseType risePhase(void) {
     sysAlarm(midwayCurr_alm);
     //?? return fall_pha;
   }
-  // surface
-  success = rise(antSurfD()-1, 0);
+  // surface, 1 meter below float level
+  success = rise(antSurfD()+1, 0);
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     //?? return fall_pha;
@@ -145,9 +146,6 @@ PhaseType risePhase(void) {
 ///
 // rise to targetD, 0 means surfacing 
 // when surfacing, expect stopCmd and don't set velocity 
-// 0 target tmr (~60) D-TD / rate * accu
-// 1 ngk tmr (16) 2*ngkDelay +2
-// 2 2meter tmr (20) ngkDelay+2/rate +3
 // uses: .riseRate .riseOrig .riseAccu .riseRetry
 // sets: .riseRate
 int rise(float targetD, int try) {
@@ -168,8 +166,8 @@ int rise(float targetD, int try) {
   tmrStart(threeT, 3);
   ngkSend(riseCmd_msg);
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
-  while (!stopB && !errB) {
-    // check: target, ngk, 3s, 20s
+  while (!stopB && !errB) {       // redundant, loop exits by break;
+    // check: target, winch, 20s, 3s
     nowD = antDepth();
     // arrived?
     if (nowD<targetD) {
@@ -244,13 +242,11 @@ int rise(float targetD, int try) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  if (boy.gpsAvail) {
-    gpsStart();
-    gpsStats();
-    iridSig();
-    gpsStop();
-  } else
-    flogf("... gps not avail");
+  if (!boy.useGps) return fall_pha;
+  gpsStart();
+  gpsStats();
+  iridSig();
+  gpsStop();
   return fall_pha;
 } // iridPhase
 
