@@ -539,14 +539,7 @@ PhaseType deployPhase(void) {
   flogf("\n\t| boy.dockD = %4.2f", boy.dockD);
   flogf("\n\t| go to surface, call home");
   utlNap(10);
-  // rise to surface, 5 tries, short delay
-  if (riseUp(0.0, 5, 1)) {
-    flogf("\n\t| deployed @ %s", utlTime());
-    return irid_pha;
-  } else {      // fall and sulk
-    flogf("\nErr\t| deployed but riseUp fail @ %s", utlTime());
-    return fall_pha;
-  }
+  return rise_pha;
 } // deployPhase
 
 ///
