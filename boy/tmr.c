@@ -35,7 +35,7 @@ void tmrStopAll(void) {
 // exp==now is not expired, so now+1 runs at least 1 sec 
 // sets: tmr.on[] .exp[]
 bool tmrExp(TmrType tim) {
-  DBG(utlX();)
+  DBGX(utlX();)
   if (tmr.on[tim] && (tmr.exp[tim] < time(0))) {
     // on and expired
     tmr.on[tim] = false;
