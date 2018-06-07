@@ -53,6 +53,7 @@ void ringSamp(void);
 bool antSurf(void);
 bool antVelo(float *velo);
 float antDepth(void);
+float antSurfD(void);
 float antTemp(void);
 void antAuton(bool auton);
 void antAutoSample(bool autos);

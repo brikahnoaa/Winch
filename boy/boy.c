@@ -121,7 +121,7 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
-  success = riseUp(boy.currChkD, 5, 1);
+  success = rise(boy.currChkD, 0);
   if (!success) {
     flogf("\n\t| riseUp fails at %3.1f m", antDepth());
     //??  return fall_pha;
@@ -132,7 +132,7 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // surface
-  success = riseUp(0.0, 5, 1);
+  success = rise(antSurfD(), 0);
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     //?? return fall_pha;

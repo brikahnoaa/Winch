@@ -422,3 +422,7 @@ void antGetSamples(void) {
 bool antSurf(void) {
   return (ant.depth<(ant.surfD+2));
 }
+
+float antSurfD(void) {
+  return ant.surfD;
+}
