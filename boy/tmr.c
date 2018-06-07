@@ -23,10 +23,19 @@ void tmrStop(TmrType tim) {
 } // tmrStop
 
 ///
+// stop all timers
+void tmrStopAll(void) {
+  TmrType t;
+  for(t = null_tmr+1; t<sizeof_tmr; t++)
+    tmr.on[t] = false;
+} // tmrCheck
+
+///
 // is timer expired? turn it off
 // exp==now is not expired, so now+1 runs at least 1 sec 
 // sets: tmr.on[] .exp[]
 bool tmrExp(TmrType tim) {
+  DBG(utlX();)
   if (tmr.on[tim] && (tmr.exp[tim] < time(0))) {
     // on and expired
     tmr.on[tim] = false;

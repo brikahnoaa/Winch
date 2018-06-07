@@ -18,5 +18,6 @@ bool tmrOff(TmrType tim);
 int tmrQuery(TmrType tim);
 void tmrStart(TmrType tim, int secs);
 void tmrStop(TmrType tim);
+void tmrStopAll(void);
 TmrType tmrAnyExp(void);
 
