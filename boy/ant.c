@@ -103,7 +103,7 @@ void antBreak(void) {
 // data waiting
 int antData() {
   int r=TURxQueuedCount(ant.port);
-  DBG1("aDa=%d", r)
+  DBG2("aDa=%d", r)
   // ?? ?? fails without this, why?
   utlDelay(100);
   return r;
@@ -113,7 +113,7 @@ int antData() {
 // if !tmrOn request sample
 // sets: ant_tmr
 void antSample(void) {
-  DBG1("aSam")
+  DBG2("aSam")
   if (antPending()) return;
   TURxFlush(ant.port);
   // sleeping?
@@ -135,7 +135,7 @@ void antSample(void) {
 bool antRead(void) {
   char *p0, *p1, *p2;
   if (!antData()) return false;
-  DBG1("antRead()");
+  DBG2("antRead()");
   utlRead(ant.port, utlBuf);
   // ?? sanity check
   // should be multiple lines, ending crlf
@@ -169,7 +169,7 @@ bool antRead(void) {
   ant.depth = atof(p2);
   ant.sampT = time(0);
   //
-  DBG1("= %4.2f, %4.2f", ant.temp, ant.depth)
+  DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
   tmrStop(ant_tmr);
   if (ant.autoSample)
     antSample();
@@ -179,7 +179,7 @@ bool antRead(void) {
 ///
 // wait for data or not pending (timeout)
 bool antDataWait(void) {
-  DBG1("aDW")
+  DBG2("aDW")
   // err if timeout ?? count?
   while (antPending())
     if (antData()) 
@@ -193,7 +193,7 @@ bool antDataWait(void) {
 // data read recently
 bool antFresh(void) {
   bool fresh = (time(0)-ant.sampT)<ant.fresh;
-  DBG1("aFr=%d", fresh)
+  DBG2("aFr=%d", fresh)
   return fresh;
 }
 
@@ -211,7 +211,7 @@ bool antPending(void) {
     utlErr(ant_err, "ant: timer expired");
     r = false;
   }
-  DBG1("aPe=%d", r)
+  DBG2("aPe=%d", r)
   return r;
 }
     
@@ -219,7 +219,7 @@ bool antPending(void) {
 // if !data&&fresh, return. if !pending, sample. wait for data. read.
 // if data, read. if !pending, sample. if !fresh, wait.
 float antDepth(void) {
-  DBG1("aDep")
+  DBG2("aDep")
   if (antData())
     antRead();
   if (!antPending())

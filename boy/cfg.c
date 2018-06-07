@@ -122,7 +122,7 @@ void cfgDefault(void) {
   param=cfgP;
   i=cfg.cnt;
   while (i--) {
-    DBG1("%s", param->id)
+    DBG2("%s", param->id)
     // default value
     if (param->def[0])
       cfgSet(param->ptr, param->type, param->def);
