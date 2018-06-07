@@ -101,7 +101,7 @@ void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
-  DBG1(">>=%d", sent)
+  DBG2(">>=%d", sent)
   DBG3(">>'%s'", utlNonPrintBlock(out, len))
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
@@ -118,7 +118,7 @@ void utlWrite(Serial port, char *out, char *eol) {
   len = strlen(utl.str);
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
-  DBG1(">>=%d", sent)
+  DBG2(">>=%d", sent)
   DBG3(">>'%s'", utlNonPrint(utl.str))
   if (len!=sent) 
     flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
@@ -137,7 +137,7 @@ int utlRead(Serial port, char *in) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG1("<<=%d", len)
+  DBG2("<<=%d", len)
   DBG3("<<'%s'", utlNonPrint(in))
   return len;
 } // utlRead
@@ -161,7 +161,7 @@ int utlReadWait(Serial port, char *in, int wait) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG1("<<(%d)=%d", wait, len)
+  DBG2("<<(%d)=%d", wait, len)
   DBG3("<<'%s'", utlNonPrint(in))
   return len;
 }

@@ -89,7 +89,7 @@ void ctdBreak(void) {
 ///
 // data waiting
 bool ctdData() {
-  DBG1("cD")
+  DBG2("cD")
   return TURxQueuedCount(ctd.port);
 } // ctdData
 
