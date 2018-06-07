@@ -165,6 +165,7 @@ int rise(float targetD, int try) {
   tmrStart(targetT, est);
   tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(twentyT, 20);
+  tmrStart(threeT, 3);
   ngkSend(riseCmd_msg);
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {
@@ -401,7 +402,7 @@ PhaseType deployPhase(void) {
     utlNap(30);
   }
   tmrStop(deploy_tmr);
-  flogf("\n\t| %4.2fm>10 so wait until not moving\n", depth);
+  flogf("\n\t| %4.2fm>10 so wait %dsec until not moving\n", depth, boy.settleT);
   lastD = depth;
   utlNap(boy.settleT);      // default 120sec
   // at most 5 min to descend, already waited 2min

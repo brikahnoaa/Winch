@@ -106,7 +106,7 @@ MsgType ngkRecv(MsgType *msg) {
 MsgType ngkRecvWait(MsgType *msg, int wait) {
   tmrStart(ngk_tmr, wait);
   while (!tmrExp(ngk_tmr))
-    if (ngkRecv(&msg)!=null_msg)
+    if (ngkRecv(msg)!=null_msg)
       break;
   return *msg;
 } // ngkRecvWait
