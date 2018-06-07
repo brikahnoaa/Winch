@@ -8,6 +8,7 @@ typedef enum {
 
 // boy
 typedef struct BoyInfo {
+  bool gpsAvail;          // use gps module, for testing
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water

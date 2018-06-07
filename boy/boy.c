@@ -243,7 +243,7 @@ int rise(float targetD, int try) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  if (gps.avail) {
+  if (boy.gpsAvail) {
     gpsStart();
     gpsStats();
     iridSig();
