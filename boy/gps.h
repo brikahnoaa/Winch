@@ -2,6 +2,7 @@
 #define GPS_H
 
 typedef struct GpsInfo {
+  bool avail;               // do we have GPS module? for testing.
   char phoneNum[16];
   char date[16];
   char lat[16];             // 45:67.8900N

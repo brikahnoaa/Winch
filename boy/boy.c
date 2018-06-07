@@ -238,135 +238,18 @@ int rise(float targetD, int try) {
 } // rise
 
 ///
-// sets: boy.lastRise .firstRise, (*msg) 
-// returns: bool
-/*
-bool riseUp(float targetD, int errMax, int delay) {
-  float depth, startD, stopD;
-  MsgType msg;
-  int err = 0, step = 1;
-  time_t riseT;
-  // if surfacing use riseToSurf()
-  if (targetD==0.0) return riseToSurf();
-  DBG0("riseUp(%3.1fm)", targetD)
-  startD = depth = antDepth();
-  /// step 1: riseCmd
-  // watch for riseRsp. on timeout, retry or continue if rising
-  ngkSend( riseCmd_msg );
-  tmrStart(ngk_tmr, boy.ngkDelay*2);
-  while (step==1) {
-    utlX();
-    utlNap(1);
-    depth = antDepth();
-    switch (ngkRecv(&msg)) {
-    case null_msg: break;
-    case riseRsp_msg:
-      // start velocity measure
-      riseT = time(0);
-      tmrStop(ngk_tmr);
-      step = 2;
-      continue; // while
-    case stopCmd_msg:     // stopped by winch
-      ngkSend(stopRsp_msg);
-      tmrStop(ngk_tmr);
-      flogf(", ERR winch stopCmd at %3.1fm in step 1", depth);
-      return false;
-    default: // unexpected msg
-      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    } // switch
-    if (tmrExp(ngk_tmr)) {
-      if (startD - depth > 2) {       // ?? should be antMoving()
-        // odd, we are rising but no response; log but ignore
-        flogf("\n\t|riseUp() timeout on ngk, but rising so continue..."); 
-        step = 2;
-        continue;
-      } else if (++err <= errMax) {
-        // retry
-        flogf(", retry"); 
-        utlDelay(delay*1000);
-        ngkSend( riseCmd_msg );
-      } else { 
-        flogf(", ERR abort"); 
-        return false;
-      }
-    } // tmr
-  } // while step1
-  /// step 2: depth
-  // watch until target depth
-  while (step==2) {
-    utlX();
-    depth = antDepth();
-    if (depth<=targetD) {
-      ngkSend( stopCmd_msg );
-      stopD = depth;
-      step = 3;
-    }
-    // shouldn't get winch msg in step 2 // ?? utlErr
-    if (ngkRecv(&msg)!=null_msg)          
-      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-  } // while step2
-  /// step 3: stopCmd 
-  // watch for stopRsp. on timeout, retry or continue if stopped
-  err = 0;
-  while (step==3) {
-    utlX();
-    depth = antDepth();
-    switch (ngkRecv(&msg)) {
-    case null_msg: break;
-    case stopRsp_msg:
-      step = 4;
-      continue; // while
-    case stopCmd_msg:     // stopped by winch
-      ngkSend(stopRsp_msg);
-      flogf("\n\t | riseUp() stopped by winch at %3.1fm. Strange not fatal.", 
-        depth);
-      return false;
-    default: // unexpected msg
-      flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
-    } // switch
-    if (tmrExp(ngk_tmr)) {
-      stopD = antDepth();      // ?? should be antMoving
-      utlNap(5);
-      depth = antDepth();
-      if (abs(stopD-depth)<0.5) {   // ?? bad hack
-        // odd, we are stopped but no response; log but ignore
-        flogf("\n\t|riseUp() stopCmd timeout, but stopped so continue..."); 
-        step = 4;
-        continue; // while
-      } else if (++err <= errMax) {
-        // retry
-        flogf(", retry"); 
-        utlDelay(delay*1000);
-        ngkSend( stopCmd_msg );
-      } else { 
-        flogf(", ERR abort"); 
-        return false;
-      } // if moving
-    } // if tmr
-  } // while step3
-  // velocity to target, not to surface
-  if (targetD!=0)
-    // skip if we didn't stop cleanly
-    if (err==0) { 
-      boy.riseVLast = (startD-depth) / (time(0)-riseT);
-      if (boy.riseVFirst==0.0)
-        boy.riseVFirst = boy.riseVLast;
-    }
-  flogf("\n\t| riseUp() to depth %d", depth);
-  return true;
-} // riseUp
-*/
-
-///
 // ??
 // turn off sbe, on irid/gps (takes 30 sec). 
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  gpsStart();
-  gpsStats();
-  iridSig();
-  gpsStop();
+  if (gps.avail) {
+    gpsStart();
+    gpsStats();
+    iridSig();
+    gpsStop();
+  } else
+    flogf("... gps not avail");
   return fall_pha;
 } // iridPhase
 

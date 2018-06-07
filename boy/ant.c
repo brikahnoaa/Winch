@@ -108,15 +108,23 @@ int antData() {
 } // antData
 
 ///
+// wait for data or not pending (timeout)
+bool antDataWait(void) {
+  DBG2("aDW")
+  while (antPending())
+    if (antData()) 
+      return true;
+  return false;
+} // antDataWait
+
+///
 // if !tmrOn request sample
 // sets: ant_tmr
 void antSample(void) {
-  DBG2("aSam")
   if (antPending()) return;
-  TURxFlush(ant.port);
-  // sleeping?
-  if (ant.sampT+SBE_SLEEP<time(0))
-    antPrompt();
+  DBG2("aSam")
+  // flush old data, check for sleep message and prompt if needed
+  antRead();
   utlWrite(ant.port, ant.samCmd, EOL);
   // get echo of command
   utlReadWait(ant.port, utlBuf, 1);
@@ -135,13 +143,18 @@ bool antRead(void) {
   if (!antData()) return false;
   DBG2("antRead()");
   utlRead(ant.port, utlBuf);
+  p0 = utlBuf;
+  // sleeping?
+  if (strstr(utlBuf, "sleep")) {
+    antPrompt();      // wakeup
+    return false;
+  }
   // sanity check
   // could be multiple lines, ending crlf 
   // data line len is about 45+15 
   // ' 20.1000,    1.287, 18 Sep 1914, 12:40:30\r\n<Executed/>\r\n'
-  p0 = utlBuf;
   while (strlen(p0)>64)
-    p0 = strchr(p0, '\r');
+    p0 = strchr(p0, '\r')+1;
   if (strlen(p0)<45) return false;
   // read temp, depth // parse two numeric csv
   p1 = strtok(p0, "\r\n#, ");
@@ -165,16 +178,6 @@ bool antRead(void) {
 } // antRead
 
 ///
-// wait for data or not pending (timeout)
-bool antDataWait(void) {
-  DBG2("aDW")
-  while (antPending())
-    if (antData()) 
-      return true;
-  return false;
-} // antDataWait
-
-///
 // data read recently
 bool antFresh(void) {
   bool fresh = (time(0)-ant.sampT)<ant.fresh;
@@ -194,6 +197,7 @@ bool antPending(void) {
     
 ///
 // if data, read. if !pending, sample. if !fresh, wait.
+// antRead may fail, e.g. sleep mode; if so, !antFresh
 float antDepth(void) {
   DBG2("aDep")
   if (antData())

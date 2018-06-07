@@ -1,3 +1,5 @@
+antRead - does sbe echo TSSon? flush after cmd
+
 test very deep, still moving at 120sec
 test no amodem responses
 
@@ -9,4 +11,42 @@ param gps.on irid.on
 crash : gpsStart() 01:02:08_antDevice(cf2)
 
 send / nosend stopCmd on slack
+
+generate fake crashes
+
+antRead missed a response
+
++risePhase()@09-18--86 12:38:21
++antStart() 09-18--86 12:38:21
++utlExpect(ok, 6) timeout
++antRingReset()
++mpcPamDev(4)
+	| oceanCurrChk()
+-Err()	|0| 12:38:35 oceanCurr invalid value
++rise(10.0)
++ngkSend(#R,01,03) at 12:38:36
+rise()	| riseCmd to winch at 12:38:36
++ngkRecv(%R,02,00) riseRsp 12:38:47, riseRsp from winch
+rise()	| reached targetD 9.8 at 12:39:24
++ngkSend(#S,01,00) at 12:39:24
++ngkRecv(%S,02,00) stopRsp 12:39:36
++ngkSend(#S,01,00) at 12:39:36
++ngkRecv(%S,02,00) stopRsp 12:39:47, stopCmd-->riseRsp
+	| rise fails at 9.6 m
+	| oceanCurrChk()
+-Err()	|1| 12:39:53 oceanCurr invalid value
++rise(0.1)
++ngkSend(#R,01,03) at 12:39:55
+rise()	| riseCmd to winch at 12:39:55
++ngkRecv(%R,02,00) riseRsp 12:40:07, riseRsp from winch
++ngkRecv(#S,02,00
+
+) stopCmd 12:40:30, stopCmd from winch
+!boyMain(): cycle 0 of 3
+
++iridPhase()@09-18--86 12:40:30
++gpsStart() 12:40:30
+
+<<<< CRASH >>>>  (saved @ 0xB000)  <<<< CRASH >>>>
+
 
