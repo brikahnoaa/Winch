@@ -29,6 +29,7 @@ typedef struct BoyInfo {
   int log;                // log filehandle
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int riseRetry;          // rise fails, retry times
+  int settleT;            // time to let deploy settle (120)
   PhaseType phase;        // deploy, data, rise, irid, fall, error
   PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
   Serial port;            // sbe16 or ant mod

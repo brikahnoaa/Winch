@@ -403,7 +403,7 @@ PhaseType deployPhase(void) {
   tmrStop(deploy_tmr);
   flogf("\n\t| %4.2fm>10 so wait until not moving\n", depth);
   lastD = depth;
-  utlNap(120);
+  utlNap(boy.settleT);      // default 120sec
   // at most 5 min to descend, already waited 2min
   tmrStart( deploy_tmr, 60*5 );
   depth = antDepth();
@@ -445,8 +445,16 @@ float oceanCurr() {
   // b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
-  flogf("oceanCurr() \t| aD=%3.1f cD=%3.1f boy2ant=%3.1f", aD, cD, c);
-  if (a<0) return -1.0;
+  flogf("\noceanCurr() \t| aD=%3.1f cD=%3.1f boy2ant=%3.1f", aD, cD, c);
+  if (a<0) {
+    flogf("\noceanCurr() \t| ERR sbe16<sbe39");
+    return -1.0;
+  }
+  if (c<a) {
+    flogf("\noceanCurr() \t| ERR boy2ant<cD-aD");
+    // ?? update boy2ant?
+    return -1.0;
+  }
   b=sqrt(pow(c,2)-pow(a,2));
   DBG1("sideways=%4.2f", b)
   return b;
@@ -466,7 +474,7 @@ bool oceanCurrChk() {
   if (sideways>boy.currMax) {
     flogf("too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
-    DBGX(return false;)
+    return false;
     return true;
   }
   return false;

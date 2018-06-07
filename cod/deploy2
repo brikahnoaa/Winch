@@ -8,12 +8,7 @@ test no amodem responses
 Err(ant)\t|1| timer expired
 Err oceanCurr invalid
 
-param gps.on irid.on
-
-crash : gpsStart() 01:02:08_antDevice(cf2)
-
-send / nosend stopCmd on slack
-
+emul: send / nosend stopCmd on slack
 generate fake crashes
 
 antRead missed a response
