@@ -132,7 +132,7 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // surface
-  success = rise(antSurfD(), 0);
+  success = rise(antSurfD()-1, 0);
   if (!success) {
     flogf(" | fails at %3.1f m", antDepth());
     //?? return fall_pha;
