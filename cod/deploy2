@@ -1,5 +1,7 @@
 antRead - does sbe echo TSSon? flush after cmd
 
+flush antRecv when antSend, skip multiple antRecv
+
 test very deep, still moving at 120sec
 test no amodem responses
 

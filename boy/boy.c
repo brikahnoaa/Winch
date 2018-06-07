@@ -445,8 +445,8 @@ float oceanCurr() {
   // b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
-  DBG1("aD=%4.2f cD=%4.2f boy2ant=%4.2f", aD, cD, c)
-  if (a<0 || c<a) return -1.0;
+  flogf("oceanCurr() \t| aD=%3.1f cD=%3.1f boy2ant=%3.1f", aD, cD, c);
+  if (a<0) return -1.0;
   b=sqrt(pow(c,2)-pow(a,2));
   DBG1("sideways=%4.2f", b)
   return b;
