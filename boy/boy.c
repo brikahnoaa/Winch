@@ -153,7 +153,7 @@ PhaseType risePhase(void) {
 int rise(float targetD, int try) {
   bool twentyB=false, stopB=false, errB=false;
   float nowD, startD, lastD, velo;
-  int est;        // estimated operation time
+  int i, est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, twentyT, threeT};  // local timer names
   DBG0("rise(%3.1f)", targetD)
@@ -203,7 +203,7 @@ int rise(float targetD, int try) {
         break;
       } else {
         twentyB = true;
-        lastD = depth;
+        lastD = nowD;
       }
     }
     // 3 seconds (after 20s)
@@ -214,8 +214,9 @@ int rise(float targetD, int try) {
         flogf(" velo=%3.1f", velo);
       if (twentyB) {
         if (lastD<=nowD) {
-        flogf("\nrise()\t| ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
-        lastD = nowD;
+          flogf("\nrise()\t| ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
+          lastD = nowD;
+        }
       }
     } 
   } // while !stop
