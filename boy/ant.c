@@ -180,12 +180,9 @@ bool antRead(void) {
 // wait for data or not pending (timeout)
 bool antDataWait(void) {
   DBG2("aDW")
-  // err if timeout ?? count?
   while (antPending())
     if (antData()) 
       return true;
-    utlX;
-  // error, prob timeout
   return false;
 } // antDataWait
 
@@ -198,25 +195,16 @@ bool antFresh(void) {
 }
 
 ///
-// tmrOn ? pending. tmrExp ? err
+// tmr not expired and on
 bool antPending(void) {
   bool r=false;
-  if (ant.auton)
+  if (!tmrExp(ant_tmr) && tmrOn(ant_tmr))
     r = true;
-  else if (tmrOff(ant_tmr))
-    r = false;
-  else if (tmrOn(ant_tmr)) 
-    r = true;
-  else if (tmrExp(ant_tmr)) {
-    utlErr(ant_err, "ant: timer expired");
-    r = false;
-  }
   DBG2("aPe=%d", r)
   return r;
 }
     
 ///
-// if !data&&fresh, return. if !pending, sample. wait for data. read.
 // if data, read. if !pending, sample. if !fresh, wait.
 float antDepth(void) {
   DBG2("aDep")

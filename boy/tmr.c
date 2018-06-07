@@ -26,7 +26,7 @@ void tmrStop(TmrType tim) {
 // stop all timers
 void tmrStopAll(void) {
   TmrType t;
-  for(t = null_tmr+1; t<sizeof_tmr; t++)
+  for (t=0; t<sizeof_tmr; t++)
     tmr.on[t] = false;
 } // tmrCheck
 
@@ -74,7 +74,7 @@ int tmrQuery(TmrType tim) {
 //
 TmrType tmrAnyExp(void) {
   TmrType t;
-  for(t = null_tmr+1; t<sizeof_tmr; t++)
+  for (t=0; t<sizeof_tmr; t++)
     if (tmrExp(t))
       return t;
   return null_tmr;

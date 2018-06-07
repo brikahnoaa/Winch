@@ -1,10 +1,10 @@
 // tmr.h interval timer
 #define TMR_H
 
-// keep these symbols enum, but don't force
+// timers 0-9 are for local use, ad hoc
 // typedef enum {
 enum {
-  null_tmr=0,
+  null_tmr=10,
   ant_tmr, ctd_tmr, deploy_tmr, data_tmr, day_tmr,
   gps_tmr, hour_tmr, init_tmr, minute_tmr, rudics_tmr,
   utl_tmr, ngk_tmr, motion_tmr, wsp_tmr, sizeof_tmr
