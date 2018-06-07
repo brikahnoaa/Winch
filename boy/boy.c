@@ -123,7 +123,7 @@ PhaseType risePhase(void) {
   }
   success = rise(boy.currChkD, 0);
   if (!success) {
-    flogf("\n\t| riseUp fails at %3.1f m", antDepth());
+    flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
   // if current is too strong at midway
@@ -240,6 +240,7 @@ int rise(float targetD, int try) {
 ///
 // sets: boy.lastRise .firstRise, (*msg) 
 // returns: bool
+/*
 bool riseUp(float targetD, int errMax, int delay) {
   float depth, startD, stopD;
   MsgType msg;
@@ -354,6 +355,7 @@ bool riseUp(float targetD, int errMax, int delay) {
   flogf("\n\t| riseUp() to depth %d", depth);
   return true;
 } // riseUp
+*/
 
 ///
 // ??
