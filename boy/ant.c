@@ -104,8 +104,6 @@ void antBreak(void) {
 int antData() {
   int r=TURxQueuedCount(ant.port);
   DBG2("aDa=%d", r)
-  // ?? ?? fails without this, why?
-  utlDelay(100);
   return r;
 } // antData
 
@@ -137,25 +135,15 @@ bool antRead(void) {
   if (!antData()) return false;
   DBG2("antRead()");
   utlRead(ant.port, utlBuf);
-  // ?? sanity check
-  // should be multiple lines, ending crlf
-  // data line len 32 < char < 64
-  // read temp, depth and scan ahead for line end
+  // sanity check
+  // could be multiple lines, ending crlf 
+  // data line len is about 45+15 
+  // ' 20.1000,    1.287, 18 Sep 1914, 12:40:30\r\n<Executed/>\r\n'
   p0 = utlBuf;
-  // trim expected trailing EOL<Executed/>EOL
-  p1 = strrchr(p0, '\r');
-  if (p1)
-    *p1 = 0;
-  p1 = strrchr(p0, '\r');
-  if (!strstr(p1, "<Exec"))
-    return false;
-  if (p1)
-    *p1 = 0;
-  // skip any leading lines
-  p1 = strrchr(p0, '\r');
-  if (p1)
-    p0 = p1;
-  // parse two numeric csv
+  while (strlen(p0)>64)
+    p0 = strchr(p0, '\r');
+  if (strlen(p0)<45) return false;
+  // read temp, depth // parse two numeric csv
   p1 = strtok(p0, "\r\n#, ");
   if (!p1) 
     return false;
