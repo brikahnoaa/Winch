@@ -4,6 +4,8 @@
 #include <sys.h>
 
 void main(void){
-  sysInit();
-  cfgDump();
+  enum { one, two };
+  printf("(%d)\n", two);
+  // sysInit();
+  // cfgDump();
 }
