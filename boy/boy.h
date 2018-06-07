@@ -16,6 +16,9 @@ typedef struct BoyInfo {
   float dockD;            // Depth when docked in winch
   float fallVFirst;       // meters/min of the first fall
   float fallVLast;        // meters/min of the most recent fall 
+  float riseAccu;         // accuracy of rise estimate (1.5)
+  float riseOrig;         // original rise rate based on tests
+  float riseRate;         // riseOrig modified by measures
   float riseVFirst;       // meters/min of the first rise 
   float riseVLast;        // meters/min of the most recent rise 
   int iridFreq;           // number of times per day to call (1)
@@ -24,6 +27,7 @@ typedef struct BoyInfo {
   int fileNum;            // current number for filename ####.dat ####.log
   int log;                // log filehandle
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
+  int riseRetry;          // rise fails, retry times
   PhaseType phase;        // deploy, data, rise, irid, fall, error
   PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
   Serial port;            // sbe16 or ant mod
@@ -40,6 +44,7 @@ static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static bool riseUp(float targetD, int errMax, int delay);
 static bool riseToSurf(void);
+static int rise(float targetD, int try);
 bool oceanCurrChk(void);
 float oceanCurr(void);
 static void boyStat(char *buffer);

@@ -1,24 +1,16 @@
 // tmr.h interval timer
 #define TMR_H
 
-typedef enum {
+// keep these symbols enum, but don't force
+// typedef enum {
+enum {
   null_tmr=0,
-  ant_tmr,          // sbe39
-  ctd_tmr,          // ctd.pending waiting for ctd response
-  deploy_tmr,       // steps during deploy phase0
-  data_tmr,         // rise to surface, send data
-  day_tmr,
-  gps_tmr,
-  hour_tmr,
-  init_tmr,         // init components
-  minute_tmr,
-  rudics_tmr,       // max time to spend on the phone
-  utl_tmr,
-  ngk_tmr,          // amodem command response
-  motion_tmr,        // waiting for motion
-  wsp_tmr,          // wispr duty cycle
-  sizeof_tmr
-  } TmrType;
+  ant_tmr, ctd_tmr, deploy_tmr, data_tmr, day_tmr,
+  gps_tmr, hour_tmr, init_tmr, minute_tmr, rudics_tmr,
+  utl_tmr, ngk_tmr, motion_tmr, wsp_tmr, sizeof_tmr
+  };
+//  } TmrType;
+typedef int TmrType;
 
 bool tmrExp(TmrType tim);
 bool tmrOn(TmrType tim);

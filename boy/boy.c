@@ -143,11 +143,100 @@ PhaseType risePhase(void) {
 
 
 ///
-// rise up to targetD, 0 means surfacing 
+// rise to targetD, 0 means surfacing 
 // when surfacing, expect stopCmd and don't set velocity 
-// .0 timer for risePhase 
-// .1 timer for step .1.1 risecmd .1.2 wait for riseStep1 (1 meter?)
-// .2 wt velo<0 rising .2.1 wt targetD .2.2 stopcmd .2.3 wt velo=0
+// 0 target tmr (~60) D-TD / rate * accu
+// 1 ngk tmr (16) 2*ngkDelay +2
+// 2 2meter tmr (20) ngkDelay+2/rate +3
+// uses: .riseRate .riseOrig .riseAccu .riseRetry
+// sets: .riseRate
+int rise(float targetD, int try) {
+  bool twentyB=false, stopB=false, errB=false;
+  float nowD, startD, lastD, velo;
+  int est;        // estimated operation time
+  MsgType msg;
+  enum {targetT, ngkT, twentyT, threeT};  // local timer names
+  DBG0("rise(%3.1f)", targetD)
+  nowD = startD = antDepth();
+  if (startD < targetD) return 1;
+  if (try > boy.riseRetry) return 2;
+  // .riseOrig=as tested, .riseRate=seen, .riseAccu=fudgeFactor
+  est = (int) ((nowD-targetD) / boy.riseRate * boy.riseAccu);
+  tmrStart(targetT, est);
+  tmrStart(ngkT, boy.ngkDelay*2);
+  tmrStart(twentyT, 20);
+  ngkSend(riseCmd_msg);
+  flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
+  while (!stopB && !errB) {
+    // check: target, ngk, 3s, 20s
+    nowD = antDepth();
+    // arrived?
+    if (nowD<targetD) {
+      flogf("\nrise()\t| reached targetD %3.1f at %s", nowD, utlTime());
+      tmrStop(targetT);
+      stopB = true;
+      break;
+    }
+    // op timeout - longer than estimated time * 1.5 (riseAccu)
+    if (tmrExp(targetT)) {
+      flogf("\nrise()\t| ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+      errB = true;
+      break;
+    }
+    // winch
+    if (ngkRecv(&msg)!=null_msg) {
+      flogf(", %s from winch", ngkMsgName(msg));
+      if (msg==stopCmd_msg)
+        return -1;
+      if (msg==riseRsp_msg)
+        tmrStop(ngkT);
+    }
+    if (tmrExp(ngkT)) {
+      flogf("\nrise()\t| no response from winch");
+    }
+    // 20 seconds
+    if (tmrExp(twentyT)) {
+      if (startD-nowD < 1.5) {
+        // by now we should have moved up 3 meters
+        flogf("\nrise()\t| ERR \t| depth %3.1f after 20 seconds", nowD);
+        errB = true;
+        break;
+      } else {
+        twentyB = true;
+        lastD = depth;
+      }
+    }
+    // 3 seconds (after 20s)
+    if (tmrExp(threeT)) {
+      tmrStart(threeT, 3);
+      flogf("\nrise()\t| 3s: depth=%3.1f", nowD);
+      if (antVelo(&velo)) 
+        flogf(" velo=%3.1f", velo);
+      if (twentyB) {
+        if (lastD<=nowD) {
+        flogf("\nrise()\t| ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
+        lastD = nowD;
+      }
+    } 
+  } // while !stop
+  // stop - either normal or due to err
+  for (i=0; i<boy.riseRetry; i++) {
+    ngkSend(stopCmd_msg);
+    if (ngkRecvWait(&msg, boy.ngkDelay*2+2)==stopRsp_msg) break;
+  }
+  // ?? if (msg!=stopRsp_msg) damnation
+  flogf(", stopCmd-->%s", ngkMsgName(msg));
+  // retry if error
+  if (errB) {
+    flogf(", retry %d", ++try);
+    return rise(targetD, try);
+  } else { 
+    // normal stop
+    return 0;
+  }
+} // rise
+
+///
 // sets: boy.lastRise .firstRise, (*msg) 
 // returns: bool
 bool riseUp(float targetD, int errMax, int delay) {
@@ -167,7 +256,7 @@ bool riseUp(float targetD, int errMax, int delay) {
     utlX();
     utlNap(1);
     depth = antDepth();
-    switch (msg = ngkRecv()) {
+    switch (ngkRecv(&msg)) {
     case null_msg: break;
     case riseRsp_msg:
       // start velocity measure
@@ -211,7 +300,7 @@ bool riseUp(float targetD, int errMax, int delay) {
       step = 3;
     }
     // shouldn't get winch msg in step 2 // ?? utlErr
-    if ((msg = ngkRecv())!=null_msg)          
+    if (ngkRecv(&msg)!=null_msg)          
       flogf("\n\t|riseUp() unexpected %s at %3.1f m", ngkMsgName(msg), depth);
   } // while step2
   /// step 3: stopCmd 
@@ -220,7 +309,7 @@ bool riseUp(float targetD, int errMax, int delay) {
   while (step==3) {
     utlX();
     depth = antDepth();
-    switch (msg = ngkRecv()) {
+    switch (ngkRecv(&msg)) {
     case null_msg: break;
     case stopRsp_msg:
       step = 4;
@@ -308,8 +397,7 @@ PhaseType fallPhase() {
   while (step==1) {
     utlX();
     depth = antDepth();
-    msg = ngkRecv();
-    switch (msg) {
+    switch (ngkRecv(&msg)) {
     case null_msg: break;
     case fallRsp_msg:
       // start velocity measure
@@ -364,8 +452,7 @@ PhaseType fallPhase() {
   while (step==3) {
     utlX();
     depth = antDepth();
-    msg = ngkRecv();
-    switch (msg) {
+    switch (ngkRecv(&msg)) {
     case null_msg: break;
     case stopCmd_msg:
       ngkSend(stopRsp_msg);

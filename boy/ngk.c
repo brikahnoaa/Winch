@@ -86,21 +86,40 @@ void ngkSend(MsgType msg) {
 // uses: ngk.expect
 // sets: ngk.on ngk.expect .lastRecv 
 // returns: msg
-MsgType ngkRecv() {
-  MsgType msg;
+MsgType ngkRecv(MsgType *msg) {
   if (utlRead(ngk.port, utlBuf)==0) 
     return null_msg;
   flogf("\n+ngkRecv(%s)", utlBuf);
-  msg = msgParse(utlBuf);
-  if (msg!=mangled_msg)
+  *msg = msgParse(utlBuf);
+  if (*msg!=mangled_msg)
     utlWrite(ngk.port, "OK", EOL);
   flogf(" %s %s", ngk.msgName[msg], utlTime());
-  if (msg==buoyCmd_msg) {     // async, invisible
+  if (*msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
-    return null_msg;
+    *msg = null_msg;
   }
-  return msg;
+  return *msg;
 } // ngkRecv
+
+///
+// wait for and log ngk response
+MsgType ngkRecvWait(MsgType *msg, int wait) {
+  tmrStart(ngk_tmr, wait);
+  while (!tmrExp(ngk_tmr))
+    if (ngkRecv(&msg)!=null_msg)
+      break;
+  return *msg;
+} // ngkRecvWait
+
+///
+// ngkRecvWait and return string
+char *ngkRecvMsg(int wait) {
+  MsgType msg;
+  if (ngkRecvWait(&msg, wait)!=null_msg)
+    return ngkMsgName(msg);
+  else
+    return "timeout";
+} // ngkRecvWait
 
 ///
 // match against ngk.msgStr[]
