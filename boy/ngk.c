@@ -73,33 +73,9 @@ void ngkSend(MsgType msg) {
   utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
-  if (utlReadWait(ngk.port, str, 6)==0)
-    utlErr(ngk_err, "expected OK, no response");
-  // str should include "OK"
-  if (strstr(str, "OK")==NULL)
-    flogf("\n\t| ngkSend() amodem bad response '%s'", utlNonPrint(str));
+  if (!utlExpect(ngk.port, str, "OK", ngk.delay))
+    flogf("\nngkSend() | WARN amodem bad response '%s'", utlNonPrint(str));
 } // ngkSend
-
-///
-// get winch message if available and parse it
-// respond immediately to stopcmd buoycmd
-// uses: ngk.expect
-// sets: ngk.on ngk.expect .lastRecv 
-// returns: msg
-MsgType ngkRecv(MsgType *msg) {
-  if (utlRead(ngk.port, utlBuf)==0) 
-    return null_msg;
-  flogf("\n+ngkRecv(%s)", utlBuf);
-  *msg = msgParse(utlBuf);
-  if (*msg!=mangled_msg)
-    utlWrite(ngk.port, "OK", EOL);
-  flogf(" %s %s", ngk.msgName[*msg], utlTime());
-  if (*msg==buoyCmd_msg) {     // async, invisible
-    ngkBuoyRsp();
-    *msg = null_msg;
-  }
-  return *msg;
-} // ngkRecv
 
 ///
 // wait for and log ngk response
@@ -122,17 +98,41 @@ char *ngkRecvMsg(int wait) {
 } // ngkRecvWait
 
 ///
+// get winch message if available and parse it
+// respond immediately to stopcmd buoycmd
+// uses: ngk.expect
+// sets: ngk.on ngk.expect .lastRecv 
+// returns: msg
+MsgType ngkRecv(MsgType *msg) {
+  if (TURxQueuedCount(ngk.port)==0)
+    return null_msg;
+  utlRead(ngk.port, utlBuf);
+  flogf("\n+ngkRecv(%s)", utlBuf);
+  *msg = msgParse(utlBuf);
+  if (*msg!=mangled_msg) 
+    utlWrite(ngk.port, "OK", EOL);
+  flogf(" %s %s", ngk.msgName[*msg], utlTime());
+  if (*msg==buoyCmd_msg) {     // async, invisible
+    ngkBuoyRsp();
+    *msg = null_msg;
+  }
+  return *msg;
+} // ngkRecv
+
+///
 // match against ngk.msgStr[]
 // sets: (*msgP) ngk.recv[]
 // returns: msgtype
 MsgType msgParse(char *str) {
   MsgType m;
   int len;
-  len = utlTrim(str);
-  if (strstr(str, "OK") && strlen(str)==2)
+  len = strlen(str);      // '%S,00,00\r\n'
+  // OK may be mixed in with message, from previous send
+  if (strstr(str, "OK") && len<6)
     return null_msg;
-  if (len!=8) 
-    flogf(" | ERR msgParse() length %d", len);
+  if (len>12)
+    flogf(" | WARN msgParse() length=%d", len);
+  // match
   for (m=null_msg+1; m<mangled_msg; m++)
     if (strstr(str, ngk.msgStr[m])!=NULL) 
       break;
@@ -144,7 +144,7 @@ MsgType msgParse(char *str) {
 
 char * ngkMsgName(MsgType msg) {
   return ngk.msgName[msg];
-}
+} // ngkMsgName
 
 ///
 // buoyRsp buoyRsp, fall and shutdown ??
@@ -153,4 +153,10 @@ void ngkBuoyRsp(void) {
   utlDelay(20);
   ngkSend(fallCmd_msg);
   utlSleep();
-}
+} // ngkBuoyRsp
+
+///
+void ngkFlush(void) { 
+  TURxFlush(ngk.port);
+  TUTxFlush(ngk.port);
+} // ngkFlush

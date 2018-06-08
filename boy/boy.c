@@ -123,7 +123,7 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   success = rise(boy.currChkD, 0);
-  if (!success) {
+  if (success>0) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
@@ -134,7 +134,7 @@ PhaseType risePhase(void) {
   }
   // surface, 1 meter below float level
   success = rise(antSurfD()+1, 0);
-  if (!success) {
+  if (success>0) {
     flogf(" | fails at %3.1f m", antDepth());
     //?? return fall_pha;
   }
@@ -144,26 +144,27 @@ PhaseType risePhase(void) {
 
 
 ///
-// rise to targetD, 0 means surfacing 
-// when surfacing, expect stopCmd and don't set velocity 
-// uses: .riseRate .riseOrig .riseAccu .riseRetry
+// rise to targetD // possible stopCmd at surface
+// ?? compute riseRate
+// uses: .riseRate .riseOrig .rateAccu .riseRetry
 // sets: .riseRate
 int rise(float targetD, int try) {
   bool twentyB=false, stopB=false, errB=false;
   float nowD, startD, lastD, velo;
   int i, est;        // estimated operation time
   MsgType msg;
-  enum {targetT, ngkT, twentyT, threeT};  // local timer names
+  enum {targetT, ngkT, twentyT, fiveT};  // local timer names
   DBG0("rise(%3.1f)", targetD)
+  ngkFlush();
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
-  // .riseOrig=as tested, .riseRate=seen, .riseAccu=fudgeFactor
-  est = (int) ((nowD-targetD) / boy.riseRate * boy.riseAccu);
+  // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
+  est = (int) (((nowD-targetD) / boy.riseRate) * boy.rateAccu);
   tmrStart(targetT, est);
   tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(twentyT, 20);
-  tmrStart(threeT, 3);
+  tmrStart(fiveT, 5);
   ngkSend(riseCmd_msg);
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
@@ -176,7 +177,7 @@ int rise(float targetD, int try) {
       stopB = true;
       break;
     }
-    // op timeout - longer than estimated time * 1.5 (riseAccu)
+    // op timeout - longer than estimated time * 1.5 (rateAccu)
     if (tmrExp(targetT)) {
       flogf("\nrise()\t| ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
       errB = true;
@@ -196,7 +197,7 @@ int rise(float targetD, int try) {
     // 20 seconds
     if (tmrExp(twentyT)) {
       if (startD-nowD < 1.5) {
-        // by now we should have moved up 3 meters
+        // by now we should have moved up 5 meters
         flogf("\nrise()\t| ERR \t| depth %3.1f after 20 seconds", nowD);
         errB = true;
         break;
@@ -205,12 +206,12 @@ int rise(float targetD, int try) {
         lastD = nowD;
       }
     }
-    // 3 seconds (after 20s)
-    if (tmrExp(threeT)) {
-      tmrStart(threeT, 3);
+    // 5 seconds
+    if (tmrExp(fiveT)) {
+      tmrStart(fiveT, 5);
       flogf("\nrise()\t| 3s: depth=%3.1f", nowD);
       if (antVelo(&velo)) 
-        flogf(" velo=%3.1f", velo);
+        flogf(" velo=%4.2f", velo);
       if (twentyB) {
         if (lastD<=nowD) {
           flogf("\nrise()\t| ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
@@ -251,6 +252,110 @@ PhaseType iridPhase(void) {
 } // iridPhase
 
 ///
+PhaseType fallPhase() {
+  fall(0);
+  return data_pha;
+} // fallPhase
+
+///
+// based on rise(), diffs commented out; wait for winch stop
+// fall to dock // expect stopCmd 
+// uses: .riseRate .riseOrig .rateAccu .riseRetry
+// sets: .riseRate
+int fall(int try) {
+  bool fortyB=false, stopB=false, errB=false;
+  float nowD, startD, lastD, velo;
+  int i, est;        // estimated operation time
+  MsgType msg;
+  enum {targetT, ngkT, fortyT, fiveT};  // local timer names
+  DBG0("rise()")
+  // DBG0("rise(%3.1f)", targetD)
+  ngkFlush();
+  nowD = startD = antDepth();
+  // if (startD < targetD) return 1;
+  if (nowD > boy.dockD-2) return 1;
+  if (try > boy.fallRetry) return 2;
+  // crude, could have cable played out
+  est = (int) ((boy.dockD/boy.fallRate)*boy.rateAccu);
+  tmrStart(targetT, est);
+  tmrStart(ngkT, boy.ngkDelay*2);
+  tmrStart(fortyT, 40);
+  tmrStart(fiveT, 5);
+  ngkSend(fallCmd_msg);
+  flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
+  while (!stopB && !errB) {       // redundant, loop exits by break;
+    // check: target, winch, 20s, 3s
+    nowD = antDepth();
+    // arrived?
+    if (nowD<boy.dockD) {
+      flogf("\nfall()\t| reached boy.dockD %3.1f at %s", nowD, utlTime());
+      // wait for winch to stop
+      // tmrStop(targetT);
+      stopB = true;
+      break;
+    }
+    // op timeout - longer than estimated time * 1.5 (rateAccu)
+    if (tmrExp(targetT)) {
+      flogf("\nfall()\t| ERR \t| fall timeout %ds @ %3.1f, stop", est, nowD);
+      errB = true;
+      break;
+    }
+    // winch
+    if (ngkRecv(&msg)!=null_msg) {
+      flogf(", %s from winch", ngkMsgName(msg));
+      if (msg==stopCmd_msg)
+        // return -1;
+        return 0;
+      if (msg==fallRsp_msg)
+        tmrStop(ngkT);
+    }
+    if (tmrExp(ngkT)) {
+      flogf("\nfall()\t| WARN no response from winch");
+    }
+    // 30 seconds
+    if (tmrExp(fortyT)) {
+      if (nowD-startD < 1.5) {
+        // by now we should have moved down 5 meters or more
+        flogf("\nfall()\t| ERR \t| depth %3.1f after 20 seconds", nowD);
+        errB = true;
+        break;
+      } else {
+        fortyB = true;
+        lastD = nowD;
+      }
+    }
+    // 5 seconds
+    if (tmrExp(fiveT)) {
+      tmrStart(fiveT, 5);
+      flogf("\nfall()\t| 3s: depth=%3.1f", nowD);
+      if (antVelo(&velo)) 
+        flogf(" velo=%4.2f", velo);
+      if (fortyB) {
+        if (lastD>=nowD) {
+          flogf("\nfall()\t| WARN not falling, %3.1f>=%3.1f", lastD, nowD);
+          lastD = nowD;
+        }
+      }
+    } 
+  } // while !stop
+  // stop - either normal or due to err
+  for (i=0; i<boy.fallRetry; i++) {
+    ngkSend(stopCmd_msg);
+    if (ngkRecvWait(&msg, boy.ngkDelay*2+2)==stopRsp_msg) break;
+  }
+  // ?? if (msg!=stopRsp_msg) damnation
+  flogf(", stopCmd-->%s", ngkMsgName(msg));
+  // retry if error
+  if (errB) {
+    flogf(", retry %d", ++try);
+    return fall(targetD, try);
+  } else { 
+    // normal stop
+    return 0;
+  }
+} // fall
+
+///
 // antAuto, science(log), startT, fallCmd, science(stop)
 // while (!docked) {
 //  fallcmd, [rsp] or time. 
@@ -261,7 +366,8 @@ PhaseType iridPhase(void) {
 // if (err>errMax) failMode++ <= failMax
 // 20 retries: 5@1sec, 5@10min, 10@1hour
 // errMax[failMode], delay[failMode]
-PhaseType fallPhase() {
+
+int fall(int try) {
   int err = 0, step = 1;
   int failStage = 0, failMax = 2;
   int errMax[3] = {5, 10, 20}, delay[3] = {1, 10*60, 60*60};

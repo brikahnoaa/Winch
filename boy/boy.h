@@ -16,9 +16,10 @@ typedef struct BoyInfo {
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch
-  float fallVFirst;       // meters/min of the first fall
-  float fallVLast;        // meters/min of the most recent fall 
-  float riseAccu;         // accuracy of rise estimate (1.5)
+  float fallRate;         // m/s from tests
+  float fallVFirst;       // meters/s of the first fall
+  float fallVLast;        // meters/s of the most recent fall 
+  float rateAccu;         // accuracy of rise/fall rate estimates (1.5)
   float riseOrig;         // original rise rate based on tests
   float riseRate;         // riseOrig modified by measures
   float riseVFirst;       // meters/min of the first rise 
@@ -29,6 +30,7 @@ typedef struct BoyInfo {
   int fileNum;            // current number for filename ####.dat ####.log
   int log;                // log filehandle
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
+  int fallRetry;          // fall fails, retry times
   int riseRetry;          // rise fails, retry times
   int settleT;            // time to let deploy settle (120)
   PhaseType phase;        // deploy, data, rise, irid, fall, error

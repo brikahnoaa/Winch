@@ -27,6 +27,7 @@ MsgType ngkRecv(MsgType *msg);
 MsgType ngkRecvWait(MsgType *msg, int wait);
 char *ngkRecvMsg(int wait);
 char *ngkMsgName(MsgType msg);
+void ngkFlush(void);
 void ngkInit(void);
 void ngkSend(MsgType msg);
 void ngkStart(void);
