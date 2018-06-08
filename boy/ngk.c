@@ -61,6 +61,7 @@ void ngkStop(void){
 
 ///
 // send message to winch via amodem
+// do not consume 'OK' response
 // sets: .send[] .lastSend 
 void ngkSend(MsgType msg) {
   char str[128];
@@ -73,8 +74,6 @@ void ngkSend(MsgType msg) {
   utlWrite(ngk.port, str, EOL);
   ngk.send[msg]++;
   ngk.lastSend = msg;
-  if (!utlExpect(ngk.port, str, "OK", ngk.delay))
-    flogf("\nngkSend() | WARN expected OK got '%s'", utlNonPrint(str));
 } // ngkSend
 
 ///
@@ -104,11 +103,11 @@ char *ngkRecvMsg(int wait) {
 // sets: ngk.on ngk.expect .lastRecv 
 // returns: msg
 MsgType ngkRecv(MsgType *msg) {
-  if (TURxQueuedCount(ngk.port)==0)
+  if (!ngkRead(utlBuf))
     return null_msg;
-  utlRead(ngk.port, utlBuf);
   flogf("\n+ngkRecv(%s)", utlBuf);
   *msg = msgParse(utlBuf);
+  // amodem will repeat message if not OK
   if (*msg!=mangled_msg) 
     utlWrite(ngk.port, "OK", EOL);
   flogf(" %s %s", ngk.msgName[*msg], utlTime());
@@ -120,19 +119,34 @@ MsgType ngkRecv(MsgType *msg) {
 } // ngkRecv
 
 ///
+// read char-fully. may have multiple msg, we want one. garbage.
+// look for %# if we get that, read 7 more bytes with timeout
+bool ngkRead(char *str) {
+  int i;
+  char c;
+  str[0]=0;
+  // look for message start in input queue
+  while (true) {
+    if (TURxQueuedCount(ngk.port)==0) return false;
+    c = TURxGetByte(ngk.port, false);
+    if (c=='%' || c=='#') break;
+  }
+  str[0] = c;
+  for (i=1; i<=8; i++) 
+    str[i] = TURxGetByteWithTimeout(ngk.port, (short)CHAR_DELAY * 2);
+  return true;
+} // ngkRead
+
+///
 // match against ngk.msgStr[]
 // sets: (*msgP) ngk.recv[]
 // returns: msgtype
 MsgType msgParse(char *str) {
   MsgType m;
-  int len;
-  len = strlen(str);      // '%S,00,00\r\n'
-  // OK may be mixed in with message, from previous send
-  if (strstr(str, "OK") && len<6)
-    return null_msg;
-  if (len>12)
-    flogf(" | WARN msgParse() length=%d", len);
-  // match
+  // str must be 8 chars
+  if (strlen(str)!=8)
+    return mangled_msg;
+  // match 
   for (m=null_msg+1; m<mangled_msg; m++)
     if (strstr(str, ngk.msgStr[m])!=NULL) 
       break;

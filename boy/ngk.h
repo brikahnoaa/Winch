@@ -26,6 +26,7 @@ static void ngkBuoyRsp(void);
 
 MsgType ngkRecv(MsgType *msg);
 MsgType ngkRecvWait(MsgType *msg, int wait);
+bool ngkRead(char *str);
 char *ngkRecvMsg(int wait);
 char *ngkMsgName(MsgType msg);
 void ngkFlush(void);

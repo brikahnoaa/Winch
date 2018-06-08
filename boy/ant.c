@@ -180,7 +180,7 @@ bool antRead(void) {
 ///
 // data read recently
 bool antFresh(void) {
-  bool fresh = (time(0)-ant.sampT)<ant.fresh;
+  int fresh = (time(0)-ant.sampT)<ant.fresh;
   DBG2("aFr=%d", fresh)
   return fresh;
 }
