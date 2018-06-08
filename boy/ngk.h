@@ -12,6 +12,7 @@ typedef struct NgkInfo {
   char * msgStr[sizeof_msg];    // msg string as if sent to buoy
   char * msgName[sizeof_msg];   // for logs
   // modem
+  int delay;
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
   int timeout[sizeof_msg];      // count
