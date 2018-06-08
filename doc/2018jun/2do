@@ -17,3 +17,8 @@ wsp
 
 
 tmr uses int. test range of int, enough seconds for a day? 4 bytes sizeof int
+limits.h, not sizeof?
+
+detection counts into a file, send?
+
+test larger irid file, 30K
