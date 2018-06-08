@@ -98,10 +98,7 @@ PhaseType rebootPhase(void) {
 PhaseType dataPhase(void) {
   int detect;
   flogf("\n+dataPhase()@%s", utlDateTime());
-  if (!boy.useWsp) {
-    utlNap(10);
-    return rise_pha;
-  }
+  DBGX(if (boy.testWinch) return rise_pha;)
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -117,6 +114,7 @@ PhaseType dataPhase(void) {
 PhaseType risePhase(void) {
   bool success;
   flogf("\n+risePhase()@%s", utlDateTime());
+  DBGX(if (boy.testWinch) utlNap(10);)
   antStart();
   ctdStart();
   ngkStart();
@@ -248,10 +246,7 @@ int rise(float targetD, int try) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  if (!boy.useGps) {
-    utlNap(10);
-    return fall_pha;
-  }
+  DBGX(if (boy.testWinch) return fall_pha;)
   gpsStart();
   gpsStats();
   iridSig();
@@ -261,6 +256,8 @@ PhaseType iridPhase(void) {
 
 ///
 PhaseType fallPhase() {
+  flogf("\n+fallPhase()@%s", utlDateTime());
+  DBGX(if (boy.testWinch) utlNap(10);)
   fall(0);
   return data_pha;
 } // fallPhase
@@ -388,10 +385,11 @@ PhaseType deployPhase(void) {
     utlNap(30);
   }
   tmrStop(deploy_tmr);
-  flogf("\n\t| %4.2fm>10, wait %dsec", depth, boy.settleT+15);
   lastD = depth;
-  utlNap(boy.settleT);      // default 120sec
   utlNap(15);
+  DBGX(if (boy.testWinch) boy.settleT = 0;)
+  utlNap(boy.settleT);      // default 120sec
+  flogf("\n\t| %4.2fm>10, watch depth for %dsec", depth, 300);
   depth = antDepth();
   // at most 5 min to descend, already waited 2min
   tmrStart( deploy_tmr, 60*5 );
