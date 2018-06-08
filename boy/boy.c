@@ -19,8 +19,10 @@ BoyInfo boy;
 // deploy or reboot, then loop over phases data/rise/irid/fall
 // sets: boy.phase .phasePrev
 void boyMain() {
-  int starts, cycle=0;
   PhaseType phaseNext;
+  int starts, cycle=0;
+  int testCycle;
+  DBGX(testCycle = boy.testCycle;)
   // boy.phase set by sys.cfg
   starts = sysInit();
   mpcInit();
@@ -36,15 +38,13 @@ void boyMain() {
     
   while (true) {
     utlX();
-    flogf("\n!boyMain(): cycle %d of %d\n", cycle, boy.cycleMax);
-    if (boy.cycleMax && (cycle >= boy.cycleMax))
-      sysStop("cycleLimit");
-    sysFlush();                    // flush all log file buffers
+    DBGX(if (testCycle) flogf("\ntestCycle %d", boy.testCycle);)
+    // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
     switch (boy.phase) {
     case data_pha: // data collect by WISPR
+      flogf("\nboyMain() \t| cycle %d", cycle++);
       phaseNext = dataPhase();
-      cycle++;
       break;
     case rise_pha: // Ascend buoy, check for current and ice
       phaseNext = risePhase();
@@ -54,6 +54,8 @@ void boyMain() {
       break;
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
+      // reset test cycle
+      DBGX(if (testCycle && --boy.testCycle<0) boy.testCycle = testCycle;)
       break;
     case deploy_pha:
       phaseNext = deployPhase();
@@ -98,7 +100,7 @@ PhaseType rebootPhase(void) {
 PhaseType dataPhase(void) {
   int detect;
   flogf("\n+dataPhase()@%s", utlDateTime());
-  DBGX(if (boy.testWinch) return rise_pha;)
+  DBGX(if (boy.testCycle&&boy.testWinch) return rise_pha;)
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -114,7 +116,7 @@ PhaseType dataPhase(void) {
 PhaseType risePhase(void) {
   bool success;
   flogf("\n+risePhase()@%s", utlDateTime());
-  DBGX(if (boy.testWinch) utlNap(10);)
+  DBGX(if (boy.testCycle&&boy.testWinch) utlNap(10);)
   antStart();
   ctdStart();
   ngkStart();
@@ -246,7 +248,7 @@ int rise(float targetD, int try) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  DBGX(if (boy.testWinch) return fall_pha;)
+  DBGX(if (boy.testCycle&&boy.testWinch) return fall_pha;)
   gpsStart();
   gpsStats();
   iridSig();
@@ -257,7 +259,7 @@ PhaseType iridPhase(void) {
 ///
 PhaseType fallPhase() {
   flogf("\n+fallPhase()@%s", utlDateTime());
-  DBGX(if (boy.testWinch) utlNap(10);)
+  DBGX(if (boy.testCycle&&boy.testWinch) utlNap(10);)
   fall(0);
   return data_pha;
 } // fallPhase

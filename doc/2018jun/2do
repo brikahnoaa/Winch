@@ -24,3 +24,5 @@ detection counts into a file, send?
 test larger irid file, 30K
 
 strip quotes from VEE params, irid params
+
+rise(+stopdelay) - add arbitrary delay when surfacing
