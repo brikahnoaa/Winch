@@ -29,7 +29,8 @@ typedef struct AntInfo {
   int log;
   int ringFresh;              // ant.fresh * ant.ringSize
   int ringSize;               // number of nodes in the (depth,time) ring
-  time_t sampT;               // time() of last sample
+  time_t sampQT;               // query time() of last sample 
+  time_t sampRT;               // read time() of last sample 
   RingNode *ring;             // nodes in the (depth,time) ring
   AntType antenna;
   DevType dev;

@@ -132,6 +132,7 @@ void antSample(void) {
     utlErr(ant_err, "antSample: TS command fail");
   else
     tmrStart( ant_tmr, ant.delay );
+  ant.sampQT = time(0);
 } // antSample
 
 ///
@@ -168,8 +169,8 @@ bool antRead(void) {
   // new values
   ant.temp = atof(p1);
   ant.depth = atof(p2);
-  ant.sampT = time(0);
-  //
+  // QT set in antSample
+  ant.sampRT = ant.sampQT;
   DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
   tmrStop(ant_tmr);
   if (ant.autoSample)
@@ -181,7 +182,8 @@ bool antRead(void) {
 // data read recently
 bool antFresh(void) {
   int fresh;
-  fresh = time(0)-ant.sampT;
+  fresh = time(0)-ant.sampRT;
+  if (fresh<0) return false;
   DBG4("aFr=%d", fresh)
   return fresh<ant.fresh;
 }
@@ -227,9 +229,9 @@ bool antVelo(float *velo) {
   int dir;
   float v;
   // got samples? 
-  if (ant.sampT - ant.ring->sampT > ant.ringFresh) return false;
+  if (ant.sampRT - ant.ring->sampT > ant.ringFresh) return false;
   // candidate velo
-  v = (ant.depth - ant.ring->depth) / (ant.sampT - ant.ring->sampT);
+  v = (ant.depth - ant.ring->depth) / (ant.sampRT - ant.ring->sampT);
   DBG3("candiV:%4.2f", v)
   dir = ringDir(v);
   if (dir) *velo = v;
@@ -242,7 +244,7 @@ bool antVelo(float *velo) {
 // sets: ring ring.depth ring.sampT
 void ringSamp(void) {
   ant.ring->depth = ant.depth;
-  ant.ring->sampT = ant.sampT;
+  ant.ring->sampT = ant.sampRT;
   ant.ring = ant.ring->next;
 } // ringSamp
 
@@ -375,7 +377,7 @@ void antAuton(bool auton) {
   } // if auton
   tmrStop(ant_tmr);
   ant.auton = auton;
-}
+} // antAuton
 
 void antGetSamples(void) {
   int len1=sizeof(utlBuf);
