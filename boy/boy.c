@@ -382,7 +382,7 @@ PhaseType deployPhase(void) {
   flogf("\n\t| %4.2fm>10 so wait %dsec until not moving\n", depth, boy.settleT);
   lastD = depth;
   utlNap(boy.settleT);      // default 120sec
-  ultNap(15);
+  utlNap(15);
   depth = antDepth();
   // at most 5 min to descend, already waited 2min
   tmrStart( deploy_tmr, 60*5 );
