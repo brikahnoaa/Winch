@@ -173,7 +173,8 @@ void ngkBuoyRsp(void) {
 ///
 void ngkFlush(void) { 
   while (ngkRead(utlStr)) 
-    flogf("\nngkFlush() \t| flushed out %s", msgParse(utlStr));
+    flogf("\nngkFlush() \t| flushed out %s", 
+      ngkMsgName( msgParse(utlStr) ));
   TURxFlush(ngk.port);
   TUTxFlush(ngk.port);
 } // ngkFlush
