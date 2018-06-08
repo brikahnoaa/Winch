@@ -98,7 +98,10 @@ PhaseType rebootPhase(void) {
 PhaseType dataPhase(void) {
   int detect;
   flogf("\n+dataPhase()@%s", utlDateTime());
-  if (!boy.useGps) return rise_pha;
+  if (!boy.useWsp) {
+    utlNap(10);
+    return rise_pha;
+  }
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -245,7 +248,10 @@ int rise(float targetD, int try) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  if (!boy.useGps) return fall_pha;
+  if (!boy.useGps) {
+    utlNap(10);
+    return fall_pha;
+  }
   gpsStart();
   gpsStats();
   iridSig();
