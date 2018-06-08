@@ -22,7 +22,6 @@ void boyMain() {
   PhaseType phaseNext;
   int starts, cycle=0;
   int testCycle;
-  DBGX(testCycle = boy.testCycle;)
   // boy.phase set by sys.cfg
   starts = sysInit();
   mpcInit();
@@ -32,16 +31,20 @@ void boyMain() {
   ngkInit();
   wspInit();
   pwrInit();
+  testCycle = boy.testCycle;
   if (starts>1) 
     boy.phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", boy.phase);
     
   while (true) {
     utlX();
-    DBGX(if (testCycle) flogf("\ntestCycle %d", boy.testCycle);)
+    if (testCycle) flogf("\ntestCycle %d", boy.testCycle);
     // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
     switch (boy.phase) {
+    case deploy_pha:
+      phaseNext = deployPhase();
+      break;
     case data_pha: // data collect by WISPR
       flogf("\nboyMain() \t| cycle %d", cycle++);
       phaseNext = dataPhase();
@@ -56,9 +59,6 @@ void boyMain() {
       phaseNext = fallPhase();
       // reset test cycle
       DBGX(if (testCycle && --boy.testCycle<0) boy.testCycle = testCycle;)
-      break;
-    case deploy_pha:
-      phaseNext = deployPhase();
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
