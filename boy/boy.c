@@ -168,6 +168,7 @@ int rise(float targetD, int try) {
   ngkSend(riseCmd_msg);
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
+    utlX();
     // check: target, winch, 20s, 5s
     nowD = antDepth();
     // arrived?
@@ -286,16 +287,16 @@ int fall(int try) {
   ngkSend(fallCmd_msg);
   flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
+    utlX();
     // check: target, winch, 20s, 3s
     nowD = antDepth();
     // arrived?
-    if (nowD>boy.dockD-1) {
-      flogf("\nfall()\t| reached boy.dockD %3.1f at %s", nowD, utlTime());
+    // if (nowD<targetD) {
       // wait for winch to stop
       // tmrStop(targetT);
       // stopB = true;
       // break;
-    }
+    // }
     // op timeout - longer than estimated time * 1.5 (rateAccu)
     if (tmrExp(targetT)) {
       flogf("\nfall()\t| ERR \t| fall timeout %ds @ %3.1f, stop", est, nowD);
@@ -329,7 +330,9 @@ int fall(int try) {
     // 5 seconds
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
-      flogf("\nfall()\t| 3s: depth=%3.1f", nowD);
+      if (nowD>boy.dockD-1) 
+        flogf("\nfall()\t| reached boy.dockD %3.1f at %s", nowD, utlTime());
+      flogf("\nfall()\t| 5s: depth=%3.1f", nowD);
       if (antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
       if (fortyB) {
@@ -379,7 +382,7 @@ PhaseType deployPhase(void) {
     utlNap(30);
   }
   tmrStop(deploy_tmr);
-  flogf("\n\t| %4.2fm>10 so wait %dsec until not moving\n", depth, boy.settleT);
+  flogf("\n\t| %4.2fm>10, wait %dsec", depth, boy.settleT+15);
   lastD = depth;
   utlNap(boy.settleT);      // default 120sec
   utlNap(15);
@@ -449,7 +452,7 @@ bool oceanCurrChk() {
     utlErr(logic_err, "oceanCurr invalid value");
     return false;
   }
-  flogf(" @%.1f=%.1f ", antDepth(), sideways);
+  flogf(" current @ %.1f=%.1f ", antDepth(), sideways);
   if (sideways>boy.currMax) {
     flogf("too strong, cancel ascent");
     // ignore current when dbg ?? should be setting

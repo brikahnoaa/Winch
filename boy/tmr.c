@@ -11,7 +11,7 @@ static struct {
 //
 // sets: tmr.on .exp[]
 //
-void tmrStart(TmrType tim, int secs) {
+void tmrStart(TmrType tim, time_t secs) {
   DBG2("tmrStart(%d,%d)", tim, secs)
   tmr.on[tim] = true;
   tmr.exp[tim] = time(0)+secs;
@@ -62,9 +62,9 @@ bool tmrOff(TmrType tim) {
 //
 // how long until a timer expires (else 0=off, neg=expired)
 //
-int tmrQuery(TmrType tim) {
+time_t tmrQuery(TmrType tim) {
   if (tmr.on[tim]) 
-    return (int)(tmr.exp[tim]-time(0))+1;
+    return (time_t)(tmr.exp[tim]-time(0))+1;
   else
     return 0;
 } // tmrQuery

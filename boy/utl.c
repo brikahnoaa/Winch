@@ -90,7 +90,7 @@ int utlExpect(Serial port, char *buf, char *expect, int wait) {
     utlX();
   }
   // timeout?
-  r = tmrQuery(utl_tmr);
+  r = (int) tmrQuery(utl_tmr);
   tmrStop(utl_tmr);
   return r;
 } // utlExpect
