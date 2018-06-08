@@ -266,7 +266,8 @@ PhaseType fallPhase() {
 int fall(int try) {
   bool fortyB=false, stopB=false, errB=false;
   float nowD, startD, lastD, velo;
-  int i, est;        // estimated operation time
+  // int i;
+  int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, fortyT, fiveT};  // local timer names
   DBG0("rise()")
