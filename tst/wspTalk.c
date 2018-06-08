@@ -13,7 +13,7 @@ void main(void){
   port = mpcPamPort();
   wspInit();
   // mpcPamDev(wsp2_pam);
-  wspStart(wsp2_pam);
+  wspStart(wsp1_pam);
   flogf("\nPress Q to exit\n");
   while (true) {
     if (cgetq()) {
