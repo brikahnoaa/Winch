@@ -1,11 +1,12 @@
 antRead - does sbe echo TSSon? flush after cmd
 
+fresh should trigger a new read at 30sec deploy, doesn't
+
 flush antRecv when antSend, skip multiple antRecv
 
 test very deep, still moving at 120sec
 test no amodem responses
 
-Err(ant)\t|1| timer expired
 Err oceanCurr invalid
 
 emul: send / nosend stopCmd on slack
