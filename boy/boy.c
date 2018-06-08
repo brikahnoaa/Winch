@@ -168,7 +168,7 @@ int rise(float targetD, int try) {
   ngkSend(riseCmd_msg);
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
-    // check: target, winch, 20s, 3s
+    // check: target, winch, 20s, 5s
     nowD = antDepth();
     // arrived?
     if (nowD<targetD) {
@@ -209,7 +209,7 @@ int rise(float targetD, int try) {
     // 5 seconds
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
-      flogf("\nrise()\t| 3s: depth=%3.1f", nowD);
+      flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
       if (antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
       if (twentyB) {
@@ -223,10 +223,11 @@ int rise(float targetD, int try) {
   // stop - either normal or due to err
   for (i=0; i<boy.riseRetry; i++) {
     ngkSend(stopCmd_msg);
-    if (ngkRecvWait(&msg, boy.ngkDelay*2+2)==stopRsp_msg) break;
+    msg = ngkRecvWait(&msg, boy.ngkDelay*2+2);
+    if (msg==stopRsp_msg || msg==stopRsp_msg) break;
   }
   // ?? if (msg!=stopRsp_msg) damnation
-  flogf(", stopCmd-->%s", ngkMsgName(msg));
+  flogf("\nrise() \t| stopCmd-->%s", ngkMsgName(msg));
   // retry if error
   if (errB) {
     flogf(", retry %d", ++try);
@@ -287,12 +288,12 @@ int fall(int try) {
     // check: target, winch, 20s, 3s
     nowD = antDepth();
     // arrived?
-    if (nowD<boy.dockD) {
+    if (nowD>boy.dockD-1) {
       flogf("\nfall()\t| reached boy.dockD %3.1f at %s", nowD, utlTime());
       // wait for winch to stop
       // tmrStop(targetT);
-      stopB = true;
-      break;
+      // stopB = true;
+      // break;
     }
     // op timeout - longer than estimated time * 1.5 (rateAccu)
     if (tmrExp(targetT)) {
@@ -338,16 +339,19 @@ int fall(int try) {
       }
     } 
   } // while !stop
+  // fall just waits for dock
   // stop - either normal or due to err
+  /*
   for (i=0; i<boy.fallRetry; i++) {
     ngkSend(stopCmd_msg);
     if (ngkRecvWait(&msg, boy.ngkDelay*2+2)==stopRsp_msg) break;
   }
   // ?? if (msg!=stopRsp_msg) damnation
   flogf(", stopCmd-->%s", ngkMsgName(msg));
+  */
   // retry if error
   if (errB) {
-    flogf(", retry %d", ++try);
+    flogf("\nfall() \t| ERR retry %d", ++try);
     return fall(try);
   } else { 
     // normal stop

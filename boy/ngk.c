@@ -74,7 +74,7 @@ void ngkSend(MsgType msg) {
   ngk.send[msg]++;
   ngk.lastSend = msg;
   if (!utlExpect(ngk.port, str, "OK", ngk.delay))
-    flogf("\nngkSend() | WARN amodem bad response '%s'", utlNonPrint(str));
+    flogf("\nngkSend() | WARN expected OK got '%s'", utlNonPrint(str));
 } // ngkSend
 
 ///
