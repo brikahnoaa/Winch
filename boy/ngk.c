@@ -132,8 +132,9 @@ bool ngkRead(char *str) {
     if (c=='%' || c=='#') break;
   }
   str[0] = c;
-  for (i=1; i<=8; i++) 
+  for (i=1; i<8; i++) 
     str[i] = TURxGetByteWithTimeout(ngk.port, (short)CHAR_DELAY * 2);
+  str[8]=0;
   return true;
 } // ngkRead
 
