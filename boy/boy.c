@@ -225,7 +225,7 @@ int rise(float targetD, int try) {
   for (i=0; i<boy.riseRetry; i++) {
     ngkSend(stopCmd_msg);
     msg = ngkRecvWait(&msg, boy.ngkDelay*2+2);
-    if (msg==stopRsp_msg || msg==stopRsp_msg) break;
+    if (msg==stopRsp_msg || msg==stopCmd_msg) break;
   }
   // ?? if (msg!=stopRsp_msg) damnation
   flogf("\nrise() \t| stopCmd-->%s", ngkMsgName(msg));
