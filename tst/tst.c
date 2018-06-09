@@ -1,11 +1,30 @@
-// cfgTst.c
+// ctdTst.c
 #include <utl.h>
-#include <cfg.h>
+#include <ctd.h>
+#include <mpc.h>
 #include <sys.h>
 
+extern CtdInfo ctd;
+
 void main(void){
-  enum { one, two };
-  printf("(%d)\n", two);
-  // sysInit();
-  // cfgDump();
+  char c;
+  sysInit();
+  mpcInit();
+  ctdInit();
+  ctdStart();
+  flogf(" %2.1f", ctdDepth());
+  flogf("\nPress Q to exit\n");
+  //ctdAuton(true);
+  //ctdAuton(false);
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
+  }
 }

@@ -11,17 +11,15 @@ void main(void){
   sysInit();
   mpcInit();
   ctdInit();
-  flogf("\nPress q to exit\n");
+  ctdStart();
   flogf(" %2.1f", ctdDepth());
-  ctdAuton(true);
-  while (!cgetq()) {}
-  flogf(" %2.1f", ctdDepth());
-  ctdAuton(false);
-  ctdLog();
+  flogf("\nPress Q to exit\n");
+  //ctdAuton(true);
+  //ctdAuton(false);
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      if (c=='q') break;
+      if (c=='Q') break;
       TUTxPutByte(ctd.port,c,false);
     }
     if (TURxQueuedCount(ctd.port)) {
