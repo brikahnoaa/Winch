@@ -1,4 +1,4 @@
-// ctdTst.c
+// wspTst.c
 #include <utl.h>
 #include <wsp.h>
 #include <mpc.h>
@@ -29,4 +29,5 @@ void main(void){
       cputc(c);
     }
   }
+  wspStop();
 }

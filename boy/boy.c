@@ -38,12 +38,13 @@ void boyMain() {
     utlX();
     // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
-    flogf("\ncycle %d @%s ", utlDateTime(), boy.cycle++);
+    flogf("\ncycle %d @%s ", boy.cycle, utlDateTime());
     switch (boy.phase) {
     case deploy_pha:
       phaseNext = deployPhase();
       break;
     case data_pha: // data collect by WISPR
+      boy.cycle++;
       phaseNext = dataPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
