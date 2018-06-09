@@ -21,7 +21,7 @@ BoyInfo boy;
 void boyMain() {
   PhaseType phaseNext;
   int starts, cycle=0;
-  int testCycle;
+  bool testing;
   // boy.phase set by sys.cfg
   starts = sysInit();
   mpcInit();
@@ -31,14 +31,14 @@ void boyMain() {
   ngkInit();
   wspInit();
   pwrInit();
-  testCycle = boy.testCycle;
+  DBGX(testing = boy.testWinch;)
   if (starts>1) 
     boy.phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", boy.phase);
     
   while (true) {
     utlX();
-    if (testCycle) flogf("\ntestCycle %d", boy.testCycle);
+    DBGX(if (testWinch) flogf("\ntesting winch");)
     // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
     switch (boy.phase) {
@@ -58,7 +58,7 @@ void boyMain() {
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
       // reset test cycle
-      DBGX(if (testCycle && --boy.testCycle<0) boy.testCycle = testCycle;)
+      DBGX(if (testing) boy.testWinch = !boy.testWinch;)
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
@@ -100,7 +100,7 @@ PhaseType rebootPhase(void) {
 PhaseType dataPhase(void) {
   int detect;
   flogf("\n+dataPhase()@%s", utlDateTime());
-  DBGX(if (boy.testCycle&&boy.testWinch) return rise_pha;)
+  DBGX(if (boy.testWinch) return rise_pha;)
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -116,7 +116,7 @@ PhaseType dataPhase(void) {
 PhaseType risePhase(void) {
   bool success;
   flogf("\n+risePhase()@%s", utlDateTime());
-  DBGX(if (boy.testCycle&&boy.testWinch) utlNap(10);)
+  DBGX(if (boy.testWinch) utlNap(10);)
   antStart();
   ctdStart();
   ngkStart();
@@ -248,7 +248,7 @@ int rise(float targetD, int try) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\n+iridPhase()@%s", utlDateTime());
-  DBGX(if (boy.testCycle&&boy.testWinch) return fall_pha;)
+  DBGX(if (boy.testWinch) return fall_pha;)
   gpsStart();
   gpsStats();
   iridSig();
@@ -259,7 +259,7 @@ PhaseType iridPhase(void) {
 ///
 PhaseType fallPhase() {
   flogf("\n+fallPhase()@%s", utlDateTime());
-  DBGX(if (boy.testCycle&&boy.testWinch) utlNap(10);)
+  DBGX(if (boy.testWinch) utlNap(10);)
   fall(0);
   return data_pha;
 } // fallPhase
