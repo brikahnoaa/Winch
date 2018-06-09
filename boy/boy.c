@@ -20,7 +20,7 @@ BoyInfo boy;
 // sets: boy.phase .phasePrev
 void boyMain() {
   PhaseType phaseNext;
-  int starts, cycle=0;
+  int starts;
   // boy.phase set by sys.cfg
   starts = sysInit();
   mpcInit();
@@ -38,12 +38,12 @@ void boyMain() {
     utlX();
     // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
+    flogf("\ncycle %d @%s ", utlDateTime(), boy.cycle++);
     switch (boy.phase) {
     case deploy_pha:
       phaseNext = deployPhase();
       break;
     case data_pha: // data collect by WISPR
-      flogf("\nboyMain() \t| cycle %d", cycle++);
       phaseNext = dataPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
@@ -82,7 +82,7 @@ void boyInit(void) {
 // ask antmod for our velocity
 // sets: boy.phase
 PhaseType rebootPhase(void) {
-  flogf("\n+rebootPhase()@%s", utlDateTime());
+  flogf("rebootPhase()");
   return fall_pha;
 } // reboot()
 
@@ -95,7 +95,9 @@ PhaseType rebootPhase(void) {
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
   int detect;
-  flogf("\n+dataPhase()@%s", utlDateTime());
+  flogf("dataPhase()");
+  if (boy.noData) return rise_pha;
+  if ((boy.oddData) && (boy.cycle % 2)==0) return rise_pha;
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -110,7 +112,9 @@ PhaseType dataPhase(void) {
 // sets: boy.alarm[]
 PhaseType risePhase(void) {
   bool success;
-  flogf("\n+risePhase()@%s", utlDateTime());
+  flogf("risePhase()");
+  if (boy.noRise) return irid_pha;
+  if ((boy.oddRise) && (boy.cycle % 2)==0) return irid_pha;
   antStart();
   ctdStart();
   ngkStart();
@@ -145,6 +149,7 @@ PhaseType risePhase(void) {
 // ?? compute riseRate
 // uses: .riseRate .riseOrig .rateAccu .riseRetry
 // sets: .riseRate
+// rets: 0=success -1=stopCmd 1=<target 2=try
 int rise(float targetD, int try) {
   bool twentyB=false, stopB=false, errB=false;
   float nowD, startD, lastD, velo;
@@ -167,7 +172,7 @@ int rise(float targetD, int try) {
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
-    if (ctdData) {
+    if (ctdData()) {
       ctdRead();
       ctdSample();
     }
@@ -246,7 +251,9 @@ int rise(float targetD, int try) {
 // turn off sbe, on irid/gps (takes 30 sec). 
 // read gps date, loc. 
 PhaseType iridPhase(void) {
-  flogf("\n+iridPhase()@%s", utlDateTime());
+  flogf("iridPhase()");
+  if (boy.noIrid) return fall_pha;
+  if ((boy.oddIrid) && (boy.cycle % 2)==0) return fall_pha;
   gpsStart();
   gpsStats();
   iridSig();
@@ -256,7 +263,9 @@ PhaseType iridPhase(void) {
 
 ///
 PhaseType fallPhase() {
-  flogf("\n+fallPhase()@%s", utlDateTime());
+  flogf("fallPhase()");
+  if (boy.noRise) return data_pha;
+  if ((boy.oddRise) && (boy.cycle % 2)==0) return data_pha;
   fall(0);
   ctdStop();
   antStop();
@@ -275,11 +284,10 @@ int fall(int try) {
   int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, fortyT, fiveT};  // local timer names
-  DBG0("rise()")
-  // DBG0("rise(%3.1f)", targetD)
+  DBG0("fall()")
   ngkFlush();
-  nowD = startD = antDepth();
   ctdSample();
+  nowD = startD = antDepth();
   // if (startD < targetD) return 1;
   if (nowD > boy.dockD-2) return 1;
   if (try > boy.fallRetry) return 2;
@@ -293,7 +301,7 @@ int fall(int try) {
   flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
-    if (ctdData) {
+    if (ctdData()) {
       ctdRead();
       ctdSample();
     }
@@ -382,7 +390,7 @@ PhaseType deployPhase(void) {
   antAutoSample(true);
   tmrStart( deploy_tmr, 60*60*2 );
   depth = antDepth();
-  flogf("\n+deployPhase()@%s %4.2fm", utlDateTime(), depth);
+  flogf("deployPhase()@%s %4.2fm", utlDateTime(), depth);
   // wait until under 10m
   while ((depth = antDepth())<10.0) {
     flogf("\ndeployPhase() at %4.2fm", depth);
@@ -421,7 +429,7 @@ PhaseType deployPhase(void) {
 // cable is stuck. up/down tries??, down to dock. 
 // go back to normal if resolved ??
 PhaseType errorPhase(void) {
-  flogf("\n+errorPhase()@%s", utlDateTime());
+  flogf("errorPhase()");
   return fall_pha;
 } // errorPhase
 

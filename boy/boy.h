@@ -10,9 +10,12 @@ typedef enum {
 // boy
 typedef struct BoyInfo {
   bool testing;
-  bool useGps;            // for test (true)
-  bool useWsp;            // for test (true)
-  bool useWinch;          // for test (true)
+  bool oddData;           // for test (true)
+  bool oddIrid;           // for test (true)
+  bool oddRise;           // for test (true)
+  bool noData;            // for test (true)
+  bool noIrid;            // for test (true)
+  bool noRise;            // for test (true)
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water
@@ -27,10 +30,11 @@ typedef struct BoyInfo {
   float riseRate;         // riseOrig modified by measures
   float riseVFirst;       // meters/min of the first rise 
   float riseVLast;        // meters/min of the most recent rise 
-  int iridFreq;           // number of times per day to call (1)
-  int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
+  int cycle;
   int cycleMax;           // limit number of cycles, i.e. test deployment
   int fileNum;            // current number for filename ####.dat ####.log
+  int iridFreq;           // number of times per day to call (1)
+  int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
   int log;                // log filehandle
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int fallRetry;          // fall fails, retry times
