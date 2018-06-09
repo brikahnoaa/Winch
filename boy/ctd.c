@@ -113,7 +113,7 @@ void ctdSample(void) {
 bool ctdRead(void) {
   char *p0, *p1, *p2, *p3;
   DBG1("ctdRead()")
-  if (!ctdPending())
+  if (!ctdData() && !ctdPending())
     ctdSample();
   while (!ctdData())
     if (!ctdPending())

@@ -157,8 +157,6 @@ int rise(float targetD, int try) {
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
   DBG0("rise(%3.1f)", targetD)
-  ngkFlush();
-  ctdSample();
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
@@ -168,7 +166,9 @@ int rise(float targetD, int try) {
   tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(twentyT, 20);
   tmrStart(fiveT, 5);
+  ngkFlush();
   ngkSend(riseCmd_msg);
+  ctdSample();
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
@@ -285,8 +285,6 @@ int fall(int try) {
   MsgType msg;
   enum {targetT, ngkT, fortyT, fiveT};  // local timer names
   DBG0("fall()")
-  ngkFlush();
-  ctdSample();
   nowD = startD = antDepth();
   // if (startD < targetD) return 1;
   if (nowD > boy.dockD-2) return 1;
@@ -297,8 +295,10 @@ int fall(int try) {
   tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(fortyT, 40);
   tmrStart(fiveT, 5);
+  ngkFlush();
   ngkSend(fallCmd_msg);
   flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
+  ctdSample();
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
     if (ctdData()) {
