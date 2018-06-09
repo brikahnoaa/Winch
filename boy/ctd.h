@@ -8,25 +8,26 @@ typedef struct CtdInfo {
   bool on;
   char logFile[32];
   char sample[32];
+  float cond;
   float depth;
+  float temp;
   int delay;                  // Delay seconds expected between polled samples
-  int fresh;
   int log;                    // log fileid
   time_t time;
   Serial port;                // same as mpc.port, ant.port
 } CtdInfo;
 
 static bool ctdPrompt(void);
-static bool ctdPending(void);
-static bool ctdFresh(void);
 static void ctdBreak(void);
-static bool ctdRead(void);
-static void ctdSample(void);
+static void ctdFlush(void);
 
 bool ctdData(void);
+bool ctdPending(void);
+bool ctdRead(void);
 float ctdDepth(void);
 void ctdAuton(bool auton);
 void ctdGetSamples(void);
 void ctdInit(void);
+void ctdSample(void);
 void ctdStart(void);
 void ctdStop(void);

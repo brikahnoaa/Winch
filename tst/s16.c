@@ -12,10 +12,11 @@ void main(void){
   mpcInit();
   ctdInit();
   ctdStart();
+  ctdRead();
+  flogf("ctdDepth %2.1f", ctdDepth());
+  ctdRead();
   flogf("ctdDepth %2.1f", ctdDepth());
   flogf("\nPress Q to exit\n");
-  //ctdAuton(true);
-  //ctdAuton(false);
   while (true) {
     if (cgetq()) {
       c=cgetc();

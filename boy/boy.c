@@ -153,6 +153,7 @@ int rise(float targetD, int try) {
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
   DBG0("rise(%3.1f)", targetD)
   ngkFlush();
+  ctdSample();
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
@@ -166,6 +167,10 @@ int rise(float targetD, int try) {
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
+    if (ctdData) {
+      ctdRead();
+      ctdSample();
+    }
     // check: target, winch, 20s, 5s
     nowD = antDepth();
     // arrived?
@@ -253,6 +258,8 @@ PhaseType iridPhase(void) {
 PhaseType fallPhase() {
   flogf("\n+fallPhase()@%s", utlDateTime());
   fall(0);
+  ctdStop();
+  antStop();
   return data_pha;
 } // fallPhase
 
@@ -272,6 +279,7 @@ int fall(int try) {
   // DBG0("rise(%3.1f)", targetD)
   ngkFlush();
   nowD = startD = antDepth();
+  ctdSample();
   // if (startD < targetD) return 1;
   if (nowD > boy.dockD-2) return 1;
   if (try > boy.fallRetry) return 2;
@@ -285,6 +293,10 @@ int fall(int try) {
   flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
+    if (ctdData) {
+      ctdRead();
+      ctdSample();
+    }
     // check: target, winch, 20s, 3s
     nowD = antDepth();
     // arrived?
@@ -418,6 +430,7 @@ PhaseType errorPhase(void) {
 // uses: .boy2ant
 float oceanCurr() {
   float aD, cD, a, b, c;
+  ctdRead();
   cD=ctdDepth();
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2

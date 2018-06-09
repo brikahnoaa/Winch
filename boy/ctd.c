@@ -24,9 +24,6 @@ void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcPamPort();
   ctdStart();
-  // sbe16 gets quirky when logging, best to STOP even if it flags error
-  ctdAuton(false);
-  tmrStop(ctd_tmr);
   if (!ctdPrompt())
     utlErr(ctd_err, "ctd: no prompt");
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
@@ -34,8 +31,6 @@ void ctdInit(void) {
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ctd.port, utlStr, EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
-  if (strlen(ctd.logFile))
-    ctd.log = utlLogFile(ctd.logFile);
   if (ctd.logging)
     strcpy(ctd.sample, "TSSon");
   else
@@ -46,6 +41,9 @@ void ctdInit(void) {
 ///
 void ctdStart(void) {
   mpcPamDev(sbe16_pam);
+  tmrStop(ctd_tmr);
+  if (strlen(ctd.logFile))
+    ctd.log = utlLogFile(ctd.logFile);
   ctd.on = true;
 }
 
@@ -64,7 +62,7 @@ void ctdStop(void){
 bool ctdPrompt(void) {
   bool s;
   DBG1("ctdPrompt()")
-  TURxFlush(ctd.port);
+  ctdFlush();
   utlWrite(ctd.port, "", EOL);
   // looking for S> at end
   s = utlExpect(ctd.port, utlBuf, "S>", 5);
@@ -102,19 +100,24 @@ void ctdSample(void) {
   if (ctdPending()) return;
   ctdPrompt();
   utlWrite(ctd.port, ctd.sample, EOL);
+  // get echo 
   len = utlReadWait(ctd.port, utlBuf, 1);
-  // get echo ?? better check, and utlErr()
   if (!strstr(utlBuf, ctd.sample))
     utlErr(ctd_err, "ctd: TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
 
 ///
-// sets: ctd.depth .ctdPending 
+// sample, read data, log to file
+// sets: .temp .cond .depth 
 bool ctdRead(void) {
   char *p0, *p1, *p2, *p3;
-  if (!ctdData()) return false;
   DBG1("ctdRead()")
+  if (!ctdPending())
+    ctdSample();
+  while (!ctdData())
+    if (!ctdPending())
+      return false;
   utlRead(ctd.port, utlBuf);
   if (ctd.log) 
     write(ctd.log, utlBuf, strlen(utlBuf));
@@ -125,8 +128,10 @@ bool ctdRead(void) {
   p0 = utlBuf;
   p1 = strtok(p0, "\r\n#, ");
   if (!p1) return false;
+  ctd.temp = atof( p1 );
   p2 = strtok(NULL, ", "); 
   if (!p2) return false;
+  ctd.cond = atof( p2 );
   p3 = strtok(NULL, ", ");
   if (!p3) return false;
   ctd.depth = atof( p3 );
@@ -137,36 +142,21 @@ bool ctdRead(void) {
 } // ctdRead
 
 ///
-// data read recently
-bool ctdFresh(void) {
-  DBG1("ctdFresh()")
-  return (time(0)-ctd.time)<ctd.fresh;
-}
-
-///
 // tmrOn ? ctdPending. tmrExp ? err
 bool ctdPending(void) {
+  if (tmrExp(ctd_tmr)) {
+    utlErr(ctd_err, "ctd: timer expired");
+    return false;
+  }
   if (ctd.auton || tmrOn(ctd_tmr))
     return true;
-  if (tmrExp(ctd_tmr))
-    utlErr(ctd_err, "ctd: timer expired");
-  return false;
+  else 
+    return false;
 }
 
 ///
-// sample if not ctdPending, wait for data, return depth
 float ctdDepth(void) {
   DBG1("ctdDepth()")
-  if (!ctdData() && ctdFresh())
-    return ctd.depth;
-  if (!ctdPending())
-      ctdSample();
-  // err if timeout ?? count?
-  while (ctdPending())
-    if (ctdData())
-      if (ctdRead())
-        return ctd.depth;
-  // timeout
   return ctd.depth;
 } // ctdDepth
 
@@ -221,3 +211,9 @@ void ctdGetSamples(void) {
   utlExpect(ctd.port, utlBuf, "S>", 2);
   flogf(" = %d bytes to %s", total, ctd.logFile);
 } // ctdGetSamples
+
+///
+// flush input - clears timeout
+void ctdFlush(void) {
+  TURxFlush(ctd.port);
+} // ctdFlush

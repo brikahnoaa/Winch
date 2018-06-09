@@ -9,7 +9,10 @@ typedef enum {
 
 // boy
 typedef struct BoyInfo {
-  bool testWinch;         // skip gps and irid
+  bool testing;
+  bool useGps;            // for test (true)
+  bool useWsp;            // for test (true)
+  bool useWinch;          // for test (true)
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water
@@ -33,7 +36,6 @@ typedef struct BoyInfo {
   int fallRetry;          // fall fails, retry times
   int riseRetry;          // rise fails, retry times
   int settleT;            // time to let deploy settle (120)
-  int testCycle;          // normal cycle when tC==0
   PhaseType phase;        // deploy, data, rise, irid, fall, error
   PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
   Serial port;            // sbe16 or ant mod

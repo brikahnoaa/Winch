@@ -76,6 +76,7 @@ void wspLog(char *str) {
 // log up to .detMax detections every .query minutes
 // while .duty% * .cycle minutes
 // return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
+// uses: .duty .cycle
 // sets: *detections
 int wspDetect(int *detections) {
   char *s, query[32];
