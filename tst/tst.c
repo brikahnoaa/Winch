@@ -1,29 +1,31 @@
 // ctdTst.c
 #include <utl.h>
-#include <ctd.h>
+#include <wsp.h>
 #include <mpc.h>
 #include <sys.h>
 
-extern CtdInfo ctd;
 
 void main(void){
   char c;
+  int detect=0;
+  Serial port;
   sysInit();
   mpcInit();
-  ctdInit();
-  ctdStart();
-  flogf(" %2.1f", ctdDepth());
+  port = mpcPamPort();
+  wspInit();
+  wspStart(wsp2_pam);
+  wspDetect(&detect);
+  flogf("wspDetect(%d)", detect);
   flogf("\nPress Q to exit\n");
-  //ctdAuton(true);
-  //ctdAuton(false);
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      if (c=='Q') break;
-      TUTxPutByte(ctd.port,c,false);
+      if (c=='Q') return;
+      cputc(c);
+      TUTxPutByte(port,c,false);
     }
-    if (TURxQueuedCount(ctd.port)) {
-      c=TURxGetByte(ctd.port,false);
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
       cputc(c);
     }
   }

@@ -1,4 +1,4 @@
-// antTst.c
+// s39.c
 #include <utl.h>
 #include <ctd.h>
 #include <mpc.h>
@@ -15,11 +15,9 @@ void main(void){
   antInit();
   ctdInit();
   antStart();
+  flogf("antDepth() -> %f\n", antDepth());
+  flogf("antTemp() -> %f\n", antTemp());
   flogf("\nPress any to talk, Q to exit\n");
-  while (!cgetq()) {
-    flogf("antDepth() -> %f\n", antDepth());
-    // flogf("antMoving() -> %f\n", antMoving());
-  }
   flogf("connected to ant\n");
   while (true) {
     if (cgetq()) {
@@ -32,4 +30,5 @@ void main(void){
       cputc(c);
     }
   }
+  antStop();
 }

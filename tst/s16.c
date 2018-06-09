@@ -12,7 +12,7 @@ void main(void){
   mpcInit();
   ctdInit();
   ctdStart();
-  flogf(" %2.1f", ctdDepth());
+  flogf("ctdDepth %2.1f", ctdDepth());
   flogf("\nPress Q to exit\n");
   //ctdAuton(true);
   //ctdAuton(false);
@@ -27,4 +27,5 @@ void main(void){
       cputc(c);
     }
   }
+  ctdStop();
 }

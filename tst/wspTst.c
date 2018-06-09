@@ -13,7 +13,6 @@ void main(void){
   mpcInit();
   port = mpcPamPort();
   wspInit();
-  // mpcPamDev(wsp2_pam);
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("wspDetect(%d)", detect);
