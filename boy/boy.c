@@ -414,6 +414,7 @@ PhaseType deployPhase(void) {
       break;
     lastD = depth;
     depth = antDepth();
+    flogf(" %3.1f", depth);
   }
   tmrStop(deploy_tmr);
   // we are docked
@@ -439,7 +440,9 @@ PhaseType errorPhase(void) {
 // uses: .boy2ant
 float oceanCurr() {
   float aD, cD, a, b, c;
+  ctdPrompt();
   ctdRead();
+  antPrompt();
   cD=ctdDepth();
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2

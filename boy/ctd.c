@@ -144,14 +144,13 @@ bool ctdRead(void) {
 ///
 // tmrOn ? ctdPending. tmrExp ? err
 bool ctdPending(void) {
-  if (tmrExp(ctd_tmr)) {
+  if (tmrExp(ctd_tmr) && !ctdData()) {
     utlErr(ctd_err, "ctd: timer expired");
     return false;
   }
   if (ctd.auton || tmrOn(ctd_tmr))
     return true;
-  else 
-    return false;
+  return false;
 }
 
 ///
