@@ -39,6 +39,8 @@ void antInit(void) {
 // turn on, clean, set params, talk to sbe39
 void antStart(void) {
   DBG0("antStart() %s", utlDateTime())
+  if (ant.on) return;
+  ant.on = true;
   antDevice(cf2_dev);
   PIOClear(ANT_PWR);
   utlDelay(200);
@@ -61,6 +63,8 @@ void antStart(void) {
 ///
 // turn off power to antmod 
 void antStop() {
+  if (!ant.on) return;
+  ant.on = false;
   if (ant.log)
     close(ant.log);
   ant.log = 0;

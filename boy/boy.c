@@ -100,6 +100,8 @@ PhaseType dataPhase(void) {
   flogf("dataPhase()");
   if (boy.noData) return rise_pha;
   if ((boy.oddData) && (boy.cycle % 2)==0) return rise_pha;
+  ctdStop();
+  antStop();
   wspStart(wsp2_pam);
   wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
@@ -258,11 +260,13 @@ PhaseType iridPhase(void) {
   flogf("iridPhase()");
   if (boy.noIrid) return fall_pha;
   if ((boy.oddIrid) && (boy.cycle % 2)==0) return fall_pha;
+  antStart();
   gpsStart();
   // gpsStats();
   iridSig();
   iridSendTest(12);
   iridHup();
+  gpsStop();
   return fall_pha;
 } // iridPhase
 
@@ -272,8 +276,6 @@ PhaseType fallPhase() {
   if (boy.noRise) return data_pha;
   if ((boy.oddRise) && (boy.cycle % 2)==0) return data_pha;
   fall(0);
-  ctdStop();
-  antStop();
   return data_pha;
 } // fallPhase
 

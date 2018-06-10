@@ -17,6 +17,7 @@ typedef struct AntInfo {
   bool auton;                 // autonomous mode
   bool autoSample;            // antSample after antRead
   bool logging;               // use TS or TSSon
+  bool on;
   bool surf;                  // on surface
   char logFile[64];
   char samCmd[32];            // TS or TSSon
