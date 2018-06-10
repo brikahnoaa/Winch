@@ -101,10 +101,10 @@ int wspDetect(int *detections) {
   while (!r && !tmrExp(phase_tmr)) {
     tmrStart(cycle_tmr, wsp.cycle*60);
     tmrStart(dc_tmr, dcM*60);
-    while (!r && !tmrExp(cycle_tmr)) {
-      while (!r && !tmrExp(dc_tmr)) {
+    while (!r && tmrOn(phase_tmr) && !tmrExp(cycle_tmr)) {
+      while (!r && tmrOn(cycle_tmr) && !tmrExp(dc_tmr)) {
         tmrStart(det_tmr, wsp.detInt*60);
-        while (!r && !tmrExp(det_tmr)) {
+        while (!r && tmrOn(dc_tmr) && !tmrExp(det_tmr)) {
           utlNap(5);
         } // while det_tmr
         // short naps avoids extra loops
@@ -124,7 +124,6 @@ int wspDetect(int *detections) {
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
     DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
   } // while phase
-  utlX();
   if (r) tmrStopAll();       // err
   utlWrite(wsp.port, "$EXI*", EOL);
   utlExpect(wsp.port, utlBuf, "FIN", 5);
