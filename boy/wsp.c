@@ -93,6 +93,7 @@ int wspDetect(int *detections) {
   else
     phaseM = wsp.cycles * wsp.cycle;
   dcM = (int) 60*wsp.cycle*wsp.duty/100; // (60, 50)
+  flogf("\n%d %d %d %d\n", phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60);
   // while no err and tmr
   tmrStart(phase_tmr, phaseM*60);
   while (!r && !tmrExp(phase_tmr)) {

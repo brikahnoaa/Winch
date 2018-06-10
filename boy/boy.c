@@ -259,9 +259,10 @@ PhaseType iridPhase(void) {
   if (boy.noIrid) return fall_pha;
   if ((boy.oddIrid) && (boy.cycle % 2)==0) return fall_pha;
   gpsStart();
-  gpsStats();
+  // gpsStats();
   iridSig();
-  gpsStop();
+  iridSendTest(12);
+  iridHup();
   return fall_pha;
 } // iridPhase
 
