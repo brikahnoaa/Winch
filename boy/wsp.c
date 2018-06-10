@@ -87,9 +87,9 @@ int wspDetect(int *detections) {
   // ?? nasty hack
   if (boyCycle()==0) return 0;
   if (boyCycle()==1) 
-    cycle = wsp.cycle1;
+    cycles = wsp.cycle1;
   else
-    cycle = wsp.cycles;
+    cycles = wsp.cycles;
   phaseM = cycles * wsp.cycle;
   flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
     cycles, wsp.cycle, wsp.duty, wsp.detInt);
