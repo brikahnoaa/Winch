@@ -92,8 +92,8 @@ int wspDetect(int *detections) {
     phaseM = wsp.cycle1 * wsp.cycle;
   else
     phaseM = wsp.cycles * wsp.cycle;
-  dcM = (int) 60*wsp.cycle*wsp.duty/100; // (60, 50)
-  flogf("\n%d %d %d %d\n", phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60);
+  dcM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
+  DBG1("\n%d %d %d %d\n", phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60)
   // while no err and tmr
   tmrStart(phase_tmr, phaseM*60);
   while (!r && !tmrExp(phase_tmr)) {
@@ -103,7 +103,7 @@ int wspDetect(int *detections) {
       while (!r && !tmrExp(cycle_tmr) && !tmrExp(dc_tmr)) {
         tmrStart(det_tmr, wsp.detInt*60);
         while (!r && !tmrExp(dc_tmr) && !tmrExp(det_tmr)) {
-          utlNap(1);
+          utlNap(10);
         } // while det_tmr
         utlX();
         // detections
