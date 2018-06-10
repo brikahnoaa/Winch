@@ -82,16 +82,17 @@ void wspLog(char *str) {
 int wspDetect(int *detections) {
   float free;
   int phaseM, dcM;
-  int cycle=1, detTotal=0, det=0, r=0;  // r==0 means no err
+  int cycles=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
   enum {phase_tmr, cycle_tmr, dc_tmr, det_tmr};
-  flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
-    wsp.cycles, wsp.cycle, wsp.duty, wsp.detInt);
   // ?? nasty hack
   if (boyCycle()==0) return 0;
   if (boyCycle()==1) 
-    phaseM = wsp.cycle1 * wsp.cycle;
+    cycle = wsp.cycle1;
   else
-    phaseM = wsp.cycles * wsp.cycle;
+    cycle = wsp.cycles;
+  phaseM = cycles * wsp.cycle;
+  flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
+    cycles, wsp.cycle, wsp.duty, wsp.detInt);
   dcM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
   DBG1("\n%d %d %d %d\n", phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60)
   // while no err and tmr
@@ -115,7 +116,7 @@ int wspDetect(int *detections) {
       flogf("\nwspDetect\t| duty cycle");
     } // while cycle
     utlX();
-    flogf("\nwspDetect\t| cycle %d", cycle++);
+    flogf("\nwspDetect\t| cycle %d", cycleCnt++);
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
