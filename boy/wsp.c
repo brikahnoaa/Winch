@@ -91,10 +91,11 @@ int wspDetect(int *detections) {
   else
     cycles = wsp.cycles;
   phaseM = cycles * wsp.cycle;
+  dcM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
   flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
     cycles, wsp.cycle, wsp.duty, wsp.detInt);
-  dcM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
-  DBG1("\n%d %d %d %d\n", phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60)
+  flogf("\nsecs %d %d %d %d\n", 
+    phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60);
   // while no err and tmr
   tmrStart(phase_tmr, phaseM*60);
   while (!r && !tmrExp(phase_tmr)) {
@@ -104,18 +105,19 @@ int wspDetect(int *detections) {
       while (!r && !tmrExp(cycle_tmr) && !tmrExp(dc_tmr)) {
         tmrStart(det_tmr, wsp.detInt*60);
         while (!r && !tmrExp(dc_tmr) && !tmrExp(det_tmr)) {
-          utlNap(10);
+          utlNap(5);
         } // while det_tmr
-        utlX();
+        // short naps avoids extra loops
+        utlNap(5);
         // detections
         r = wspQuery(&det);
         detTotal += det;
         flogf("\nwspDetect\t| detected %d", det);
       } // while duty
-      utlX();
+      utlNap(5);
       flogf("\nwspDetect\t| duty cycle");
     } // while cycle
-    utlX();
+    utlNap(5);
     flogf("\nwspDetect\t| cycle %d", cycleCnt++);
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
