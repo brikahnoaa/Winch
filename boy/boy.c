@@ -501,3 +501,9 @@ bool boyDocked(float depth) {
   if (boy.dockD==0.0) return false;
   else return (abs(depth-boy.dockD)<1.0);
 }
+
+///
+// cycle number
+int boyCycle(void) {
+  return boy.cycle;
+} // boyCycle

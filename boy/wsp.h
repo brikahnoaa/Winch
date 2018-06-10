@@ -10,6 +10,8 @@ typedef struct WspInfo {
   int cards;                  // number of cards installed
   int cfSize;                 // size of CF card
   int cycle;                  // (60 min)
+  int cycle1;                 // how many cycles first day (15) ??
+  int cycles;                 // how many cycles (24)
   int detInt;                 // how often to log detections (10 min)
   int detMax;                 // max detections to be logged
   int duty;                   // percent of cycle to run wispr
@@ -19,6 +21,7 @@ typedef struct WspInfo {
   Serial port;                // mpcPamPort()
 } WspInfo;
 
+static int wspQuery(int *det);
 int wspDetect(int *detections);
 int wspSpace(float *disk);
 int wspStart(int card);

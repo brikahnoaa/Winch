@@ -1,5 +1,6 @@
 // wsp.c 
 #include <utl.h>
+#include <boy.h>
 #include <wsp.h>
 #include <mpc.h>
 #include <tmr.h>
@@ -79,40 +80,68 @@ void wspLog(char *str) {
 // uses: .duty .cycle .detInt
 // sets: *detections
 int wspDetect(int *detections) {
-  char *s, query[32];
   float free;
-  int dc, det=0, r=0;  // r==0 means no err
-  DBG0("wspDetect()")
-  dc = (int) 60*wsp.duty/100*wsp.cycle; // (50, 60)
-  DBG1("\ndutycycle %d %s", dc, utlTime())
-  tmrStart(minute_tmr, dc);
-  // while no err and duty cycle
-  while (!r && !tmrExp(minute_tmr)) {
-    // nap for a time
-    utlNap(60*wsp.detInt);         // (10)
-    // detections
-    TURxFlush(wsp.port);
-    sprintf(query, "$DX?,%d*", wsp.detMax);
-    utlWrite(wsp.port, query, EOL);
-    utlReadWait(wsp.port, utlBuf, 16);
-    wspLog(utlBuf);
-    // total det
-    s = strtok(utlBuf, "$,");
-    if (!strstr(s, "DXN")) r = 3;
-    s = strtok(NULL, ",");
-    det += atoi(s);
-    DBG1("detected %d", det)
+  int phaseM, dcM, detTotal=0, det=0, r=0;  // r==0 means no err
+  enum {phase_tmr, cycle_tmr, dc_tmr, det_tmr};
+  flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
+    wsp.cycles, wsp.cycle, wsp.duty, wsp.detInt);
+  // ?? nasty hack
+  if (boyCycle()==0) return 0;
+  if (boyCycle()==1) 
+    phaseM = wsp.cycle1 * wsp.cycle;
+  else
+    phaseM = wsp.cycles * wsp.cycle;
+  dcM = (int) 60*wsp.cycle*wsp.duty/100; // (60, 50)
+  // while no err and tmr
+  tmrStart(phase_tmr, phaseM*60);
+  while (!r && !tmrExp(phase_tmr)) {
+    tmrStart(cycle_tmr, wsp.cycle*60);
+    while (!r && !tmrExp(cycle_tmr)) {
+      tmrStart(dc_tmr, dcM*60);
+      while (!r && !tmrExp(dc_tmr)) {
+        tmrStart(det_tmr, wsp.detInt*60);
+        while (!r && !tmrExp(det_tmr)) {
+          utlNap(1);
+        } // while det_tmr
+        utlX();
+        // detections
+        r = wspQuery(&det);
+        detTotal += det;
+      } // while duty
+      utlX();
+    } // while cycle
+    utlX();
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
     DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
-  } // while duty cycle
-  if (r) tmrStop(minute_tmr);       // err
+  } // while phase
+  utlX();
+  if (r) tmrStopAll();       // err
   utlWrite(wsp.port, "$EXI*", EOL);
   utlExpect(wsp.port, utlBuf, "FIN", 5);
-  *detections = det;
+  *detections = detTotal;
   return r;
 } // wspDetect
+
+///
+// query detections
+int wspQuery(int *det) {
+  int r=0;
+  char *s, query[32];
+  TURxFlush(wsp.port);
+  sprintf(query, "$DX?,%d*", wsp.detMax);
+  utlWrite(wsp.port, query, EOL);
+  utlReadWait(wsp.port, utlBuf, 16);
+  wspLog(utlBuf);
+  // total det
+  s = strtok(utlBuf, "$,");
+  if (!strstr(s, "DXN")) r = 3;
+  s = strtok(NULL, ",");
+  *det = atoi(s);
+  DBG1("detected %d", det)
+  return r;
+} // wspQuery
 
 ///
 // wispr detection program, query disk space
