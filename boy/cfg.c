@@ -170,7 +170,7 @@ bool cfgString(char *str){
     // ignore case compare with cfgCmp
     if (cfgCmp(ref, id) || cfgCmp(ref, var)) {
       cfgSet(ptr, type, val);
-      DBG2("\n(%c) %s=%s", type, var, val)
+      DBG1("\n(%c) %s=%s", type, var, val)
       return true;
     }
   } // for cfg
