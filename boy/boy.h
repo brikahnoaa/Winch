@@ -3,7 +3,7 @@
 
 typedef enum {
   deploy_pha=0, 
-  data_pha, rise_pha, irid_pha, fall_pha,
+  rise_pha, irid_pha, fall_pha, data_pha,
   reboot_pha, error_pha
 } PhaseType;
 

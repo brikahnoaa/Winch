@@ -43,10 +43,6 @@ void boyMain() {
     case deploy_pha:
       phaseNext = deployPhase();
       break;
-    case data_pha: // data collect by WISPR
-      boy.cycle++;
-      phaseNext = dataPhase();
-      break;
     case rise_pha: // Ascend buoy, check for current and ice
       phaseNext = risePhase();
       break;
@@ -56,6 +52,10 @@ void boyMain() {
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
       // reset test cycle
+      break;
+    case data_pha: // data collect by WISPR
+      phaseNext = dataPhase();
+      boy.cycle++;
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
