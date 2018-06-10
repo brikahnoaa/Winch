@@ -158,6 +158,7 @@ int rise(float targetD, int try) {
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
   DBG0("rise(%3.1f)", targetD)
+  utlNap(15);
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
@@ -205,9 +206,10 @@ int rise(float targetD, int try) {
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
+      flogf("\nrise()\t| 20s: startD-nowD %3.1f ", startD-nowD);
       if (startD-nowD < 1.5) {
         // by now we should have moved up 5 meters
-        flogf("\nrise()\t| ERR \t| depth %3.1f after 20 seconds", nowD);
+        flogf("ERR < 1.5");
         errB = true;
         break;
       } else {
@@ -286,6 +288,7 @@ int fall(int try) {
   MsgType msg;
   enum {targetT, ngkT, fortyT, fiveT};  // local timer names
   DBG0("fall()")
+  utlNap(15);
   nowD = startD = antDepth();
   // if (startD < targetD) return 1;
   if (nowD > boy.dockD-2) return 1;

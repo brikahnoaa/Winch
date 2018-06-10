@@ -10,12 +10,12 @@ typedef struct WspInfo {
   int cards;                  // number of cards installed
   int cfSize;                 // size of CF card
   int cycle;                  // (60 min)
+  int detInt;                 // how often to log detections (10 min)
   int detMax;                 // max detections to be logged
   int duty;                   // percent of cycle to run wispr
   int freeMin;                // free disk min GB, else go on to new wispr
   int gain;                   // mic sensitivity
   int log;                    // log fileid
-  int query;                  // how often to log detections (10 min)
   Serial port;                // mpcPamPort()
 } WspInfo;
 

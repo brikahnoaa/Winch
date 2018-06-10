@@ -74,7 +74,7 @@ static CfgParam cfgP[] = {
   {"brR", "boy.riseRetry",  &boy.riseRetry,   'i',  "3"},
   {"clg", "ctd.logging",    &ctd.logging,     'b',  "true"},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c',  ""},
-  {"cde", "ctd.delay",      &ctd.delay,       'i',  "5"},
+  {"cde", "ctd.delay",      &ctd.delay,       'i',  "6"},
   {"gph", "gps.phoneNum",   &gps.phoneNum,    'c',  "0088160000519"},
   {"gpl", "gps.platform",   &gps.platform,    'c',  "LR01"},
   {"gpr", "gps.project",    &gps.project,     'c',  "QUEH"},
@@ -98,11 +98,11 @@ static CfgParam cfgP[] = {
   {"wcs", "wsp.cards",      &wsp.cards,       'i',  "2"},
   {"wcf", "wsp.cfSize",     &wsp.cfSize,      'i',  "512"},
   {"wcy", "wsp.cycle",      &wsp.cycle,       'i',  "60"},
+  {"wdI", "wsp.detInt",     &wsp.detInt,      'i',  "10"},
   {"wdX", "wsp.detMax",     &wsp.detMax,      'i',  "10"},
   {"wdu", "wsp.duty",       &wsp.duty,        'i',  "50"},
   {"wfM", "wsp.freeMin",    &wsp.freeMin,     'i',  "5"},
   {"wga", "wsp.gain",       &wsp.gain,        'i',  "1"},
-  {"wqu", "wsp.query",      &wsp.query,       'i',  "10"},
 };
 
 

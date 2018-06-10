@@ -76,7 +76,7 @@ void wspLog(char *str) {
 // log up to .detMax detections every .query minutes
 // while .duty% * .cycle minutes
 // return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
-// uses: .duty .cycle
+// uses: .duty .cycle .detInt
 // sets: *detections
 int wspDetect(int *detections) {
   char *s, query[32];
@@ -89,7 +89,7 @@ int wspDetect(int *detections) {
   // while no err and duty cycle
   while (!r && !tmrExp(minute_tmr)) {
     // nap for a time
-    utlNap(60*wsp.query);         // (10)
+    utlNap(60*wsp.detInt);         // (10)
     // detections
     TURxFlush(wsp.port);
     sprintf(query, "$DX?,%d*", wsp.detMax);
