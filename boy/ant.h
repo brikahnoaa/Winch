@@ -39,7 +39,6 @@ typedef struct AntInfo {
 
 static bool antFresh(void);
 static bool antPending(void);
-static bool antPrompt(void);
 static bool antRead(void);
 static bool antDataWait(void);
 static int antData(void);
@@ -51,6 +50,7 @@ int ringDir(float v);
 void ringPrint(void);
 void ringSamp(void);
 
+bool antPrompt(void);
 bool antSurf(void);
 bool antVelo(float *velo);
 float antDepth(void);

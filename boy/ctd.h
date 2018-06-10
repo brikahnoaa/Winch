@@ -17,12 +17,12 @@ typedef struct CtdInfo {
   Serial port;                // same as mpc.port, ant.port
 } CtdInfo;
 
-static bool ctdPrompt(void);
 static void ctdBreak(void);
 static void ctdFlush(void);
 
 bool ctdData(void);
 bool ctdPending(void);
+bool ctdPrompt(void);
 bool ctdRead(void);
 float ctdDepth(void);
 void ctdAuton(bool auton);
