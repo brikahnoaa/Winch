@@ -30,8 +30,9 @@ void boyMain() {
   wspInit();
   pwrInit();
   flogf("\ system starts %d", starts);
-  // if (starts>1) 
-    // boy.phase = reboot_pha;
+  boy.phase = boy.startPh;
+  if (starts>1) 
+    boy.phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", boy.phase);
     
   while (true) {
