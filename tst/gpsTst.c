@@ -1,65 +1,51 @@
-// antTst.c
+// gpsTst.c
 #include <utl.h>
-#include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
-#include <sys.h>
 #include <ant.h>
-#include <tmr.h>
+#include <sys.h>
 
-#define EOL "\r"
+extern GpsInfo gps;
 
 void main(void){
-  char *here;
   Serial port;
-  int gpsT=90, iridT=120;
+  char c;
   sysInit();
   mpcInit();
   antInit();
-  // ctdInit();
-  // ctdStart();
-  port = antPort();
+  gpsInit();
+  //
   antStart();
-  // a3laStart()
-  antDevice(cf2_dev);
-  TUTxPutByte(port, 3, false);
-  TUTxPutByte(port, 'I', false);
-  antDevice(a3la_dev);
-  utlExpect(port, utlBuf, "COMMAND", 12);
-  flogf("'%s'", utlBuf);
-  flogf("\nAT+PD\n");
-  tmrStart(ant_tmr, gpsT);
-  while (!tmrExp(ant_tmr)) {
-    utlWrite(port, "AT+PD", EOL);
-    utlExpect(port, utlBuf, "OK", 12);
-    if (!strstr(utlBuf, "Invalid Position"))
-      break;
-    if (utlMatchAfter(utlStr, utlBuf, "Satellites Used=", "0123456789")) 
-      flogf(" Sats=%s", utlStr);
-    if (cgetq() && cgetc()=='Q') break;
-    utlNap(3);
-  } // while timer
-  // replace crlf
-  for (here=utlBuf; *here; here++) 
-    if (*here=='\r' || *here=='\n')
-      *here = '.';
-  flogf("\n%s\n%d seconds\n", utlBuf, gpsT-tmrQuery(ant_tmr));
-  // switch to irid
-  antDevice(cf2_dev);
-  antSwitch(irid_ant);
-  antDevice(a3la_dev);
-  flogf("\nCSQ\n");
-  tmrStart(ant_tmr, iridT);
-  while (!tmrExp(ant_tmr)) {
-    utlWrite(port, "AT+CSQ", EOL);
-    utlExpect(port, utlBuf, "OK", 12);
-    // replace crlf
-    for (here=utlBuf; *here; here++) 
-      if (*here=='\r' || *here=='\n')
-        *here = '.';
-    flogf("%s\n", utlBuf);
-    if (cgetq() && cgetc()=='Q') break;
-  } // while timer
-  antDevice(cf2_dev);
-  TUTxPutByte(port, 4, false);
-  TUTxPutByte(port, 'I', false);
+  gpsStart();
+  // gpsStats();
+  iridSig();
+  iridSendTest(12);
+  iridHup();
+  /**/
+  port = gps.port;
+  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
+  while (true) {
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      if (c=='C') {
+        antDevice(cf2_dev);
+        continue;
+      }
+      if (c=='A') {
+        antDevice(a3la_dev);
+        continue;
+      }
+      cputc(c);
+      TUTxPutByte(port,c,false);
+    }
+  }
+  /**/
+
+  gpsStop();
+  antStop();
 }

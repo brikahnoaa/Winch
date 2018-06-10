@@ -26,6 +26,7 @@ void boyMain() {
   antInit();
   boyInit();
   ctdInit();
+  gpsInit();
   ngkInit();
   wspInit();
   pwrInit();
