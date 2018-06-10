@@ -101,6 +101,7 @@ int wspDetect(int *detections) {
   while (!r && !tmrExp(phase_tmr)) {
     tmrStart(cycle_tmr, wsp.cycle*60);
     tmrStart(dc_tmr, dcM*60);
+    flogf("\nwspDetect\t| cycle %d", cycleCnt++);
     while (!r && tmrOn(phase_tmr) && !tmrExp(cycle_tmr)) {
       while (!r && tmrOn(cycle_tmr) && !tmrExp(dc_tmr)) {
         tmrStart(det_tmr, wsp.detInt*60);
@@ -118,7 +119,6 @@ int wspDetect(int *detections) {
       flogf("\nwspDetect\t| duty cycle");
     } // while cycle
     utlNap(5);
-    flogf("\nwspDetect\t| cycle %d", cycleCnt++);
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
