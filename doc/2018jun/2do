@@ -25,6 +25,12 @@ test larger irid file, 30K
 
 strip quotes from VEE params, irid params
 
+detections for real, change pam2
+
+sys.startCheck restartPhase
+
+autostart after sleep
+
 rise(+stopdelay) - add arbitrary delay when surfacing
 
 git v3.surfTest

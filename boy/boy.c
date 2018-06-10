@@ -21,7 +21,6 @@ BoyInfo boy;
 void boyMain() {
   PhaseType phaseNext;
   int starts;
-  // boy.phase set by sys.cfg
   starts = sysInit();
   mpcInit();
   antInit();
@@ -30,6 +29,7 @@ void boyMain() {
   ngkInit();
   wspInit();
   pwrInit();
+  flogf("\ system starts %d", starts);
   if (starts>1) 
     boy.phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", boy.phase);
@@ -454,7 +454,7 @@ float oceanCurr() {
   c=boy.boy2ant;
   flogf("\noceanCurr() \t| aD=%3.1f cD=%3.1f boy2ant=%3.1f", aD, cD, c);
   if (a<0) {
-    flogf("\noceanCurr() \t| ERR sbe16<sbe39");
+    flogf("\noceanCurr() \t| ERR sbe16-sbe39<0");
     return -1.0;
   }
   if (c<a) {
