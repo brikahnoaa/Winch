@@ -81,7 +81,8 @@ void wspLog(char *str) {
 // sets: *detections
 int wspDetect(int *detections) {
   float free;
-  int phaseM, dcM, detTotal=0, det=0, r=0;  // r==0 means no err
+  int phaseM, dcM;
+  int cycle=1, detTotal=0, det=0, r=0;  // r==0 means no err
   enum {phase_tmr, cycle_tmr, dc_tmr, det_tmr};
   flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
     wsp.cycles, wsp.cycle, wsp.duty, wsp.detInt);
@@ -107,10 +108,13 @@ int wspDetect(int *detections) {
         // detections
         r = wspQuery(&det);
         detTotal += det;
+        flogf("\nwspDetect\t| detected %d", det);
       } // while duty
       utlX();
+      flogf("\nwspDetect\t| duty cycle");
     } // while cycle
     utlX();
+    flogf("\nwspDetect\t| cycle %d", cycle++);
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
@@ -121,6 +125,7 @@ int wspDetect(int *detections) {
   utlWrite(wsp.port, "$EXI*", EOL);
   utlExpect(wsp.port, utlBuf, "FIN", 5);
   *detections = detTotal;
+  flogf("\nwspDetect\t| total detections %d", detTotal);
   return r;
 } // wspDetect
 
