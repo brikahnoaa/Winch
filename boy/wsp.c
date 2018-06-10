@@ -96,11 +96,11 @@ int wspDetect(int *detections) {
   tmrStart(phase_tmr, phaseM*60);
   while (!r && !tmrExp(phase_tmr)) {
     tmrStart(cycle_tmr, wsp.cycle*60);
-    while (!r && !tmrExp(cycle_tmr)) {
+    while (!r && !tmrExp(phase_tmr) && !tmrExp(cycle_tmr)) {
       tmrStart(dc_tmr, dcM*60);
-      while (!r && !tmrExp(dc_tmr)) {
+      while (!r && !tmrExp(cycle_tmr) && !tmrExp(dc_tmr)) {
         tmrStart(det_tmr, wsp.detInt*60);
-        while (!r && !tmrExp(det_tmr)) {
+        while (!r && !tmrExp(dc_tmr) && !tmrExp(det_tmr)) {
           utlNap(1);
         } // while det_tmr
         utlX();
