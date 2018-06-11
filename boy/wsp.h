@@ -9,9 +9,9 @@ typedef struct WspInfo {
   int card;                   // current wispr card in use
   int cards;                  // number of cards installed
   int cfSize;                 // size of CF card
-  int cycle;                  // (60 min)
-  int cycle1;                 // how many cycles first day (15) ??
-  int cycles;                 // how many cycles (24)
+  int hour;                   // (60 min)
+  int day1;                   // how many cycles first day (15) ??
+  int day;                    // how many cycles (24)
   int detInt;                 // how often to log detections (10 min)
   int detMax;                 // max detections to be logged
   int duty;                   // percent of cycle to run wispr

@@ -90,36 +90,12 @@ PhaseType rebootPhase(void) {
 } // reboot()
 
 ///
-// wispr recording and detecting, buoy is docked to ngk
-// data is gathered for about 24hours (data_tmr)
-// wsp powers down for % of each hour (wispr_tmr)
-// organize data files, transfer data to antmod ??
-// sleep needs a lot of optimizing to be worth the trouble
-// uses: data_tmr duty_tmr
-PhaseType dataPhase(void) {
-  int detect;
-  flogf("dataPhase()");
-  if (boy.noData) return rise_pha;
-  if ((boy.oddData) && (boy.cycle % 2)==0) return rise_pha;
-  ctdStop();
-  antStop();
-  wspStart(wsp2_pam);
-  wspDetect(&detect);
-  flogf("\ndataPhase detections: %d", detect);
-  wspStorm(utlBuf);
-  flogf("\nstorm: %s", utlBuf);
-  wspStop();
-  return rise_pha;
-} // dataPhase
-
-///
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
 PhaseType risePhase(void) {
   bool success;
   flogf("risePhase()");
   if (boy.noRise) return irid_pha;
-  if ((boy.oddRise) && (boy.cycle % 2)==0) return irid_pha;
   antStart();
   ctdStart();
   ngkStart();
@@ -147,6 +123,53 @@ PhaseType risePhase(void) {
   // success
   return irid_pha;
 } // risePhase
+
+///
+// ??
+// turn off sbe, on irid/gps (takes 30 sec). 
+// read gps date, loc. 
+PhaseType iridPhase(void) {
+  flogf("iridPhase()");
+  if (boy.noIrid) return fall_pha;
+  antStart();
+  gpsStart();
+  // gpsStats();
+  iridSig();
+  iridSendTest(12);
+  iridHup();
+  gpsStop();
+  return fall_pha;
+} // iridPhase
+
+///
+PhaseType fallPhase() {
+  flogf("fallPhase()");
+  if (boy.noRise) return data_pha;
+  fall(0);
+  return data_pha;
+} // fallPhase
+
+///
+// wispr recording and detecting, buoy is docked to ngk
+// data is gathered for about 24hours (data_tmr)
+// wsp powers down for % of each hour (wispr_tmr)
+// organize data files, transfer data to antmod ??
+// sleep needs a lot of optimizing to be worth the trouble
+// uses: data_tmr duty_tmr
+PhaseType dataPhase(void) {
+  int detect;
+  flogf("dataPhase()");
+  if (boy.noData) return rise_pha;
+  ctdStop();
+  antStop();
+  wspStart(wsp2_pam);
+  wspDetect(&detect);
+  flogf("\ndataPhase detections: %d", detect);
+  wspStorm(utlBuf);
+  flogf("\nstorm: %s", utlBuf);
+  wspStop();
+  return rise_pha;
+} // dataPhase
 
 
 ///
@@ -252,33 +275,6 @@ int rise(float targetD, int try) {
     return 0;
   }
 } // rise
-
-///
-// ??
-// turn off sbe, on irid/gps (takes 30 sec). 
-// read gps date, loc. 
-PhaseType iridPhase(void) {
-  flogf("iridPhase()");
-  if (boy.noIrid) return fall_pha;
-  if ((boy.oddIrid) && (boy.cycle % 2)==0) return fall_pha;
-  antStart();
-  gpsStart();
-  // gpsStats();
-  iridSig();
-  iridSendTest(12);
-  iridHup();
-  gpsStop();
-  return fall_pha;
-} // iridPhase
-
-///
-PhaseType fallPhase() {
-  flogf("fallPhase()");
-  if (boy.noRise) return data_pha;
-  if ((boy.oddRise) && (boy.cycle % 2)==0) return data_pha;
-  fall(0);
-  return data_pha;
-} // fallPhase
 
 ///
 // based on rise(), diffs commented out; wait for winch stop

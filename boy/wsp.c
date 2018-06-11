@@ -75,40 +75,43 @@ void wspLog(char *str) {
 
 ///
 // log up to .detMax detections every .query minutes
-// while .duty% * .cycle minutes
+// while .duty% * .hour minutes
 // return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
-// uses: .duty .cycle .detInt
+// uses: .day .day1 .duty .hour .detInt
 // sets: *detections
 int wspDetect(int *detections) {
   float free;
-  int phaseM, dutyM, phaseS, cycleS, dutyS, queryS;
-  int cycles=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
-  enum {phase_tmr, cycle_tmr, duty_tmr, query_tmr};
-  // ?? nasty hack
-  if (boyCycle()==0) return 0;
+  int dayM, dutyM, dayS, hourS, dutyS, queryS;
+  int day=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
+  enum {day_tmr, hour_tmr, duty_tmr, query_tmr};
+  // skip data cycle zero (deploy), go back up
+  if (boyCycle()==0) {
+    *detections=0;
+    return 0;
+  }
   if (boyCycle()==1) 
-    cycles = wsp.cycle1;
+    day = wsp.day1;
   else
-    cycles = wsp.cycles;
-  phaseM = cycles * wsp.cycle;
-  dutyM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
-  phaseS = phaseM*60;
-  cycleS = wsp.cycle*60;
+    day = wsp.day;
+  dayM = day * wsp.hour;
+  dutyM = (int) wsp.hour*wsp.duty/100; // (60, 50)
+  dayS = dayM*60;
+  hourS = wsp.hour*60;
   dutyS = dutyM*60;
   queryS = wsp.detInt*60;
-  flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
-    cycles, wsp.cycle, wsp.duty, wsp.detInt);
+  flogf("\nwspDetect()\t| day hours=%d, hour=%dm, duty=%d%%, detInt=%dm",
+    day, wsp.hour, wsp.duty, wsp.detInt);
   flogf("\nsecs %d %d %d %d\n", 
-    phaseS, cycleS, dutyS, queryS);
+    dayS, hourS, dutyS, queryS);
   // while no err and tmr
-  tmrStart(phase_tmr, phaseS);
-  // phase
+  tmrStart(day_tmr, dayS);
+  // day
   while (!r) {
-    if (tmrQuery(phase_tmr)<cycleS) continue;
-    tmrStart(cycle_tmr, cycleS);
+    if (tmrQuery(day_tmr)<hourS) continue;
+    tmrStart(hour_tmr, hourS);
     tmrStart(duty_tmr, dutyS);
     flogf("\nwspDetect\t| cycle %d", cycleCnt++);
-    // cycle
+    // hour
     while (!r) {
       // duty
       while (!r) {
@@ -127,16 +130,16 @@ int wspDetect(int *detections) {
         if (tmrExp(duty_tmr)) break;
       } // while duty
       flogf("\nwspDetect\t| duty cycle");
-      // wait until cycle ends
-      while (!tmrExp(cycle_tmr)) utlNap(5);
+      // wait until hour ends
+      while (!tmrExp(hour_tmr)) utlNap(5);
       break;
-    } // while cycle
+    } // while hour
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
     DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
-    if (tmrExp(phase_tmr)) break;
-  } // while phase
+    if (tmrExp(day_tmr)) break;
+  } // while day
   if (r) tmrStopAll();       // err
   utlWrite(wsp.port, "$EXI*", EOL);
   utlExpect(wsp.port, utlBuf, "FIN", 5);
