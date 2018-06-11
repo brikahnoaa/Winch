@@ -97,8 +97,8 @@ int wspDetect(int *detections) {
   queryS = wsp.detInt*60;
   flogf("\nwspDetect()\t| day=%dh, hour=%dm, duty=%d%%, detInt=%dm",
     day, wsp.hour, wsp.duty, wsp.detInt);
-  flogf("\nsecs %d %d %d %d\n", 
-    dayS, hourS, dutyS, queryS);
+  flogf("\nsecs %d %d %d %d %s", 
+    dayS, hourS, dutyS, queryS, utlTime());
   // while no err and tmr
   tmrStart(day_tmr, dayS);
   // day
@@ -107,7 +107,7 @@ int wspDetect(int *detections) {
     if (tmrQuery(day_tmr)<hourS) continue;
     tmrStart(hour_tmr, hourS);
     tmrStart(duty_tmr, dutyS);
-    flogf("\nwspDetect\t| hour %d", cycleCnt++);
+    flogf("\nwspDetect\t| hour %d %s", cycleCnt++, utlTime());
     // hour
     while (!r) {
       // duty
@@ -124,11 +124,11 @@ int wspDetect(int *detections) {
         // detections
         r = wspQuery(&det);
         detTotal += det;
-        flogf("\nwspDetect\t| detected %d", det);
+        flogf("\nwspDetect\t| detected %d %s", det, utlTime());
         // short naps avoids extra loops
         if (tmrExp(duty_tmr)) break;
       } // while duty
-      flogf("\nwspDetect\t| duty cycle");
+      flogf("\nwspDetect\t| duty cycle %s", utlTime());
       // wait until hour ends
       while (!r && !tmrExp(hour_tmr)) {
         if (cgetq() && cgetc()=='q') { r = 5; continue; }
