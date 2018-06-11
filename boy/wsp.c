@@ -81,7 +81,7 @@ void wspLog(char *str) {
 // uses: .day .day1 .duty .hour .detInt
 // sets: *detections
 int wspDetect(int *detections) {
-  float free;
+  // float free;
   int dayM, dutyM, dayS, hourS, dutyS, queryS;
   int day=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
   enum {day_tmr, hour_tmr, duty_tmr, query_tmr};
@@ -146,7 +146,7 @@ int wspDetect(int *detections) {
   utlWrite(wsp.port, "$EXI*", EOL);
   utlExpect(wsp.port, utlBuf, "FIN", 5);
   *detections = detTotal;
-  flogf("\nwspDetect\t| total detections %d", detTotal);
+  flogf("\nwspDetect\t| total detections %d %s", detTotal, utlTime());
   return r;
 } // wspDetect
 
