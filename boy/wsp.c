@@ -126,6 +126,7 @@ int wspDetect(int *detections) {
           if (tmrExp(query_tmr)) break;
         } // while det_tmr
         // detections
+        if (r) break; // ??
         r = wspQuery(&det);
         detTotal += det;
         flogf("\nwspDetect\t| detected %d %s", det, utlTime());
