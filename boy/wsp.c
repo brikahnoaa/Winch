@@ -38,9 +38,9 @@ int wspStart(int card) {
   mpcPamPulse(WISPR_PWR_ON);
   wsp.card =  card;
   // expect df output
-  utlExpect(wsp.port, utlBuf, "/mnt", 40);
+  // utlExpect(wsp.port, utlBuf, "/mnt", 40);
   // ?? check free disk, maybe increment card
-  flogf("\n%s\n", utlBuf);
+  // flogf("\n%s\n", utlBuf);
   return card;
 } // wspStart
 
@@ -99,6 +99,10 @@ int wspDetect(int *detections) {
     day, wsp.hour, wsp.duty, wsp.detInt);
   flogf("\nsecs %d %d %d %d %s", 
     dayS, hourS, dutyS, queryS, utlTime());
+  // check disk space
+  // if (wspSpace(&free)) r = 2;     // fail
+  // if (free*wsp.cfSize<wsp.freeMin) r = 1;
+  // DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
   // while no err and tmr
   tmrStart(day_tmr, dayS);
   // day
@@ -136,10 +140,6 @@ int wspDetect(int *detections) {
       }
       break;
     } // while hour
-    // check disk space
-    if (wspSpace(&free)) r = 2;     // fail
-    if (free*wsp.cfSize<wsp.freeMin) r = 1;
-    DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
     if (tmrExp(day_tmr)) break;
   } // while day
   if (r) tmrStopAll();       // err
