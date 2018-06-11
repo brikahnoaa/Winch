@@ -59,6 +59,10 @@
 typedef enum {ant_err, ctd_err, log_err, file_err, wsp_err, gps_err,
     ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;
 
+typedef struct GlobalInfo {
+  int det;
+} GlobalInfo;
+
 typedef struct UtlInfo {
   bool ignoreCon;             // ignore console input
   char *buf;

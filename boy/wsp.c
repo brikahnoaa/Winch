@@ -82,7 +82,7 @@ void wspLog(char *str) {
 // sets: *detections
 int wspDetect(int *detections) {
   // float free;
-  int dayM, dutyM, dayS, hourS, dutyS, queryS;
+  long dayM, dutyM, dayS, hourS, dutyS, queryS;
   int day=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
   enum {day_tmr, hour_tmr, duty_tmr, query_tmr};
   if (boyCycle()==1) 
@@ -97,7 +97,7 @@ int wspDetect(int *detections) {
   queryS = wsp.detInt*60;
   flogf("\nwspDetect()\t| day=%dh, hour=%dm, duty=%d%%, detInt=%dm",
     day, wsp.hour, wsp.duty, wsp.detInt);
-  flogf("\nsecs %d %d %d %d %s", 
+  flogf("\nsecs %ld %ld %ld %ld %s", 
     dayS, hourS, dutyS, queryS, utlTime());
   // check disk space
   // if (wspSpace(&free)) r = 2;     // fail

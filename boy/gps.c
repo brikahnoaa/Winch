@@ -4,6 +4,8 @@
 #include <ant.h>
 #include <tmr.h>
 
+extern GlobalInfo global;
+
 // gps and iridium routines have a lot of ways to fail, so return 0 or errcode
 //
 #define EOL "\r"
@@ -220,6 +222,7 @@ int iridSendTest(int msgLen) {
   // 1 byte number of blocks.
   sprintf(utlBuf, "@@@cs%c%cT%c%c", 
     (char) msgLen>>8, (char) msgLen & 0xFF, (char) 1, (char) 1);
+  sprintf(utlBuf+20, "Detected %d %s", global.det, utlDateTime());
   // poke in cs high and low bytes
   cs = iridCRC(utlBuf+5, bufLen-5);
   utlBuf[3] = (char) (cs >> 8);

@@ -13,6 +13,8 @@
 #include <tmr.h>
 #include <wsp.h>
 
+extern GlobalInfo global;
+
 BoyInfo boy;
 
 ///
@@ -97,7 +99,7 @@ PhaseType rebootPhase(void) {
   ngkRecvWait(&msg, 30);
   ngkSend(stopCmd_msg);
   ngkRecvWait(&msg, 30);
-  return fall_pha;
+  return deploy_pha;
 } // reboot()
 
 ///
@@ -146,7 +148,7 @@ PhaseType iridPhase(void) {
   gpsStart();
   // gpsStats();
   iridSig();
-  iridSendTest(12);
+  iridSendTest(100);
   iridHup();
   gpsStop();
   return fall_pha;
@@ -177,6 +179,7 @@ PhaseType dataPhase(void) {
   wspStart(wsp1_pam);
   success = wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
+  global.det = detect;
   wspStorm(utlBuf);
   flogf("\nstorm: %s", utlBuf);
   wspStop();

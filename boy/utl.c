@@ -13,6 +13,7 @@
 char *utlBuf, *utlStr;     
 
 UtlInfo utl;
+GlobalInfo global;
 
 ///
 // malloc static buffers (heap is 384K, stack only 16K)
