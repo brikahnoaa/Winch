@@ -1,5 +1,6 @@
 // wsp.c 
 #include <utl.h>
+#include <pwr.h>
 #include <boy.h>
 #include <wsp.h>
 #include <mpc.h>
@@ -102,19 +103,22 @@ int wspDetect(int *detections) {
   tmrStart(day_tmr, dayS);
   // day
   while (!r) {
+    if (cgetq() && cgetc()=='q') { r = 5; continue; }
     if (tmrQuery(day_tmr)<hourS) continue;
     tmrStart(hour_tmr, hourS);
     tmrStart(duty_tmr, dutyS);
-    flogf("\nwspDetect\t| cycle %d", cycleCnt++);
+    flogf("\nwspDetect\t| hour %d", cycleCnt++);
     // hour
     while (!r) {
       // duty
       while (!r) {
+        if (cgetq() && cgetc()=='q') { r = 5; continue; }
         if (tmrQuery(duty_tmr)<queryS) continue;
         tmrStart(query_tmr, queryS);
         // query
         while (!r) {
-          utlNap(5);
+          if (cgetq() && cgetc()=='q') { r = 5; continue; }
+          pwrNap(5);
           if (tmrExp(query_tmr)) break;
         } // while det_tmr
         // detections
@@ -126,7 +130,10 @@ int wspDetect(int *detections) {
       } // while duty
       flogf("\nwspDetect\t| duty cycle");
       // wait until hour ends
-      while (!tmrExp(hour_tmr)) utlNap(5);
+      while (!r && !tmrExp(hour_tmr)) {
+        if (cgetq() && cgetc()=='q') { r = 5; continue; }
+        pwrNap(5);
+      }
       break;
     } // while hour
     // check disk space

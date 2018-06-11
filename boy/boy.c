@@ -53,7 +53,6 @@ void boyMain() {
       break;
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
-      // reset test cycle
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
@@ -157,18 +156,19 @@ PhaseType fallPhase() {
 // sleep needs a lot of optimizing to be worth the trouble
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
-  int detect;
+  int success, detect;
   flogf("dataPhase()");
   if (boy.noData) return rise_pha;
   if (boy.cycle==0) return rise_pha;
   ctdStop();
   antStop();
-  wspStart(wsp2_pam);
-  wspDetect(&detect);
+  wspStart(wsp1_pam);
+  success = wspDetect(&detect);
   flogf("\ndataPhase detections: %d", detect);
   wspStorm(utlBuf);
   flogf("\nstorm: %s", utlBuf);
   wspStop();
+  if (success==5) sysStop("user stop in dataPhase");
   return rise_pha;
 } // dataPhase
 
