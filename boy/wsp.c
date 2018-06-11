@@ -84,11 +84,6 @@ int wspDetect(int *detections) {
   int dayM, dutyM, dayS, hourS, dutyS, queryS;
   int day=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
   enum {day_tmr, hour_tmr, duty_tmr, query_tmr};
-  // skip data cycle zero (deploy), go back up
-  if (boyCycle()==0) {
-    *detections=0;
-    return 0;
-  }
   if (boyCycle()==1) 
     day = wsp.day1;
   else
@@ -99,7 +94,7 @@ int wspDetect(int *detections) {
   hourS = wsp.hour*60;
   dutyS = dutyM*60;
   queryS = wsp.detInt*60;
-  flogf("\nwspDetect()\t| day hours=%d, hour=%dm, duty=%d%%, detInt=%dm",
+  flogf("\nwspDetect()\t| day=%dh, hour=%dm, duty=%d%%, detInt=%dm",
     day, wsp.hour, wsp.duty, wsp.detInt);
   flogf("\nsecs %d %d %d %d\n", 
     dayS, hourS, dutyS, queryS);

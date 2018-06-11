@@ -160,6 +160,7 @@ PhaseType dataPhase(void) {
   int detect;
   flogf("dataPhase()");
   if (boy.noData) return rise_pha;
+  if (boy.cycle==0) return rise_pha;
   ctdStop();
   antStop();
   wspStart(wsp2_pam);
