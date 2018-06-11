@@ -181,7 +181,9 @@ bool cfgString(char *str){
 ///
 // compare strings for equivalence, ignore case
 bool cfgCmp(char *a, char*b) {
-  while (*a!=0) 
+  if (strlen(a)!=strlen(b))
+    return false;
+  while (*a && *b) 
     // convert char to lower, postincr, compare
     if (tolower(*a++)!=tolower(*b++))
       return false;
