@@ -32,7 +32,9 @@ void boyMain() {
   pwrInit();
   flogf("\ system starts %d", starts);
   boy.phase = boy.startPh;
-  if (starts>1) 
+  if (boy.testing) 
+    flogf("\nboy.testing");
+  else if (starts>1) 
     boy.phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", boy.phase);
     
@@ -57,6 +59,8 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       boy.cycle++;
+      sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
+      execstr(utlBuf);
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
@@ -87,7 +91,12 @@ void boyInit(void) {
 // ask antmod for our velocity
 // sets: boy.phase
 PhaseType rebootPhase(void) {
-  flogf("rebootPhase()");
+  MsgType msg;
+  flogf("rebootPhase()\t| stop stop fall continue");
+  ngkSend(stopCmd_msg);
+  ngkRecvWait(&msg, 30);
+  ngkSend(stopCmd_msg);
+  ngkRecvWait(&msg, 30);
   return fall_pha;
 } // reboot()
 

@@ -73,10 +73,11 @@ void preRun(int delay) {
 // returns: starts
 int startCheck(void) {
   int cnt, max;
+  char str[128];
   max = atoi(VEEFetchStr("STARTS_MAX", STARTS_MAX));
   cnt = atoi(VEEFetchStr("STARTS", STARTS)) + 1;
-  sprintf(utlStr, "%d", cnt);
-  VEEStoreStr("STARTS", utlStr);
+  sprintf(str, "%d", cnt);
+  VEEStoreStr("STARTS", str);
   // log file is not open yet
   cprintf("\nstartCheck(): starts %d, max %d", cnt, max);
   if (cnt>max)
