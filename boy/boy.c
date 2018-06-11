@@ -67,6 +67,9 @@ void boyMain() {
     } // switch
     boy.phasePrev = boy.phase;
     boy.phase = phaseNext;
+    // ignor if cycleMax==0
+    if (boy.cycleMax && (boy.cycle > boy.cycleMax)) 
+      sysStop("cycleMax reached");
   } // while true
 } // boyMain() 
 
