@@ -81,9 +81,9 @@ void wspLog(char *str) {
 // sets: *detections
 int wspDetect(int *detections) {
   float free;
-  int phaseM, dcM;
+  int phaseM, dutyM, phaseS, cycleS, dutyS, queryS;
   int cycles=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
-  enum {phase_tmr, cycle_tmr, dc_tmr, det_tmr};
+  enum {phase_tmr, cycle_tmr, duty_tmr, query_tmr};
   // ?? nasty hack
   if (boyCycle()==0) return 0;
   if (boyCycle()==1) 
@@ -91,48 +91,51 @@ int wspDetect(int *detections) {
   else
     cycles = wsp.cycles;
   phaseM = cycles * wsp.cycle;
-  dcM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
+  dutyM = (int) wsp.cycle*wsp.duty/100; // (60, 50)
+  phaseS = phaseM*60;
+  cycleS = wsp.cycle*60;
+  dutyS = dutyM*60;
+  queryS = wsp.detInt*60;
   flogf("\nwspDetect()\t| phase cycles=%d, cycle=%dm, duty=%d%%, detInt=%dm",
     cycles, wsp.cycle, wsp.duty, wsp.detInt);
   flogf("\nsecs %d %d %d %d\n", 
-    phaseM*60, wsp.cycle*60, dcM*60, wsp.detInt*60);
+    phaseS, cycleS, dutyS, queryS);
   // while no err and tmr
-  tmrStart(phase_tmr, phaseM*60);
+  tmrStart(phase_tmr, phaseS);
   // phase
   while (!r) {
-    tmrStart(cycle_tmr, wsp.cycle*60);
-    tmrStart(dc_tmr, dcM*60);
+    if (tmrQuery(phase_tmr)<cycleS) continue;
+    tmrStart(cycle_tmr, cycleS);
+    tmrStart(duty_tmr, dutyS);
     flogf("\nwspDetect\t| cycle %d", cycleCnt++);
     // cycle
     while (!r) {
       // duty
       while (!r) {
-        tmrStart(det_tmr, wsp.detInt*60);
+        if (tmrQuery(duty_tmr)<queryS) continue;
+        tmrStart(query_tmr, queryS);
         // query
         while (!r) {
           utlNap(5);
-          if (tmrExp(det_tmr)) break;
+          if (tmrExp(query_tmr)) break;
         } // while det_tmr
         // detections
         r = wspQuery(&det);
         detTotal += det;
         flogf("\nwspDetect\t| detected %d", det);
         // short naps avoids extra loops
-        utlNap(5);
-        if (tmrExp(dc_tmr)) break;
+        if (tmrExp(duty_tmr)) break;
       } // while duty
-      utlNap(5);
       flogf("\nwspDetect\t| duty cycle");
       // wait until cycle ends
-      while (!tmrExp(cycle_tmr)) {}
+      while (!tmrExp(cycle_tmr)) utlNap(5);
       break;
     } // while cycle
     // check disk space
     if (wspSpace(&free)) r = 2;     // fail
     if (free*wsp.cfSize<wsp.freeMin) r = 1;
     DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
-    utlNap(5);
-    if (!tmrExp(phase_tmr)) break;
+    if (tmrExp(phase_tmr)) break;
   } // while phase
   if (r) tmrStopAll();       // err
   utlWrite(wsp.port, "$EXI*", EOL);
