@@ -1,0 +1,6 @@
+on recovery, test up/down manual. test up/up manual.
+
+surface: detected; wait x secs for winch slack; stop if needed.
+surface2: if no gps signal, extend 5 times
+surface3: after each irid call attempt, check avg depth
+

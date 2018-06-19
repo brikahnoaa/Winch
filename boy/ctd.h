@@ -4,6 +4,7 @@
 
 typedef struct CtdInfo {
   bool auton;
+  bool autoSample;
   bool logging;
   bool on;
   char logFile[32];

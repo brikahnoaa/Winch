@@ -138,6 +138,8 @@ bool ctdRead(void) {
   DBG1("= %4.2", ctd.depth)
   tmrStop(ctd_tmr);
   ctd.time = time(0);
+  if (ctd.autoSample) 
+    ctdSample();
   return true;
 } // ctdRead
 

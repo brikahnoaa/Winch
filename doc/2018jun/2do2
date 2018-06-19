@@ -1,35 +1,16 @@
-wsp
-  turn off test file
-  test for hour cycle
-  ls files
-
-  hour cycle
-    30 min run, 10 min detect count
-    storm
-
-  first cycle hours
-
-  cycle hours - default 15, resets to 24
-
-  do data when cycle# = 0, rise fall 3 times
-
-  test replacing hours with minutes
-
-
-tmr uses int. test range of int, enough seconds for a day? 4 bytes sizeof int
-limits.h, not sizeof?
-
-detection counts into a file, send?
-
 test larger irid file, 30K
 
 strip quotes from VEE params, irid params
 resolve ant & ctd
 
-rise(+stopdelay) - add arbitrary delay when surfacing
+antDepth blocks, extern antData()
 
-git v3.surfTest
+winch up: primary stop method is NGK slack, secondary is antmod depth
+    start timer at surf depth detect, watch for stopCmd
+        manual stop if timeout (90 sec?)
+    log and report time between surf detect and winchStop
+    after stop, wait 1 minute and check depth
+        restart sequence if now below surf (pushed under)
+            repeat cycle up to 5x 
 
-.1 science! ctd during ascent, descent
-.. no auto
-.. ctdData()
+param: pause during 8m current check to allow drift

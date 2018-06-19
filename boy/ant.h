@@ -11,6 +11,7 @@ typedef struct RingNode {
   float depth;
   time_t sampT;
   struct RingNode *next;
+  struct RingNode *prev;
 } RingNode;
 
 typedef struct AntInfo {
@@ -38,18 +39,16 @@ typedef struct AntInfo {
   Serial port;
 } AntInfo;
 
+static int ringDir(void);
+void ringPrint(void);
+void ringSamp(void);
+
 static bool antFresh(void);
 static bool antPending(void);
 static bool antRead(void);
-static bool antDataWait(void);
-static int antData(void);
 static void antBreak(void);
 static void antMovSam(void);
 static void antSample(void);
-
-int ringDir(float v);
-void ringPrint(void);
-void ringSamp(void);
 
 bool antPrompt(void);
 bool antSurf(void);
@@ -57,12 +56,13 @@ bool antVelo(float *velo);
 float antDepth(void);
 float antSurfD(void);
 float antTemp(void);
-void antAuton(bool auton);
+int antData(void);
+// void antAuton(bool auton);
 void antAutoSample(bool autos);
 void antDevice(DevType dev);
 void antDevPwr(char c, bool on);
 void antFlush(void);
-void antGetSamples(void);
+// void antGetSamples(void);
 void antInit(void);
 void antRingReset(void);
 void antStart(void);

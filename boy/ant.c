@@ -25,14 +25,17 @@ void antInit(void) {
   else
     strcpy(ant.samCmd, "TS");
   antDevice(null_dev);
+  // init antRing
   // alloc bloc to store depth values for moving/velo
   ant.ring = (RingNode *) calloc(ant.ringSize, sizeof(RingNode));
   // to string the nodes into a ring, access like an array
   for (i=0; i<ant.ringSize-1; i++) {
     ant.ring[i].next = &ant.ring[i+1];
+    ant.ring[i+1].prev = &ant.ring[i];
   }
   ant.ring[i].next = ant.ring;
-  ant.ringFresh = ant.fresh * ant.ringSize;
+  ant.ring[i].prev = &ant.ring[i-1];
+  ant.ringFresh = ant.fresh * ant.ringSize * 2;
 } // antInit
 
 ///
@@ -112,16 +115,6 @@ int antData() {
 } // antData
 
 ///
-// wait for data or not pending (timeout)
-bool antDataWait(void) {
-  DBG2("aDW")
-  while (antPending())
-    if (antData()) 
-      return true;
-  return false;
-} // antDataWait
-
-///
 // if !tmrOn request sample
 // sets: ant_tmr
 void antSample(void) {
@@ -140,7 +133,7 @@ void antSample(void) {
 } // antSample
 
 ///
-// antRead processes most recent sample, could be multiple
+// antRead processes most recent sample, ignore junk
 // after: if ant.autoSample then antSample(), else not pending after read
 // sets: ant.temp .depth .sampT .ring->depth .ring->sampT
 bool antRead(void) {
@@ -203,46 +196,19 @@ bool antPending(void) {
 }
     
 ///
-// if data, read. if !pending, sample. if !fresh, wait.
-// antRead may fail, e.g. sleep mode; if so, !antFresh
 float antDepth(void) {
   DBG2("aDep")
   if (antData())
     antRead();
-  if (!antPending())
-    antSample();
-  if (!antFresh()) {
-    antDataWait();
-    antRead();
-  }
   return ant.depth;
 } // antDepth
 
+///
 float antTemp(void) {
-  antDepth();
+  if (antData())
+    antRead();
   return ant.temp;
 } // antTemp
-
-///
-// checks recent depth against previous, computes velocity m/s
-// false if oldest recent depth is very old
-// sets *velo 0.0 if depths go up and down
-// uses: ant.ring ringFresh
-// sets: *velo ant.ring->depth ->time returns bool
-bool antVelo(float *velo) {
-  int dir;
-  float v;
-  // got samples? 
-  if (ant.sampRT - ant.ring->sampT > ant.ringFresh) return false;
-  // candidate velo
-  v = (ant.depth - ant.ring->depth) / (ant.sampRT - ant.ring->sampT);
-  DBG3("candiV:%4.2f", v)
-  dir = ringDir(v);
-  if (dir) *velo = v;
-  else *velo = 0.0;
-  DBG2("aV=%4.2f", *velo)
-  return true;
-} // antVelo
 
 ///
 // sets: ring ring.depth ring.sampT
@@ -253,23 +219,38 @@ void ringSamp(void) {
 } // ringSamp
 
 ///
-// is this ring consistent increasing (1) or decreasing (-1)
-int ringDir(float v) {
+// checks recent depth against previous, computes velocity m/s
+// retn: false and *v=0.0 if ring is stale or vacilates
+// uses: ant.ring ringFresh
+// sets: *velo returns bool
+bool antVelo(float *velo) {
+  *velo = 0.0;
+  // got samples? ??
+  if (ant.sampRT - ant.ring->sampT > ant.ringFresh) 
+    return false;
+  if (ringDir()==0)
+    return false;
+  *velo = (ant.depth - ant.ring->depth) / (ant.sampRT - ant.ring->sampT);
+  DBG2("aV=%4.2f", *velo)
+  return true;
+} // antVelo
+
+///
+// is the depth ring consistent increasing (1) or decreasing (-1)
+int ringDir() {
   RingNode *n;
-  int dir;
-  // direction - check all samples for consistent direction
-  dir = (v>0) ? 1 : -1;
-  for (n=ant.ring; n->next!=ant.ring; n=n->next) {
-    DBG3("rd:%3.1f", n->depth)
-    if (dir==1) // fall
-      if (n->depth > n->next->depth)
-        dir = 0;
-    if (dir==-1) // rise
-      if (n->depth < n->next->depth)
-        dir = 0;
-    if (dir==0) break;
-  }
-  return dir;
+  float dir;
+  n = ant.ring;
+  dir = ant.depth - n->depth;
+  if (dir==0) return 0;
+  // direction - check all samples for consistency rise or fall
+  for (n=ant.ring; n->prev!=ant.ring; n=n->prev) 
+    if (dir>0) // positive==fall
+      if (n->depth < n->prev->depth) return 0;
+    else // rise
+      if (n->depth > n->prev->depth) return 0;
+  if (dir>0) return 1;
+  else return -1;
 } // ringDir
 
 /// debug
@@ -283,11 +264,10 @@ void ringPrint(void) {
     printf("[%d]%3.1f,%d\n", i, r->depth, (int)(r->sampT-now));
     r = r->next;
   }
-}
+} // ringPrint
 
 ///
-// clear sample times used by antVelo, call this when winch stops
-// could be replaced with free(), calloc()
+// clear sample times used by antVelo, antAvgD
 // sets: ant.ring->sampT;
 void antRingReset(void) {
   RingNode *n;
@@ -355,6 +335,7 @@ void antAutoSample(bool autos) {
   ant.autoSample = autos;
 } // antAutoSample
 
+/*
 ///
 // turn autonomous on/off. idle_ant clears samples
 void antAuton(bool auton) {
@@ -382,7 +363,8 @@ void antAuton(bool auton) {
   tmrStop(ant_tmr);
   ant.auton = auton;
 } // antAuton
-
+*/
+/*
 void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
@@ -405,6 +387,7 @@ void antGetSamples(void) {
   utlReadWait(ant.port, utlBuf, 1);
   flogf("\nantGetSamples(): %d bytes to %s", total, ant.logFile);
 } // antGetSamples
+*/
 
 bool antSurf(void) {
   return (ant.depth<(ant.surfD+2));
