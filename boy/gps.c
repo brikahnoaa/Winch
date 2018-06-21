@@ -207,6 +207,7 @@ int iridDial(void) {
 int iridSendTest(int msgLen) {
   int hdr1=13, hdr2=10, hdrTry=8, hdrPause=20;
   int cs, bufLen, x;
+  char *s;
   char land[128];
   DBG0("iridSendTest()")
   bufLen = msgLen+hdr2;
@@ -231,9 +232,9 @@ int iridSendTest(int msgLen) {
   if (iridDial()) return 1;
   while (hdrTry--) {
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
-    x = utlExpect(gps.port, land, "ACK", hdrPause);
-    if (x) {
-      DBG4("(%d)", x)
+    s = utlExpect(gps.port, land, "ACK", hdrPause);
+    if (s) {
+      DBG4("(%d)", s)
       break;
     }
   }

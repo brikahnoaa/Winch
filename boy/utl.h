@@ -82,10 +82,10 @@ extern char *utlRet;      // returned by some char *utlFuncs()
 char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeBrief(void);
+char *utlExpect(Serial port, char *buf, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
-int utlExpect(Serial port, char *buf, char *expect, int wait);
 int utlLogFile(char *fname);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);

@@ -60,7 +60,7 @@ void ctdStop(void){
 // sbe16
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
-  bool s;
+  char *s;
   DBG1("ctdPrompt()")
   ctdFlush();
   utlWrite(ctd.port, "", EOL);

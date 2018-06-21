@@ -1,11 +1,34 @@
-// dosfile.c
+// s39.c
 #include <utl.h>
-#include <cfg.h>
+#include <ctd.h>
+#include <mpc.h>
 #include <sys.h>
+#include <ant.h>
+
+extern AntInfo ant;
+extern CtdInfo ctd;
 
 void main(void){
-  char cmd[128];
-  sprintf(cmd, "copy sys.log test\\sys%04d.log", 2);
+  char c;
   sysInit();
-  execstr(cmd);
+  mpcInit();
+  antInit();
+  ctdInit();
+  antStart();
+  flogf("antDepth() -> %f\n", antDepth());
+  flogf("antTemp() -> %f\n", antTemp());
+  flogf("\nPress any to talk, Q to exit\n");
+  flogf("connected to ant\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ant.port,c,false);
+    }
+    while (TURxQueuedCount(ant.port)) {
+      c=TURxGetByte(ant.port,false);
+      cputc(c);
+    }
+  }
+  antStop();
 }

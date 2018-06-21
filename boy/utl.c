@@ -73,25 +73,25 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
 // readWait(1) until we get the expected string (or timeout)
 // in: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf
-// rets: 0:timeout, >0:timeSecs *buf
-int utlExpect(Serial port, char *buf, char *expect, int wait) {
-  int r;
+// rets: char* to expected str, or null
+char *utlExpect(Serial port, char *buf, char *expect, int wait) {
+  char *r;
   DBG1("utlExpect(%s, %d)", expect, wait)
   buf[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
-  while (!strstr(buf, expect)) {
+  while (true) {
     if (tmrExp(utl_tmr)) {
       DBG0("utlExpect(%s, %d) timeout", expect, wait)
       DBG1("->'%s'", buf);
-      return 0;
+      return NULL;
     }
-    if (utlReadWait(port, utl.buf, 1))
+    if (utlRead(port, utl.buf))
       strcat(buf, utl.buf);
-    utlX();
+    r = strstr(buf, expect);
+    if (r) break;
+    utlNap(1);
   }
-  // timeout?
-  r = (int) tmrQuery(utl_tmr);
   tmrStop(utl_tmr);
   return r;
 } // utlExpect
