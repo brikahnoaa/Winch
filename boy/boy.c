@@ -408,7 +408,6 @@ PhaseType deployPhase(void) {
   float depth, lastD;
   ngkStart();
   antStart();
-  antAutoSample(true);
   tmrStart( deploy_tmr, 60*60*2 );
   depth = antDepth();
   flogf("deployPhase()@%s %4.2fm", utlDateTime(), depth);

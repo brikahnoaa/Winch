@@ -33,7 +33,6 @@ void antInit(void) {
     ant.ring[i].next = &ant.ring[i+1];
   }
   ant.ring[i].next = ant.ring;
-  ant.ringFresh = ant.fresh * ant.ringSize;
 } // antInit
 
 ///
@@ -54,11 +53,12 @@ void antStart(void) {
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
-  antRingReset();                   // flush sample buffer
+  antReset();                   // flush sample buffer
   antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
   utlExpect(ant.port, utlBuf, "<Exec", 1);
+  antReset();
 } // antStart
 
 ///
@@ -103,10 +103,10 @@ void antBreak(void) {
 
 ///
 // data waiting
-int antData() {
+bool antData() {
   int r=TURxQueuedCount(ant.port);
   DBG2("aDa=%d", r)
-  return r;
+  return r>0;
 } // antData
 
 ///
@@ -179,49 +179,31 @@ bool antRead(void) {
   p2 = strtok(NULL, ", ");
   if (!p2) 
     return false;
-  // save last samples
-  ringSamp();
+  // sampT was set in antSample
   // new values
   ant.temp = atof(p1);
   ant.depth = atof(p2);
-  // sampT set in antSample
+  // save in ring
+  ringSamp();
   DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
   tmrStop(ant_tmr);
-  if (ant.autoSample)
-    antSample();
+  antSample();
   return true;
 } // antRead
 
 ///
-// data read recently
-bool antFresh(void) {
-  int fresh;
-  fresh = time(0)-ant.sampT;
-  if (fresh<0) return false;
-  DBG4("aFr=%d", fresh)
-  return fresh<ant.fresh;
-}
-
-///
 // tmr not expired and on
 bool antPending(void) {
-  DBG2("aPe")
   return (tmrOn(ant_tmr));
 }
     
 ///
-// if data, read. if !pending, sample. if !fresh, wait.
-// antRead may fail, e.g. sleep mode; if so, !antFresh
+// if data then read
+// retn: .depth
 float antDepth(void) {
   DBG2("aDep")
   if (antData())
     antRead();
-  if (!antPending())
-    antSample();
-  if (!antFresh()) {
-    antDataWait();
-    antRead();
-  }
   return ant.depth;
 } // antDepth
 
@@ -232,23 +214,39 @@ float antTemp(void) {
 
 ///
 // checks recent depth against previous, computes velocity m/s
-// false if oldest recent depth is very old
-// sets *velo 0.0 if depths go up and down
-// uses: ant.ring ringFresh
-// sets: *velo ant.ring->depth ->time returns bool
-bool antVelo(float *velo) {
-  int dir;
+// checks ring for consistent direction v. waves
+// sets: *velo 
+// retn: 0=full success; -1=empty; -2=waves; #=how many ring samples
+int antVelo(float *velo) {
+  int r=0, samp=ant.ringSize;
   float v;
-  // got samples? 
-  if (ant.sampT - ant.ring->sampT > ant.ringFresh) return false;
-  // candidate velo
-  v = (ant.depth - ant.ring->depth) / (ant.sampT - ant.ring->sampT);
-  DBG3("candiV:%4.2f", v)
-  dir = ringDir(v);
-  if (dir) *velo = v;
-  else *velo = 0.0;
+  RingNode *n;
+  DBG0("antVelo")
+  // empty ring
+  if (!ant.ring->sampT) {
+    *velo=0.0;
+    return -1;
+  }
+  // find oldest value in ring
+  n = ant.ring->next;
+  while (!n->sampT) {
+    r = --samp;
+    n = n->next;
+  } // note: r==0 if ring is full, first test falls
+  // velocity
+  v = (ant.ring->depth - n->depth) / (ant.ring->sampT - n->sampT);
+  // ring consistent direction? v>0 means falling
+  while (n!=ant.ring) {
+    if (  (v>0 && n->depth > n->next->depth)
+        ||(v<0 && n->depth < n->next->depth)  ) {
+      *velo = 0.0;
+      return -2;
+    } // waves
+    n = n->next;
+  } // check ring
+  *velo = v;
   DBG2("aV=%4.2f", *velo)
-  return true;
+  return r;
 } // antVelo
 
 ///
@@ -293,19 +291,22 @@ void ringPrint(void) {
 }
 
 ///
-// clear sample times used by antVelo, call this when winch stops
-// could be replaced with free(), calloc()
+// clear sample times used by antVelo, antAvg. fresh sample
 // sets: ant.ring->sampT;
-void antRingReset(void) {
+void antReset(void) {
   RingNode *n;
-  DBG0("antRingReset()")
+  DBG0("antReset()")
   n = ant.ring; 
   while (true) {
+    n->depth = 0.0;
     n->sampT = 0;
     n = n->next;
     if (n==ant.ring) break;
   } // while
-} // antRingReset
+  antSample();
+  antDataWait();
+  antRead();
+} // antReset
 
 ///
 // antmod uMPC cf2 and iridium A3LA
@@ -328,7 +329,14 @@ void antDevice(DevType dev) {
 } // antDevice
 
 ///
+// gps.port = antPort()
+Serial antPort(void) {
+  return ant.port;
+} // antPort
+
+///
 // tell antmod to power dev on/off
+// should be in gps.c??
 void antDevPwr(char c, bool on) {
   DevType currDev=ant.dev;
   DBG0("antDevPwr(%c, %d)", c, on)
@@ -341,10 +349,8 @@ void antDevPwr(char c, bool on) {
   antDevice(currDev);
 } // antDevPwr
 
-Serial antPort(void) {
-  return ant.port;
-} // antPort
-
+///
+// should be in gps.c??
 void antSwitch(AntType antenna) {
   if (antenna==ant.antenna) return;
   DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
@@ -356,40 +362,6 @@ void antSwitch(AntType antenna) {
   ant.antenna = antenna;
 } // antSwitch
     
-///
-void antAutoSample(bool autos) {
-  DBG1("antAutoSample")
-  ant.autoSample = autos;
-} // antAutoSample
-
-///
-// turn autonomous on/off. idle_ant clears samples
-void antAuton(bool auton) {
-  DBG0("antAuto(%d)", auton)
-  if (auton) {
-    utlWrite(ant.port, "SampleInterval=0.5", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "txRealTime=y", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "initlogging", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "initlogging", EOL);
-    utlReadWait(ant.port, utlBuf, 1);
-    utlWrite(ant.port, "startnow", EOL);
-    // swallow header
-    utlReadWait(ant.port, utlBuf, 5);
-    if (!strstr(utlBuf, "Start logging"))
-      utlErr(ant_err, "antAuto: expected 'Start logging' header");
-  } else {
-    utlWrite(ant.port, "stop", EOL);
-    // swallow tail
-    utlNap(2);
-    TURxFlush(ant.port);
-  } // if auton
-  tmrStop(ant_tmr);
-  ant.auton = auton;
-} // antAuton
-
 void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;

@@ -45,7 +45,6 @@ static CfgParam cfgP[] = {
   {"asD", "ant.subD",       &ant.subD,        'f',  "3.49"},
   {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
   {"ade", "ant.delay",      &ant.delay,       'i',  "3"},
-  {"afr", "ant.fresh",      &ant.fresh,       'i',  "3"},
   {"arS", "ant.ringSize",   &ant.ringSize,    'i',  "5"},
   {"buD", "boy.noData",     &boy.noData,      'b',  "false"},
   {"buI", "boy.noIrid",     &boy.noIrid,      'b',  "false"},

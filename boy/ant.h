@@ -26,9 +26,7 @@ typedef struct AntInfo {
   float surfD;                // surfaceDepth of CTD when ant is floating
   float temp;
   int delay;
-  int fresh;                  // time()-ant.time < fresh is usable
   int log;
-  int ringFresh;              // ant.fresh * ant.ringSize
   int ringSize;               // number of nodes in the (depth,time) ring
   time_t sampT;               // read time() of last sample 
   RingNode *ring;             // nodes in the (depth,time) ring
@@ -37,33 +35,31 @@ typedef struct AntInfo {
   Serial port;
 } AntInfo;
 
-static bool antFresh(void);
+static int ringDir(float v);
+static void ringSamp(void);
+void ringPrint(void);
+
 static bool antPending(void);
 static bool antRead(void);
-static bool antDataWait(void);
-static int antData(void);
 static void antBreak(void);
 static void antMovSam(void);
 static void antSample(void);
 
-int ringDir(float v);
-void ringPrint(void);
-void ringSamp(void);
-
+bool antData(void);
+bool antDataWait(void);
 bool antPrompt(void);
 bool antSurf(void);
-bool antVelo(float *velo);
 float antDepth(void);
 float antSurfD(void);
 float antTemp(void);
-void antAuton(bool auton);
-void antAutoSample(bool autos);
+int antAvg(float *avg);
+int antVelo(float *velo);
 void antDevice(DevType dev);
 void antDevPwr(char c, bool on);
 void antFlush(void);
 void antGetSamples(void);
 void antInit(void);
-void antRingReset(void);
+void antReset(void);
 void antStart(void);
 void antStop(void);
 void antSwitch(AntType antenna);
