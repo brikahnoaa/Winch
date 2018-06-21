@@ -48,10 +48,9 @@ bool tmrExp(TmrType tim) {
 } // tmrExp
 
 ///
-// is timer still running?
-// exp==now is not expired, so now+1 runs at least 1 sec 
+// is timer on and not expired?
 bool tmrOn(TmrType tim) {
-  return (tmr.on[tim] && (tmr.exp[tim] >= time(0)));
+  return (tmr.on[tim] && !tmrExp(tim));
 } // tmrOn
 
 ///

@@ -58,7 +58,7 @@ void antStart(void) {
   antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
-  utlExpect(ant.port, utlBuf, "Executed", 1);
+  utlExpect(ant.port, utlBuf, "<Exec", 1);
 } // antStart
 
 ///
@@ -78,20 +78,17 @@ bool antPrompt() {
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
-  if (strstr(utlBuf, "Exec"))
+  if (utlExpect(ant.port, utlBuf, "<Exec", 1))
     return true;
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, ant.delay);
-  if (strstr(utlBuf, "Exec"))
+  if (utlExpect(ant.port, utlBuf, "<Exec", 1))
     return true;
   // try a third time after break
   antBreak();
-  TURxFlush(ant.port);
   utlNap(2);
+  TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
-  if (strstr(utlBuf, "Exec"))
+  if (utlExpect(ant.port, utlBuf, "<Exec", 1))
     return true;
   utlErr(ant_err, "antPrompt() fail");
   return false;
@@ -129,41 +126,52 @@ void antSample(void) {
   if (antPending()) return;
   DBG2("aSam")
   // flush old data, check for sleep message and prompt if needed
-  antRead();
+  if (antData()) {
+    utlRead(ant.port, utlBuf);
+    if (strstr(utlBuf, "sleep"))
+      antPrompt();      // wakeup
+  } // antData()
   utlWrite(ant.port, ant.samCmd, EOL);
   // get echo of command
-  utlReadWait(ant.port, utlBuf, 1);
-  if (!strstr(utlBuf, ant.samCmd))
-    utlErr(ant_err, "antSample: TS command fail");
-  else
+  if (utlExpect(ant.port, utlBuf, ant.samCmd, 1))
     tmrStart( ant_tmr, ant.delay );
+  else
+    utlErr(ant_err, "antSample: TS command no echo");
   ant.sampT = time(0);
 } // antSample
 
 ///
 // antRead processes most recent sample, could be multiple lines
-// TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\r\n<Executed/>\r\n'
-// TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\r\n<Executed/>\r\n'
+// TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
+// TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
 // after: if ant.autoSample then antSample(), else not pending after read
 // sets: ant.temp .depth .ring->depth .ring->sampT
 // note: ant.sampT set in antSample()
 bool antRead(void) {
+  static char execStr[]="<Executed/>\r\n";
+  int execLen=strlen("<Executed/>\r\n");
   char *p0, *p1, *p2;
   if (!antData()) return false;
+  // data waiting
   DBG2("antRead()");
-  if (!(p1 = utlExpect(ant.port, utlBuf, "<Executed/>", 1)))
+  p0 = utlExpect(ant.port, utlBuf, execStr, 1);
+  if (!p0) {
+    utlErr(ant_err, "antRead: no Exec");
+    flogf("\nantRead()\t| no Exec '%s'", utlBuf);
     return false;
+  } // not data
   p0 = utlBuf;
-  // terminate 
-  *p1 = 0;
-  // sleeping?
-  if (strstr(utlBuf, "sleep")) {
-    antPrompt();      // wakeup
+  // more than one result? skip past execStr
+  while ((p1 = strstr(p0, execStr)))
+    if (strlen(p1)>execLen)
+      p0 = p1 + execLen;
+    else break;
+  // result p0 must end in execStr
+  if (!p1) {
+    utlErr(ant_err, "antRead: garbage");
+    flogf("\nantRead()\t| garbage '%s'", utlBuf);
     return false;
   }
-  while (strlen(p0)>64)
-    p0 = strchr(p0, '\r')+1;
-  if (strlen(p0)<45) return false;
   // read temp, depth // parse two numeric csv
   p1 = strtok(p0, "\r\n#, ");
   if (!p1) 
@@ -197,11 +205,8 @@ bool antFresh(void) {
 ///
 // tmr not expired and on
 bool antPending(void) {
-  bool r=false;
-  if (!tmrExp(ant_tmr) && tmrOn(ant_tmr))
-    r = true;
-  DBG2("aPe=%d", r)
-  return r;
+  DBG2("aPe")
+  return (tmrOn(ant_tmr));
 }
     
 ///
