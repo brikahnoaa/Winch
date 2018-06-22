@@ -53,7 +53,6 @@ void antStart(void) {
   // state
   ant.auton = false;
   tmrStop(ant_tmr);
-  antReset();                   // flush sample buffer
   antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
@@ -112,7 +111,7 @@ bool antData() {
 ///
 // wait for data or not pending (timeout)
 bool antDataWait(void) {
-  DBG2("aDW")
+  DBG0("aDW")
   while (antPending())
     if (antData()) 
       return true;
@@ -124,7 +123,7 @@ bool antDataWait(void) {
 // sets: ant_tmr
 void antSample(void) {
   if (antPending()) return;
-  DBG2("aSam")
+  DBG0("aSam")
   // flush old data, check for sleep message and prompt if needed
   if (antData()) {
     utlRead(ant.port, utlBuf);
@@ -153,8 +152,8 @@ bool antRead(void) {
   char *p0, *p1, *p2;
   if (!antData()) return false;
   // data waiting
-  DBG2("antRead()");
-  p0 = utlExpect(ant.port, utlBuf, execStr, 1);
+  DBG0("antRead()");
+  p0 = utlExpect(ant.port, utlBuf, execStr, 2);
   if (!p0) {
     utlErr(ant_err, "antRead: no Exec");
     flogf("\nantRead()\t| no Exec '%s'", utlBuf);
@@ -304,7 +303,8 @@ void antReset(void) {
     if (n==ant.ring) break;
   } // while
   antSample();
-  antDataWait();
+  if (!antDataWait()) 
+    utlErr(ant_err, "antDataWait():timeout");
   antRead();
 } // antReset
 
