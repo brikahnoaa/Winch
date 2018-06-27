@@ -90,6 +90,7 @@ int gpsStats(void){
   utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789");
   flogf(" Time=%s", utlStr);
   strcpy(gps.time, utlStr);
+  // gpsResetTime(gps.time);
   // lat lon
   utlWrite(gps.port, "at+pl", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
@@ -101,6 +102,42 @@ int gpsStats(void){
   strcpy(gps.lon, utlStr);
   return 0;
 } // gpsStats
+
+///
+// uses: .date .time
+// sets: system time
+bool gpsResetTime(void) {
+  struct tm t;
+  time_t gpsSeconds, diff;
+  char *s;
+  DBG0("gpsResetTime(%s %s)", gps.date, gps.time);
+  if (!gps.date || !gps.time) {
+    flogf("\ngpsResetTime()\t| called with null data");
+    return false;
+  }
+  strcpy(utlStr, gps.date);
+  if (!(s = strtok(utlStr, " -:."))) return false;
+  t.tm_mon = atoi(s) - 1;
+  if (!(s = strtok(NULL, " -:."))) return false;
+  t.tm_mday = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return false;
+  t.tm_year = atoi(s) - 1900;
+  strcpy(utlStr, gps.time);
+  if (!(s = strtok(utlStr, " -:."))) return false;
+  t.tm_hour = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return false;
+  t.tm_min = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return false;
+  t.tm_sec = atoi(s);
+  gpsSeconds = mktime(&t);
+  diff = time(0) - gpsSeconds;
+  if (diff < -1 || diff > 1) {
+    flogf("\ngpsResetTime()\t| off by %ld seconds", diff);
+    RTCSetTime(gpsSeconds, NULL);
+  }
+  return true;
+} // gpsResetTime
+  
 
 ///
 // sets: gps.sats

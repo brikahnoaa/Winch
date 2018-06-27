@@ -1,34 +1,51 @@
-// s39.c
+// gpsTst.c
 #include <utl.h>
-#include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
-#include <sys.h>
 #include <ant.h>
+#include <sys.h>
 
-extern AntInfo ant;
-extern CtdInfo ctd;
+extern GpsInfo gps;
 
 void main(void){
+  Serial port;
   char c;
   sysInit();
   mpcInit();
   antInit();
-  ctdInit();
+  gpsInit();
+  //
   antStart();
-  flogf("antDepth() -> %f\n", antDepth());
-  flogf("antTemp() -> %f\n", antTemp());
-  flogf("\nPress any to talk, Q to exit\n");
-  flogf("connected to ant\n");
+  gpsStart();
+  // gpsStats();
+  iridSig();
+  iridSendTest(12);
+  iridHup();
+  /**/
+  port = gps.port;
+  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
   while (true) {
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      TUTxPutByte(ant.port,c,false);
-    }
-    while (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
+      if (c=='C') {
+        antDevice(cf2_dev);
+        continue;
+      }
+      if (c=='A') {
+        antDevice(a3la_dev);
+        continue;
+      }
       cputc(c);
+      TUTxPutByte(port,c,false);
     }
   }
+  /**/
+
+  gpsStop();
   antStop();
 }

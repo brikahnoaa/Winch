@@ -1,0 +1,20 @@
+.1 obj: irid call, drift and depth measure
+.1.1 irid - place multiple calls, increase size on success
+... run out line during calls. if #S and buoy not surfaced, then #R.
+... full descend for audio tests between irid tests
+... time limit 5 minutes
+... use 1K files
+.1.2 drift and depth - is it necessary to run line during irid call?
+... measure gps every 30s, depthA when not gps, depthB continuous.
+... surface, brake, test 2min
+... let out 20m or slack (surf+20). brake, test. 2min
+... let out +20m or slack (surf+40). brake, test. 2min
+... let out +20m or slack (surf+60). brake, test. 2min
+... let out +20m or slack (surf+80). brake, test. 2min
+... down without gps, with depth
+.2 procedure
+.. test both ctd, gps, irid at start time. sbe39 failure is fatal
+.. 4 cycles - three for irid, one for drift test
+.. acoustics: 1 minute of detection recording, wind test
+.. buoy status:
+  binary depth 8 bits; 4bits ??, 2bits phase, 2bits cycle

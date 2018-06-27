@@ -17,10 +17,8 @@ void main(void){
   //
   antStart();
   gpsStart();
-  // gpsStats();
-  iridSig();
-  iridSendTest(12);
-  iridHup();
+  gpsStats();
+  gpsResetTime();
   /**/
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");
