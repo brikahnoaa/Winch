@@ -246,10 +246,13 @@ int iridDial(void) {
 // uses: utlBuf=zero utlRet=comm
 int iridSendTest(int msgLen) {
   int hdr1=13, hdr2=10, hdrTry=8, hdrPause=20;
+  int min=48;
   int cs, bufLen, x;
   char *s;
   char land[128];
-  DBG0("iridSendTest()")
+  if (msgLen<min)
+    msgLen = min;
+  DBG0("iridSendTest(%d)", msgLen)
   bufLen = msgLen+hdr2;
   msgLen += 5;
   memset(utlBuf, 0, bufLen);
