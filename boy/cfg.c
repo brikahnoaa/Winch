@@ -72,6 +72,7 @@ static CfgParam cfgP[] = {
   {"clg", "ctd.logging",    &ctd.logging,     'b',  "true"},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c',  ""},
   {"cde", "ctd.delay",      &ctd.delay,       'i',  "6"},
+  {"gsT", "gps.setTime",    &gps.setTime,     'b',  "true"},
   {"gph", "gps.phoneNum",   &gps.phoneNum,    'c',  "0088160000519"},
   {"gpl", "gps.platform",   &gps.platform,    'c',  "LR01"},
   {"gpr", "gps.project",    &gps.project,     'c',  "QUEH"},

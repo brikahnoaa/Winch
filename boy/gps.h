@@ -2,6 +2,7 @@
 #define GPS_H
 
 typedef struct GpsInfo {
+  bool setTime;             // flag, reset time via gps, starts true
   char phoneNum[16];
   char date[16];
   char lat[16];             // 45:67.8900N
@@ -22,7 +23,7 @@ typedef struct GpsInfo {
 } GpsInfo;
 
 static int gpsSats(void);
-bool gpsResetTime(void);
+bool gpsSetTime(void);
 int gpsStart(void);
 int gpsStats(void);
 int iridCRC(char *buf, int cnt);

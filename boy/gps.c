@@ -90,7 +90,10 @@ int gpsStats(void){
   utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789");
   flogf(" Time=%s", utlStr);
   strcpy(gps.time, utlStr);
-  // gpsResetTime(gps.time);
+  if (gps.setTime) {
+    gpsSetTime();
+    gps.setTime = false;
+  }
   // lat lon
   utlWrite(gps.port, "at+pl", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
@@ -106,13 +109,13 @@ int gpsStats(void){
 ///
 // uses: .date .time
 // sets: system time
-bool gpsResetTime(void) {
+bool gpsSetTime(void) {
   struct tm t;
   time_t gpsSeconds, diff;
   char *s;
-  DBG0("gpsResetTime(%s %s)", gps.date, gps.time);
+  DBG0("gpsSetTime(%s %s)", gps.date, gps.time);
   if (!gps.date || !gps.time) {
-    flogf("\ngpsResetTime()\t| called with null data");
+    flogf("\ngpsSetTime()\t| called with null data");
     return false;
   }
   strcpy(utlStr, gps.date);
@@ -132,11 +135,11 @@ bool gpsResetTime(void) {
   gpsSeconds = mktime(&t);
   diff = time(0) - gpsSeconds;
   if (diff < -1 || diff > 1) {
-    flogf("\ngpsResetTime()\t| off by %ld seconds", diff);
+    flogf("\ngpsSetTime()\t| off by %ld seconds", diff);
     RTCSetTime(gpsSeconds, NULL);
   }
   return true;
-} // gpsResetTime
+} // gpsSetTime
   
 
 ///
