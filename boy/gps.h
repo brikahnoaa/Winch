@@ -16,6 +16,7 @@ typedef struct GpsInfo {
   int rudResp;              // wait secs for rudics to respond to a block
   int signal;
   int signalMin;
+  int testSize;             // size of test file
   int timeout;
   int log;
   int sats;
