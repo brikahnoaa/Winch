@@ -273,7 +273,6 @@ int iridSendTest(int msgLen) {
   utlBuf[3] = (char) (cs >> 8);
   utlBuf[4] = (char) (cs & 0xFF);
   DBG2("%s", utlNonPrint(utlBuf))
-  if (iridDial()) return 1;
   while (hdrTry--) {
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
     s = utlExpect(gps.port, land, "ACK", hdrPause);
@@ -297,7 +296,7 @@ int iridSendTest(int msgLen) {
         utlNonPrintBlock(utlBuf, i));
     }
   }
-  utlWrite(gps.port, "done", NULL);
+  utlWrite(gps.port, "data", NULL);
   tmrStop(rudics_tmr);
   return 0;
 } // iridSendTest

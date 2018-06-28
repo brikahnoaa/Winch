@@ -78,7 +78,7 @@ static CfgParam cfgP[] = {
   {"gpr", "gps.project",    &gps.project,     'c',  "QUEH"},
   {"gre", "gps.redial",     &gps.redial,      'i',  "5"},
   {"grR", "gps.rudResp",    &gps.rudResp,     'i',  "30"},
-  {"gsM", "gps.signalMin",  &gps.signalMin,   'i',  "4"},
+  {"gsM", "gps.signalMin",  &gps.signalMin,   'i',  "3"},
   {"gtS", "gps.testSize",   &gps.testSize,    'i',  "64"},
   {"gto", "gps.timeout",    &gps.timeout,     'i',  "120"},
   {"nde", "ngk.delay",      &ngk.delay,       'i',  "7"},
