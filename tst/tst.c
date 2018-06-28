@@ -20,10 +20,8 @@ void main(void){
   // gpsStats();
   flogf("\nstart %s", utlTime());
   iridSig();
-  iridSendTest(64);
-  iridSendTest(128);
-  iridSendTest(256);
-  iridSendTest(1024);
+  iridSendTest(gps.testSize);
+  iridSendTest(gps.testSize);
   iridHup();
   flogf("\nstop %s", utlTime());
   /**/
