@@ -102,8 +102,8 @@ void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
-  DBG2(">>=%d", sent)
-  DBG3(">>'%s'", utlNonPrintBlock(out, len))
+  DBG3("[>>]=%d", sent)
+  // DBG3(">>'%s'", utlNonPrintBlock(out, len))
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock
@@ -336,7 +336,9 @@ void utlX(void) {
       c = cgetc();
       switch (c) {
       case 'q':
+      case 'Q':
       case 'x':
+      case 'X':
         utlStop("user quit");
         break;
       }
