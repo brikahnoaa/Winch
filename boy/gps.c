@@ -247,7 +247,7 @@ int iridDial(void) {
 int iridSendTest(int msgLen) {
   int hdr1=13, hdr2=10, hdrTry=8, hdrPause=20;
   int min=48;
-  int cs, bufLen, x;
+  int cs, i, bufLen;
   char *s;
   char land[128];
   RTCTimer rt;
@@ -292,8 +292,8 @@ int iridSendTest(int msgLen) {
   RTCElapsedTimerSetup(&rt);
   while (!tmrExp(rudics_tmr)) {
     if (TURxQueuedCount(gps.port)) {
-      utlRead(gps.port, utlBuf);
-      flogf(" (%ld %s)", utlNonPrint(utlBuf));
+      i = utlRead(gps.port, utlBuf);
+      flogf(" (%ld %d %s)", RTCElapsedTime(&rt)/1000, i, utlNonPrint(utlBuf));
     }
   }
   tmrStop(rudics_tmr);
