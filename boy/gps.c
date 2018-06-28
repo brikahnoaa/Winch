@@ -293,9 +293,11 @@ int iridSendTest(int msgLen) {
   while (!tmrExp(rudics_tmr)) {
     if (TURxQueuedCount(gps.port)) {
       i = utlRead(gps.port, utlBuf);
-      flogf(" (%ld %d %s)", RTCElapsedTime(&rt)/1000, i, utlNonPrint(utlBuf));
+      flogf(" (%ld %d %s)", RTCElapsedTime(&rt)/1000, i, 
+        utlNonPrintBlock(utlBuf, i));
     }
   }
+  utlWrite(gps.port, "done", NULL);
   tmrStop(rudics_tmr);
   return 0;
 } // iridSendTest
