@@ -250,6 +250,7 @@ int iridSendTest(int msgLen) {
   int cs, bufLen, x;
   char *s;
   char land[128];
+  RTCTimer rt;
   if (msgLen<min)
     msgLen = min;
   DBG0("iridSendTest(%d)", msgLen)
@@ -288,17 +289,12 @@ int iridSendTest(int msgLen) {
   utlBuf[0] = 0;
   flogf("\nland->");
   tmrStart(rudics_tmr, gps.rudResp);
+  RTCElapsedTimerSetup(&rt);
   while (!tmrExp(rudics_tmr)) {
-    x = utlReadWait(gps.port, utlBuf, 1);
-    flogf("%s", utlNonPrint(utlBuf));
-    // ACK is only for projheader, may be leftover, skip
-    if (strstr(utlBuf, "ACK\n")) {
-      strcpy(utlBuf, utlBuf+4);
-      continue;
+    if (TURxQueuedCount(gps.port)) {
+      utlRead(gps.port, utlBuf);
+      flogf(" (%ld %s)", utlNonPrint(utlBuf));
     }
-    if (strstr(utlBuf, "done"))
-      break;
-    // if (strstr(utlBuf, "cmds"))
   }
   tmrStop(rudics_tmr);
   return 0;
