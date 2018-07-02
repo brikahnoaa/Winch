@@ -54,6 +54,7 @@ float antSurfD(void);
 float antTemp(void);
 int antAvg(float *avg);
 int antVelo(float *velo);
+void antAuton(bool auton);
 void antDevice(DevType dev);
 void antDevPwr(char c, bool on);
 void antFlush(void);
