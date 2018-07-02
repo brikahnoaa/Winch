@@ -32,5 +32,8 @@ void main(void){
       cputc(c);
     }
   }
+  antAuton(false);
+  antGetSamples();
   antStop();
+  sysStop("user stop");
 }

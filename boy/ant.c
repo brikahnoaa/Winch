@@ -20,7 +20,7 @@ void antInit(void) {
   ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
-  if (ant.logging)
+  if (ant.sampLog)
     strcpy(ant.samCmd, "TSSon");
   else
     strcpy(ant.samCmd, "TS");
@@ -143,7 +143,6 @@ void antSample(void) {
 // antRead processes most recent sample, could be multiple lines
 // TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
-// after: if ant.autoSample then antSample(), else not pending after read
 // sets: ant.temp .depth .ring->depth .ring->sampT
 // note: ant.sampT set in antSample()
 bool antRead(void) {
@@ -363,23 +362,20 @@ void antSwitch(AntType antenna) {
 } // antSwitch
     
 ///
-// turn autonomous on/off. idle_ant clears samples
+// turn autonomous on/off, with no output. Fetch with antGetSamples()
 void antAuton(bool auton) {
   DBG0("antAuto(%d)", auton)
   if (auton) {
     utlWrite(ant.port, "SampleInterval=0.5", EOL);
-    utlWrite(ant.port, "txRealTime=y", EOL);
-    utlWrite(ant.port, "initlogging", EOL);
-    utlWrite(ant.port, "initlogging", EOL);
+    utlExpect(ant.port, utlBuf, "Executed", 2);
+    utlWrite(ant.port, "txRealTime=n", EOL);
+    utlExpect(ant.port, utlBuf, "Executed", 2);
     utlWrite(ant.port, "startnow", EOL);
-    // swallow header
-    utlExpect(ant.port, utlBuf, "Start logging", 5);
-    if (!strstr(utlBuf, "Start logging"))
-      utlErr(ant_err, "antAuto: expected 'Start logging' header");
+    utlExpect(ant.port, utlBuf, "-->", 2);
   } else {
     utlWrite(ant.port, "stop", EOL);
-    // swallow tail
-    utlNap(2);
+    utlExpect(ant.port, utlBuf, "Executed", 5);
+    utlNap(1);
     TURxFlush(ant.port);
   } // if auton
   tmrStop(ant_tmr);
@@ -392,7 +388,7 @@ void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
   int total=0;
-  DBG0("antGetSamples()")
+  flogf("\nantGetSamples()");
   ant.log = utlLogFile(ant.logFile);
   antPrompt();          // wakeup
   utlWrite(ant.port, "GetSamples:", EOL);
@@ -406,9 +402,10 @@ void antGetSamples(void) {
   } // while ==
   close(ant.log);
   utlWrite(ant.port, "initLogging", EOL);
+  utlExpect(ant.port, utlBuf, "-->", 2);
   utlWrite(ant.port, "initLogging", EOL);
-  utlReadWait(ant.port, utlBuf, 1);
-  flogf("\nantGetSamples(): %d bytes to %s", total, ant.logFile);
+  utlExpect(ant.port, utlBuf, "-->", 2);
+  flogf(": %d bytes to %s", total, ant.logFile);
 } // antGetSamples
 
 bool antSurf(void) {

@@ -15,8 +15,7 @@ typedef struct RingNode {
 
 typedef struct AntInfo {
   bool auton;                 // autonomous mode
-  bool autoSample;            // antSample after antRead
-  bool logging;               // use TS or TSSon
+  bool sampLog;               // use TS or TSSon - conflicts with auton
   bool on;
   bool surf;                  // on surface
   char logFile[64];

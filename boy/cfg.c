@@ -40,8 +40,8 @@ typedef struct CfgParam {
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
-  {"alg", "ant.logging",    &ant.logging,     'b',  "true"},
-  {"alF", "ant.logFile",    &ant.logFile,     'c',  ""},
+  {"asL", "ant.sampLog",    &ant.sampLog,     'b',  "false"},
+  {"alF", "ant.logFile",    &ant.logFile,     'c',  "s39"},
   {"asD", "ant.subD",       &ant.subD,        'f',  "3.49"},
   {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
   {"ade", "ant.delay",      &ant.delay,       'i',  "3"},
