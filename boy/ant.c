@@ -362,6 +362,32 @@ void antSwitch(AntType antenna) {
   ant.antenna = antenna;
 } // antSwitch
     
+///
+// turn autonomous on/off. idle_ant clears samples
+void antAuton(bool auton) {
+  DBG0("antAuto(%d)", auton)
+  if (auton) {
+    utlWrite(ant.port, "SampleInterval=0.5", EOL);
+    utlWrite(ant.port, "txRealTime=y", EOL);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlWrite(ant.port, "initlogging", EOL);
+    utlWrite(ant.port, "startnow", EOL);
+    // swallow header
+    utlExpect(ant.port, utlBuf, "Start logging", 5);
+    if (!strstr(utlBuf, "Start logging"))
+      utlErr(ant_err, "antAuto: expected 'Start logging' header");
+  } else {
+    utlWrite(ant.port, "stop", EOL);
+    // swallow tail
+    utlNap(2);
+    TURxFlush(ant.port);
+  } // if auton
+  tmrStop(ant_tmr);
+  ant.auton = auton;
+}
+
+///
+// write stored sample to a file
 void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
