@@ -46,9 +46,10 @@ static CfgParam cfgP[] = {
   {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
   {"ade", "ant.delay",      &ant.delay,       'i',  "3"},
   {"arS", "ant.ringSize",   &ant.ringSize,    'i',  "5"},
-  {"buD", "boy.noData",     &boy.noData,      'b',  "false"},
-  {"buI", "boy.noIrid",     &boy.noIrid,      'b',  "false"},
-  {"buR", "boy.noRise",     &boy.noRise,      'b',  "false"},
+  {"bnD", "boy.noData",     &boy.noData,      'b',  "false"},
+  {"bnI", "boy.noIrid",     &boy.noIrid,      'b',  "false"},
+  {"bnR", "boy.noRise",     &boy.noRise,      'b',  "false"},
+  {"bte", "boy.testing",    &boy.testing,     'b',  "false"},
   {"blF", "boy.logFile",    &boy.logFile,     'c',  "boy"},
   {"bte", "boy.testing",    &boy.testing,     'b',  "false"},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f',  "2.35"},
@@ -229,9 +230,9 @@ int cfgRead(char *file) {
   int r, fh;
   struct stat finfo;
   //
-  flogf("\ncfgRead(%s)", file);
+  DBG0("cfgRead(%s)", file)
   if (stat(file, &finfo) < 0) {
-    flogf("\t| file not found");
+    DBG1("| file not found")
     return 0;
   }
   fh = open(file, O_RDONLY);

@@ -10,9 +10,6 @@ typedef enum {
 // boy
 typedef struct BoyInfo {
   bool testing;
-  bool oddData;           // for test (true)
-  bool oddIrid;           // for test (true)
-  bool oddRise;           // for test (true)
   bool noData;            // for test (true)
   bool noIrid;            // for test (true)
   bool noRise;            // for test (true)

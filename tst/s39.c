@@ -13,8 +13,10 @@ void main(void){
   sysInit();
   mpcInit();
   antInit();
-  ctdInit();
   antStart();
+  flogf("antDepth() -> %f\n", antDepth());
+  flogf("antTemp() -> %f\n", antTemp());
+  antAuton(true);
   flogf("antDepth() -> %f\n", antDepth());
   flogf("antTemp() -> %f\n", antTemp());
   flogf("\nPress any to talk, Q to exit\n");
@@ -30,5 +32,8 @@ void main(void){
       cputc(c);
     }
   }
+  antAuton(false);
+  antGetSamples();
   antStop();
+  sysStop("user stop");
 }
