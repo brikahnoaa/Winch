@@ -19,14 +19,13 @@ typedef struct BoyInfo {
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
   float dockD;            // Depth when docked in winch
-  float fallRate;         // m/s from tests
   float fallVFirst;       // meters/s of the first fall
   float fallVLast;        // meters/s of the most recent fall 
+  float fallVTest;        // m/s from tests
   float rateAccu;         // accuracy of rise/fall rate estimates (1.5)
-  float riseOrig;         // original rise rate based on tests
-  float riseRate;         // riseOrig modified by measures
   float riseVFirst;       // meters/min of the first rise 
   float riseVLast;        // meters/min of the most recent rise 
+  float riseVTest;        // meters/min of the most recent rise 
   int cycle;
   int cycleMax;           // limit number of cycles, i.e. test deployment
   int fileNum;            // current number for filename ####.dat ####.log

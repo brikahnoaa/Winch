@@ -117,23 +117,27 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
-  success = rise(boy.currChkD, 0);
-  if (success>0) {
-    flogf("\n\t| rise fails at %3.1f m", antDepth());
-    //??  return fall_pha;
+  if (boy.cycle<4) {
+    // R,01,00
+  } else {
+    // R,01,03
+    success = rise(boy.currChkD, 0);
+    if (success>0) {
+      flogf("\n\t| rise fails at %3.1f m", antDepth());
+      //??  return fall_pha;
+    }
+    // if current is too strong at midway
+    if (oceanCurrChk()) {
+      sysAlarm(midwayCurr_alm);
+      //?? return fall_pha;
+    }
+    // surface, 1 meter below float level
+    success = rise(antSurfD()+1, 0);
+    if (success>0) {
+      flogf(" | fails at %3.1f m", antDepth());
+      //?? return fall_pha;
+    }
   }
-  // if current is too strong at midway
-  if (oceanCurrChk()) {
-    sysAlarm(midwayCurr_alm);
-    //?? return fall_pha;
-  }
-  // surface, 1 meter below float level
-  success = rise(antSurfD()+1, 0);
-  if (success>0) {
-    flogf(" | fails at %3.1f m", antDepth());
-    //?? return fall_pha;
-  }
-  // success
   return irid_pha;
 } // risePhase
 
@@ -206,7 +210,7 @@ int rise(float targetD, int try) {
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
   // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
-  est = (int) (((nowD-targetD) / boy.riseRate) * boy.rateAccu);
+  est = (int) (((nowD-targetD) / boy.riseVTest) * boy.rateAccu);
   tmrStart(targetT, est);
   tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(twentyT, 20);
@@ -311,7 +315,7 @@ int fall(int try) {
   if (nowD > boy.dockD-2) return 1;
   if (try > boy.fallRetry) return 2;
   // crude, could have cable played out
-  est = (int) ((boy.dockD/boy.fallRate)*boy.rateAccu);
+  est = (int) ((boy.dockD/boy.fallVTest)*boy.rateAccu);
   tmrStart(targetT, est);
   tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(fortyT, 40);

@@ -1,0 +1,12 @@
+. surf algor
+..1 reel out
+current check at 8m
+#R,01,03
+if #S,02 then rise again
+..2 no brake
+
+. call algor
+.. auton sampling
+.. gps before after calls
+.. (5) minutes
+.. irid, gps: 2 irid, 1 gps per surf algor
