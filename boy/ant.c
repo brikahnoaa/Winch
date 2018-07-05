@@ -167,22 +167,25 @@ bool antRead(void) {
   // result p0 must end in execStr
   if (!p1) {
     utlErr(ant_err, "antRead: garbage");
-    flogf("\nantRead()\t| garbage '%s'", utlBuf);
     return false;
   }
   // read temp, depth // parse two numeric csv
   p1 = strtok(p0, "\r\n#, ");
-  if (!p1) 
-    return false;
   p2 = strtok(NULL, ", ");
-  if (!p2) 
+  if (!p1 || !p2) {
+    utlErr(ant_err, "antRead: garbage");
     return false;
+  }
   // sampT was set in antSample
   // new values
   ant.temp = atof(p1);
   ant.depth = atof(p2);
+  if (ant.temp==0.0 && ant.depth==0.0) {
+    utlErr(ant_err, "antRead: null values");
+    return false;
+  }
   // save in ring
-  ringSamp();
+  ringSamp(ant.depth, ant.sampT);
   DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
   tmrStop(ant_tmr);
   antSample();
@@ -225,34 +228,69 @@ int antVelo(float *velo) {
     *velo=0.0;
     return -1;
   }
-  // find oldest value in ring
+  // find oldest value in ring, skip empty nodes
   n = ant.ring->next;
   while (!n->sampT) {
     r = --samp;
     n = n->next;
-  } // note: r==0 if ring is full, first test falls
+  } // note: r==0 if ring is full, as first test falls
+  // only one value
+  if (n==ant.ring) {
+    *velo=0.0;
+    return -1;
+  }
   // velocity
   v = (ant.ring->depth - n->depth) / (ant.ring->sampT - n->sampT);
   // ring consistent direction? v>0 means falling
-  while (n!=ant.ring) {
+  while (true) {
     if (  (v>0 && n->depth > n->next->depth)
         ||(v<0 && n->depth < n->next->depth)  ) {
       *velo = 0.0;
       return -2;
     } // waves
     n = n->next;
-  } // check ring
+    if (n==ant.ring) break;
+  } // walk ring
   *velo = v;
   DBG2("aV=%4.2f", *velo)
   return r;
 } // antVelo
 
 ///
+// oops, doesn't include antRing->depth
+int antAvg(float *avg) {
+  int r=0, samp=ant.ringSize;
+  float a=0.0;
+  RingNode *n;
+  DBG0("antVelo")
+  // empty ring
+  if (!ant.ring->sampT) {
+    *avg=0.0;
+    return -1;
+  }
+  // find oldest value in ring, skip empty nodes
+  n = ant.ring->next;
+  while (!n->sampT) {
+    r = --samp;
+    n = n->next;
+  } // note: r==0 if ring is full, as first test falls
+  // walk around the ring
+  while (true) {
+    a += n->depth;
+    n = n->next;
+    if (n==ant.ring->next) break;
+  } // walk ring
+  *avg = a / samp;
+  return r;
+} // antAvg
+
+///
+// ant.ring points to last good value
 // sets: ring ring.depth ring.sampT
-void ringSamp(void) {
-  ant.ring->depth = ant.depth;
-  ant.ring->sampT = ant.sampT;
+void ringSamp(float depth, time_t sampT) {
   ant.ring = ant.ring->next;
+  ant.ring->depth = depth;
+  ant.ring->sampT = sampT;
 } // ringSamp
 
 ///
@@ -278,13 +316,12 @@ int ringDir(float v) {
 /// debug
 // print out values of ring
 void ringPrint(void) {
-  RingNode *r = ant.ring;
+  RingNode *n = ant.ring;
   time_t now = time(0);
   int i;
-  printf("ring\n");
   for (i=0; i<ant.ringSize; i++) {
-    printf("[%d]%3.1f,%d\n", i, r->depth, (int)(r->sampT-now));
-    r = r->next;
+    flogf("\n[%d]%3.1f,%ld", i, n->depth, n->sampT);
+    n = n->next;
   }
 }
 
@@ -297,14 +334,10 @@ void antReset(void) {
   n = ant.ring; 
   while (true) {
     n->depth = 0.0;
-    n->sampT = 0;
+    n->sampT = (time_t) 0;
     n = n->next;
     if (n==ant.ring) break;
   } // while
-  antSample();
-  if (!antDataWait()) 
-    utlErr(ant_err, "antDataWait():timeout");
-  antRead();
 } // antReset
 
 ///

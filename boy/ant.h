@@ -35,13 +35,12 @@ typedef struct AntInfo {
 } AntInfo;
 
 static int ringDir(float v);
-static void ringSamp(void);
 void ringPrint(void);
+void ringSamp(float depth, time_t sampT);
 
 static bool antPending(void);
 static bool antRead(void);
 static void antBreak(void);
-static void antMovSam(void);
 static void antSample(void);
 
 bool antData(void);
