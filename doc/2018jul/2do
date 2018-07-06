@@ -7,6 +7,10 @@ if #S,02 then rise again
 
 . call algor
 .. auton sampling
-.. gps before after calls
+.. gps before after calls ?
 .. (5) minutes
 .. irid, gps: 2 irid, 1 gps per surf algor
+
+. data
+.. 1minute detect, wind or just wind?
+

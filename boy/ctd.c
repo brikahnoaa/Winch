@@ -32,9 +32,9 @@ void ctdInit(void) {
   utlWrite(ctd.port, utlStr, EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
   if (ctd.logging)
-    strcpy(ctd.sample, "TSSon");
+    strcpy(ctd.samCmd, "TSSon");
   else
-    strcpy(ctd.sample, "TS");
+    strcpy(ctd.samCmd, "TS");
   ctdStop();
 } // ctdInit
 
@@ -96,13 +96,18 @@ bool ctdData() {
 // sets: ctd.ctdPending ctd_tmr
 void ctdSample(void) {
   int len;
-  DBG1("ctdSample()")
   if (ctdPending()) return;
-  ctdPrompt();
-  utlWrite(ctd.port, ctd.sample, EOL);
+  DBG0("cSam")
+  // flush old data, check for sleep message and prompt if needed
+  if (ctdData()) {
+    utlRead(ctd.port, utlBuf);
+    if (strstr(utlBuf, "sleep"))
+      ctdPrompt();      // wakeup
+  } // ctdData()
+  utlWrite(ctd.port, ctd.samCmd, EOL);
   // get echo 
   len = utlReadWait(ctd.port, utlBuf, 1);
-  if (!strstr(utlBuf, ctd.sample))
+  if (!strstr(utlBuf, ctd.samCmd))
     utlErr(ctd_err, "ctd: TS command fail");
   tmrStart( ctd_tmr, ctd.delay );
 } // ctdSample
@@ -112,13 +117,14 @@ void ctdSample(void) {
 // sets: .temp .cond .depth 
 bool ctdRead(void) {
   char *p0, *p1, *p2, *p3;
-  DBG1("ctdRead()")
-  if (!ctdData() && !ctdPending())
-    ctdSample();
-  while (!ctdData())
-    if (!ctdPending())
-      return false;
-  utlRead(ctd.port, utlBuf);
+  if (!ctdData()) return false;
+  DBG0("ctdRead()")
+  // utlRead(ctd.port, utlBuf);
+  p0 = utlExpect(ctd.port, utlBuf, "S>", 2);
+  if (!p0) {
+    utlErr(ant_err, "ctdRead: no S>");
+    return false;
+  } // not data
   if (ctd.log) 
     write(ctd.log, utlBuf, strlen(utlBuf));
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time

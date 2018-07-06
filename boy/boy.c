@@ -118,8 +118,6 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   if (boy.cycle<4) {
-    // R,01,00
-  } else {
     // R,01,03
     success = rise(boy.currChkD, 0);
     if (success>0) {
@@ -137,6 +135,9 @@ PhaseType risePhase(void) {
       flogf(" | fails at %3.1f m", antDepth());
       //?? return fall_pha;
     }
+  } else {
+    // R,01,00
+    riseFree();
   }
   return irid_pha;
 } // risePhase
@@ -190,6 +191,102 @@ PhaseType dataPhase(void) {
   if (success==5) sysStop("user stop in dataPhase");
   return rise_pha;
 } // dataPhase
+
+///
+// rise and keep sending cable, run on current
+int riseRun(float targetD, int try) {
+  bool twentyB=false, stopB=false, errB=false;
+  float nowD, startD, lastD, velo;
+  int i, est;        // estimated operation time
+  MsgType msg;
+  enum {targetT, ngkT, twentyT, fiveT};  // local timer names
+  DBG0("rise(%3.1f)", targetD)
+  utlNap(15);
+  nowD = startD = antDepth();
+  if (startD < targetD) return 1;
+  if (try > boy.riseRetry) return 2;
+  // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
+  // est needs more testing ??
+  // ?? est = (int) (((nowD-targetD) / boy.riseVTest) * boy.rateAccu);
+  est = 20*3+20;
+  tmrStart(targetT, est);
+  tmrStart(ngkT, boy.ngkDelay*2);
+  tmrStart(twentyT, 20);
+  tmrStart(fiveT, 5);
+  ngkFlush();
+  ngkSend(riseCmd_msg);
+  ctdSample();
+  flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
+  while (!stopB && !errB) {       // redundant, loop exits by break;
+    utlX();
+    if (ctdData()) {
+      ctdRead();
+      ctdSample();
+    }
+    // check: target, winch, 20s, 5s
+    nowD = antDepth();
+    // arrived?
+    if (nowD<targetD) {
+      flogf("\nrise()\t| reached targetD %3.1f at %s", nowD, utlTime());
+      tmrStop(targetT);
+      stopB = true;
+      break;
+    }
+    // op timeout - longer than estimated time + fudge
+    if (tmrExp(targetT)) {
+      flogf("\nrise()\t| ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+      errB = true;
+      break;
+    }
+    // winch
+    if (ngkRecv(&msg)!=null_msg) {
+      flogf(", %s from winch", ngkMsgName(msg));
+      if (msg==stopCmd_msg)
+        // stops before target reached
+        ngkSend(riseCmd_msg);
+      if (msg==riseRsp_msg)
+        tmrStop(ngkT);
+    }
+    if (tmrExp(ngkT)) {
+      // ?? missed it?
+      flogf("\nrise()\t| no response from winch");
+    }
+    // 20 seconds
+    if (tmrExp(twentyT)) {
+      flogf("\nrise()\t| 20s: startD-nowD %3.1f ", startD-nowD);
+      if (startD-nowD < 1.5) {
+        // by now we should have moved up 5 meters
+        flogf("ERR < 1.5");
+        errB = true;
+        break;
+      } else {
+        twentyB = true;
+        lastD = nowD;
+      }
+    }
+    // 5 seconds
+    if (tmrExp(fiveT)) {
+      tmrStart(fiveT, 5);
+      flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
+      if (antVelo(&velo)) 
+        flogf(" velo=%4.2f", velo);
+      if (twentyB) {
+        if (lastD<=nowD) {
+          flogf("\nrise()\t| ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
+          lastD = nowD;
+        }
+      }
+    } 
+  } // while !stop
+  // retry if error
+  if (errB) {
+    flogf(", retry %d", ++try);
+    return rise(targetD, try);
+  } else { 
+    // normal stop
+    return 0;
+  }
+} // riseRun
 
 
 ///

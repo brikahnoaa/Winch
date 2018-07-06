@@ -104,7 +104,8 @@ void antBreak(void) {
 // data waiting
 bool antData() {
   int r=TURxQueuedCount(ant.port);
-  DBG2("aDa=%d", r)
+  if (r)
+    tmrStop(ant_tmr);
   return r>0;
 } // antData
 
@@ -155,9 +156,10 @@ bool antRead(void) {
   p0 = utlExpect(ant.port, utlBuf, execStr, 2);
   if (!p0) {
     utlErr(ant_err, "antRead: no Exec");
-    flogf("\nantRead()\t| no Exec '%s'", utlBuf);
     return false;
   } // not data
+  if (ant.log)
+    write(ant.log, utlBuf, strlen(utlBuf));
   p0 = utlBuf;
   // more than one result? skip past execStr
   while ((p1 = strstr(p0, execStr)))
@@ -187,7 +189,6 @@ bool antRead(void) {
   // save in ring
   ringSamp(ant.depth, ant.sampT);
   DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
-  tmrStop(ant_tmr);
   antSample();
   return true;
 } // antRead
@@ -421,24 +422,30 @@ void antGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
   int total=0;
+  int log;
   flogf("\nantGetSamples()");
-  ant.log = utlLogFile(ant.logFile);
+  if (ant.log)
+    log = ant.log;
+  else
+    log = utlLogFile(ant.logFile);
   antPrompt();          // wakeup
   utlWrite(ant.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
     len2 = (int) TURxGetBlock(ant.port, utlBuf, (long) len1, (short) 1000);
-    len3 = write(ant.log, utlBuf, len2);
+    len3 = write(log, utlBuf, len2);
     if (len2!=len3)
-      flogf("\nERR\t| antGetSamples() could not write ant.log");
+      flogf("\t| ERR fail write to log");
     total += len3;
   } // while ==
-  close(ant.log);
-  utlWrite(ant.port, "initLogging", EOL);
-  utlExpect(ant.port, utlBuf, "-->", 2);
-  utlWrite(ant.port, "initLogging", EOL);
-  utlExpect(ant.port, utlBuf, "-->", 2);
   flogf(": %d bytes to %s", total, ant.logFile);
+  // close log file if local only
+  if (!ant.log)
+    close(log);
+  utlWrite(ant.port, "initLogging", EOL);
+  utlExpect(ant.port, utlBuf, "-->", 2);
+  utlWrite(ant.port, "initLogging", EOL);
+  utlExpect(ant.port, utlBuf, "-->", 2);
 } // antGetSamples
 
 bool antSurf(void) {

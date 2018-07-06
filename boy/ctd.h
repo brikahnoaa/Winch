@@ -7,7 +7,7 @@ typedef struct CtdInfo {
   bool logging;
   bool on;
   char logFile[32];
-  char sample[32];
+  char samCmd[32];
   float cond;
   float depth;
   float temp;
