@@ -151,6 +151,18 @@ int wspDetect(int *detections) {
   return r;
 } // wspDetect
 
+int wspMinutes(int *detections, int minutes) {
+  tmrStart(wsp_tmr, minutes*60);
+  while (tmrOn(wsp_tmr)) {
+    utlX();
+  }
+  wspQuery(detections);
+  flogf("\nwspDetect\t| detected %d %s", *detections, utlTime());
+  utlWrite(wsp.port, "$EXI*", EOL);
+  utlExpect(wsp.port, utlBuf, "FIN", 5);
+  return 0;
+} // wspMinutes
+
 ///
 // query detections
 int wspQuery(int *det) {

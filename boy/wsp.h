@@ -23,6 +23,7 @@ typedef struct WspInfo {
 
 static int wspQuery(int *det);
 int wspDetect(int *detections);
+int wspMinutes(int *detections, int minutes);
 int wspSpace(float *disk);
 int wspStart(int card);
 void wspInit(void);
