@@ -197,7 +197,7 @@ PhaseType dataPhase(void) {
 int riseRun(float targetD, int try) {
   bool twentyB=false, stopB=false, errB=false;
   float nowD, startD, lastD, velo;
-  int i, est;        // estimated operation time
+  int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
   DBG0("rise(%3.1f)", targetD)

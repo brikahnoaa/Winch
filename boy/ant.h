@@ -13,7 +13,8 @@ typedef struct RingNode {
 
 typedef struct AntInfo {
   bool auton;                 // autonomous mode, silent
-  bool store;                 // store on device with TSSon - except auton
+  bool clearSamp;             // clear after getSamples
+  bool storeSamp;             // store on device with TSSon - except auton
   bool on;
   bool surf;                  // on surface
   char logFile[64];
@@ -37,13 +38,12 @@ void ringPrint(void);
 void ringSamp(float depth, time_t sampT);
 
 static bool antPending(void);
-static bool antRead(void);
 static void antBreak(void);
-static void antSample(void);
 
 bool antData(void);
 bool antDataWait(void);
 bool antPrompt(void);
+bool antRead(void);
 bool antSurf(void);
 float antDepth(void);
 float antSurfD(void);
@@ -57,6 +57,7 @@ void antFlush(void);
 void antGetSamples(void);
 void antInit(void);
 void antReset(void);
+void antSample(void);
 void antStart(void);
 void antStop(void);
 void antSwitch(AntType antenna);

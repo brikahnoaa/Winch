@@ -14,11 +14,14 @@ void main(void){
   mpcInit();
   antInit();
   antStart();
+  flogf("\n");
+  antSample();
+  antDataWait();
+  if (!antRead())
+    flogf("read fails\n");
   flogf("antDepth() -> %f\n", antDepth());
   flogf("antTemp() -> %f\n", antTemp());
-  antAuton(true);
-  flogf("antDepth() -> %f\n", antDepth());
-  flogf("antTemp() -> %f\n", antTemp());
+  // antAuton(true);
   flogf("\nPress any to talk, Q to exit\n");
   flogf("connected to ant\n");
   while (true) {
@@ -34,6 +37,5 @@ void main(void){
   }
   antAuton(false);
   antGetSamples();
-  antStop();
-  sysStop("user stop");
+  utlStop("normal");
 }

@@ -40,7 +40,8 @@ typedef struct CfgParam {
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
-  {"ast", "ant.store",      &ant.store,       'b',  "false"},
+  {"acS", "ant.clearSamp",  &ant.clearSamp,   'b',  "true"},
+  {"asS", "ant.storeSamp",  &ant.storeSamp,   'b',  "true"},
   {"alF", "ant.logFile",    &ant.logFile,     'c',  "s39"},
   {"asD", "ant.subD",       &ant.subD,        'f',  "3.49"},
   {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
@@ -69,8 +70,9 @@ static CfgParam cfgP[] = {
   {"brR", "boy.riseRetry",  &boy.riseRetry,   'i',  "3"},
   {"bsT", "boy.settleT",    &boy.settleT,     'i',  "120"},
   {"bsP", "boy.startPh",    &boy.startPh,     'i',  "0"},
-  {"cst", "ctd.store",      &ctd.store,       'b',  "true"},
-  {"clF", "ctd.logFile",    &ctd.logFile,     'c',  ""},
+  {"ccS", "ctd.clearSamp",  &ctd.clearSamp,   'b',  "true"},
+  {"csS", "ctd.storeSamp",  &ctd.storeSamp,   'b',  "true"},
+  {"clF", "ctd.logFile",    &ctd.logFile,     'c',  "s16"},
   {"cde", "ctd.delay",      &ctd.delay,       'i',  "6"},
   {"gsT", "gps.setTime",    &gps.setTime,     'b',  "true"},
   {"gph", "gps.phoneNum",   &gps.phoneNum,    'c',  "0088160000519"},

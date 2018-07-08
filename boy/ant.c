@@ -21,10 +21,6 @@ void antInit(void) {
   ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
-  if (ant.store)
-    strcpy(ant.samCmd, "TSSon");
-  else
-    strcpy(ant.samCmd, "TS");
   antDevice(null_dev);
   ant.on = false;
   // alloc bloc to store depth values for moving/velo
@@ -53,7 +49,7 @@ void antStart(void) {
   DBG1("%s", utlBuf)
   // state
   ant.auton = false;
-  tmrStop(ant_tmr);
+  tmrStop(s39_tmr);
   antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
@@ -108,7 +104,7 @@ bool antData() {
   DBG2("aD")
   r=TURxQueuedCount(ant.port);
   if (r)
-    tmrStop(ant_tmr);
+    tmrStop(s39_tmr);
   return r>0;
 } // antData
 
@@ -124,7 +120,7 @@ bool antDataWait(void) {
 
 ///
 // if !tmrOn request sample
-// sets: ant_tmr
+// sets: s39_tmr
 void antSample(void) {
   if (antPending()) return;
   DBG0("aSam")
@@ -134,11 +130,14 @@ void antSample(void) {
     if (strstr(utlBuf, "sleep"))
       antPrompt();      // wakeup
   } // antData()
-  if (!ant.auton && ant.store)
+  if (!ant.auton && ant.storeSamp)
     utlWrite(ant.port, "TSSon", EOL);
   else
     utlWrite(ant.port, "TS", EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
+  // catch echo - none in auton
+  if (!ant.auton)
+    utlReadWait(ant.port, utlBuf, 1);
+  tmrStart(s39_tmr, ant.delay);
   ant.sampT = time(0);
 } // antSample
 
@@ -184,7 +183,7 @@ bool antRead(void) {
 ///
 // tmr not expired and on
 bool antPending(void) {
-  return (tmrOn(ant_tmr));
+  return (tmrOn(s39_tmr));
 }
     
 ///
@@ -385,7 +384,7 @@ void antSwitch(AntType antenna) {
     
 ///
 // turn autonomous on/off, with no output. Fetch with antGetSamples()
-// sets: .samCmd
+// sets: .auton
 void antAuton(bool auton) {
   DBG0("antAuto(%d)", auton)
   if (auton) {
@@ -395,18 +394,12 @@ void antAuton(bool auton) {
     utlExpect(ant.port, utlBuf, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);
     utlExpect(ant.port, utlBuf, "-->", 2);
-    strcpy(ant.samCmd, "TS");
   } else {
     utlWrite(ant.port, "stop", EOL);
     utlExpect(ant.port, utlBuf, EXEC, 5);
     utlNap(1);
     TURxFlush(ant.port);
-    if (ant.store)
-      strcpy(ant.samCmd, "TSSon");
-    else
-      strcpy(ant.samCmd, "TS");
   } // if auton
-  tmrStop(ant_tmr);
   ant.auton = auton;
 }
 
@@ -436,10 +429,12 @@ void antGetSamples(void) {
   // close log file if local only
   if (!ant.log)
     close(log);
-  utlWrite(ant.port, "initLogging", EOL);
-  utlExpect(ant.port, utlBuf, "-->", 2);
-  utlWrite(ant.port, "initLogging", EOL);
-  utlExpect(ant.port, utlBuf, "-->", 2);
+  if (ant.clearSamp) {
+    utlWrite(ant.port, "initLogging", EOL);
+    utlExpect(ant.port, utlBuf, "-->", 2);
+    utlWrite(ant.port, "initLogging", EOL);
+    utlExpect(ant.port, utlBuf, "-->", 2);
+  }
 } // antGetSamples
 
 bool antSurf(void) {

@@ -5,7 +5,7 @@
 // typedef enum {
 enum {
   null_tmr=10,
-  ant_tmr, ctd_tmr, deploy_tmr, data_tmr, day_tmr,
+  s16_tmr, s39_tmr, ant_tmr, deploy_tmr, data_tmr, day_tmr,
   gps_tmr, hour_tmr, init_tmr, minute_tmr, rudics_tmr,
   utl_tmr, ngk_tmr, motion_tmr, wsp_tmr, sizeof_tmr
   };
