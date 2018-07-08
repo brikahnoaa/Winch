@@ -5,6 +5,7 @@
 #include <tmr.h>
 
 #define EOL "\r"
+#define EXEC "S>"
 
 CtdInfo ctd;
 
@@ -87,8 +88,9 @@ void ctdBreak(void) {
 ///
 // data waiting
 bool ctdData() {
+  int r;
   DBG2("cD")
-  int r=TURxQueuedCount(ctd.port);
+  r=TURxQueuedCount(ctd.port);
   if (r)
     tmrStop(ctd_tmr);
   return r>0;
@@ -102,13 +104,12 @@ bool ctdDataWait(void) {
     if (ctdData()) 
       return true;
   return false;
-} // antDataWait
+} // ctdDataWait
 
 ///
 // poke ctd to get sample, set interval timer (ignore ctd.auton)
 // sets: ctd_tmr
 void ctdSample(void) {
-  int len;
   if (ctdPending()) return;
   DBG0("cSam")
   // flush old data, check for sleep message and prompt if needed
@@ -117,12 +118,12 @@ void ctdSample(void) {
     if (strstr(utlBuf, "sleep"))
       ctdPrompt();      // wakeup
   } // ctdData()
-  if (!ant.auton && ant.store)
-    utlWrite(ant.port, "TSSon", EOL);
+  if (!ctd.auton && ctd.store)
+    utlWrite(ctd.port, "TSSon", EOL);
   else
-    utlWrite(ant.port, "TS", EOL);
+    utlWrite(ctd.port, "TS", EOL);
   // get echo // NOTE - sbe16 does not echo while auton
-  if (!ant.auton)
+  if (!ctd.auton)
     utlExpect(ctd.port, utlBuf, EXEC, 2);
 } // ctdSample
 
@@ -136,7 +137,7 @@ bool ctdRead(void) {
   // utlRead(ctd.port, utlBuf);
   p0 = utlExpect(ctd.port, utlBuf, EXEC, 2);
   if (!p0) {
-    utlErr(ant_err, "ctdRead: no S>");
+    utlErr(ctd_err, "ctdRead: no S>");
     return false;
   } // not data
   if (ctd.log) 

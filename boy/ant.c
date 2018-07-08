@@ -4,7 +4,8 @@
 #include <tmr.h>
 
 #define EOL "\r"
-#define SBE_SLEEP 20
+#define ANT_BAUD 9600
+#define EXEC "<Executed/>"
 
 AntInfo ant;
 
@@ -103,8 +104,9 @@ void antBreak(void) {
 ///
 // data waiting
 bool antData() {
+  int r;
   DBG2("aD")
-  int r=TURxQueuedCount(ant.port);
+  r=TURxQueuedCount(ant.port);
   if (r)
     tmrStop(ant_tmr);
   return r>0;

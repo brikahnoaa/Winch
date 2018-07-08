@@ -1,7 +1,6 @@
 // ctd.h
 
 #define CTD_H
-#define EXEC "S>"
 
 typedef struct CtdInfo {
   bool auton;

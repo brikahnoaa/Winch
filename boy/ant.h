@@ -1,9 +1,6 @@
 // ant.h
 #define ANT_H
 
-#define ANT_BAUD 9600
-#define EXEC "<Executed/>"
-
 typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
 

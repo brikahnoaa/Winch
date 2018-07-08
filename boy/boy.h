@@ -52,6 +52,7 @@ static PhaseType errorPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static int rise(float targetD, int try);
+static int riseRun(float targetD, int try);
 static int fall(int try);
 bool oceanCurrChk(void);
 float oceanCurr(void);

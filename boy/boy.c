@@ -137,7 +137,7 @@ PhaseType risePhase(void) {
     }
   } else {
     // R,01,00
-    riseFree();
+    riseRun(antSurfD()+1, 0);
   }
   return irid_pha;
 } // risePhase
