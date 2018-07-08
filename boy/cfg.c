@@ -40,7 +40,7 @@ typedef struct CfgParam {
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
-  {"asL", "ant.sampLog",    &ant.sampLog,     'b',  "false"},
+  {"ast", "ant.store",      &ant.store,       'b',  "false"},
   {"alF", "ant.logFile",    &ant.logFile,     'c',  "s39"},
   {"asD", "ant.subD",       &ant.subD,        'f',  "3.49"},
   {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
@@ -69,7 +69,7 @@ static CfgParam cfgP[] = {
   {"brR", "boy.riseRetry",  &boy.riseRetry,   'i',  "3"},
   {"bsT", "boy.settleT",    &boy.settleT,     'i',  "120"},
   {"bsP", "boy.startPh",    &boy.startPh,     'i',  "0"},
-  {"clg", "ctd.logging",    &ctd.logging,     'b',  "true"},
+  {"cst", "ctd.store",      &ctd.store,       'b',  "true"},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c',  ""},
   {"cde", "ctd.delay",      &ctd.delay,       'i',  "6"},
   {"gsT", "gps.setTime",    &gps.setTime,     'b',  "true"},

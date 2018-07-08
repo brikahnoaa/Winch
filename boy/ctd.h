@@ -1,13 +1,14 @@
 // ctd.h
 
 #define CTD_H
+#define EXEC "S>"
 
 typedef struct CtdInfo {
   bool auton;
-  bool logging;
+  bool store;                 // store on device with TSSon - except auton
   bool on;
   char logFile[32];
-  char samCmd[32];
+  char samCmd[16];
   float cond;
   float depth;
   float temp;
@@ -21,6 +22,7 @@ static void ctdBreak(void);
 static void ctdFlush(void);
 
 bool ctdData(void);
+bool ctdDataWait(void);
 bool ctdPending(void);
 bool ctdPrompt(void);
 bool ctdRead(void);

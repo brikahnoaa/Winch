@@ -2,6 +2,7 @@
 #define ANT_H
 
 #define ANT_BAUD 9600
+#define EXEC "<Executed/>"
 
 typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
@@ -14,12 +15,12 @@ typedef struct RingNode {
 } RingNode;
 
 typedef struct AntInfo {
-  bool auton;                 // autonomous mode
-  bool sampLog;               // use TS or TSSon - conflicts with auton
+  bool auton;                 // autonomous mode, silent
+  bool store;                 // store on device with TSSon - except auton
   bool on;
   bool surf;                  // on surface
   char logFile[64];
-  char samCmd[32];            // TS or TSSon
+  char samCmd[16];            // TS or TSSon
   float depth;
   float subD;                 // subsurfaceD; ant.surfD + boy.ant2tip
   float surfD;                // surfaceDepth of CTD when ant is floating

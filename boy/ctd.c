@@ -31,7 +31,7 @@ void ctdInit(void) {
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ctd.port, utlStr, EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
-  if (ctd.logging)
+  if (ctd.store)
     strcpy(ctd.samCmd, "TSSon");
   else
     strcpy(ctd.samCmd, "TS");
@@ -65,13 +65,13 @@ bool ctdPrompt(void) {
   ctdFlush();
   utlWrite(ctd.port, "", EOL);
   // looking for S> at end
-  s = utlExpect(ctd.port, utlBuf, "S>", 5);
+  s = utlExpect(ctd.port, utlBuf, EXEC, 5);
   if (s)
     return true;
   // try again after break
   ctdBreak();
   utlWrite(ctd.port, "", EOL);
-  s = utlExpect(ctd.port, utlBuf, "S>", 5);
+  s = utlExpect(ctd.port, utlBuf, EXEC, 5);
   if (s)
     return true;
   return false;
@@ -88,12 +88,25 @@ void ctdBreak(void) {
 // data waiting
 bool ctdData() {
   DBG2("cD")
-  return TURxQueuedCount(ctd.port);
+  int r=TURxQueuedCount(ctd.port);
+  if (r)
+    tmrStop(ctd_tmr);
+  return r>0;
 } // ctdData
 
 ///
+// wait for data or not pending (timeout)
+bool ctdDataWait(void) {
+  DBG0("aDW")
+  while (ctdPending())
+    if (ctdData()) 
+      return true;
+  return false;
+} // antDataWait
+
+///
 // poke ctd to get sample, set interval timer (ignore ctd.auton)
-// sets: ctd.ctdPending ctd_tmr
+// sets: ctd_tmr
 void ctdSample(void) {
   int len;
   if (ctdPending()) return;
@@ -104,12 +117,13 @@ void ctdSample(void) {
     if (strstr(utlBuf, "sleep"))
       ctdPrompt();      // wakeup
   } // ctdData()
-  utlWrite(ctd.port, ctd.samCmd, EOL);
-  // get echo 
-  len = utlReadWait(ctd.port, utlBuf, 1);
-  if (!strstr(utlBuf, ctd.samCmd))
-    utlErr(ctd_err, "ctd: TS command fail");
-  tmrStart( ctd_tmr, ctd.delay );
+  if (!ant.auton && ant.store)
+    utlWrite(ant.port, "TSSon", EOL);
+  else
+    utlWrite(ant.port, "TS", EOL);
+  // get echo // NOTE - sbe16 does not echo while auton
+  if (!ant.auton)
+    utlExpect(ctd.port, utlBuf, EXEC, 2);
 } // ctdSample
 
 ///
@@ -120,7 +134,7 @@ bool ctdRead(void) {
   if (!ctdData()) return false;
   DBG0("ctdRead()")
   // utlRead(ctd.port, utlBuf);
-  p0 = utlExpect(ctd.port, utlBuf, "S>", 2);
+  p0 = utlExpect(ctd.port, utlBuf, EXEC, 2);
   if (!p0) {
     utlErr(ant_err, "ctdRead: no S>");
     return false;
@@ -150,42 +164,43 @@ bool ctdRead(void) {
 ///
 // tmrOn ? ctdPending. tmrExp ? err
 bool ctdPending(void) {
-  if (tmrExp(ctd_tmr) && !ctdData()) {
-    utlErr(ctd_err, "ctd: timer expired");
-    return false;
-  }
-  if (ctd.auton || tmrOn(ctd_tmr))
-    return true;
-  return false;
+  return (tmrOn(ctd_tmr));
 }
 
 ///
 float ctdDepth(void) {
-  DBG1("ctdDepth()")
+  DBG1("cDep")
+  if (ctdData())
+      ctdRead();
   return ctd.depth;
 } // ctdDepth
 
 ///
 // NOTE - sbe16 does not echo while logging, must get prompt before STOP
-// turn autonomous on/off.
+// sets: .samCmd
 void ctdAuton(bool auton) {
   DBG0("ctdAuton(%d)", auton)
   if (auton) {
     // note - initlogging done at end of ctdGetSamples
     ctdPrompt();
     utlWrite(ctd.port, "sampleInterval=10", EOL);
-    utlReadWait(ctd.port, utlBuf, 1);
+    utlExpect(ctd.port, utlStr, EXEC, 2);
     utlWrite(ctd.port, "txRealTime=y", EOL);
-    utlReadWait(ctd.port, utlBuf, 1);
+    utlExpect(ctd.port, utlStr, EXEC, 2);
     utlWrite(ctd.port, "startnow", EOL);
-    utlReadWait(ctd.port, utlBuf, 1);
+    utlExpect(ctd.port, utlStr, "start logging", 2);
     if (!strstr(utlBuf, "start logging"))
       utlErr(ctd_err, "ctdAuton: expected 'Start logging' header");
+    strcpy(ctd.samCmd, "TS");
   } else {
     ctdPrompt();
     utlWrite(ctd.port, "stop", EOL);
     utlReadWait(ctd.port, utlBuf, 1);   // response
     // utlNap(2+ctd.delay);
+    if (ctd.store)
+      strcpy(ctd.samCmd, "TSSon");
+    else
+      strcpy(ctd.samCmd, "TS");
   } // if auton
   ctd.auton = auton;
 } // ctdAuton
@@ -213,7 +228,7 @@ void ctdGetSamples(void) {
   utlWrite(ctd.port, "initLogging", EOL);
   utlExpect(ctd.port, utlBuf, "verify", 2);
   utlWrite(ctd.port, "initLogging", EOL);
-  utlExpect(ctd.port, utlBuf, "S>", 2);
+  utlExpect(ctd.port, utlBuf, EXEC, 2);
   flogf(" = %d bytes to %s", total, ctd.logFile);
 } // ctdGetSamples
 

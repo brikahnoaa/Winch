@@ -20,7 +20,7 @@ void antInit(void) {
   ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
-  if (ant.sampLog)
+  if (ant.store)
     strcpy(ant.samCmd, "TSSon");
   else
     strcpy(ant.samCmd, "TS");
@@ -56,7 +56,7 @@ void antStart(void) {
   antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
-  utlExpect(ant.port, utlBuf, "<Exec", 1);
+  utlExpect(ant.port, utlBuf, EXEC, 1);
   antReset();
 } // antStart
 
@@ -77,17 +77,17 @@ bool antPrompt() {
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, utlBuf, "<Exec", 1))
+  if (utlExpect(ant.port, utlBuf, EXEC, 1))
     return true;
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, utlBuf, "<Exec", 1))
+  if (utlExpect(ant.port, utlBuf, EXEC, 1))
     return true;
   // try a third time after break
   antBreak();
   utlNap(2);
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, utlBuf, "<Exec", 1))
+  if (utlExpect(ant.port, utlBuf, EXEC, 1))
     return true;
   utlErr(ant_err, "antPrompt() fail");
   return false;
@@ -103,6 +103,7 @@ void antBreak(void) {
 ///
 // data waiting
 bool antData() {
+  DBG2("aD")
   int r=TURxQueuedCount(ant.port);
   if (r)
     tmrStop(ant_tmr);
@@ -131,48 +132,33 @@ void antSample(void) {
     if (strstr(utlBuf, "sleep"))
       antPrompt();      // wakeup
   } // antData()
-  utlWrite(ant.port, ant.samCmd, EOL);
-  // get echo of command
-  if (utlExpect(ant.port, utlBuf, ant.samCmd, 1))
-    tmrStart( ant_tmr, ant.delay );
+  if (!ant.auton && ant.store)
+    utlWrite(ant.port, "TSSon", EOL);
   else
-    utlErr(ant_err, "antSample: TS command no echo");
+    utlWrite(ant.port, "TS", EOL);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
   ant.sampT = time(0);
 } // antSample
 
 ///
-// antRead processes most recent sample, could be multiple lines
 // TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
 // sets: ant.temp .depth .ring->depth .ring->sampT
 // note: ant.sampT set in antSample()
 bool antRead(void) {
-  static char execStr[]="<Executed/>\r\n";
-  int execLen=strlen("<Executed/>\r\n");
   char *p0, *p1, *p2;
   if (!antData()) return false;
   // data waiting
   DBG0("antRead()");
-  p0 = utlExpect(ant.port, utlBuf, execStr, 2);
+  p0 = utlExpect(ant.port, utlBuf, EXEC, 2);
   if (!p0) {
     utlErr(ant_err, "antRead: no Exec");
     return false;
   } // not data
   if (ant.log)
     write(ant.log, utlBuf, strlen(utlBuf));
-  p0 = utlBuf;
-  // more than one result? skip past execStr
-  while ((p1 = strstr(p0, execStr)))
-    if (strlen(p1)>execLen)
-      p0 = p1 + execLen;
-    else break;
-  // result p0 must end in execStr
-  if (!p1) {
-    utlErr(ant_err, "antRead: garbage");
-    return false;
-  }
   // read temp, depth // parse two numeric csv
-  p1 = strtok(p0, "\r\n#, ");
+  p1 = strtok(utlBuf, "\r\n#, ");
   p2 = strtok(NULL, ", ");
   if (!p1 || !p2) {
     utlErr(ant_err, "antRead: garbage");
@@ -203,7 +189,7 @@ bool antPending(void) {
 // if data then read
 // retn: .depth
 float antDepth(void) {
-  DBG2("aDep")
+  DBG1("aDep")
   if (antData())
     antRead();
   return ant.depth;
@@ -397,20 +383,26 @@ void antSwitch(AntType antenna) {
     
 ///
 // turn autonomous on/off, with no output. Fetch with antGetSamples()
+// sets: .samCmd
 void antAuton(bool auton) {
   DBG0("antAuto(%d)", auton)
   if (auton) {
     utlWrite(ant.port, "SampleInterval=0.5", EOL);
-    utlExpect(ant.port, utlBuf, "Executed", 2);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
     utlWrite(ant.port, "txRealTime=n", EOL);
-    utlExpect(ant.port, utlBuf, "Executed", 2);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);
     utlExpect(ant.port, utlBuf, "-->", 2);
+    strcpy(ant.samCmd, "TS");
   } else {
     utlWrite(ant.port, "stop", EOL);
-    utlExpect(ant.port, utlBuf, "Executed", 5);
+    utlExpect(ant.port, utlBuf, EXEC, 5);
     utlNap(1);
     TURxFlush(ant.port);
+    if (ant.store)
+      strcpy(ant.samCmd, "TSSon");
+    else
+      strcpy(ant.samCmd, "TS");
   } // if auton
   tmrStop(ant_tmr);
   ant.auton = auton;
