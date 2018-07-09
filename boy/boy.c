@@ -148,14 +148,24 @@ PhaseType risePhase(void) {
 // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("iridPhase()");
-  if (boy.noIrid) return fall_pha;
   antStart();
-  gpsStart();
-  // gpsStats();
-  iridSig();
-  iridSendTest(100);
-  iridHup();
-  gpsStop();
+  antAuton(true);
+  ctdAuton(true);
+  tmrStart(phase_tmr, 5*60);
+  if (boy.cycle<2) {
+    // first two cycles are gps only
+    gpsStart();
+    while (tmrOn(phase_tmr)) {
+      gpsStats();
+      // utlNap(5);
+    }
+    gpsStop();
+  } else {
+    // irid calls
+    iridSig();
+    iridSendTest(100);
+    iridHup();
+  }
   return fall_pha;
 } // iridPhase
 
@@ -210,13 +220,14 @@ int riseRun(float targetD, int try) {
   // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
   // est needs more testing ??
   // ?? est = (int) (((nowD-targetD) / boy.riseVTest) * boy.rateAccu);
-  est = 20*3+20;
+  // est hack = depth * sec/meter + fudge
+  est = 20*3+30;
   tmrStart(targetT, est);
-  tmrStart(ngkT, boy.ngkDelay*2);
   tmrStart(twentyT, 20);
   tmrStart(fiveT, 5);
   ngkFlush();
   ngkSend(riseCmd_msg);
+  tmrStart(ngkT, boy.ngkDelay+2);
   ctdPrompt();
   ctdSample();
   antSample();
@@ -244,15 +255,20 @@ int riseRun(float targetD, int try) {
     // winch
     if (ngkRecv(&msg)!=null_msg) {
       flogf(", %s from winch", ngkMsgName(msg));
-      if (msg==stopCmd_msg)
-        // stops before target reached
+      if (msg==stopCmd_msg) {
+        // riseRun - keep going
         ngkSend(riseCmd_msg);
+        tmrStop(targetT);
+        stopB = true;
+        break;
+      }
       if (msg==riseRsp_msg)
         tmrStop(ngkT);
     }
     if (tmrExp(ngkT)) {
-      // ?? missed it?
       flogf("\nrise()\t| no response from winch");
+      // ?? missed it? 20s timeout will tell
+      // ngkSend(riseCmd_msg);
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
@@ -271,20 +287,111 @@ int riseRun(float targetD, int try) {
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
       flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
-      if (antVelo(&velo)) 
+      if (antVelo(&velo)>=0) 
         flogf(" velo=%4.2f", velo);
-      if (twentyB) {
-        if (lastD<=nowD) {
-          flogf("\nrise()\t| ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
-          lastD = nowD;
-        }
-      }
     } 
   } // while !stop
   // retry if error
   if (errB) {
     flogf(", retry %d", ++try);
-    return rise(targetD, try);
+    return riseRun(targetD, try);
+  } else { 
+    // normal stop
+    return 0;
+  }
+} // riseRun
+
+///
+// rise and stop with no brake
+int riseFree(float targetD, int try) {
+  bool twentyB=false, stopB=false, errB=false;
+  float nowD, startD, lastD, velo;
+  int est;        // estimated operation time
+  MsgType msg;
+  enum {targetT, ngkT, twentyT, fiveT};  // local timer names
+  DBG0("riseRun(%3.1f, %d)", targetD, try)
+  utlNap(15);
+  antSample();
+  antDataWait();
+  nowD = startD = antDepth();
+  if (startD < targetD) return 1;
+  if (try > boy.riseRetry) return 2;
+  // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
+  // est needs more testing ??
+  // ?? est = (int) (((nowD-targetD) / boy.riseVTest) * boy.rateAccu);
+  // est hack = depth * sec/meter + fudge
+  est = 20*3+30;
+  tmrStart(targetT, est);
+  tmrStart(twentyT, 20);
+  tmrStart(fiveT, 5);
+  ngkFlush();
+  ngkSend(surfCmd_msg);
+  tmrStart(ngkT, boy.ngkDelay+2);
+  ctdPrompt();
+  ctdSample();
+  antSample();
+  flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
+  while (!stopB && !errB) {       // redundant, loop exits by break;
+    utlX();
+    if (ctdData())
+      ctdRead();
+    // check: target, winch, 20s, 5s
+    if (antData())
+      nowD = antDepth();
+    // arrived?
+    if (nowD<targetD) {
+      flogf("\nrise()\t| reached targetD %3.1f at %s", nowD, utlTime());
+      tmrStop(targetT);
+      stopB = true;
+      break;
+    }
+    // op timeout - longer than estimated time + fudge
+    if (tmrExp(targetT)) {
+      flogf("\nrise()\t| ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+      errB = true;
+      break;
+    }
+    // winch
+    if (ngkRecv(&msg)!=null_msg) {
+      flogf(", %s from winch", ngkMsgName(msg));
+      if (msg==stopCmd_msg) {
+        tmrStop(targetT);
+        stopB = true;
+        break;
+      }
+      if (msg==riseRsp_msg)
+        tmrStop(ngkT);
+    }
+    if (tmrExp(ngkT)) {
+      flogf("\nrise()\t| no response from winch");
+      // ?? missed it? 20s timeout will tell
+      // ngkSend(riseCmd_msg);
+    }
+    // 20 seconds
+    if (tmrExp(twentyT)) {
+      flogf("\nrise()\t| 20s: startD-nowD %3.1f ", startD-nowD);
+      if (startD-nowD < 1.5) {
+        // by now we should have moved up 5 meters
+        flogf("ERR < 1.5");
+        errB = true;
+        break;
+      } else {
+        twentyB = true;
+        lastD = nowD;
+      }
+    }
+    // 5 seconds
+    if (tmrExp(fiveT)) {
+      tmrStart(fiveT, 5);
+      flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
+      if (antVelo(&velo)>=0) 
+        flogf(" velo=%4.2f", velo);
+    } 
+  } // while !stop
+  // retry if error
+  if (errB) {
+    flogf(", retry %d", ++try);
+    return riseRun(targetD, try);
   } else { 
     // normal stop
     return 0;
@@ -517,39 +624,44 @@ int fall(int try) {
 PhaseType deployPhase(void) {
   float depth, lastD;
   ngkStart();
+  ctdStart();
+  ctdSample();
+  ctdDataWait();
+  if (!ctdRead())
+    utlErr(ctd_err, "sbe16 failure");
   antStart();
-  tmrStart( deploy_tmr, 60*60*2 );
   antSample();
   antDataWait();
   if (!antRead())
-    utlStop("sbe39 failure");
+    utlErr(ant_err, "sbe39 failure");
   depth = antDepth();
+  tmrStart( phase_tmr, 60*60*2 );
   flogf("deployPhase()@%s %4.2fm", utlDateTime(), depth);
   // wait until under 10m
   while ((depth = antDepth())<10.0) {
     flogf("\ndeployPhase() at %4.2fm", depth);
-    if (tmrExp(deploy_tmr)) 
+    if (tmrExp(phase_tmr)) 
       sysStop("deployP() 2 hour timeout");
     utlNap(30);
   }
-  tmrStop(deploy_tmr);
+  tmrStop(phase_tmr);
   lastD = depth;
   utlNap(15);
   utlNap(boy.settleT);      // default 120sec
   flogf("\n\t| %4.2fm>10, watch depth for %dsec", depth, 300);
   depth = antDepth();
   // at most 5 min to descend, already waited 2min
-  tmrStart( deploy_tmr, 60*5 );
+  tmrStart( minute_tmr, 60*5 );
   // must fall at least 1m in 10 sec
   while (depth-lastD>1.0) {
     utlNap(15);
-    if (tmrExp(deploy_tmr)) 
+    if (tmrExp(minute_tmr)) 
       break;
     lastD = depth;
     depth = antDepth();
     flogf(" %3.1f", depth);
   }
-  tmrStop(deploy_tmr);
+  tmrStop(minute_tmr);
   // we are docked
   depth = antDepth();
   boy.dockD = depth;
@@ -577,7 +689,7 @@ int oceanCurr(float *curr) {
   ctdSample();
   if (!ctdDataWait()) {
     utlErr(ctd_err, "ctdDataWait fail in oceanCurr()");
-    return -1;
+    return 1;
   }
   ctdRead();
   antPrompt();
@@ -590,16 +702,17 @@ int oceanCurr(float *curr) {
   flogf("\noceanCurr() \t| aD=%3.1f cD=%3.1f boy2ant=%3.1f", aD, cD, c);
   if (a<0) {
     flogf("\noceanCurr() \t| ERR sbe16-sbe39<0");
-    return -1.0;
+    return 2;
   }
   if (c<a) {
     flogf("\noceanCurr() \t| ERR boy2ant<cD-aD");
     // ?? update boy2ant?
-    return -1.0;
+    return 3;
   }
   b=sqrt(pow(c,2)-pow(a,2));
   DBG1("sideways=%4.2f", b)
-  return b;
+  *curr = b;
+  return 0;
 } // oceanCurr
 
 ///

@@ -5,9 +5,9 @@
 // typedef enum {
 enum {
   null_tmr=10,
-  s16_tmr, s39_tmr, ant_tmr, deploy_tmr, data_tmr, day_tmr,
-  gps_tmr, hour_tmr, init_tmr, minute_tmr, rudics_tmr,
-  utl_tmr, ngk_tmr, motion_tmr, wsp_tmr, sizeof_tmr
+  s16_tmr, s39_tmr, day_tmr, hour_tmr, minute_tmr, phase_tmr,
+  data_tmr, gps_tmr, ngk_tmr, rudics_tmr, utl_tmr, wsp_tmr, 
+  sizeof_tmr
   };
 //  } TmrType;
 typedef time_t TmrType;
