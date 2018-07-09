@@ -331,8 +331,8 @@ void utlX(void) {
   // ?? pwrChk();
   // ?? utlPet();
   // console?
-  if (!utl.ignoreCon) {
-    if (cgetq()) {
+  if (cgetq()) {
+    if (!utl.ignoreCon) {
       c = cgetc();
       switch (c) {
       case 'q':
@@ -342,6 +342,7 @@ void utlX(void) {
         utlStop("user quit");
         break;
       }
-    }
+    } else 
+      cflush();
   }
 } // utlX

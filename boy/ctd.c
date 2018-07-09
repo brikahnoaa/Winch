@@ -111,7 +111,7 @@ void ctdSample(void) {
   // flush old data, check for sleep message and prompt if needed
   if (ctdData()) {
     utlRead(ctd.port, utlBuf);
-    if (strstr(utlBuf, "sleep"))
+    if (strstr(utlBuf, "time out"))
       ctdPrompt();      // wakeup
   } // ctdData()
   if (!ctd.auton && ctd.storeSamp)

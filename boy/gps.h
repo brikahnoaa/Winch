@@ -6,7 +6,7 @@ typedef struct GpsInfo {
   char phoneNum[16];
   char date[16];
   char lat[16];             // 45:67.8900N
-  char lon[16];             // 123:45.6789W
+  char lng[16];             // 123:45.6789W
   char platform[16];        // rudicsland
   char project[16];         // rudicsland
   char projHdr[16];         // ???csProjPlat

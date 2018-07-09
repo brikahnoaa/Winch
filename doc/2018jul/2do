@@ -14,3 +14,12 @@ if #S,02 then rise again
 . data
 .. 1minute detect, wind or just wind?
 
+. ocean
+test, should be 0.0
+delay 20sec
+
+riseRun - if no signal, check depth, rise?
+
+MINUTE to go double speed
+
+safe stop (auton)

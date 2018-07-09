@@ -73,7 +73,7 @@ int iridPrompt() {
 
 ///
 // get gps info; date, time, lon, lat
-// sets: .date .time .lon .lat
+// sets: .date .time .lng .lat
 // return: 0=success
 int gpsStats(void){
   DBG0("gpsStats()")
@@ -94,15 +94,15 @@ int gpsStats(void){
     gpsSetTime();
     gps.setTime = false;
   }
-  // lat lon
+  // lat lng
   utlWrite(gps.port, "at+pl", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
   utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS");
   flogf(" Lat=%s", utlStr);
   strcpy(gps.lat, utlStr);
   utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS");
-  flogf(" Lon=%s", utlStr);
-  strcpy(gps.lon, utlStr);
+  flogf(" Lng=%s", utlStr);
+  strcpy(gps.lng, utlStr);
   return 0;
 } // gpsStats
 
