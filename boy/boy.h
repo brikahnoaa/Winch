@@ -54,8 +54,8 @@ static PhaseType risePhase(void);
 static int rise(float targetD, int try);
 static int riseRun(float targetD, int try);
 static int fall(int try);
-bool oceanCurrChk(void);
-float oceanCurr(void);
+static int oceanCurrChk(void);
+static int oceanCurr(float *curr);
 static void boyStat(char *buffer);
 
 bool boyDocked(float depth);

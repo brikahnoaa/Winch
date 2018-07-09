@@ -153,8 +153,13 @@ bool ctdRead(void) {
   p3 = strtok(NULL, ", ");
   if (!p3) return false;
   ctd.depth = atof( p3 );
+  if (ctd.temp==0.0 && ctd.depth==0.0) {
+    utlErr(ant_err, "antRead: null values");
+    return false;
+  }
   DBG1("= %4.2", ctd.depth)
   ctd.time = time(0);
+  ctdSample();
   return true;
 } // ctdRead
 

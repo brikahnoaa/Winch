@@ -25,13 +25,13 @@ void boyMain() {
   int starts;
   starts = sysInit();
   mpcInit();
+  pwrInit();
   antInit();
   boyInit();
   ctdInit();
   gpsInit();
   ngkInit();
   wspInit();
-  pwrInit();
   flogf("\ system starts %d", starts);
   boy.phase = boy.startPh;
   if (boy.testing) 
@@ -200,8 +200,10 @@ int riseRun(float targetD, int try) {
   int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
-  DBG0("rise(%3.1f)", targetD)
+  DBG0("riseRun(%3.1f, %d)", targetD, try)
   utlNap(15);
+  antSample();
+  antDataWait();
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
@@ -215,16 +217,17 @@ int riseRun(float targetD, int try) {
   tmrStart(fiveT, 5);
   ngkFlush();
   ngkSend(riseCmd_msg);
+  ctdPrompt();
   ctdSample();
+  antSample();
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
-    if (ctdData()) {
+    if (ctdData())
       ctdRead();
-      ctdSample();
-    }
     // check: target, winch, 20s, 5s
-    nowD = antDepth();
+    if (antData())
+      nowD = antDepth();
     // arrived?
     if (nowD<targetD) {
       flogf("\nrise()\t| reached targetD %3.1f at %s", nowD, utlTime());
@@ -303,6 +306,8 @@ int rise(float targetD, int try) {
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
   DBG0("rise(%3.1f)", targetD)
   utlNap(15);
+  antSample();
+  antDataWait();
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
@@ -314,16 +319,17 @@ int rise(float targetD, int try) {
   tmrStart(fiveT, 5);
   ngkFlush();
   ngkSend(riseCmd_msg);
+  ctdPrompt();
   ctdSample();
+  antSample();
   flogf("\nrise()\t| riseCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
-    if (ctdData()) {
+    if (ctdData()) 
       ctdRead();
-      ctdSample();
-    }
     // check: target, winch, 20s, 5s
-    nowD = antDepth();
+    if (antData())
+      nowD = antDepth();
     // arrived?
     if (nowD<targetD) {
       flogf("\nrise()\t| reached targetD %3.1f at %s", nowD, utlTime());
@@ -407,6 +413,8 @@ int fall(int try) {
   enum {targetT, ngkT, fortyT, fiveT};  // local timer names
   DBG0("fall()")
   utlNap(15);
+  antSample();
+  antDataWait();
   nowD = startD = antDepth();
   // if (startD < targetD) return 1;
   if (nowD > boy.dockD-2) return 1;
@@ -420,15 +428,16 @@ int fall(int try) {
   ngkFlush();
   ngkSend(fallCmd_msg);
   flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
+  ctdPrompt();
   ctdSample();
+  antSample();
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
-    if (ctdData()) {
+    if (ctdData()) 
       ctdRead();
-      ctdSample();
-    }
     // check: target, winch, 20s, 3s
-    nowD = antDepth();
+    if (antData())
+      nowD = antDepth();
     // arrived?
     // if (nowD<targetD) {
       // wait for winch to stop
@@ -510,6 +519,10 @@ PhaseType deployPhase(void) {
   ngkStart();
   antStart();
   tmrStart( deploy_tmr, 60*60*2 );
+  antSample();
+  antDataWait();
+  if (!antRead())
+    utlStop("sbe39 failure");
   depth = antDepth();
   flogf("deployPhase()@%s %4.2fm", utlDateTime(), depth);
   // wait until under 10m
@@ -558,9 +571,14 @@ PhaseType errorPhase(void) {
 ///
 // wait currChkSettle, buoy ctd, ant td, compute
 // uses: .boy2ant
-float oceanCurr() {
+int oceanCurr(float *curr) {
   float aD, cD, a, b, c;
   ctdPrompt();
+  ctdSample();
+  if (!ctdDataWait()) {
+    utlErr(ctd_err, "ctdDataWait fail in oceanCurr()");
+    return -1;
+  }
   ctdRead();
   antPrompt();
   cD=ctdDepth();
@@ -586,22 +604,20 @@ float oceanCurr() {
 
 ///
 // uses: boy.currMax
-bool oceanCurrChk() {
+int oceanCurrChk() {
   float sideways;
-  flogf("\n\t| oceanCurrChk() ");
-  sideways = oceanCurr();
-  if (sideways<0) {
-    utlErr(logic_err, "oceanCurr invalid value");
-    return false;
+  flogf("\n\t| oceanCurrChk()");
+  if (oceanCurr(&sideways)) {
+    utlErr(boy_err, "oceanCurr failed");
+    return 1;
   }
-  flogf(" current @ %.1f=%.1f ", antDepth(), sideways);
+  flogf(" current @ %.1f = %.1f", antDepth(), sideways);
   if (sideways>boy.currMax) {
-    flogf("too strong, cancel ascent");
+    flogf(" too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
-    return false;
-    return true;
+    return 2;
   }
-  return false;
+  return 0;
 } // oceanCurrChk
 
 ///
