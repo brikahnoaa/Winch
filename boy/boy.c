@@ -597,6 +597,7 @@ int fall(int try) {
 // wait until under 10m, watch until not falling, wait 30s, riseUp()
 PhaseType deployPhase(void) {
   float depth, lastD;
+  enum {deploy_tmr, drop_tmr}
   ngkStart();
   ctdStart();
   ctdSample();
@@ -609,39 +610,34 @@ PhaseType deployPhase(void) {
   if (!antRead())
     utlErr(ant_err, "sbe39 failure");
   depth = antDepth();
-  tmrStart( phase_tmr, boy.minute*60*2 );
+  tmrStart( deploy_tmr, boy.minute*60*2 );
   flogf("deployPhase()@%s %4.2fm", utlDateTime(), depth);
   // wait until under 10m
   while ((depth = antDepth())<10.0) {
     flogf("\ndeployPhase() at %4.2fm", depth);
-    if (tmrExp(phase_tmr)) 
+    if (tmrExp(deploy_tmr)) 
       sysStop("deployP() 2 hour timeout");
-    utlNap(30);
+    utlNap(20);
   }
-  tmrStop(phase_tmr);
-  lastD = depth;
-  utlNap(15);
-  utlNap(boy.settleT);      // default 120sec
-  flogf("\n\t| %4.2fm>10, watch depth for %dsec", depth, 300);
-  depth = antDepth();
-  // at most 5 min to descend, already waited 2min
-  tmrStart( minute_tmr, boy.minute*5 );
-  // must fall at least 1m in 10 sec
-  while (depth-lastD>1.0) {
+  flogf("\n\t| %4.2fm>10, watch depth to settle down for %dsec\n", depth, 300);
+  // at most 5min to descend, already waited 2min
+  tmrStart(drop_tmr, boy.minute*5);
+  while (true) {
+    // must fall at least 1m in 15 sec
     utlNap(15);
-    if (tmrExp(minute_tmr)) 
-      break;
+    antSample();
+    antDataWait();
     lastD = depth;
     depth = antDepth();
+    if (depth-lastD<1.0) break;
+    if (tmrExp(drop_tmr)) break;
     flogf(" %3.1f", depth);
   }
-  tmrStop(minute_tmr);
-  // we are docked
-  depth = antDepth();
+  utlNap(boy.settleT);      // default 120sec
+  // we are down
   boy.dockD = depth;
   flogf("\n\t| boy.dockD = %4.2f", boy.dockD);
   flogf("\n\t| go to surface, call home");
-  utlNap(10);
   return rise_pha;
 } // deployPhase
 

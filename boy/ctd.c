@@ -183,7 +183,7 @@ float ctdDepth(void) {
 // "start logging at = 08 Jul 2018 05:28:29, sample interval = 10 seconds\r\n"
 // sets: .auton
 void ctdAuton(bool auton) {
-  DBG0("ctdAuton(%d)", auton)
+  flogf("ctdAuton(%d)", auton);
   if (auton) {
     // note - initlogging done at end of ctdGetSamples
     if (ctdPending())

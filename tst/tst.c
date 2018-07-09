@@ -12,10 +12,9 @@ void main(void){
   mpcInit();
   ctdInit();
   ctdStart();
-  ctdSample();
-  ctdDataWait();
   ctdRead();
-  ctdAuton(true);
+  flogf("ctdDepth %2.1f", ctdDepth());
+  ctdRead();
   flogf("ctdDepth %2.1f", ctdDepth());
   flogf("\nPress Q to exit\n");
   while (true) {
@@ -29,7 +28,5 @@ void main(void){
       cputc(c);
     }
   }
-  ctdAuton(false);
-  // ctdGetSamples();
   ctdStop();
 }
