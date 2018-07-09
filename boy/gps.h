@@ -33,5 +33,6 @@ int iridPrompt(void);
 int iridSendTest(int msgLen);
 int iridSig(void);
 void gpsInit(void);
+void gpsSig(void);
 void gpsStop(void);
 void iridHup(void);

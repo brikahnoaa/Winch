@@ -343,6 +343,6 @@ void utlX(void) {
         break;
       }
     } else 
-      cflush();
+      ciflush();
   }
 } // utlX

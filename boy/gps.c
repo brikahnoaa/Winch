@@ -162,6 +162,13 @@ int gpsSats(void){
   return 2;
 } // gpsSats
 
+///
+// switch to gps
+void gpsSig(void) {
+  antDevice(cf2_dev);
+  antSwitch(gps_ant);
+}
+
 /// 
 // sets: gps.signal
 int iridSig(void) {

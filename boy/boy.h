@@ -32,6 +32,7 @@ typedef struct BoyInfo {
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
   int log;                // log filehandle
+  int minute;             // set smaller to speed up test cycle (60)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int fallRetry;          // fall fails, retry times
   int riseRetry;          // rise fails, retry times
