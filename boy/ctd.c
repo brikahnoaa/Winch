@@ -39,7 +39,7 @@ void ctdInit(void) {
 void ctdStart(void) {
   mpcPamDev(sbe16_pam);
   tmrStop(s16_tmr);
-  if (strlen(ctd.logFile))
+  if (!ctd.log && strlen(ctd.logFile))
     ctd.log = utlLogFile(ctd.logFile);
   ctd.on = true;
 }
@@ -183,7 +183,8 @@ float ctdDepth(void) {
 // "start logging at = 08 Jul 2018 05:28:29, sample interval = 10 seconds\r\n"
 // sets: .auton
 void ctdAuton(bool auton) {
-  flogf("ctdAuton(%d)", auton);
+  char *s;
+  flogf("\nctdAuton(%d)", auton);
   if (auton) {
     // note - initlogging done at end of ctdGetSamples
     if (ctdPending())
@@ -191,17 +192,21 @@ void ctdAuton(bool auton) {
     ctdPrompt();
     utlWrite(ctd.port, "sampleInterval=10", EOL);
     utlExpect(ctd.port, utlStr, EXEC, 2);
-    utlWrite(ctd.port, "txRealTime=y", EOL);
+    utlWrite(ctd.port, "txRealTime=n", EOL);
     utlExpect(ctd.port, utlStr, EXEC, 2);
     utlWrite(ctd.port, "startnow", EOL);
-    utlExpect(ctd.port, utlStr, "start logging", 4);
-    if (!strstr(utlStr, "start logging"))
-      utlErr(ctd_err, "ctdAuton: expected 'start logging' header");
+    s = utlExpect(ctd.port, utlStr, "start logging", 4);
+    if (!s)
+      utlErr(ctd_err, "ctdAuton: expected 'start logging'");
     ctdPrompt();
   } else {
     ctdPrompt();
     utlWrite(ctd.port, "stop", EOL);
-    utlExpect(ctd.port, utlBuf, "logging stopped", 4);
+    utlExpect(ctd.port, utlStr, EXEC, 2);
+    utlWrite(ctd.port, "stop", EOL);
+    s = utlExpect(ctd.port, utlBuf, "logging stopped", 4);
+    if (!s)
+      utlErr(ctd_err, "ctdAuton: expected 'logging stopped'");
   } // if auton
   ctd.auton = auton;
 } // ctdAuton
@@ -212,7 +217,10 @@ void ctdGetSamples(void) {
   int len1=sizeof(utlBuf);
   int len2=len1, len3=len1;
   int total=0;
-  ctd.log = utlLogFile(ctd.logFile);
+  if (!ctd.log && strlen(ctd.logFile))
+    ctd.log = utlLogFile(ctd.logFile);
+  if (!ctd.log)
+    return;
   flogf("\n+ctdGetSamples()");
   ctdPrompt();          // wakeup
   utlWrite(ctd.port, "GetSamples:", EOL);

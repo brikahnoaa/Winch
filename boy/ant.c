@@ -386,7 +386,7 @@ void antSwitch(AntType antenna) {
 // turn autonomous on/off, with no output. Fetch with antGetSamples()
 // sets: .auton
 void antAuton(bool auton) {
-  flogf("antAuto(%d)", auton);
+  flogf("\nantAuton(%d)", auton);
   if (auton) {
     utlWrite(ant.port, "SampleInterval=0.5", EOL);
     utlExpect(ant.port, utlBuf, EXEC, 2);

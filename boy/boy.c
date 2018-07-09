@@ -555,7 +555,6 @@ int fall(int try) {
     if (ngkRecv(&msg)!=null_msg) {
       flogf(", %s from winch", ngkMsgName(msg));
       if (msg==stopCmd_msg)
-        // return -1;
         return 0;
       if (msg==fallRsp_msg)
         tmrStop(ngkTmr);
@@ -563,8 +562,9 @@ int fall(int try) {
     if (tmrExp(ngkTmr)) {
       flogf("\nfall()\t| WARN no response from winch");
     }
-    if (nowD>boy.dockD-1) {
-      flogf("\nfall()\t| reached boy.dockD %3.1f at %s", nowD, utlTime());
+    if (!twentyB && nowD>boy.dockD-1) {
+      flogf("\nfall()\t| @%3.1f near boy.dockD=%3.1f %s", 
+        nowD, boy.dockD, utlTime());
       // give 20 sec to get stop cmd
       tmrStart(twentyTmr, 20);
       twentyB = true;
@@ -599,6 +599,7 @@ PhaseType deployPhase(void) {
   float depth, lastD;
   enum {deploy_tmr, drop_tmr}
   ngkStart();
+  flogf("\ndeploy: testing sbe16, sbe39");
   ctdStart();
   ctdSample();
   ctdDataWait();
@@ -609,17 +610,21 @@ PhaseType deployPhase(void) {
   antDataWait();
   if (!antRead())
     utlErr(ant_err, "sbe39 failure");
-  depth = antDepth();
+  flogf("deployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
+    antDepth(), ctdDepth(), utlDateTime());
   tmrStart( deploy_tmr, boy.minute*60*2 );
-  flogf("deployPhase()@%s %4.2fm", utlDateTime(), depth);
   // wait until under 10m
-  while ((depth = antDepth())<10.0) {
-    flogf("\ndeployPhase() at %4.2fm", depth);
+  while (true) {
+    antSample();
+    antDataWait();
+    depth = antDepth();
+    flogf("\ndeployPhase@%4.2fm %s", depth, utlTime());
+    if (depth>10) break;
     if (tmrExp(deploy_tmr)) 
       sysStop("deployP() 2 hour timeout");
-    utlNap(20);
+    utlNap(30);
   }
-  flogf("\n\t| %4.2fm>10, watch depth to settle down for %dsec\n", depth, 300);
+  flogf("\n\t| %4.2fm>10, watch for depth to settle down");
   // at most 5min to descend, already waited 2min
   tmrStart(drop_tmr, boy.minute*5);
   while (true) {
@@ -629,10 +634,11 @@ PhaseType deployPhase(void) {
     antDataWait();
     lastD = depth;
     depth = antDepth();
+    flogf(" %3.1f", depth);
     if (depth-lastD<1.0) break;
     if (tmrExp(drop_tmr)) break;
-    flogf(" %3.1f", depth);
   }
+  flogf("\n\t| down, pause for %ds", boy.settleT);
   utlNap(boy.settleT);      // default 120sec
   // we are down
   boy.dockD = depth;
