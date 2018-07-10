@@ -18,9 +18,17 @@ void main(void){
   antStart();
   gpsStart();
   // gpsStats();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\n%s\n", utlTime());
   iridSig();
-  iridSendTest(12);
+  iridDial();
+  iridSendTest(100);
+  iridSendTest(100);
   iridHup();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\nstop %s", utlTime());
   /**/
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");

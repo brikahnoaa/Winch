@@ -18,12 +18,12 @@ void main(void){
   antStart();
   gpsStart();
   // gpsStats();
-  flogf("\nstart %s", utlTime());
-  iridSig();
-  iridDial();
-  iridSendTest(gps.testSize);
-  iridSendTest(gps.testSize);
-  iridHup();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
   flogf("\nstop %s", utlTime());
   /**/
   port = gps.port;

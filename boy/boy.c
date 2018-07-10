@@ -117,7 +117,7 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
-  if (boy.cycle<4) {
+  if (boy.cycle % 2) {
     // R,01,03
     result = rise(boy.currChkD, 0);
     if (result) {
@@ -153,16 +153,25 @@ PhaseType iridPhase(void) {
   ctdAuton(true);
   tmrStart(phase_tmr, 5*boy.minute);
   if (!boy.noIrid) {
-      gpsStart();
+    gpsStart();
+    flogf("\n%s ===\n", utlTime());
+    gpsSig();
+    gpsStats();
+    flogf("\n%s ===\n", utlTime());
+    iridSig();
+    iridDial();
+    iridSendTest(100);
+    iridHup();
+    flogf("\n%s ===\n", utlTime());
+    iridDial();
+    iridSendTest(100);
+    iridHup();
+    flogf("\n%s ===\n", utlTime());
+    gpsSig();
+    while (!tmrExp(phase_tmr)) 
       gpsStats();
-      while (tmrOn(phase_tmr)) {
-        iridSig();
-        iridSendTest(100);
-        iridHup();
-        gpsSig();
-        gpsStats();
-      } // while phase
-      gpsStop();
+    flogf("\n%s ===\n", utlTime());
+    gpsStop();
   } // irid
   antAuton(false);
   ctdAuton(false);
@@ -173,6 +182,24 @@ PhaseType iridPhase(void) {
 PhaseType fallPhase() {
   flogf("fallPhase()");
   if (boy.noRise) return data_pha;
+  if (boy.cycle % 2) {
+    antSample();
+    antDataWait();
+    flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
+    ngkSend(stopCmd_msg);
+    antSample();
+    antDataWait();
+    flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
+    ngkSend(stopCmd_msg);
+    antSample();
+    antDataWait();
+    flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
+    tmrStart(minute_tmr, 2*boy.minute);
+    while (!tmrExp(minute_tmr)) {
+      antDataWait();
+      flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
+    }
+  }
   fall(0);
   return data_pha;
 } // fallPhase
@@ -188,7 +215,6 @@ PhaseType dataPhase(void) {
   int success, detect;
   flogf("dataPhase()");
   if (boy.noData) return rise_pha;
-  if (boy.cycle==0) return rise_pha;
   ctdStop();
   antStop();
   wspStart(wsp1_pam);

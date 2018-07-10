@@ -20,6 +20,9 @@ delay 20sec
 
 riseRun - if no signal, check depth, rise?
 
-MINUTE to go double speed
+boy.minute to go double speed
+after riseRun, stop and depth for one or two minutes
+
+v3.wispr merge
 
 safe stop (auton)

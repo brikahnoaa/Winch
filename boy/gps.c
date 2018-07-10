@@ -94,6 +94,7 @@ int gpsStats(void){
     gpsSetTime();
     gps.setTime = false;
   }
+  flogf("\n");
   // lat lng
   utlWrite(gps.port, "at+pl", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
@@ -167,12 +168,13 @@ int gpsSats(void){
 void gpsSig(void) {
   antDevice(cf2_dev);
   antSwitch(gps_ant);
+  antDevice(a3la_dev);
 }
 
 /// 
 // sets: gps.signal
 int iridSig(void) {
-  DBG0("iridSig()")
+  flogf("iridSig()");
   // switch to irid
   antDevice(cf2_dev);
   antSwitch(irid_ant);
@@ -281,6 +283,7 @@ int iridSendTest(int msgLen) {
   utlBuf[4] = (char) (cs & 0xFF);
   DBG2("%s", utlNonPrint(utlBuf))
   while (hdrTry--) {
+    flogf(" projHdr");
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
     s = utlExpect(gps.port, land, "ACK", hdrPause);
     if (s) {
@@ -290,6 +293,7 @@ int iridSendTest(int msgLen) {
   }
   if (hdrTry < 0) return 2;
   // send data
+  flogf(" data");
   utlWriteBlock(gps.port, utlBuf, bufLen);
   // land ho!
   utlBuf[0] = 0;
@@ -303,8 +307,7 @@ int iridSendTest(int msgLen) {
         utlNonPrintBlock(utlBuf, i));
     }
   }
-  utlWrite(gps.port, "data", NULL);
-  tmrStop(rudics_tmr);
+  utlWrite(gps.port, "done", NULL);
   return 0;
 } // iridSendTest
 
