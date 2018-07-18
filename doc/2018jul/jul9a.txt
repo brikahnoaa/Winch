@@ -1,0 +1,499 @@
+C:\>set starts=0
+
+C:\>set boy.noirid
+
+C:\>set boy.noirid=true
+
+C:\>set boy.nodata=true
+
+C:\>set boy.cycleMax=6
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 1, max 50
+---   ---
+Program: sys.c,  Build: Jul  9 2018 11:12:29
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 1
+Started: 07-09-18 18:15:07
+---   ---
+VEE: BOY.NOIRID=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.CYCLEMAX=6
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 1
+boyMain(): starting with phase 0
+cycle 0 @07-09-18 18:15:09 deployPhase()@07-09-18 18:15:24 1.19m
+deployPhase() at 1.19m
+deployPhase() at 0.86m
+deployPhase() at 2.37m
+deployPhase() at 8.41m
+	| 14.45m>10, watch depth for 300sec 20.5
+	| boy.dockD = 20.49
+	| go to surface, call home
+cycle 0 @07-09-18 18:20:06 risePhase()
+-Err(file)	|0| 18:20:07 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=20.5 cD=40.0 boy2ant=14.3
+oceanCurr() 	| ERR boy2ant<cD-aD
+-Err()	|0| 18:20:33 oceanCurr failed
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#R,01,03) at 18:20:49
+rise()	| riseCmd to winch at 18:20:50
+rise()	| 5s: depth=26.0
++ngkRecv(%R,02,00) riseRsp 18:21:01, riseRsp from winch
+rise()	| 5s: depth=24.2
+rise()	| 5s: depth=22.2
+rise()	| 20s: startD-nowD 4.7 
+rise()	| 5s: depth=20.2
+rise()	| 5s: depth=18.3
+rise()	| 5s: depth=16.3
+rise()	| 5s: depth=14.3
+rise()	| 5s: depth=12.4
+rise()	| 5s: depth=10.4
+rise()	| reached targetD 10.0 at 18:21:43
++ngkSend(#S,01,00) at 18:21:43
++ngkRecv(%S,02,00) stopRsp 18:21:55
+rise() 	| stopCmd-->stopRsp
+	| oceanCurrChk()
+oceanCurr() 	| aD=10.0 cD=22.1 boy2ant=14.3 current @ 10.0 = 7.6
++ngkSend(#R,01,03) at 18:22:37
+rise()	| riseCmd to winch at 18:22:38
+rise()	| 5s: depth=8.1
++ngkRecv(%R,02,00) riseRsp 18:22:49, riseRsp from winch
+rise()	| 5s: depth=6.3
+rise()	| 5s: depth=4.4
+rise()	| 20s: startD-nowD 4.7 
+rise()	| 5s: depth=2.4
+rise()	| reached targetD 2.1 at 18:23:01
++ngkSend(#S,01,00) at 18:23:01
++ngkRecv(%S,02,00) stopRsp 18:23:12
+rise() 	| stopCmd-->stopRsp
+cycle 0 @07-09-18 18:23:12 iridPhase()
+-Err(ctd)	|0| 18:23:25 ctdAuton: expected 'start logging' header
+cycle 0 @07-09-18 18:23:34 fallPhase()
++ngkSend(#F,01,00) at 18:23:50
+fall()	| fallCmd to winch at 18:23:50
+fall()	| 5s: depth=1.4 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:24:01, fallRsp from winch
+fall()	| 5s: depth=1.3 velo=0.00
+fall()	| 5s: depth=2.4
+fall()	| 5s: depth=3.7
+fall()	| 5s: depth=4.8
+fall()	| 5s: depth=6.2
+fall()	| 5s: depth=7.4
+fall()	| 5s: depth=8.5
+fall()	| 5s: depth=9.7
+fall()	| 5s: depth=10.9
+fall()	| 5s: depth=12.1
+fall()	| 5s: depth=13.3
+fall()	| 5s: depth=14.5
+fall()	| 5s: depth=15.7
+fall()	| 5s: depth=16.9
+fall()	| 5s: depth=18.1
+fall()	| 5s: depth=19.2
+fall()	| 5s: depth=20.6
+fall()	| 5s: depth=21.7
+fall()	| 5s: depth=22.9
+fall()	| 5s: depth=24.1
+fall()	| 5s: depth=25.3
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:26:10, stopCmd from winch
+cycle 0 @07-09-18 18:26:10 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 1 @07-09-18 18:26:11 risePhase()
+-Err(file)	|1| 18:26:11 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:26:53
+rise()	| riseCmd to winch at 18:26:54
+rise()	| 5s: depth=26.0
++ngkRecv(%R,02,00) riseRsp 18:27:04, riseRsp from winch
+rise()	| 5s: depth=24.2
+rise()	| 5s: depth=22.3
+rise()	| 20s: startD-nowD 4.6 
+rise()	| 5s: depth=20.3
+rise()	| 5s: depth=18.3
+rise()	| 5s: depth=16.4
+rise()	| 5s: depth=14.4
+rise()	| 5s: depth=12.4
+rise()	| 5s: depth=10.2
+rise()	| reached targetD 9.8 at 18:27:48
++ngkSend(#S,01,00) at 18:27:48
++ngkRecv(%S,02,00) stopRsp 18:27:59
+rise() 	| stopCmd-->stopRsp
+	| oceanCurrChk()
+oceanCurr() 	| aD=9.8 cD=21.9 boy2ant=14.3 current @ 9.8 = 7.7
++ngkSend(#R,01,03) at 18:28:42
+rise()	| riseCmd to winch at 18:28:43
+rise()	| 5s: depth=7.9
++ngkRecv(%R,02,00) riseRsp 18:28:53, riseRsp from winch
+rise()	| 5s: depth=6.1
+rise()	| 5s: depth=4.1
+rise()	| 20s: startD-nowD 4.8 
+rise()	| 5s: depth=2.1
+rise()	| reached targetD 1.9 at 18:29:06
++ngkSend(#S,01,00) at 18:29:06
++ngkRecv(#S,02,00) stopCmd 18:29:17
+rise() 	| stopCmd-->stopCmd
+cycle 1 @07-09-18 18:29:17 iridPhase()
+-Err(ctd)	|1| 18:29:30 ctdAuton: expected 'start logging' header
+cycle 1 @07-09-18 18:29:39 fallPhase()
+ngkFlush() 	| flushed out stopRsp
++ngkSend(#F,01,00) at 18:29:55
+fall()	| fallCmd to winch at 18:29:55
+fall()	| 5s: depth=1.0 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:30:06, fallRsp from winch
+fall()	| 5s: depth=1.3 velo=0.00
+fall()	| 5s: depth=2.5
+fall()	| 5s: depth=3.7
+fall()	| 5s: depth=4.9
+fall()	| 5s: depth=6.0
+fall()	| 5s: depth=7.2
+fall()	| 5s: depth=8.4
+fall()	| 5s: depth=9.6
+fall()	| 5s: depth=10.8
+fall()	| 5s: depth=12.0
+fall()	| 5s: depth=13.2
+fall()	| 5s: depth=14.4
+fall()	| 5s: depth=15.7
+fall()	| 5s: depth=16.9
+fall()	| 5s: depth=18.1
+fall()	| 5s: depth=19.3
+fall()	| 5s: depth=20.5
+fall()	| 5s: depth=21.7
+fall()	| 5s: depth=22.8
+fall()	| 5s: depth=24.0
+fall()	| 5s: depth=25.2
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:32:15, stopCmd from winch
+cycle 1 @07-09-18 18:32:15 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 2 @07-09-18 18:32:16 risePhase()
+-Err(file)	|2| 18:32:16 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:32:59
+rise()	| riseCmd to winch at 18:33:00
+rise()	| 5s: depth=26.0
++ngkRecv(%R,02,00) riseRsp 18:33:10, riseRsp from winch
+rise()	| 5s: depth=24.0
+rise()	| 5s: depth=22.1
+rise()	| 20s: startD-nowD 4.9 
+rise()	| 5s: depth=20.0
+rise()	| 5s: depth=18.1
+rise()	| 5s: depth=16.1
+rise()	| 5s: depth=14.1
+rise()	| 5s: depth=12.2
+rise()	| 5s: depth=10.2
+rise()	| reached targetD 9.8 at 18:33:54
++ngkSend(#S,01,00) at 18:33:54
++ngkRecv(%S,02,00) stopRsp 18:34:05
+rise() 	| stopCmd-->stopRsp
+	| oceanCurrChk()
+oceanCurr() 	| aD=9.8 cD=21.8 boy2ant=14.3 current @ 9.8 = 7.7
++ngkSend(#R,01,03) at 18:34:47
+rise()	| riseCmd to winch at 18:34:49
+rise()	| 5s: depth=7.8
+rise()	| 5s: depth=6.3
++ngkRecv(%R,02,00) riseRsp 18:34:59, riseRsp from winch
+rise()	| 5s: depth=4.1
+rise()	| 20s: startD-nowD 4.7 
+rise()	| reached targetD 2.1 at 18:35:11
++ngkSend(#S,01,00) at 18:35:11
++ngkRecv(%S,02,00) stopRsp 18:35:22
+rise() 	| stopCmd-->stopRsp
+cycle 2 @07-09-18 18:35:22 iridPhase()
+-Err(ctd)	|2| 18:35:34 ctdAuton: expected 'start logging' header
+cycle 2 @07-09-18 18:35:44 fallPhase()
++ngkSend(#F,01,00) at 18:36:00
+fall()	| fallCmd to winch at 18:36:00
+fall()	| 5s: depth=0.9 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:36:11, fallRsp from winch
+fall()	| 5s: depth=1.4 velo=0.00
+fall()	| 5s: depth=2.5
+fall()	| 5s: depth=3.7
+fall()	| 5s: depth=4.9
+fall()	| 5s: depth=6.1
+fall()	| 5s: depth=7.3
+fall()	| 5s: depth=8.5
+fall()	| 5s: depth=9.8
+fall()	| 5s: depth=11.0
+fall()	| 5s: depth=12.2
+fall()	| 5s: depth=13.4
+fall()	| 5s: depth=14.5
+fall()	| 5s: depth=15.8
+fall()	| 5s: depth=16.9
+fall()	| 5s: depth=18.1
+fall()	| 5s: depth=19.3
+fall()	| 5s: depth=20.5
+fall()	| 5s: depth=21.7
+fall()	| 5s: depth=22.9
+fall()	| 5s: depth=24.1
+fall()	| 5s: depth=25.3
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:38:20, stopCmd from winch
+cycle 2 @07-09-18 18:38:20 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 3 @07-09-18 18:38:20 risePhase()
+-Err(file)	|3| 18:38:21 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:39:03
+rise()	| riseCmd to winch at 18:39:04
+rise()	| 5s: depth=26.0
++ngkRecv(%R,02,00) riseRsp 18:39:14, riseRsp from winch
+rise()	| 5s: depth=24.2
+rise()	| 5s: depth=22.3
+rise()	| 20s: startD-nowD 4.9 
+rise()	| 5s: depth=20.3
+rise()	| 5s: depth=18.3
+rise()	| 5s: depth=16.3
+rise()	| 5s: depth=14.4
+rise()	| 5s: depth=12.2
+rise()	| 5s: depth=10.2
+rise()	| reached targetD 9.8 at 18:39:58
++ngkSend(#S,01,00) at 18:39:58
++ngkRecv(%S,02,00) stopRsp 18:40:09
+rise() 	| stopCmd-->stopRsp
+	| oceanCurrChk()
+oceanCurr() 	| aD=9.8 cD=21.8 boy2ant=14.3 current @ 9.8 = 7.7
++ngkSend(#R,01,03) at 18:40:52
+rise()	| riseCmd to winch at 18:40:53
+rise()	| 5s: depth=7.8
++ngkRecv(%R,02,00) riseRsp 18:41:03, riseRsp from winch
+rise()	| 5s: depth=6.0
+rise()	| 5s: depth=3.9
+rise()	| 20s: startD-nowD 4.9 
+rise()	| reached targetD 2.1 at 18:41:15
++ngkSend(#S,01,00) at 18:41:15
++ngkRecv(%S,02,00) stopRsp 18:41:26
+rise() 	| stopCmd-->stopRsp
+cycle 3 @07-09-18 18:41:26 iridPhase()
+-Err(ctd)	|3| 18:41:39 ctdAuton: expected 'start logging' header
+cycle 3 @07-09-18 18:41:48 fallPhase()
++ngkSend(#F,01,00) at 18:42:04
+fall()	| fallCmd to winch at 18:42:04
+fall()	| 5s: depth=0.9
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:42:15, fallRsp from winch
+fall()	| 5s: depth=1.2 velo=0.00
+fall()	| 5s: depth=2.4
+fall()	| 5s: depth=3.6
+fall()	| 5s: depth=4.9
+fall()	| 5s: depth=6.1
+fall()	| 5s: depth=7.3
+fall()	| 5s: depth=8.5
+fall()	| 5s: depth=9.7
+fall()	| 5s: depth=10.9
+fall()	| 5s: depth=12.1
+fall()	| 5s: depth=13.2
+fall()	| 5s: depth=14.5
+fall()	| 5s: depth=15.6
+fall()	| 5s: depth=16.8
+fall()	| 5s: depth=18.0
+fall()	| 5s: depth=19.3
+fall()	| 5s: depth=20.5
+fall()	| 5s: depth=21.7
+fall()	| 5s: depth=22.9
+fall()	| 5s: depth=24.1
+fall()	| 5s: depth=25.3
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:44:24, stopCmd from winch
+cycle 3 @07-09-18 18:44:24 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 4 @07-09-18 18:44:25 risePhase()
+-Err(file)	|4| 18:44:25 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:45:08
+rise()	| riseCmd to winch at 18:45:09
+rise()	| 5s: depth=26.0 velo=-0.01
+rise()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 18:45:19, riseRsp from winch
+rise()	| 5s: depth=24.0 velo=-0.29
+rise()	| 5s: depth=22.1 velo=-0.29
+rise()	| 20s: startD-nowD 5.1 
+rise()	| 5s: depth=20.1 velo=-0.29
+rise()	| 5s: depth=18.1 velo=-0.29
+rise()	| 5s: depth=16.2 velo=-0.43
+rise()	| 5s: depth=14.1 velo=-0.43
+rise()	| 5s: depth=12.0 velo=-0.29
+rise()	| 5s: depth=10.0 velo=-0.29
+rise()	| 5s: depth=8.0 velo=-0.29
+rise()	| 5s: depth=6.1 velo=-0.29
+rise()	| 5s: depth=4.1 velo=-0.29
+rise()	| reached targetD 2.1 at 18:46:25
+cycle 4 @07-09-18 18:46:26 iridPhase()
+-Err(ctd)	|4| 18:46:39 ctdAuton: expected 'start logging' header
+cycle 4 @07-09-18 18:46:48 fallPhase()
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#F,01,00) at 18:47:04
+fall()	| fallCmd to winch at 18:47:04
+fall()	| 5s: depth=1.2 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:47:15, fallRsp from winch
+fall()	| 5s: depth=1.5 velo=0.00
+fall()	| 5s: depth=2.4
+fall()	| 5s: depth=3.6
+fall()	| 5s: depth=4.7
+fall()	| 5s: depth=5.9
+fall()	| 5s: depth=7.1
+fall()	| 5s: depth=8.3
+fall()	| 5s: depth=9.6
+fall()	| 5s: depth=10.8
+fall()	| 5s: depth=12.0
+fall()	| 5s: depth=13.2
+fall()	| 5s: depth=14.3
+fall()	| 5s: depth=15.6
+fall()	| 5s: depth=16.7
+fall()	| 5s: depth=17.9
+fall()	| 5s: depth=19.1
+fall()	| 5s: depth=20.3
+fall()	| 5s: depth=21.5
+fall()	| 5s: depth=22.7
+fall()	| 5s: depth=23.9
+fall()	| 5s: depth=25.1
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:49:25, stopCmd from winch
+cycle 4 @07-09-18 18:49:25 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 5 @07-09-18 18:49:25 risePhase()
+-Err(file)	|5| 18:49:26 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:50:08
+rise()	| riseCmd to winch at 18:50:09
+rise()	| 5s: depth=26.0 velo=0.00
+rise()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 18:50:19, riseRsp from winch
+rise()	| 5s: depth=24.2 velo=-0.29
+rise()	| 5s: depth=22.3 velo=-0.29
+rise()	| 20s: startD-nowD 4.8 
+rise()	| 5s: depth=20.3 velo=-0.30
+rise()	| 5s: depth=18.3 velo=-0.28
+rise()	| 5s: depth=16.3 velo=-0.45
+rise()	| 5s: depth=14.4 velo=-0.43
+rise()	| 5s: depth=12.2 velo=-0.29
+rise()	| 5s: depth=10.2 velo=-0.29
+rise()	| 5s: depth=8.3 velo=-0.29
+rise()	| 5s: depth=6.3 velo=-0.29
+rise()	| 5s: depth=4.3 velo=-0.29
+rise()	| 5s: depth=2.4 velo=-0.29
+rise()	| reached targetD 1.9 at 18:51:27
+cycle 5 @07-09-18 18:51:27 iridPhase()
+-Err(ctd)	|5| 18:51:40 ctdAuton: expected 'start logging' header
+cycle 5 @07-09-18 18:51:50 fallPhase()
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#F,01,00) at 18:52:05
+fall()	| fallCmd to winch at 18:52:06
+fall()	| 5s: depth=1.1 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:52:17, fallRsp from winch
+fall()	| 5s: depth=1.3 velo=0.00
+fall()	| 5s: depth=2.5
+fall()	| 5s: depth=3.7
+fall()	| 5s: depth=4.9
+fall()	| 5s: depth=6.0
+fall()	| 5s: depth=7.2
+fall()	| 5s: depth=8.6
+fall()	| 5s: depth=9.7
+fall()	| 5s: depth=10.9
+fall()	| 5s: depth=12.1
+fall()	| 5s: depth=13.3
+fall()	| 5s: depth=14.5
+fall()	| 5s: depth=15.7
+fall()	| 5s: depth=16.9
+fall()	| 5s: depth=18.1
+fall()	| 5s: depth=19.3
+fall()	| 5s: depth=20.5
+fall()	| 5s: depth=21.6
+fall()	| 5s: depth=22.8
+fall()	| 5s: depth=24.0
+fall()	| 5s: depth=25.2
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:54:26, stopCmd from winch
+cycle 5 @07-09-18 18:54:26 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 6 @07-09-18 18:54:27 risePhase()
+-Err(file)	|6| 18:54:27 utlLogFile(s16): open failed for log\s16.log
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:55:10
+rise()	| riseCmd to winch at 18:55:11
+rise()	| 5s: depth=26.0 velo=-0.01
+rise()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 18:55:21, riseRsp from winch
+rise()	| 5s: depth=24.0 velo=-0.29
+rise()	| 5s: depth=22.1 velo=-0.29
+rise()	| 20s: startD-nowD 4.9 
+rise()	| 5s: depth=20.0 velo=-0.29
+rise()	| 5s: depth=18.1 velo=-0.29
+rise()	| 5s: depth=16.1 velo=-0.43
+rise()	| 5s: depth=14.1 velo=-0.29
+rise()	| 5s: depth=12.2 velo=-0.43
+rise()	| 5s: depth=10.0 velo=-0.29
+rise()	| 5s: depth=8.2 velo=-0.45
+rise()	| 5s: depth=6.1 velo=-0.29
+rise()	| 5s: depth=4.1 velo=-0.29
+rise()	| reached targetD 2.1 at 18:56:28
+cycle 6 @07-09-18 18:56:28 iridPhase()
+-Err(ctd)	|6| 18:56:41 ctdAuton: expected 'start logging' header
+cycle 6 @07-09-18 18:56:50 fallPhase()
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#F,01,00) at 18:57:06
+fall()	| fallCmd to winch at 18:57:06
+fall()	| 5s: depth=1.2 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:57:18, fallRsp from winch
+fall()	| 5s: depth=1.3 velo=0.00
+fall()	| 5s: depth=2.3
+fall()	| 5s: depth=3.6
+fall()	| 5s: depth=4.7
+fall()	| 5s: depth=5.9
+fall()	| 5s: depth=7.1
+fall()	| 5s: depth=8.3
+fall()	| 5s: depth=9.5
+fall()	| 5s: depth=10.8
+fall()	| 5s: depth=12.0
+fall()	| 5s: depth=13.2
+fall()	| 5s: depth=14.3
+fall()	| 5s: depth=15.6
+fall()	| 5s: depth=16.7
+fall()	| 5s: depth=17.9
+fall()	| 5s: depth=19.1
+fall()	| 5s: depth=20.3
+fall()	| 5s: depth=21.5
+fall()	| 5s: depth=22.7
+fall()	| 5s: depth=23.9
+fall()	| 5s: depth=25.1
+fall()	| 5s: depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:59:27, stopCmd from winch
+cycle 6 @07-09-18 18:59:27 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+mpcSleep() at 07-09-18 18:59:28

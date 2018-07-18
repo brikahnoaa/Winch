@@ -1,0 +1,62 @@
+set
+SYS.QPBC=32
+BOY.NOIRID=TRUE
+BOY.NODATA=TRUE
+BOY.CYCLEMAX=6
+BOY.TESTING=TRUE
+GPS.SETTIME=FALSE
+SHUTDOWN=user quit
+GPS.RUDRESP=5
+STARTS=10
+
+C:\>
+###MX Load: CRC 010000 01EBF7 = 2FDF1C80
+Gs test\irid
+Saving 60408 bytes to TEST\IRID.PXE...
+
+C:\>test\irid
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 11, max 50
+---   ---
+Program: sys.c,  Build: Jul  9 2018 14:07:52
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 11
+Started: 07-09-18 23:24:39
+---   ---
+VEE: BOY.NOIRID=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.CYCLEMAX=6
+VEE: BOY.TESTING=TRUE
+VEE: GPS.SETTIME=FALSE
+VEE: GPS.RUDRESP=5
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+23:24:49
+
+GPS Sats=10 Date=07-09-2018 Time=23:25:33.000
+ Lat=44:37.2557 N Lng=124:02.6513 W
+23:25:33
+
+GPS Sats=10 Date=07-09-2018 Time=23:25:40.000
+ Lat=44:37.2557 N Lng=124:02.6512 W
+23:25:41
+iridSig() csq=5
+iridDial() 23:25:48 CONNECT 9600 projHdr data
+land-> (2480 5 cmds x0A )
+23:26:40
+
+iridDial() 23:26:40 CONNECT 9600 projHdr data
+land-> (2568 5 cmds x0A ) (3597 4 @@@y) (3747 38  x00 &C x01  x01 SendData() x0A SendData() x0A SendData() x0A )
+23:27:40
+
+GPS Sats=10 Date=07-09-2018 Time=23:27:56.000
+ Lat=44:37.2552 N Lng=124:02.6517 W
+23:27:57
+
+GPS Sats=10 Date=07-09-2018 Time=23:28:04.000
+ Lat=44:37.2553 N Lng=124:02.6514 W
+stop 23:28:04
+Press Q to exit, C:cf2, A:a3la
+
+C:\>
