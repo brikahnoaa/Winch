@@ -47,9 +47,10 @@ void ctdStart(void) {
 ///
 void ctdStop(void){
   mpcPamDev(null_pam);
-  if (ctd.log) 
+  if (ctd.log) {
     close(ctd.log);
-  ctd.log = 0;
+    ctd.log = 0;
+  }
   ctd.on = false;
 } // ctdStop
 
@@ -233,7 +234,10 @@ void ctdGetSamples(void) {
     flogf("+[%d]", len3);
     total += len3;
   } // while ==
-  close(ctd.log);
+  if (ctd.log) {
+    close(ctd.log);
+    ctd.log = 0;
+  }
   if (ctd.clearSamp) {
     utlWrite(ctd.port, "initLogging", EOL);
     utlExpect(ctd.port, utlBuf, "verify", 2);

@@ -33,11 +33,11 @@ deployPhase() at 8.41m
 	| boy.dockD = 20.49
 	| go to surface, call home
 cycle 0 @07-09-18 18:20:06 risePhase()
--Err(file)	|0| 18:20:07 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|0| 18:20:07 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=20.5 cD=40.0 boy2ant=14.3
 oceanCurr() 	| ERR boy2ant<cD-aD ??
--Err()	|0| 18:20:33 oceanCurr failed
+-ERR()	|0| 18:20:33 oceanCurr failed
 ngkFlush() 	| flushed out stopCmd ??
 +ngkSend(#R,01,03) at 18:20:49
 rise()	| riseCmd to winch at 18:20:50
@@ -71,7 +71,7 @@ rise()	| reached targetD 2.1 at 18:23:01
 +ngkRecv(%S,02,00) stopRsp 18:23:12
 rise() 	| stopCmd-->stopRsp
 cycle 0 @07-09-18 18:23:12 iridPhase()
--Err(ctd)	|0| 18:23:25 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|0| 18:23:25 ctdAuton: expected 'start logging' header
 cycle 0 @07-09-18 18:23:34 fallPhase()
 +ngkSend(#F,01,00) at 18:23:50
 fall()	| fallCmd to winch at 18:23:50
@@ -107,7 +107,7 @@ SYS.LOG
        1 file(s) copied
 
 cycle 1 @07-09-18 18:26:11 risePhase()
--Err(file)	|1| 18:26:11 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|1| 18:26:11 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
 +ngkSend(#R,01,03) at 18:26:53
@@ -142,7 +142,7 @@ rise()	| reached targetD 1.9 at 18:29:06
 +ngkRecv(#S,02,00) stopCmd 18:29:17
 rise() 	| stopCmd-->stopCmd
 cycle 1 @07-09-18 18:29:17 iridPhase()
--Err(ctd)	|1| 18:29:30 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|1| 18:29:30 ctdAuton: expected 'start logging' header
 cycle 1 @07-09-18 18:29:39 fallPhase()
 ngkFlush() 	| flushed out stopRsp
 +ngkSend(#F,01,00) at 18:29:55
@@ -179,7 +179,7 @@ SYS.LOG
        1 file(s) copied
 
 cycle 2 @07-09-18 18:32:16 risePhase()
--Err(file)	|2| 18:32:16 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|2| 18:32:16 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
 +ngkSend(#R,01,03) at 18:32:59
@@ -213,7 +213,7 @@ rise()	| reached targetD 2.1 at 18:35:11
 +ngkRecv(%S,02,00) stopRsp 18:35:22
 rise() 	| stopCmd-->stopRsp
 cycle 2 @07-09-18 18:35:22 iridPhase()
--Err(ctd)	|2| 18:35:34 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|2| 18:35:34 ctdAuton: expected 'start logging' header
 cycle 2 @07-09-18 18:35:44 fallPhase()
 +ngkSend(#F,01,00) at 18:36:00
 fall()	| fallCmd to winch at 18:36:00
@@ -249,7 +249,7 @@ SYS.LOG
        1 file(s) copied
 
 cycle 3 @07-09-18 18:38:20 risePhase()
--Err(file)	|3| 18:38:21 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|3| 18:38:21 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
 +ngkSend(#R,01,03) at 18:39:03
@@ -283,7 +283,7 @@ rise()	| reached targetD 2.1 at 18:41:15
 +ngkRecv(%S,02,00) stopRsp 18:41:26
 rise() 	| stopCmd-->stopRsp
 cycle 3 @07-09-18 18:41:26 iridPhase()
--Err(ctd)	|3| 18:41:39 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|3| 18:41:39 ctdAuton: expected 'start logging' header
 cycle 3 @07-09-18 18:41:48 fallPhase()
 +ngkSend(#F,01,00) at 18:42:04
 fall()	| fallCmd to winch at 18:42:04
@@ -319,7 +319,7 @@ SYS.LOG
        1 file(s) copied
 
 cycle 4 @07-09-18 18:44:25 risePhase()
--Err(file)	|4| 18:44:25 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|4| 18:44:25 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
 +ngkSend(#R,01,03) at 18:45:08
@@ -341,7 +341,7 @@ rise()	| 5s: depth=6.1 velo=-0.29
 rise()	| 5s: depth=4.1 velo=-0.29
 rise()	| reached targetD 2.1 at 18:46:25
 cycle 4 @07-09-18 18:46:26 iridPhase()
--Err(ctd)	|4| 18:46:39 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|4| 18:46:39 ctdAuton: expected 'start logging' header
 cycle 4 @07-09-18 18:46:48 fallPhase()
 ngkFlush() 	| flushed out stopCmd
 +ngkSend(#F,01,00) at 18:47:04
@@ -378,7 +378,7 @@ SYS.LOG
        1 file(s) copied
 
 cycle 5 @07-09-18 18:49:25 risePhase()
--Err(file)	|5| 18:49:26 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|5| 18:49:26 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
 +ngkSend(#R,01,03) at 18:50:08
@@ -401,7 +401,7 @@ rise()	| 5s: depth=4.3 velo=-0.29
 rise()	| 5s: depth=2.4 velo=-0.29
 rise()	| reached targetD 1.9 at 18:51:27
 cycle 5 @07-09-18 18:51:27 iridPhase()
--Err(ctd)	|5| 18:51:40 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|5| 18:51:40 ctdAuton: expected 'start logging' header
 cycle 5 @07-09-18 18:51:50 fallPhase()
 ngkFlush() 	| flushed out stopCmd
 +ngkSend(#F,01,00) at 18:52:05
@@ -438,7 +438,7 @@ SYS.LOG
        1 file(s) copied
 
 cycle 6 @07-09-18 18:54:27 risePhase()
--Err(file)	|6| 18:54:27 utlLogFile(s16): open failed for log\s16.log
+-ERR(file)	|6| 18:54:27 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
 +ngkSend(#R,01,03) at 18:55:10
@@ -460,7 +460,7 @@ rise()	| 5s: depth=6.1 velo=-0.29
 rise()	| 5s: depth=4.1 velo=-0.29
 rise()	| reached targetD 2.1 at 18:56:28
 cycle 6 @07-09-18 18:56:28 iridPhase()
--Err(ctd)	|6| 18:56:41 ctdAuton: expected 'start logging' header
+-ERR(ctd)	|6| 18:56:41 ctdAuton: expected 'start logging' header
 cycle 6 @07-09-18 18:56:50 fallPhase()
 ngkFlush() 	| flushed out stopCmd
 +ngkSend(#F,01,00) at 18:57:06

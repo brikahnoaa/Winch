@@ -23,6 +23,11 @@ riseRun - if no signal, check depth, rise?
 boy.minute to go double speed
 after riseRun, stop and depth for one or two minutes
 
+errs in dry test
+
+emu switch no surf detect; echo cable len for up/down cmd
+
+
 v3.wispr merge
 
 safe stop (auton)

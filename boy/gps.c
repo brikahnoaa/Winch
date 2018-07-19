@@ -22,7 +22,7 @@ void gpsInit(void) {
   DBG0("gpsInit()")
   gps.port = antPort();
   if (!gps.port)
-    utlErr(logic_err, "no gps.port, was gpsInit called before antInit?");
+    utlErr(gps_err, "no gps.port, was gpsInit called before antInit?");
   // sets projHdr to 13 char project header, 0 in byte 14
   sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
   // poke in cs high and low bytes

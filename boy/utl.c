@@ -32,9 +32,7 @@ void utlInit(void) {
   utl.errName[gps_err] = "gps";
   utl.errName[ngk_err] = "ngk";
   utl.errName[wsp_err] = "wsp";
-  utl.errName[file_err] = "file";
   utl.errName[log_err] = "log";
-  utl.errName[logic_err] = "logic";
 }
 
 void utlDelay(int x) { 
@@ -288,8 +286,8 @@ int utlLogFile(char *fname) {
   DBG1("(%s)", path)
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
-    sprintf(utl.str, "utlLogFile(%s): open failed for %s", fname, path);
-    utlErr(file_err, utl.str);
+    sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", fname, log, path);
+    utlErr(log_err, utl.str);
     return 0;
   } else {
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
