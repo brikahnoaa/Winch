@@ -24,13 +24,17 @@ void utlInit(void) {
   utl.ret = malloc(BUFSZ);
   utlBuf = malloc(BUFSZ);
   utlStr = malloc(BUFSZ);
+  // sync with enum ErrType
   utl.errName[ant_err] = "ant";
+  utl.errName[boy_err] = "boy";
+  utl.errName[cfg_err] = "cfg";
   utl.errName[ctd_err] = "ctd";
-  utl.errName[log_err] = "log";
-  utl.errName[file_err] = "file";
+  utl.errName[gps_err] = "gps";
   utl.errName[ngk_err] = "ngk";
-  utl.errName[ngkParse_err] = "ngkParse";
-  // utl.errName[_err] = "";
+  utl.errName[wsp_err] = "wsp";
+  utl.errName[file_err] = "file";
+  utl.errName[log_err] = "log";
+  utl.errName[logic_err] = "logic";
 }
 
 void utlDelay(int x) { 
@@ -297,7 +301,7 @@ int utlLogFile(char *fname) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
-  flogf("\n-Err(%s)\t|%d| %s %s", 
+  flogf("\n-ERR(%s)\t|%d| %s %s", 
     utl.errName[err], utl.errCnt[err], utlTime(), str);
   utl.errCnt[err]++;
 }

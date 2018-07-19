@@ -56,8 +56,11 @@
 
 #include <dbg.h>
 
-typedef enum {ant_err, boy_err, ctd_err, log_err, file_err, wsp_err, gps_err,
-    ngk_err, ngkParse_err, logic_err, sizeof_err} ErrType;
+// sync with utlInit()
+typedef enum {
+    ant_err, boy_err, cfg_err, ctd_err, gps_err, ngk_err, wsp_err,
+    file_err, logic_err,  log_err,
+    sizeof_err} ErrType;
 
 typedef struct GlobalInfo {
   int det;

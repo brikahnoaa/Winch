@@ -178,7 +178,8 @@ bool cfgString(char *str){
       return true;
     }
   } // for cfg
-  flogf("\nErr\t|cfgString() no match on name/id %s=%s", ref, val);
+  utlErr(cfg_err, "cfgString() no match on name/id");
+  flogf( " %s=%s ??", ref, val);
   return false;                 // name not found
 } // cfgString
 

@@ -153,7 +153,7 @@ MsgType msgParse(char *str) {
       break;
   ngk.recv[m]++;
   if (m==mangled_msg)           // no match or invalid
-    utlErr(ngkParse_err, str);
+    utlErr(ngk_err, str);
   return m;
 } // msgParse
 

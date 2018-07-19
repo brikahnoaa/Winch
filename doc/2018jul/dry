@@ -36,9 +36,9 @@ cycle 0 @07-09-18 18:20:06 risePhase()
 -Err(file)	|0| 18:20:07 utlLogFile(s16): open failed for log\s16.log
 	| oceanCurrChk()
 oceanCurr() 	| aD=20.5 cD=40.0 boy2ant=14.3
-oceanCurr() 	| ERR boy2ant<cD-aD
+oceanCurr() 	| ERR boy2ant<cD-aD ??
 -Err()	|0| 18:20:33 oceanCurr failed
-ngkFlush() 	| flushed out stopCmd
+ngkFlush() 	| flushed out stopCmd ??
 +ngkSend(#R,01,03) at 18:20:49
 rise()	| riseCmd to winch at 18:20:50
 rise()	| 5s: depth=26.0

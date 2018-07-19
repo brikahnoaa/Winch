@@ -298,7 +298,7 @@ int riseRun(float targetD, int try) {
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
-      flogf("\nrise()\t| 20s: startD-nowD %3.1f ", startD-nowD);
+      flogf("\nrise()\t| %s startD-nowD %3.1f ", utlTime(), startD-nowD);
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters in 13.5s
         flogf("ERR < 2m");
@@ -312,7 +312,7 @@ int riseRun(float targetD, int try) {
     // 5 seconds
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
-      flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
+      flogf("\nrise()\t| %s depth=%3.1f", utlTime(), nowD);
       if (antVelo(&velo)>=0) 
         flogf(" velo=%4.2f", velo);
     } 
@@ -395,7 +395,7 @@ int riseFree(float targetD, int try) {
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
-      flogf("\nrise()\t| 20s: startD-nowD %3.1f ", startD-nowD);
+      flogf("\nrise()\t| %s startD-nowD %3.1f ", utlTime(), startD-nowD);
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters
         flogf("ERR < 2");
@@ -409,7 +409,7 @@ int riseFree(float targetD, int try) {
     // 5 seconds
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
-      flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
+      flogf("\nrise()\t| %s depth=%3.1f", utlTime(), nowD);
       if (antVelo(&velo)>=0) 
         flogf(" velo=%4.2f", velo);
     } 
@@ -489,7 +489,7 @@ int rise(float targetD, int try) {
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
-      flogf("\nrise()\t| 20s: startD-nowD %3.1f ", startD-nowD);
+      flogf("\nrise()\t| %s startD-nowD %3.1f ", utlTime(), startD-nowD);
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters
         flogf("ERR < 2");
@@ -503,7 +503,7 @@ int rise(float targetD, int try) {
     // 5 seconds
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
-      flogf("\nrise()\t| 5s: depth=%3.1f", nowD);
+      flogf("\nrise()\t| %s depth=%3.1f", utlTime(), nowD);
       if (antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
       if (twentyB) {
@@ -603,7 +603,7 @@ int fall(int try) {
     // 5 seconds
     if (tmrExp(fiveTmr)) {
       tmrStart(fiveTmr, 5);
-      flogf("\nfall()\t| 5s: depth=%3.1f", nowD);
+      flogf("\nfall()\t| %s depth=%3.1f", utlTime(), nowD);
       if (antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     } 
