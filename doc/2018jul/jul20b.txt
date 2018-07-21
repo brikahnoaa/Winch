@@ -1,0 +1,752 @@
+
+###MX Load: CRC 010000 023F07 = A39FB564
+Gs boy
+Saving 81672 bytes to BOY.PXE...
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 14, max 50
+---   ---
+Program: sys.c,  Build: Jul 19 2018 13:23:32
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 14
+Started: 07-20-18 18:01:02
+---   ---
+VEE: BOY.NOIRID=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.CYCLEMAX=6
+VEE: BOY.TESTING=TRUE
+VEE: GPS.SETTIME=FALSE
+VEE: GPS.RUDRESP=5
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 14
+boy.testing
+boyMain(): starting with phase 0
+cycle 0 @07-20-18 18:01:05 
+deploy: testing sbe16, sbe39deployPhase()	| ant@1.4m buoy@14.1m 07-20-18 18:01:20
+deployPhase@1.30m 18:01:20
+deployPhase@1.53m 18:01:51
+deployPhase@7.69m 18:02:22
+deployPhase@13.87m 18:02:53
+	| 1.43m>10, watch for depth to settle down 17.0 20.2 23.4 26.0 26.0
+	| down, pause for 120s
+	| boy.dockD = 26.00
+	| go to surface, call home
+cycle 0 @07-20-18 18:06:12 risePhase()
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#R,01,00) at 18:06:55
+rise()	| riseCmd to winch at 18:06:56
+rise()	| 18:07:01 depth=26.0 velo=0.00
+rise()	| no response from winch
+rise()	| 18:07:07 depth=26.0 velo=0.00
+rise()	| 18:07:13 depth=26.0 velo=0.00
+rise()	| 18:07:16 startD-nowD 0.0 ERR < 2, retry 1
++ngkSend(#R,01,03) at 18:07:31
+rise()	| riseCmd to winch at 18:07:33
+rise()	| 18:07:37 depth=26.0 velo=0.00
+rise()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 18:07:43, riseRsp from winch
+rise()	| 18:07:43 depth=24.2 velo=-0.29
+rise()	| 18:07:49 depth=22.3 velo=-0.29
+rise()	| 18:07:52 startD-nowD 4.7 
+rise()	| 18:07:55 depth=20.3 velo=-0.29
+rise()	| 18:08:01 depth=18.3 velo=-0.29
+rise()	| 18:08:07 depth=16.3 velo=-0.29
+rise()	| 18:08:13 depth=14.4 velo=-0.29
+rise()	| 18:08:19 depth=12.4 velo=-0.29
+rise()	| 18:08:25 depth=10.5 velo=-0.29
+rise()	| 18:08:31 depth=8.5 velo=-0.29
+rise()	| 18:08:37 depth=6.5 velo=-0.29
+rise()	| 18:08:43 depth=4.6 velo=-0.43
+rise()	| 18:08:49 depth=2.5 velo=-0.43
+rise()	| reached targetD 2.1 at 18:08:49
+cycle 0 @07-20-18 18:08:49 iridPhase()
+antAuton(1)
+ctdAuton(1)
+-ERR(ctd)	|0| 18:09:03 ctdAuton: expected 'start logging'
+antAuton(0)
+ctdAuton(0)
+-ERR(ctd)	|1| 18:09:13 ctdAuton: expected 'logging stopped'
+cycle 0 @07-20-18 18:09:14 fallPhase()
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#F,01,00) at 18:09:29
+fall()	| fallCmd to winch at 18:09:29
+fall()	| 18:09:36 depth=1.5 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:09:41, fallRsp from winch
+fall()	| 18:09:42 depth=1.3 velo=0.00
+fall()	| 18:09:48 depth=2.5
+fall()	| 18:09:54 depth=3.6
+fall()	| 18:10:00 depth=4.8
+fall()	| 18:10:06 depth=6.2
+fall()	| 18:10:12 depth=7.4
+fall()	| 18:10:18 depth=8.6
+fall()	| 18:10:24 depth=9.7
+fall()	| 18:10:30 depth=10.9
+fall()	| 18:10:36 depth=12.1
+fall()	| 18:10:42 depth=13.3
+fall()	| 18:10:48 depth=14.5
+fall()	| 18:10:54 depth=15.7
+fall()	| 18:11:00 depth=16.9
+fall()	| 18:11:06 depth=18.0
+fall()	| 18:11:12 depth=19.3
+fall()	| 18:11:18 depth=20.6
+fall()	| 18:11:24 depth=21.7
+fall()	| 18:11:30 depth=22.9
+fall()	| 18:11:36 depth=24.1
+fall()	| @25.0 near boy.dockD=26.0 18:11:40
+fall()	| 18:11:42 depth=25.3
+fall()	| 18:11:48 depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:11:50, stopCmd from winch
+cycle 0 @07-20-18 18:11:50 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 1 @07-20-18 18:11:51 risePhase()
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 18:12:34
+rise()	| riseCmd to winch at 18:12:35
+rise()	| 18:12:40 depth=26.0
++ngkRecv(%R,02,00) riseRsp 18:12:45, riseRsp from winch
+rise()	| 18:12:46 depth=24.2
+rise()	| 18:12:52 depth=22.3
+rise()	| 18:12:55 startD-nowD 4.8 
+rise()	| 18:12:58 depth=20.3
+rise()	| 18:13:04 depth=18.1
+rise()	| 18:13:10 depth=16.1
+rise()	| 18:13:16 depth=14.1
+rise()	| 18:13:22 depth=12.2
+rise()	| 18:13:28 depth=10.2
+rise()	| reached targetD 9.8 at 18:13:29
++ngkSend(#S,01,00) at 18:13:29
++ngkRecv(%S,02,00) stopRsp 18:13:40
+rise() 	| stopCmd-->stopRsp
+	| oceanCurrChk()
+oceanCurr() 	| aD=9.8 cD=21.8 boy2ant=14.3 current @ 9.8 = 7.7
++ngkSend(#R,01,03) at 18:14:23
+rise()	| riseCmd to winch at 18:14:24
+rise()	| 18:14:29 depth=7.8 velo=0.00
+rise()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 18:14:34, riseRsp from winch
+rise()	| 18:14:35 depth=5.8 velo=-0.29
+rise()	| 18:14:41 depth=3.8 velo=-0.29
+rise()	| 18:14:44 startD-nowD 4.9 
+rise()	| reached targetD 2.1 at 18:14:46
+cycle 1 @07-20-18 18:14:46 iridPhase()
+antAuton(1)
+ctdAuton(1)
+-ERR(ctd)	|2| 18:14:59 ctdAuton: expected 'start logging'
+antAuton(0)
+ctdAuton(0)
+-ERR(ctd)	|3| 18:15:09 ctdAuton: expected 'logging stopped'
+cycle 1 @07-20-18 18:15:09 fallPhase()
+fallPhase()	|@1.3 18:15:10
++ngkSend(#S,01,00) at 18:15:10
+fallPhase()	|@1.0 18:15:10
++ngkSend(#S,01,00) at 18:15:11
+fallPhase()	|@0.9 18:15:11
+fallPhase()	|@1.2 18:15:12
+fallPhase()	|@1.5 18:15:12
+fallPhase()	|@1.5 18:15:13
+fallPhase()	|@1.2 18:15:14
+fallPhase()	|@1.1 18:15:14
+fallPhase()	|@1.3 18:15:15
+fallPhase()	|@1.4 18:15:16
+fallPhase()	|@1.1 18:15:16
+fallPhase()	|@1.0 18:15:17
+fallPhase()	|@1.4 18:15:18
+fallPhase()	|@1.2 18:15:18
+fallPhase()	|@1.4 18:15:19
+fallPhase()	|@1.2 18:15:19
+fallPhase()	|@1.0 18:15:20
+fallPhase()	|@0.9 18:15:21
+fallPhase()	|@1.1 18:15:21
+fallPhase()	|@1.4 18:15:22
+fallPhase()	|@1.1 18:15:23
+fallPhase()	|@0.9 18:15:23
+fallPhase()	|@1.3 18:15:24
+fallPhase()	|@0.9 18:15:25
+fallPhase()	|@1.2 18:15:25
+fallPhase()	|@1.4 18:15:26
+fallPhase()	|@1.2 18:15:27
+fallPhase()	|@1.5 18:15:27
+fallPhase()	|@1.3 18:15:28
+fallPhase()	|@0.8 18:15:29
+fallPhase()	|@1.3 18:15:29
+fallPhase()	|@1.4 18:15:30
+fallPhase()	|@1.3 18:15:31
+fallPhase()	|@0.9 18:15:31
+fallPhase()	|@1.3 18:15:32
+fallPhase()	|@1.2 18:15:33
+fallPhase()	|@0.8 18:15:33
+fallPhase()	|@1.4 18:15:34
+fallPhase()	|@1.1 18:15:35
+fallPhase()	|@1.4 18:15:35
+fallPhase()	|@1.3 18:15:36
+fallPhase()	|@0.9 18:15:37
+fallPhase()	|@1.0 18:15:37
+fallPhase()	|@1.1 18:15:38
+fallPhase()	|@1.0 18:15:38
+fallPhase()	|@1.2 18:15:39
+fallPhase()	|@1.4 18:15:40
+fallPhase()	|@1.0 18:15:40
+fallPhase()	|@0.9 18:15:41
+fallPhase()	|@0.9 18:15:42
+fallPhase()	|@0.8 18:15:42
+fallPhase()	|@1.6 18:15:43
+fallPhase()	|@1.3 18:15:44
+fallPhase()	|@0.9 18:15:44
+fallPhase()	|@1.5 18:15:45
+fallPhase()	|@1.0 18:15:46
+fallPhase()	|@0.9 18:15:46
+fallPhase()	|@1.0 18:15:47
+fallPhase()	|@1.4 18:15:48
+fallPhase()	|@1.0 18:15:48
+fallPhase()	|@1.0 18:15:49
+fallPhase()	|@1.5 18:15:50
+fallPhase()	|@1.5 18:15:50
+fallPhase()	|@0.9 18:15:51
+fallPhase()	|@0.8 18:15:52
+fallPhase()	|@1.1 18:15:52
+fallPhase()	|@1.2 18:15:53
+fallPhase()	|@1.1 18:15:54
+fallPhase()	|@1.4 18:15:54
+fallPhase()	|@0.9 18:15:55
+fallPhase()	|@1.2 18:15:56
+fallPhase()	|@1.0 18:15:56
+fallPhase()	|@1.5 18:15:57
+fallPhase()	|@1.0 18:15:57
+fallPhase()	|@1.2 18:15:58
+fallPhase()	|@1.5 18:15:59
+fallPhase()	|@1.3 18:15:59
+fallPhase()	|@1.2 18:16:00
+fallPhase()	|@1.2 18:16:01
+fallPhase()	|@1.3 18:16:01
+fallPhase()	|@1.2 18:16:02
+fallPhase()	|@1.2 18:16:03
+fallPhase()	|@1.5 18:16:03
+fallPhase()	|@1.4 18:16:04
+fallPhase()	|@1.2 18:16:05
+fallPhase()	|@0.8 18:16:05
+fallPhase()	|@1.0 18:16:06
+fallPhase()	|@1.3 18:16:07
+fallPhase()	|@1.6 18:16:07
+fallPhase()	|@1.0 18:16:08
+fallPhase()	|@0.8 18:16:09
+fallPhase()	|@1.3 18:16:09
+fallPhase()	|@1.3 18:16:10
+fallPhase()	|@1.6 18:16:11
+fallPhase()	|@1.0 18:16:11
+fallPhase()	|@0.9 18:16:12
+fallPhase()	|@0.8 18:16:13
+fallPhase()	|@1.0 18:16:13
+fallPhase()	|@1.0 18:16:14
+fallPhase()	|@1.0 18:16:14
+fallPhase()	|@1.3 18:16:15
+fallPhase()	|@1.0 18:16:16
+fallPhase()	|@0.9 18:16:16
+fallPhase()	|@1.5 18:16:17
+fallPhase()	|@1.4 18:16:18
+fallPhase()	|@1.3 18:16:18
+fallPhase()	|@1.5 18:16:19
+fallPhase()	|@1.2 18:16:20
+fallPhase()	|@1.1 18:16:20
+fallPhase()	|@1.0 18:16:21
+fallPhase()	|@1.1 18:16:22
+fallPhase()	|@0.9 18:16:22
+fallPhase()	|@1.5 18:16:23
+fallPhase()	|@1.3 18:16:24
+fallPhase()	|@1.5 18:16:24
+fallPhase()	|@1.5 18:16:25
+fallPhase()	|@1.3 18:16:26
+fallPhase()	|@1.2 18:16:26
+fallPhase()	|@1.4 18:16:27
+fallPhase()	|@1.4 18:16:28
+fallPhase()	|@1.5 18:16:28
+fallPhase()	|@1.0 18:16:29
+fallPhase()	|@1.0 18:16:30
+fallPhase()	|@0.9 18:16:30
+fallPhase()	|@1.0 18:16:31
+fallPhase()	|@1.4 18:16:32
+fallPhase()	|@0.8 18:16:32
+fallPhase()	|@1.1 18:16:33
+fallPhase()	|@0.9 18:16:33
+fallPhase()	|@1.5 18:16:34
+fallPhase()	|@1.2 18:16:35
+fallPhase()	|@1.2 18:16:35
+fallPhase()	|@1.1 18:16:36
+fallPhase()	|@0.9 18:16:37
+fallPhase()	|@0.9 18:16:37
+fallPhase()	|@1.5 18:16:38
+fallPhase()	|@1.4 18:16:39
+fallPhase()	|@1.1 18:16:39
+fallPhase()	|@1.4 18:16:40
+fallPhase()	|@1.3 18:16:41
+fallPhase()	|@1.0 18:16:41
+fallPhase()	|@1.1 18:16:42
+fallPhase()	|@1.6 18:16:43
+fallPhase()	|@1.0 18:16:43
+fallPhase()	|@1.3 18:16:44
+fallPhase()	|@1.6 18:16:45
+fallPhase()	|@1.3 18:16:45
+fallPhase()	|@0.9 18:16:46
+fallPhase()	|@1.5 18:16:47
+fallPhase()	|@1.3 18:16:47
+fallPhase()	|@1.2 18:16:48
+fallPhase()	|@1.3 18:16:49
+fallPhase()	|@1.4 18:16:49
+fallPhase()	|@1.0 18:16:50
+fallPhase()	|@0.9 18:16:51
+fallPhase()	|@1.2 18:16:51
+fallPhase()	|@1.4 18:16:52
+fallPhase()	|@1.3 18:16:52
+fallPhase()	|@1.5 18:16:53
+fallPhase()	|@1.3 18:16:54
+fallPhase()	|@1.2 18:16:54
+fallPhase()	|@1.2 18:16:55
+fallPhase()	|@1.2 18:16:56
+fallPhase()	|@0.8 18:16:56
+fallPhase()	|@0.8 18:16:57
+fallPhase()	|@1.4 18:16:58
+fallPhase()	|@1.1 18:16:58
+fallPhase()	|@1.1 18:16:59
+fallPhase()	|@1.1 18:17:00
+fallPhase()	|@1.5 18:17:00
+fallPhase()	|@1.2 18:17:01
+fallPhase()	|@1.4 18:17:02
+fallPhase()	|@1.4 18:17:02
+fallPhase()	|@1.1 18:17:03
+fallPhase()	|@1.6 18:17:04
+fallPhase()	|@1.3 18:17:04
+fallPhase()	|@1.3 18:17:05
+fallPhase()	|@1.4 18:17:06
+fallPhase()	|@1.5 18:17:06
+fallPhase()	|@1.1 18:17:07
+fallPhase()	|@1.5 18:17:08
+fallPhase()	|@1.3 18:17:08
+fallPhase()	|@1.0 18:17:09
+fallPhase()	|@1.3 18:17:10
+fallPhase()	|@1.4 18:17:10
+fallPhase()	|@1.1 18:17:11
+fallPhase()	|@1.4 18:17:11
+ngkFlush() 	| flushed out stopRsp
+ngkFlush() 	| flushed out stopRsp
++ngkSend(#F,01,00) at 18:17:28
+fall()	| fallCmd to winch at 18:17:28
+fall()	| 18:17:34 depth=1.0 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 18:17:39, fallRsp from winch
+fall()	| 18:17:40 depth=1.3 velo=0.00
+fall()	| 18:17:46 depth=2.5
+fall()	| 18:17:52 depth=3.7
+fall()	| 18:17:58 depth=4.9
+fall()	| 18:18:04 depth=6.0
+fall()	| 18:18:10 depth=7.2
+fall()	| 18:18:16 depth=8.4
+fall()	| 18:18:22 depth=9.6
+fall()	| 18:18:28 depth=10.8
+fall()	| 18:18:34 depth=12.1
+fall()	| 18:18:40 depth=13.3
+fall()	| 18:18:46 depth=14.5
+fall()	| 18:18:52 depth=15.7
+fall()	| 18:18:58 depth=16.9
+fall()	| 18:19:04 depth=18.1
+fall()	| 18:19:10 depth=19.3
+fall()	| 18:19:16 depth=20.4
+fall()	| 18:19:22 depth=21.6
+fall()	| 18:19:28 depth=22.8
+fall()	| 18:19:34 depth=24.0
+fall()	| @25.0 near boy.dockD=26.0 18:19:38
+fall()	| 18:19:40 depth=25.3
+fall()	| 18:19:46 depth=26.0
++ngkRecv(#S,02,00) stopCmd 18:19:48, stopCmd from winch
+cycle 1 @07-20-18 18:19:48 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 2 @07-20-18 18:19:50 risePhase()
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,00) at 18:20:32
+rise()	| riseCmd to winch at 18:20:33
+rise()	| 18:20:38 depth=26.0 velo=0.00
+rise()	| no response from winch
+rise()	| 18:20:44 depth=26.0 velo=0.00
+rise()	| 18:20:50 depth=26.0 velo=0.00
+rise()	| 18:20:53 startD-nowD 0.0 ERR < 2, retry 1
++ngkSend(#R,01,03) at 18:21:08
+rise()	| riseCmd to winch at 18:21:10
+rise()	| 18:21:14 depth=26.0 velo=0.00
+rise()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 18:21:20, riseRsp from winch
+rise()	| 18:21:20 depth=24.2 velo=-0.29
+rise()	| 18:21:26 depth=22.3 velo=-0.28
+rise()	| 18:21:29 startD-nowD 4.7 
+mpcSleep() at 07-20-18 18:21:29
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+###MX Load: CRC 010000 0238E7 = F13AFCD6
+Gs boy
+Saving 80104 bytes to BOY.PXE...
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 15, max 50
+---   ---
+Program: sys.c,  Build: Jul 19 2018 13:23:32
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 15
+Started: 07-21-18 00:27:44
+---   ---
+VEE: BOY.NOIRID=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.CYCLEMAX=6
+VEE: BOY.TESTING=TRUE
+VEE: GPS.SETTIME=FALSE
+VEE: GPS.RUDRESP=5
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 15
+boy.testing
+boyMain(): starting with phase 0
+cycle 0 @07-21-18 00:27:47 
+deploy: testing sbe16, sbe39deployPhase()	| ant@26.0m buoy@40.0m 07-21-18 00:28:02
+deployPhase@26.00m 00:28:02
+	| 26.00m>10, watch for depth to settle down 26.0
+	| down, pause for 120s
+	| boy.dockD = 26.00
+	| go to surface, call home
+cycle 0 @07-21-18 00:30:19 risePhase()
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,00) at 00:31:01
+riseFree()	| riseCmd to winch at 00:31:02
+riseFree()	| 00:31:07 depth=26.0 velo=0.00
+riseFree()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 00:31:13, riseRsp from winch
+riseFree()	| 00:31:13 depth=24.2 velo=-0.29
+riseFree()	| 00:31:19 depth=22.2 velo=-0.31
+riseFree()	| 00:31:22 startD-nowD 4.7 
+riseFree()	| 00:31:25 depth=20.2 velo=-0.30
+riseFree()	| 00:31:31 depth=18.3 velo=-0.29
+riseFree()	| 00:31:37 depth=16.2 velo=-0.31
+riseFree()	| 00:31:43 depth=14.3 velo=-0.29
+riseFree()	| 00:31:49 depth=12.3 velo=-0.30
+riseFree()	| 00:31:55 depth=10.3 velo=-0.30
+riseFree()	| 00:32:01 depth=8.3 velo=-0.30
+riseFree()	| 00:32:07 depth=6.4 velo=-0.29
+riseFree()	| 00:32:13 depth=4.3 velo=-0.31
+riseFree()	| 00:32:19 depth=2.4 velo=-0.30
+riseFree()	| reached targetD 2.0 at 00:32:20
+cycle 0 @07-21-18 00:32:20 iridPhase()
+antAuton(1)
+ctdAuton(1)
+-ERR(ctd)	|0| 00:32:33 ctdAuton: expected 'start logging'
+antAuton(0)
+ctdAuton(0)
+-ERR(ctd)	|1| 00:32:44 ctdAuton: expected 'logging stopped'
+cycle 0 @07-21-18 00:32:44 fallPhase()
+ngkFlush() 	| flushed out stopCmd
++ngkSend(#F,01,00) at 00:33:00
+fall()	| fallCmd to winch at 00:33:00
+fall()	| 00:33:06 depth=1.6 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 00:33:11, fallRsp from winch
+fall()	| 00:33:12 depth=1.3 velo=0.00
+fall()	| 00:33:18 depth=2.5
+fall()	| 00:33:24 depth=3.6
+fall()	| 00:33:30 depth=4.8
+fall()	| 00:33:36 depth=6.0
+fall()	| 00:33:42 depth=7.2
+fall()	| 00:33:48 depth=8.4
+fall()	| 00:33:54 depth=9.6
+fall()	| 00:34:00 depth=10.9
+fall()	| 00:34:06 depth=12.0
+fall()	| 00:34:12 depth=13.3
+fall()	| 00:34:18 depth=14.5
+fall()	| 00:34:24 depth=15.7
+fall()	| 00:34:30 depth=16.8
+fall()	| 00:34:36 depth=18.0
+fall()	| 00:34:42 depth=19.2
+fall()	| 00:34:48 depth=20.4
+fall()	| 00:34:54 depth=21.6
+fall()	| 00:35:00 depth=22.8
+fall()	| 00:35:06 depth=24.0
+fall()	| @25.0 near boy.dockD=26.0 00:35:10
+fall()	| 00:35:12 depth=25.3
+fall()	| 00:35:18 depth=26.0
++ngkRecv(#S,02,00) stopCmd 00:35:20, stopCmd from winch
+cycle 0 @07-21-18 00:35:20 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 1 @07-21-18 00:35:22 risePhase()
+	| oceanCurrChk()
+oceanCurr() 	| aD=26.0 cD=40.0 boy2ant=14.3 current @ 26.0 = 2.9
++ngkSend(#R,01,03) at 00:36:04
+riseRun()	| riseCmd to winch at 00:36:06
+riseRun()	| 00:36:10 depth=26.0 velo=0.00
+riseRun()	| no response from winch
++ngkRecv(%R,02,00) riseRsp 00:36:16, riseRsp from winch
+riseRun()	| 00:36:16 depth=24.2 velo=-0.29
+riseRun()	| 00:36:22 depth=22.3 velo=-0.29
+riseRun()	| 00:36:25 startD-nowD 4.7 
+riseRun()	| 00:36:28 depth=20.3 velo=-0.29
+riseRun()	| 00:36:34 depth=18.3 velo=-0.29
+riseRun()	| 00:36:40 depth=16.3 velo=-0.29
+riseRun()	| 00:36:46 depth=14.4 velo=-0.29
+riseRun()	| 00:36:52 depth=12.4 velo=-0.29
+riseRun()	| 00:36:58 depth=10.5 velo=-0.29
+riseRun()	| reached targetD 9.8 at 00:36:59
+	| oceanCurrChk()
+oceanCurr() 	| aD=9.8 cD=15.2 boy2ant=14.3 current @ 9.8 = 13.2 | fails at 1.1 m
+cycle 1 @07-21-18 00:37:42 iridPhase()
+antAuton(1)
+ctdAuton(1)
+-ERR(ctd)	|2| 00:37:55 ctdAuton: expected 'start logging'
+antAuton(0)
+ctdAuton(0)
+-ERR(ctd)	|3| 00:38:05 ctdAuton: expected 'logging stopped'
+cycle 1 @07-21-18 00:38:05 fallPhase()
+fallPhase()	|@0.8 00:38:06
++ngkSend(#S,01,00) at 00:38:06
+fallPhase()	|@0.9 00:38:06
++ngkSend(#S,01,00) at 00:38:07
+fallPhase()	|@1.1 00:38:07
+fallPhase()	|@1.4 00:38:08
+fallPhase()	|@1.4 00:38:08
+fallPhase()	|@0.9 00:38:09
+fallPhase()	|@1.5 00:38:10
+fallPhase()	|@1.5 00:38:10
+fallPhase()	|@1.4 00:38:11
+fallPhase()	|@1.1 00:38:12
+fallPhase()	|@1.5 00:38:12
+fallPhase()	|@0.8 00:38:13
+fallPhase()	|@1.6 00:38:13
+fallPhase()	|@1.2 00:38:14
+fallPhase()	|@1.5 00:38:15
+fallPhase()	|@1.5 00:38:15
+fallPhase()	|@1.3 00:38:16
+fallPhase()	|@1.0 00:38:17
+fallPhase()	|@0.9 00:38:17
+fallPhase()	|@1.4 00:38:18
+fallPhase()	|@1.3 00:38:19
+fallPhase()	|@1.3 00:38:19
+fallPhase()	|@1.5 00:38:20
+fallPhase()	|@1.0 00:38:21
+fallPhase()	|@1.0 00:38:21
+fallPhase()	|@1.1 00:38:22
+fallPhase()	|@1.1 00:38:23
+fallPhase()	|@1.2 00:38:23
+fallPhase()	|@1.1 00:38:24
+fallPhase()	|@0.9 00:38:25
+fallPhase()	|@0.8 00:38:25
+fallPhase()	|@1.1 00:38:26
+fallPhase()	|@1.0 00:38:27
+fallPhase()	|@1.0 00:38:27
+fallPhase()	|@1.2 00:38:28
+fallPhase()	|@1.2 00:38:29
+fallPhase()	|@1.5 00:38:29
+fallPhase()	|@1.5 00:38:30
+fallPhase()	|@1.0 00:38:30
+fallPhase()	|@0.9 00:38:31
+fallPhase()	|@1.0 00:38:32
+fallPhase()	|@1.5 00:38:32
+fallPhase()	|@1.4 00:38:33
+fallPhase()	|@1.6 00:38:34
+fallPhase()	|@1.4 00:38:34
+fallPhase()	|@1.4 00:38:35
+fallPhase()	|@1.3 00:38:36
+fallPhase()	|@0.8 00:38:36
+fallPhase()	|@1.0 00:38:37
+fallPhase()	|@1.3 00:38:38
+fallPhase()	|@0.9 00:38:38
+fallPhase()	|@1.1 00:38:39
+fallPhase()	|@1.3 00:38:40
+fallPhase()	|@1.3 00:38:40
+fallPhase()	|@1.2 00:38:41
+fallPhase()	|@1.5 00:38:42
+fallPhase()	|@1.3 00:38:42
+fallPhase()	|@1.1 00:38:43
+fallPhase()	|@1.0 00:38:44
+fallPhase()	|@0.8 00:38:44
+fallPhase()	|@0.9 00:38:45
+fallPhase()	|@1.0 00:38:46
+fallPhase()	|@1.3 00:38:46
+fallPhase()	|@1.5 00:38:47
+fallPhase()	|@1.0 00:38:47
+fallPhase()	|@1.0 00:38:48
+fallPhase()	|@1.2 00:38:49
+fallPhase()	|@1.0 00:38:49
+fallPhase()	|@1.4 00:38:50
+fallPhase()	|@1.5 00:38:51
+fallPhase()	|@1.2 00:38:51
+fallPhase()	|@1.5 00:38:52
+fallPhase()	|@1.0 00:38:53
+fallPhase()	|@1.4 00:38:53
+fallPhase()	|@1.2 00:38:54
+fallPhase()	|@1.6 00:38:55
+fallPhase()	|@1.3 00:38:55
+fallPhase()	|@1.2 00:38:56
+fallPhase()	|@1.0 00:38:57
+fallPhase()	|@1.5 00:38:57
+fallPhase()	|@1.5 00:38:58
+fallPhase()	|@0.9 00:38:59
+fallPhase()	|@1.4 00:38:59
+fallPhase()	|@1.5 00:39:00
+fallPhase()	|@1.6 00:39:01
+fallPhase()	|@1.5 00:39:01
+fallPhase()	|@1.5 00:39:02
+fallPhase()	|@1.4 00:39:03
+fallPhase()	|@1.0 00:39:03
+fallPhase()	|@1.0 00:39:04
+fallPhase()	|@1.1 00:39:05
+fallPhase()	|@1.2 00:39:05
+fallPhase()	|@1.5 00:39:06
+fallPhase()	|@1.2 00:39:06
+fallPhase()	|@1.0 00:39:07
+fallPhase()	|@1.6 00:39:08
+fallPhase()	|@1.1 00:39:08
+fallPhase()	|@0.9 00:39:09
+fallPhase()	|@1.5 00:39:10
+fallPhase()	|@1.5 00:39:10
+fallPhase()	|@1.4 00:39:11
+fallPhase()	|@0.8 00:39:12
+fallPhase()	|@1.4 00:39:12
+fallPhase()	|@0.9 00:39:13
+fallPhase()	|@1.1 00:39:14
+fallPhase()	|@1.4 00:39:14
+fallPhase()	|@1.0 00:39:15
+fallPhase()	|@0.9 00:39:16
+fallPhase()	|@1.2 00:39:16
+fallPhase()	|@1.2 00:39:17
+fallPhase()	|@1.0 00:39:18
+fallPhase()	|@0.8 00:39:18
+fallPhase()	|@1.1 00:39:19
+fallPhase()	|@1.3 00:39:20
+fallPhase()	|@1.5 00:39:20
+fallPhase()	|@0.8 00:39:21
+fallPhase()	|@1.3 00:39:22
+fallPhase()	|@1.1 00:39:22
+fallPhase()	|@1.0 00:39:23
+fallPhase()	|@1.0 00:39:23
+fallPhase()	|@1.0 00:39:24
+fallPhase()	|@1.4 00:39:25
+fallPhase()	|@1.4 00:39:25
+fallPhase()	|@1.5 00:39:26
+fallPhase()	|@1.6 00:39:27
+fallPhase()	|@1.6 00:39:27
+fallPhase()	|@1.6 00:39:28
+fallPhase()	|@1.5 00:39:29
+fallPhase()	|@1.0 00:39:29
+fallPhase()	|@1.3 00:39:30
+fallPhase()	|@1.6 00:39:31
+fallPhase()	|@1.1 00:39:31
+fallPhase()	|@1.0 00:39:32
+fallPhase()	|@1.2 00:39:33
+fallPhase()	|@1.2 00:39:33
+fallPhase()	|@1.0 00:39:34
+fallPhase()	|@0.9 00:39:35
+fallPhase()	|@1.6 00:39:35
+fallPhase()	|@1.0 00:39:36
+fallPhase()	|@1.5 00:39:37
+fallPhase()	|@0.9 00:39:37
+fallPhase()	|@1.5 00:39:38
+fallPhase()	|@1.0 00:39:39
+fallPhase()	|@1.0 00:39:39
+fallPhase()	|@1.2 00:39:40
+fallPhase()	|@1.5 00:39:41
+fallPhase()	|@1.5 00:39:41
+fallPhase()	|@1.0 00:39:42
+fallPhase()	|@1.4 00:39:42
+fallPhase()	|@0.9 00:39:43
+fallPhase()	|@1.0 00:39:44
+fallPhase()	|@1.1 00:39:44
+fallPhase()	|@1.1 00:39:45
+fallPhase()	|@0.9 00:39:46
+fallPhase()	|@1.3 00:39:46
+fallPhase()	|@0.8 00:39:47
+fallPhase()	|@1.6 00:39:48
+fallPhase()	|@1.1 00:39:48
+fallPhase()	|@1.4 00:39:49
+fallPhase()	|@0.9 00:39:50
+fallPhase()	|@1.0 00:39:50
+fallPhase()	|@1.0 00:39:51
+fallPhase()	|@0.8 00:39:52
+fallPhase()	|@1.4 00:39:52
+fallPhase()	|@1.5 00:39:53
+fallPhase()	|@1.2 00:39:54
+fallPhase()	|@1.2 00:39:54
+fallPhase()	|@1.4 00:39:55
+fallPhase()	|@1.1 00:39:56
+fallPhase()	|@1.5 00:39:56
+fallPhase()	|@0.9 00:39:57
+fallPhase()	|@1.1 00:39:58
+fallPhase()	|@0.8 00:39:58
+fallPhase()	|@1.2 00:39:59
+fallPhase()	|@1.2 00:40:00
+fallPhase()	|@1.2 00:40:00
+fallPhase()	|@1.4 00:40:01
+fallPhase()	|@1.2 00:40:01
+fallPhase()	|@0.9 00:40:02
+fallPhase()	|@1.1 00:40:03
+fallPhase()	|@1.5 00:40:03
+fallPhase()	|@1.1 00:40:04
+fallPhase()	|@0.8 00:40:05
+fallPhase()	|@1.0 00:40:05
+fallPhase()	|@1.4 00:40:06
+fallPhase()	|@1.1 00:40:07
+fallPhase()	|@1.4 00:40:07
+ngkFlush() 	| flushed out stopRsp
+ngkFlush() 	| flushed out stopRsp
++ngkSend(#F,01,00) at 00:40:24
+fall()	| fallCmd to winch at 00:40:24
+fall()	| 00:40:30 depth=1.4 velo=0.00
+fall()	| WARN no response from winch
++ngkRecv(%F,02,00) fallRsp 00:40:35, fallRsp from winch
+fall()	| 00:40:36 depth=1.3 velo=0.00
+fall()	| 00:40:42 depth=2.5
+fall()	| 00:40:48 depth=3.6
+fall()	| 00:40:54 depth=4.8
+fall()	| 00:41:00 depth=6.0
+fall()	| 00:41:06 depth=7.2
+fall()	| 00:41:12 depth=8.6
+fall()	| 00:41:18 depth=9.7
+fall()	| 00:41:24 depth=10.9
+fall()	| 00:41:30 depth=12.1
+fall()	| 00:41:36 depth=13.3
+fall()	| 00:41:42 depth=14.5
+fall()	| 00:41:48 depth=15.7
+fall()	| 00:41:54 depth=16.9
+fall()	| 00:42:00 depth=18.0
+fall()	| 00:42:06 depth=19.2
+fall()	| 00:42:12 depth=20.4
+fall()	| 00:42:18 depth=21.7
+fall()	| 00:42:24 depth=22.9
+fall()	| 00:42:30 depth=24.1
+fall()	| @25.0 near boy.dockD=26.0 00:42:34
+fall()	| 00:42:36 depth=25.3
+fall()	| 00:42:42 depth=26.0
++ngkRecv(#S,02,00) stopCmd 00:42:44, stopCmd from winch
+cycle 1 @07-21-18 00:42:44 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 2 @07-21-18 00:42:46 risePhase()
+	| oceanCurrChk()
