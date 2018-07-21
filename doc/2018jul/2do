@@ -19,14 +19,28 @@ test, should be 0.0
 delay 20sec
 
 riseRun - if no signal, check depth, rise?
+ - after call phase, stop cable for 1min and record
 
-boy.minute to go double speed
+boy.minute to go double speed in tests
 after riseRun, stop and depth for one or two minutes
+
+gps drift and depth test; before and after, plus 2m after riserun
+
+emu: rise 00 response
+emu: winch command fail sometimes
+emu: start logging from ctd
+
+fix: retry riseFree()
 
 errs in dry test
 
 emu switch no surf detect; echo cable len for up/down cmd
 
+buoystatus end test
+
+after test, go normal?
+
+riseRun v rise(-1,0) ?
 
 v3.wispr merge
 
