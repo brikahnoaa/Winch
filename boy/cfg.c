@@ -84,7 +84,7 @@ static CfgParam cfgP[] = {
   {"gsM", "gps.signalMin",  &gps.signalMin,   'i',  "3"},
   {"gtS", "gps.testSize",   &gps.testSize,    'i',  "64"},
   {"gto", "gps.timeout",    &gps.timeout,     'i',  "120"},
-  {"nde", "ngk.delay",      &ngk.delay,       'i',  "7"},
+  {"nde", "ngk.delay",      &ngk.delay,       'i',  "8"},
   {"pon", "pwr.on",         &pwr.on,          'b',  "false"},
   {"plF", "pwr.logFile",    &pwr.logFile,     'c',  "pwr"},
   {"pch", "pwr.charge",     &pwr.charge,      'f',  "12000.0"},

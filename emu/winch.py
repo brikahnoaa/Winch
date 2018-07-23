@@ -118,7 +118,7 @@ def amodInput():
         motor('up')
         amodPut(riseRsp)
     # surf
-    if surfCmd in l:
+    elif surfCmd in l:
         motor('up')
         amodPut(riseRsp)
     # stop

@@ -196,8 +196,10 @@ PhaseType fallPhase() {
     flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
     tmrStart(minute_tmr, 2*boy.minute);
     while (!tmrExp(minute_tmr)) {
-      antDataWait();
-      flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
+      if (antData())
+        flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
+      if (ctdData()) 
+        flogf("\n\t| ctd@%3.1f %s", ctdDepth(), utlTime());
     }
   }
   fall(0);
@@ -236,7 +238,7 @@ int riseRun(float targetD, int try) {
   int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
-  DBG0("riseRun(%3.1f, %d)", targetD, try)
+  flogf("riseRun(%3.1f, %d)", targetD, try);
   utlNap(15);
   antSample();
   antDataWait();
@@ -335,7 +337,7 @@ int riseFree(float targetD, int try) {
   int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
-  DBG0("riseRun(%3.1f, %d)", targetD, try)
+  flogf("riseRun(%3.1f, %d)", targetD, try);
   utlNap(15);
   antSample();
   antDataWait();
@@ -356,7 +358,7 @@ int riseFree(float targetD, int try) {
   ctdPrompt();
   ctdSample();
   antSample();
-  flogf("\nriseFree()\t| riseCmd to winch at %s", utlTime());
+  flogf("\nriseFree()\t| surfCmd to winch at %s", utlTime());
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
     if (ctdData())
@@ -391,7 +393,7 @@ int riseFree(float targetD, int try) {
     if (tmrExp(ngkT)) {
       flogf("\nriseFree()\t| no response from winch");
       // ?? missed it? 20s timeout will tell
-      // ngkSend(riseCmd_msg);
+      // ngkSend(surfCmd_msg);
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
