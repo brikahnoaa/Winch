@@ -194,6 +194,7 @@ PhaseType fallPhase() {
     antSample();
     antDataWait();
     flogf("\nfallPhase()\t|@%3.1f %s", antDepth(), utlTime());
+    ctdSample();
     tmrStart(minute_tmr, 2*boy.minute);
     while (!tmrExp(minute_tmr)) {
       if (antData())
