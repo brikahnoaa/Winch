@@ -17,6 +17,7 @@ portSelect = 3
 
 amodDelay = 5.5
 serThreadObj = None
+slackDetect = 0
 
 def info():
     global go, cableLen, motorRunState
@@ -208,7 +209,10 @@ def motorThread():
 
 def slack():
     "determine if the cableLen is slack"
-    return floats.depth()<.1
+    if slackDetect:
+        return floats.depth()<.1
+    else:
+        return 0
 
 def docked():
     "are we docked?"

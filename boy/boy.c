@@ -182,6 +182,7 @@ PhaseType iridPhase(void) {
 PhaseType fallPhase() {
   flogf("fallPhase()");
   if (boy.noRise) return data_pha;
+  // ?? test routine
   if (boy.cycle % 2) {
     antSample();
     antDataWait();
@@ -200,7 +201,7 @@ PhaseType fallPhase() {
       if (antData())
         flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
       if (ctdData()) 
-        flogf("\n\t| ctd@%3.1f %s", ctdDepth(), utlTime());
+        flogf("\n\t| boy@%3.1f %s", ctdDepth(), utlTime());
     }
   }
   fall(0);
@@ -256,7 +257,7 @@ int riseRun(float targetD, int try) {
   tmrStart(fiveT, 5);
   ngkFlush();
   ngkSend(riseCmd_msg);
-  tmrStart(ngkT, boy.ngkDelay+2);
+  tmrStart(ngkT, boy.ngkDelay*2);
   ctdPrompt();
   ctdSample();
   antSample();
@@ -295,13 +296,14 @@ int riseRun(float targetD, int try) {
         tmrStop(ngkT);
     }
     if (tmrExp(ngkT)) {
-      flogf("\nriseRun()\t| no response from winch");
+      flogf("\nriseRun()\t| no response from winch %s", utlTime());
       // ?? missed it? 20s timeout will tell
       // ngkSend(riseCmd_msg);
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
-      flogf("\nriseRun()\t| %s startD-nowD %3.1f ", utlTime(), startD-nowD);
+      flogf("\nriseRun()\t| 20sec %s startD-nowD %3.1f ", 
+        utlTime(), startD-nowD);
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters in 13.5s
         flogf("ERR < 2m");
@@ -316,7 +318,7 @@ int riseRun(float targetD, int try) {
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
       flogf("\nriseRun()\t| %s depth=%3.1f", utlTime(), nowD);
-      if (antVelo(&velo)>=0) 
+      if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     } 
   } // while !stop
@@ -355,7 +357,7 @@ int riseFree(float targetD, int try) {
   tmrStart(fiveT, 5);
   ngkFlush();
   ngkSend(surfCmd_msg);
-  tmrStart(ngkT, boy.ngkDelay+2);
+  tmrStart(ngkT, boy.ngkDelay*2);
   ctdPrompt();
   ctdSample();
   antSample();
@@ -392,13 +394,14 @@ int riseFree(float targetD, int try) {
         tmrStop(ngkT);
     }
     if (tmrExp(ngkT)) {
-      flogf("\nriseFree()\t| no response from winch");
+      flogf("\nriseFree()\t| no response from winch %s", utlTime());
       // ?? missed it? 20s timeout will tell
       // ngkSend(surfCmd_msg);
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
-      flogf("\nriseFree()\t| %s startD-nowD %3.1f ", utlTime(), startD-nowD);
+      flogf("\nriseFree()\t| 20sec %s startD-nowD %3.1f ", 
+        utlTime(), startD-nowD);
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters
         flogf("ERR < 2");
@@ -413,7 +416,7 @@ int riseFree(float targetD, int try) {
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
       flogf("\nriseFree()\t| %s depth=%3.1f", utlTime(), nowD);
-      if (antVelo(&velo)>=0) 
+      if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     } 
   } // while !stop
@@ -488,11 +491,12 @@ int rise(float targetD, int try) {
         tmrStop(ngkT);
     }
     if (tmrExp(ngkT)) {
-      flogf("\nrise()\t| no response from winch");
+      flogf("\nrise()\t| no response from winch %s", utlTime());
     }
     // 20 seconds
     if (tmrExp(twentyT)) {
-      flogf("\nrise()\t| %s startD-nowD %3.1f ", utlTime(), startD-nowD);
+      flogf("\nrise()\t| %s 20sec startD-nowD %3.1f ", 
+        utlTime(), startD-nowD);
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters
         flogf("ERR < 2");
@@ -507,7 +511,7 @@ int rise(float targetD, int try) {
     if (tmrExp(fiveT)) {
       tmrStart(fiveT, 5);
       flogf("\nrise()\t| %s depth=%3.1f", utlTime(), nowD);
-      if (antVelo(&velo)) 
+      if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
       if (twentyB) {
         if (lastD<=nowD) {
@@ -520,7 +524,7 @@ int rise(float targetD, int try) {
   // stop - either normal or due to err
   for (i=0; i<boy.riseRetry; i++) {
     ngkSend(stopCmd_msg);
-    msg = ngkRecvWait(&msg, boy.ngkDelay*2+2);
+    msg = ngkRecvWait(&msg, boy.ngkDelay*2);
     if (msg==stopRsp_msg || msg==stopCmd_msg) break;
   }
   // ?? if (msg!=stopRsp_msg) damnation
@@ -560,9 +564,9 @@ int fall(int try) {
   est = 15 * boy.minute;
   tmrStart(targetTmr, est);
   ngkFlush();
-  ngkSend(fallCmd_msg);
   flogf("\nfall()\t| fallCmd to winch at %s", utlTime());
-  tmrStart(ngkTmr, boy.ngkDelay);
+  ngkSend(fallCmd_msg);
+  tmrStart(ngkTmr, boy.ngkDelay*2);
   tmrStart(fiveTmr, 5);
   ctdPrompt();
   ctdSample();
@@ -589,7 +593,7 @@ int fall(int try) {
         tmrStop(ngkTmr);
     }
     if (tmrExp(ngkTmr)) {
-      flogf("\nfall()\t| WARN no response from winch");
+      flogf("\nfall()\t| WARN no response from winch %s", utlTime());
     }
     if (!twentyB && nowD>boy.dockD-1) {
       flogf("\nfall()\t| @%3.1f near boy.dockD=%3.1f %s", 
@@ -607,7 +611,7 @@ int fall(int try) {
     if (tmrExp(fiveTmr)) {
       tmrStart(fiveTmr, 5);
       flogf("\nfall()\t| %s depth=%3.1f", utlTime(), nowD);
-      if (antVelo(&velo)) 
+      if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     } 
   } // while !stop !err
@@ -634,12 +638,14 @@ PhaseType deployPhase(void) {
   ctdDataWait();
   if (!ctdRead())
     utlErr(ctd_err, "sbe16 failure");
+  flogf(" sbe16@%3.1f", ctdDepth());
   antStart();
   antSample();
   antDataWait();
   if (!antRead())
     utlErr(ant_err, "sbe39 failure");
-  flogf("deployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
+  flogf(" sbe39@%3.1f", antDepth());
+  flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
     antDepth(), ctdDepth(), utlDateTime());
   tmrStart( deploy_tmr, boy.minute*60*2 );
   // wait until under 10m
@@ -701,10 +707,10 @@ int oceanCurr(float *curr) {
   cD=ctdDepth();
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
-  // b:=horizontal displacement, caused by current
+  // solve for b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
-  flogf("\noceanCurr() \t| aD=%3.1f cD=%3.1f boy2ant=%3.1f", aD, cD, c);
+  flogf("\noceanCurr() \t| ant=%3.1f boy=%3.1f boy2ant=%3.1f", aD, cD, c);
   if (a<0) {
     flogf("\noceanCurr() \t| ERR sbe16-sbe39<0");
     return 2;
@@ -715,7 +721,7 @@ int oceanCurr(float *curr) {
     return 3;
   }
   b=sqrt(pow(c,2)-pow(a,2));
-  DBG1("sideways=%4.2f", b)
+  flogf("sideways=%4.2f", b);
   *curr = b;
   return 0;
 } // oceanCurr

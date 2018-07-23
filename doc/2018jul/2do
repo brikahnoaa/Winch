@@ -24,6 +24,7 @@ riseRun - if no signal, check depth, rise?
 boy.minute to go double speed in tests
 after riseRun, stop and depth for one or two minutes
 
+depth between calls
 gps drift and depth test; before and after, plus 2m after riserun
 
 emu: rise 00 response

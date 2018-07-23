@@ -166,7 +166,8 @@ def depth():
     "mooring - (cable+buoyLine)"
     # TBD
     d = mooring-(winch.cable()+buoyLine)
-    if d<0: return 0
+    surf = antSBEpos+floatsLine-2
+    if d<surf: return surf
     else: return d
 
 init()
