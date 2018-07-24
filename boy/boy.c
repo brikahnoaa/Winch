@@ -278,7 +278,7 @@ int riseRun(float targetD, int try) {
     }
     // op timeout - longer than estimated time + fudge
     if (tmrExp(targetT)) {
-      flogf("\n\triseRun() ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+      flogf("\nriseRun() ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
       errB = true;
       break;
     }
@@ -378,7 +378,7 @@ int riseFree(float targetD, int try) {
     }
     // op timeout - longer than estimated time + fudge
     if (tmrExp(targetT)) {
-      flogf("\n\triseFree() ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+      flogf("\nriseFree() ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
       errB = true;
       break;
     }
@@ -478,7 +478,7 @@ int rise(float targetD, int try) {
     }
     // op timeout - longer than estimated time * 1.5 (rateAccu)
     if (tmrExp(targetT)) {
-      flogf("\n\trise() ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+      flogf("\nrise() ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
       errB = true;
       break;
     }
@@ -515,7 +515,7 @@ int rise(float targetD, int try) {
         flogf(" velo=%4.2f", velo);
       if (twentyB) {
         if (lastD<=nowD) {
-          flogf("\n\trise() ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
+          flogf("\nrise() ERR \t| not rising, %3.1f<=%3.1f", lastD, nowD);
           lastD = nowD;
         }
       }
@@ -580,7 +580,7 @@ int fall(int try) {
     // op timeout - longer than estimated time * 1.5 (rateAccu)
     // antmod may stay at surface as extra is reeled in
     if (tmrExp(targetTmr)) {
-      flogf("\n\tfall() ERR \t| fall timeout %ds @ %3.1f, stop", est, nowD);
+      flogf("\nfall() ERR \t| fall timeout %ds @ %3.1f, stop", est, nowD);
       errB = true;
       break;
     }
