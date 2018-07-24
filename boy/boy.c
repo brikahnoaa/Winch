@@ -659,7 +659,7 @@ PhaseType deployPhase(void) {
       sysStop("deployP() 2 hour timeout");
     utlNap(30);
   }
-  flogf("\n\t| %4.2fm>10, watch for depth to settle down");
+  flogf("\n\t| %4.2fm>10, watch for depth to settle down\n");
   // at most 5min to descend, already waited 2min
   tmrStart(drop_tmr, boy.minute*5);
   while (true) {
