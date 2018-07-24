@@ -548,21 +548,18 @@ int fall(int try) {
   bool twentyB=false, stopB=false, errB=false;
   float nowD, startD, velo;
   // int i;
-  int est;        // estimated operation time
+  int op;        // estimated operation time
   MsgType msg;
-  enum {targetTmr, ngkTmr, twentyTmr, fiveTmr};  // local timer names
+  enum {opTmr, ngkTmr, twentyTmr, fiveTmr};  // local timer names
   DBG0("fall()")
   utlNap(15);
   antSample();
   antDataWait();
   nowD = startD = antDepth();
-  // if (startD < targetD) return 1;
-  if (nowD > boy.dockD-2) return 1;
   if (try > boy.fallRetry) return 2;
-  // crude, could have cable played out
-  est = (int) ((boy.dockD/boy.fallVTest)*boy.rateAccu);
-  est = 15 * boy.minute;
-  tmrStart(targetTmr, est);
+  // could be cable far out, maybe dockD+100m
+  op = 20 * boy.minute;
+  tmrStart(opTmr, op);
   ngkFlush();
   flogf("\n\tfall() fallCmd to winch at %s", utlTime());
   ngkSend(fallCmd_msg);
@@ -574,21 +571,20 @@ int fall(int try) {
   while (!stopB && !errB) {       // redundant, loop exits by break;
     if (ctdData()) 
       ctdRead();
-    // check: target, winch, 5s
+    // check: op, winch, 5s
     if (antData())
       nowD = antDepth();
-    // op timeout - longer than estimated time * 1.5 (rateAccu)
-    // antmod may stay at surface as extra is reeled in
-    if (tmrExp(targetTmr)) {
-      flogf("\nfall() ERR \t| fall timeout %ds @ %3.1f, stop", est, nowD);
+    // op timeout // antmod may stay at surface as extra is reeled in
+    if (tmrExp(opTmr)) {
+      flogf("\nfall() ERR \t| fall timeout %ds @ %3.1f, stop", op, nowD);
       errB = true;
       break;
     }
     // winch
     if (ngkRecv(&msg)!=null_msg) {
       flogf(", %s from winch", ngkMsgName(msg));
-      if (msg==stopCmd_msg)
-        return 0;
+      if (msg==stopCmd_msg) return 0;
+      if (msg==stopRsp_msg) return 0;
       if (msg==fallRsp_msg)
         tmrStop(ngkTmr);
     }
@@ -732,6 +728,7 @@ int oceanCurr(float *curr) {
 int oceanCurrChk() {
   float sideways;
   flogf("\n\t| oceanCurrChk()");
+  // delay 20sec before measure to stabilize
   utlNap(20);
   if (oceanCurr(&sideways)) {
     utlErr(boy_err, "oceanCurr failed");
