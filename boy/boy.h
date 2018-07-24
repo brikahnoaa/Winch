@@ -38,6 +38,7 @@ typedef struct BoyInfo {
   int riseRetry;          // rise fails, retry times
   int settleT;            // time to let deploy settle (120)
   int startPh;            // phase to start in (0)
+  int testCnt;            // counter used in testing (3)
   PhaseType phase;        // deploy, data, rise, irid, fall, error
   PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
   Serial port;            // sbe16 or ant mod

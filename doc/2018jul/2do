@@ -1,8 +1,8 @@
 . surf algor
 ..1 reel out
-current check at 8m
-#R,01,03
-if #S,02 then rise again
+v current check at 8m
+v #R,01,03
+x if #S,02 then rise again
 ..2 no brake
 
 . call algor
@@ -14,17 +14,20 @@ if #S,02 then rise again
 . data
 .. 1minute detect, wind or just wind?
 
-. ocean
+. fall
+.. v could be reeled out 100m or more before fall is measurable
+
+. oceanCurr
 test, should be 0.0
-delay 20sec
+v delay 20sec before measure
 
 riseRun - if no signal, check depth, rise?
  - after call phase, stop cable for 1min and record
 
-boy.minute to go double speed in tests
-after riseRun, stop and depth for one or two minutes
+v boy.minute to go double speed in tests
+v after riseRun, stop and depth for one or two minutes
 
-depth between calls
+x depth between calls - no, auton is on
 gps drift and depth test; before and after, plus 2m after riserun
 
 emu: rise 00 response
@@ -46,3 +49,7 @@ riseRun v rise(-1,0) ?
 v3.wispr merge
 
 safe stop (auton)
+
+
+gpsAnt() iridAnt()
+gpsSig iridSig check sig level, return success

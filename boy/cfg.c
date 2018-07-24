@@ -71,6 +71,7 @@ static CfgParam cfgP[] = {
   {"brR", "boy.riseRetry",  &boy.riseRetry,   'i',  "3"},
   {"bsT", "boy.settleT",    &boy.settleT,     'i',  "120"},
   {"bsP", "boy.startPh",    &boy.startPh,     'i',  "0"},
+  {"btC", "boy.testCnt",    &boy.testCnt,     'i',  "3"},
   {"ccS", "ctd.clearSamp",  &ctd.clearSamp,   'b',  "true"},
   {"csS", "ctd.storeSamp",  &ctd.storeSamp,   'b',  "true"},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c',  "s16"},

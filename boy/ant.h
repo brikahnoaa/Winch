@@ -62,3 +62,4 @@ void antStart(void);
 void antStop(void);
 void antSwitch(AntType antenna);
 Serial antPort(void);
+AntType antAntenna(void);

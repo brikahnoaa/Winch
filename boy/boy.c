@@ -144,9 +144,9 @@ PhaseType risePhase(void) {
 
 ///
 // ??
-// turn off sbe, on irid/gps (takes 30 sec). 
-// read gps date, loc. 
+// on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
+  int i;
   flogf("iridPhase()");
   antStart();
   antAuton(true);
@@ -155,19 +155,17 @@ PhaseType iridPhase(void) {
   if (!boy.noIrid) {
     gpsStart();
     flogf("\n%s ===\n", utlTime());
-    gpsSig();
+    gpsSats();
     gpsStats();
+    for (i=0; i<boy.testCnt; i++) {
+      flogf("\n%s ===\n", utlTime());
+      iridSig();
+      iridDial();
+      iridSendTest(100);
+      iridHup();
+    }
     flogf("\n%s ===\n", utlTime());
-    iridSig();
-    iridDial();
-    iridSendTest(100);
-    iridHup();
-    flogf("\n%s ===\n", utlTime());
-    iridDial();
-    iridSendTest(100);
-    iridHup();
-    flogf("\n%s ===\n", utlTime());
-    gpsSig();
+    gpsSats();
     while (!tmrExp(phase_tmr)) 
       gpsStats();
     flogf("\n%s ===\n", utlTime());
@@ -717,7 +715,7 @@ int oceanCurr(float *curr) {
     return 3;
   }
   b=sqrt(pow(c,2)-pow(a,2));
-  flogf("sideways=%4.2f", b);
+  flogf(" sideways=%4.2f", b);
   *curr = b;
   return 0;
 } // oceanCurr
@@ -727,14 +725,14 @@ int oceanCurr(float *curr) {
 // uses: boy.currMax
 int oceanCurrChk() {
   float sideways;
-  flogf("\n\t| oceanCurrChk()");
+  flogf("\noceanCurrChk()");
   // delay 20sec before measure to stabilize
   utlNap(20);
   if (oceanCurr(&sideways)) {
-    utlErr(boy_err, "oceanCurr failed");
+    utlErr(boy_err, " oceanCurr failed");
     return -1;
   }
-  flogf(" current @ %.1f = %.1f", antDepth(), sideways);
+  flogf("\n\t|current @ %.1f = %.1f", antDepth(), sideways);
   if (sideways>boy.currMax) {
     flogf(" too strong, cancel ascent");
     // ignore current when dbg ?? should be setting

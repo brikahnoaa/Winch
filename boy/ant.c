@@ -444,3 +444,7 @@ bool antSurf(void) {
 float antSurfD(void) {
   return ant.surfD;
 }
+
+AntType antAntenna(void) {
+  return ant.antenna;
+}
