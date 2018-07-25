@@ -18,7 +18,7 @@ void main(void){
   gpsInit();
   //
   antStart();
-  tmrStart(phase_tmr, 5*60);
+  tmrStart(phase_tmr, 6*60);
   gpsStart();
   gpsStats();
   for (i=0; i<3; i++) {
@@ -30,8 +30,12 @@ void main(void){
   }
   flogf("\n%s ===\n", utlTime());
   gpsSats();
-  while (!tmrExp(phase_tmr))
+  while (!tmrExp(phase_tmr)) {
     gpsStats();
+    antDevice(cf2_dev);
+    flogf("\nantDepth()->%3.1f", antDepth());
+    antDevice(a3la_dev);
+  }
   /**/
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");
