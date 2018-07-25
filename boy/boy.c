@@ -179,30 +179,22 @@ PhaseType iridPhase(void) {
 
 ///
 PhaseType fallPhase() {
-  flogf("fallPhase()");
-  if (boy.noRise) return data_pha;
-  // ?? test routine
-  if (boy.cycle % 2) {
-    antSample();
-    antDataWait();
-    flogf("\n\tfallPhase()@%3.1f %s", antDepth(), utlTime());
-    ngkSend(stopCmd_msg);
-    antSample();
-    antDataWait();
-    flogf("\n\tfallPhase()@%3.1f %s", antDepth(), utlTime());
-    ngkSend(stopCmd_msg);
-    antSample();
-    antDataWait();
-    flogf("\n\tfallPhase()@%3.1f %s", antDepth(), utlTime());
-    ctdSample();
-    tmrStart(minute_tmr, 2*boy.minute);
-    while (!tmrExp(minute_tmr)) {
-      if (antData())
-        flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
-      if (ctdData()) 
-        flogf("\n\t| boy@%3.1f %s", ctdDepth(), utlTime());
-    }
+  flogf("\nfallPhase()");
+  flogf("\n\t| one minute stop drift");
+  antSample();
+  antDataWait();
+  flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
+  ngkSend(stopCmd_msg);
+  antSample();
+  ctdSample();
+  tmrStart(minute_tmr, boy.minute);
+  while (!tmrExp(minute_tmr)) {
+    if (antData())
+      flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
+    if (ctdData()) 
+      flogf("\n\t| boy@%3.1f %s", ctdDepth(), utlTime());
   }
+  if (boy.noRise) return data_pha;
   fall(0);
   return data_pha;
 } // fallPhase
