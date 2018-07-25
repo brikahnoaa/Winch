@@ -63,15 +63,6 @@ void gpsStop(void) {
 } // gpsStop
 
 ///
-// return: 0 success
-int iridPrompt() {
-  TURxFlush(gps.port);
-  utlWrite(gps.port, "at", EOL);
-  if (!utlExpect(gps.port, utlBuf, "OK", 4)) return 1;
-  else return 0;
-} // iridPrompt
-
-///
 // get gps info; date, time, lon, lat
 // sets: .date .time .lng .lat
 // return: 0=success
@@ -333,4 +324,12 @@ void iridHup(void) {
   utlExpect(gps.port, utlBuf, "OK", 5);
 } // iridHup
 
+///
+// return: 0 success
+int iridPrompt() {
+  TURxFlush(gps.port);
+  utlWrite(gps.port, "at", EOL);
+  if (!utlExpect(gps.port, utlBuf, "OK", 4)) return 1;
+  else return 0;
+} // iridPrompt
 

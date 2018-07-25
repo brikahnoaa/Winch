@@ -117,6 +117,7 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
+  // testing
   if (boy.cycle % 2) {
     // R,01,03
     result = riseRun(boy.currChkD, 0);

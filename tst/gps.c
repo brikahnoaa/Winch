@@ -16,15 +16,20 @@ void main(void){
   gpsInit();
   //
   antStart();
+  tmrStart(phase_tmr, 5*boy.minute);
   gpsStart();
-  // gpsStats();
-  flogf("\n%s\n", utlTime());
   gpsStats();
-  flogf("\n%s\n", utlTime());
-  gpsStats();
-  flogf("\n%s\n", utlTime());
-  gpsStats();
-  flogf("\nstop %s", utlTime());
+  for (i=0; i<boy.testCnt; i++) {
+    flogf("\n%s ===\n", utlTime());
+    iridSig();
+    iridDial();
+    iridSendTest(100);
+    iridHup();
+  }
+  flogf("\n%s ===\n", utlTime());
+  gpsSats();
+  while (!tmrExp(phase_tmr))
+    gpsStats();
   /**/
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");
