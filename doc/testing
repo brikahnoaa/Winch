@@ -1,0 +1,10 @@
+BOY.NOIRID=TRUE
+BOY.NODATA=TRUE
+  testing up/down only
+boy.norise=true
+  no up/down
+BOY.CYCLEMAX=6
+BOY.TESTING=TRUE
+  ignore starts>0
+GPS.SETTIME=FALSE
+

@@ -52,7 +52,6 @@ static CfgParam cfgP[] = {
   {"bnR", "boy.noRise",     &boy.noRise,      'b',  "false"},
   {"bte", "boy.testing",    &boy.testing,     'b',  "false"},
   {"blF", "boy.logFile",    &boy.logFile,     'c',  "boy"},
-  {"bte", "boy.testing",    &boy.testing,     'b',  "false"},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f',  "2.35"},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f',  "14.29"},
   {"bcD", "boy.currChkD",   &boy.currChkD,    'f',  "10.0"},

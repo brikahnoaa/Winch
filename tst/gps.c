@@ -4,19 +4,21 @@
 #include <mpc.h>
 #include <ant.h>
 #include <sys.h>
+#include <tmr.h>
 
 extern GpsInfo gps;
 
 void main(void){
   Serial port;
   char c;
+  int i;
   sysInit();
   mpcInit();
   antInit();
   gpsInit();
   //
   antStart();
-  tmrStart(phase_tmr, 5*boy.minute);
+  tmrStart(phase_tmr, 5*60);
   gpsStart();
   gpsStats();
   for (i=0; i<boy.testCnt; i++) {
