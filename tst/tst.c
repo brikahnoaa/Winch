@@ -18,6 +18,7 @@ void main(void){
   gpsInit();
   //
   antStart();
+  antAuton(true);
   flogf("\n%s ===\n", utlTime());
   tmrStart(phase_tmr, 6*60);
   gpsStart();
@@ -39,6 +40,7 @@ void main(void){
     flogf("\nantDepth()->%3.1f", antDepth());
     antDevice(a3la_dev);
   }
+  antAuton(false);
   flogf("\n%s ===\n", utlTime());
   /**/
   port = gps.port;
