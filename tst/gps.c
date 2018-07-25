@@ -21,7 +21,7 @@ void main(void){
   tmrStart(phase_tmr, 5*60);
   gpsStart();
   gpsStats();
-  for (i=0; i<boy.testCnt; i++) {
+  for (i=0; i<3; i++) {
     flogf("\n%s ===\n", utlTime());
     iridSig();
     iridDial();
