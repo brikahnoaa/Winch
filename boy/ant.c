@@ -150,6 +150,7 @@ void antSample(void) {
 ///
 // TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
+//  - note: now TS=TSSon due to TxSampleNum=N
 // sets: ant.temp .depth .ring->depth .ring->sampT
 // note: ant.sampT set in antSample()
 bool antRead(void) {
@@ -339,8 +340,8 @@ void antReset(void) {
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
   if (dev==ant.dev) return;
-  utlDelay(SETTLE);
   DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
+  utlDelay(SETTLE);
   if (dev==cf2_dev)
     PIOSet(ANT_SEL);
   else if (dev==a3la_dev)
@@ -350,7 +351,6 @@ void antDevice(DevType dev) {
   utlDelay(SETTLE);
   TUTxFlush(ant.port);
   TURxFlush(ant.port);
-  utlPet();
   return;
 } // antDevice
 
@@ -393,6 +393,7 @@ void antSwitch(AntType antenna) {
 // sets: .auton
 void antAuton(bool auton) {
   flogf("\nantAuton(%d)", auton);
+  antPrompt();
   if (auton) {
     utlWrite(ant.port, "startnow", EOL);
     if (!utlExpect(ant.port, utlBuf, "-->", 2)) {
