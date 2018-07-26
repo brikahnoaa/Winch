@@ -60,6 +60,9 @@ void antStart(void) {
   utlExpect(ant.port, utlBuf, EXEC, 2);
   utlWrite(ant.port, "txRealTime=n", EOL);
   utlExpect(ant.port, utlBuf, EXEC, 2);
+  // just in case auton is on
+  utlWrite(ant.port, "stop", EOL);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
   antReset();
 } // antStart
 
@@ -67,11 +70,15 @@ void antStart(void) {
 // turn off power to antmod 
 void antStop() {
   if (!ant.on) return;
-  ant.on = false;
   if (ant.log)
     close(ant.log);
   ant.log = 0;
+  antDevice(cf2_dev);
+  // just in case auton is on
+  utlWrite(ant.port, "stop", EOL);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
   PIOClear(ANT_PWR);
+  ant.on = false;
 } // antStop
 
 ///
@@ -345,8 +352,8 @@ void antReset(void) {
 // antmod uMPC cf2 and iridium A3LA
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
-  if (dev==ant.dev) return;
   DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
+  if (dev==ant.dev) return;
   utlDelay(SETTLE);
   if (dev==cf2_dev)
     PIOSet(ANT_SEL);
@@ -357,6 +364,7 @@ void antDevice(DevType dev) {
   utlDelay(SETTLE);
   TUTxFlush(ant.port);
   TURxFlush(ant.port);
+  ant.dev = dev;
   return;
 } // antDevice
 

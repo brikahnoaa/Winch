@@ -147,7 +147,6 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  int i;
   flogf("iridPhase()");
   antStart();
   antAuton(true);
@@ -168,12 +167,13 @@ PhaseType iridPhase(void) {
     }
     flogf("\n%s ===\n", utlTime());
     gpsSats();
-    while (!tmrExp(phase_tmr)) {
+    tmrStart(minute_tmr, boy.minute);
+    while (!tmrExp(minute_tmr)) {
       gpsStats();
       antDevice(cf2_dev);
       antSample();
       antDataWait();
-      flogf("\nantDepth()->%3.1f", antDepth());
+      flogf("\nantDepth()->%4.2f", antDepth());
       antDevice(a3la_dev);
     }
     flogf("\n%s ===\n", utlTime());

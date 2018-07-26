@@ -167,7 +167,7 @@ int iridSig(void) {
     if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 1;
     if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789")) {
       gps.signal = atoi(utlStr);
-      if (gps.signal>1) flogf(" csq=%s", utlStr);
+      flogf(" csq=%d", gps.signal);
       if (gps.signal>gps.signalMin) return 0;
     } // if CSQ
   } // while timer
