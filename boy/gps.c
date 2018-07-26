@@ -157,6 +157,7 @@ int gpsSats(void){
 
 ///
 // sets: gps.signal
+// rets: 0=success
 int iridSig(void) {
   flogf("iridSig()");
   antSwitch(irid_ant);
@@ -167,10 +168,10 @@ int iridSig(void) {
     if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789")) {
       gps.signal = atoi(utlStr);
       if (gps.signal>1) flogf(" csq=%s", utlStr);
-      if (gps.signal>gps.signalMin) break;
+      if (gps.signal>gps.signalMin) return 0;
     } // if CSQ
   } // while timer
-  return 0;
+  return 2;
 } // iridSig
 
 ///

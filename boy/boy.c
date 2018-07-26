@@ -158,10 +158,11 @@ PhaseType iridPhase(void) {
     flogf("\n%s ===\n", utlTime());
     gpsSats();
     gpsStats();
-    for (i=0; i<boy.testCnt; i++) {
+    while (!tmrExp(phase_tmr)) {
       flogf("\n%s ===\n", utlTime());
-      iridSig();
-      iridDial();
+      // 0=success
+      if (iridSig()) continue;
+      if (iridDial()) continue;
       iridSendTest(100);
       iridHup();
     }
