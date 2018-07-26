@@ -253,7 +253,7 @@ int iridDial(void) {
 // create a block of zero, send
 // uses: utlBuf=zero utlRet=comm
 int iridSendTest(int msgLen) {
-  int hdr1=13, hdr2=10, hdrTry=8, hdrPause=20;
+  int hdr1=13, hdr2=10, hdrTry=3, hdrPause=10;
   int min=48;
   int cs, i, bufLen;
   char *s;
