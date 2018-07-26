@@ -53,7 +53,13 @@ void antStart(void) {
   antPrompt();
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ant.port, utlStr, EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 1);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
+  utlWrite(ant.port, "TxSampleNum=N", EOL);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
+  utlWrite(ant.port, "SampleInterval=1", EOL);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
+  utlWrite(ant.port, "txRealTime=n", EOL);
+  utlExpect(ant.port, utlBuf, EXEC, 2);
   antReset();
 } // antStart
 
@@ -388,15 +394,21 @@ void antSwitch(AntType antenna) {
 void antAuton(bool auton) {
   flogf("\nantAuton(%d)", auton);
   if (auton) {
-    utlWrite(ant.port, "SampleInterval=0.5", EOL);
-    utlExpect(ant.port, utlBuf, EXEC, 2);
-    utlWrite(ant.port, "txRealTime=n", EOL);
-    utlExpect(ant.port, utlBuf, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);
-    utlExpect(ant.port, utlBuf, "-->", 2);
+    if (!utlExpect(ant.port, utlBuf, "-->", 2)) {
+      flogf("\t| startnow fail, retry ...");
+      utlWrite(ant.port, "startnow", EOL);
+      if (!utlExpect(ant.port, utlBuf, "-->", 2)) 
+        flogf(" startnow failed");
+    } // if -->
   } else {
     utlWrite(ant.port, "stop", EOL);
-    utlExpect(ant.port, utlBuf, EXEC, 5);
+    if (!utlExpect(ant.port, utlBuf, "-->", 2)) {
+      flogf("\t| stop fail, retry ...");
+      utlWrite(ant.port, "stop", EOL);
+      if (!utlExpect(ant.port, utlBuf, "-->", 2)) 
+        flogf(" stop failed");
+    } // if -->
     utlNap(1);
     TURxFlush(ant.port);
   } // if auton
@@ -411,6 +423,7 @@ void antGetSamples(void) {
   int total=0;
   int log;
   flogf("\nantGetSamples()");
+  antAuton(false);
   if (ant.log)
     log = ant.log;
   else

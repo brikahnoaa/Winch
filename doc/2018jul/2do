@@ -53,3 +53,10 @@ safe stop (auton)
 
 gpsAnt() iridAnt()
 gpsSig iridSig check sig level, return success
+
+lost connect check
+iridDial() 00:12:08 CONNECT 9600 projHdr projHdr projHdr projHdr projHdr projHdr projHdr projHdr
+iridDial() 00:39:04 (0) (1) (2) (3) (4)
+-ERR(gps)	|0| 00:39:42 call retry exceeded projHdr projHdr projHdr
+
+
