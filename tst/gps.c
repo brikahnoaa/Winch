@@ -40,6 +40,7 @@ void main(void){
     flogf("\nantDepth()->%3.1f", antDepth());
     antDevice(a3la_dev);
   }
+  antDevice(cf2_dev);
   antAuton(false);
   flogf("\n%s ===\n", utlTime());
   /**/

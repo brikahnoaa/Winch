@@ -160,7 +160,11 @@ bool antRead(void) {
   if (!antData()) return false;
   // data waiting
   DBG0("antRead()");
-  p0 = utlExpect(ant.port, utlBuf, EXEC, 2);
+  // with auton there is no Executed, so look for #
+  if (ant.auton)
+    p0 = utlExpect(ant.port, utlBuf, "# ", 2);
+  else
+    p0 = utlExpect(ant.port, utlBuf, EXEC, 2);
   if (!p0) {
     utlErr(ant_err, "antRead: no Exec");
     return false;
