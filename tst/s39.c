@@ -16,7 +16,8 @@ void main(void){
   antStart();
   flogf("\n");
   antSample();
-  antDataWait();
+  if (!antDataWait())
+    flogf("data wait fails\n");
   if (!antRead())
     flogf("read fails\n");
   flogf("antDepth() -> %f\n", antDepth());
@@ -35,7 +36,7 @@ void main(void){
       cputc(c);
     }
   }
-  antAuton(false);
-  antGetSamples();
+  // antAuton(false);
+  // antGetSamples();
   utlStop("normal");
 }

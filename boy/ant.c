@@ -166,7 +166,7 @@ bool antRead(void) {
   else
     p0 = utlExpect(ant.port, utlBuf, EXEC, 2);
   if (!p0) {
-    utlErr(ant_err, "antRead: no Exec");
+    utlErr(ant_err, "antRead: no data");
     return false;
   } // not data
   if (ant.log)

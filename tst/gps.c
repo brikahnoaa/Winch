@@ -18,8 +18,15 @@ void main(void){
   gpsInit();
   //
   antStart();
+    antSample();
+    antDataWait();
+    flogf("\nantDepth()->%3.1f", antDepth());
   antAuton(true);
   flogf("\n%s ===\n", utlTime());
+    antSample();
+    antDataWait();
+    flogf("\nantDepth()->%3.1f", antDepth());
+  /*
   tmrStart(phase_tmr, 6*60);
   gpsStart();
   gpsStats();
@@ -40,6 +47,7 @@ void main(void){
     flogf("\nantDepth()->%3.1f", antDepth());
     antDevice(a3la_dev);
   }
+  */
   antDevice(cf2_dev);
   antAuton(false);
   flogf("\n%s ===\n", utlTime());
