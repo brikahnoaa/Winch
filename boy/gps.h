@@ -32,8 +32,6 @@ int gpsStats(void);
 int iridDial(void);
 int iridSendTest(int msgLen);
 int iridSig(void);
-void gpsAnt(void);
 void gpsInit(void);
 void gpsStop(void);
-void iridAnt(void);
 void iridHup(void);

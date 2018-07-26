@@ -59,4 +59,8 @@ iridDial() 00:12:08 CONNECT 9600 projHdr projHdr projHdr projHdr projHdr projHdr
 iridDial() 00:39:04 (0) (1) (2) (3) (4)
 -ERR(gps)	|0| 00:39:42 call retry exceeded projHdr projHdr projHdr
 
+projHdr cfg.c
+not handling CONNECT error
+v antDepth antAuton(0) failed
+antDepth()->0.0 \\ -ERR(ant)	|0| 17:24:15 antRead: no Exec
 

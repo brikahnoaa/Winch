@@ -138,7 +138,7 @@ bool gpsSetTime(void) {
 // sets: gps.sats
 // rets: 0=success
 int gpsSats(void){
-  gpsAnt();
+  antSwitch(gps_ant);
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlNap(2);
@@ -156,28 +156,10 @@ int gpsSats(void){
 } // gpsSats
 
 ///
-// switch to gps
-void gpsAnt(void) {
-  if (antAntenna()==gps_ant) return;
-  antDevice(cf2_dev);
-  antSwitch(gps_ant);
-  antDevice(a3la_dev);
-}
-
-/// 
-// switch to irid
-void iridAnt(void) {
-  if (antAntenna()==irid_ant) return;
-  antDevice(cf2_dev);
-  antSwitch(irid_ant);
-  antDevice(a3la_dev);
-}
-
-///
 // sets: gps.signal
 int iridSig(void) {
   flogf("iridSig()");
-  iridAnt();
+  antSwitch(irid_ant);
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlWrite(gps.port, "at+csq", EOL);

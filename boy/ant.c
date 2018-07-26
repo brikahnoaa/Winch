@@ -75,8 +75,10 @@ void antStop() {
 } // antStop
 
 ///
+// rets: true==success (returns early)
 bool antPrompt() {
   DBG1("antPrompt()")
+  antDevice(cf2_dev);
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
@@ -378,13 +380,17 @@ void antDevPwr(char c, bool on) {
 ///
 // should be in gps.c??
 void antSwitch(AntType antenna) {
+  DevType dev;
   if (antenna==ant.antenna) return;
   DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
+  dev = ant.dev;
+  antDevice(cf2_dev);
   TUTxPutByte(ant.port, 1, false);        // ^A
   if (antenna==gps_ant) 
     TUTxPutByte(ant.port, 'G', false);
   else
     TUTxPutByte(ant.port, 'I', false);
+  antDevice(dev);
   ant.antenna = antenna;
 } // antSwitch
     

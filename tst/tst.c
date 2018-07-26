@@ -35,11 +35,15 @@ void main(void){
   while (!tmrExp(phase_tmr)) {
     gpsStats();
     antDevice(cf2_dev);
+    ultNap(1);
     antSample();
     antDataWait();
     flogf("\nantDepth()->%3.1f", antDepth());
     antDevice(a3la_dev);
+    ultNap(1);
   }
+  antDevice(cf2_dev);
+  ultNap(1);
   antAuton(false);
   flogf("\n%s ===\n", utlTime());
   /**/
