@@ -183,16 +183,7 @@ PhaseType iridPhase(void) {
   } // if irid
   antAuton(false);
   ctdAuton(false);
-  return fall_pha;
-} // iridPhase
-
-///
-PhaseType fallPhase() {
-  flogf("\nfallPhase()");
   flogf("\n\t| one minute stop drift");
-  antSample();
-  antDataWait();
-  flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
   ngkSend(stopCmd_msg);
   antSample();
   ctdSample();
@@ -203,6 +194,12 @@ PhaseType fallPhase() {
     if (ctdData()) 
       flogf("\n\t| boy@%3.1f %s", ctdDepth(), utlTime());
   }
+  return fall_pha;
+} // iridPhase
+
+///
+PhaseType fallPhase() {
+  flogf("\nfallPhase()");
   if (boy.noRise) return data_pha;
   fall(0);
   return data_pha;
