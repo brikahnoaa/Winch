@@ -13,8 +13,9 @@
 #include <tmr.h>
 #include <wsp.h>
 
-extern GlobalInfo global;
+#define MINUTE 60
 
+extern GlobalInfo global;
 BoyInfo boy;
 
 ///
@@ -151,7 +152,7 @@ PhaseType iridPhase(void) {
   antStart();
   antAuton(true);
   ctdAuton(true);
-  tmrStart(phase_tmr, 5*boy.minute);
+  tmrStart(phase_tmr, 5*MINUTE);
   if (!boy.noIrid) {
     gpsStart();
     flogf("\n%s ===\n", utlTime());
@@ -164,10 +165,11 @@ PhaseType iridPhase(void) {
       if (iridDial()) continue;
       iridSendTest(100);
       iridHup();
-    }
+    } // while
     flogf("\n%s ===\n", utlTime());
     gpsSats();
-    tmrStart(minute_tmr, boy.minute);
+    flogf("\n%s ===\n", utlTime());
+    tmrStart(minute_tmr, MINUTE);
     while (!tmrExp(minute_tmr)) {
       gpsStats();
       antDevice(cf2_dev);
@@ -175,10 +177,10 @@ PhaseType iridPhase(void) {
       antDataWait();
       flogf("\nantDepth()->%4.2f", antDepth());
       antDevice(a3la_dev);
-    }
+    } // while
     flogf("\n%s ===\n", utlTime());
     gpsStop();
-  } // irid
+  } // if irid
   antAuton(false);
   ctdAuton(false);
   return fall_pha;
@@ -194,7 +196,7 @@ PhaseType fallPhase() {
   ngkSend(stopCmd_msg);
   antSample();
   ctdSample();
-  tmrStart(minute_tmr, boy.minute);
+  tmrStart(minute_tmr, MINUTE);
   while (!tmrExp(minute_tmr)) {
     if (antData())
       flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
@@ -556,7 +558,7 @@ int fall(int try) {
   nowD = startD = antDepth();
   if (try > boy.fallRetry) return 2;
   // could be cable far out, maybe dockD+100m
-  op = 20 * boy.minute;
+  op = 20 * MINUTE;
   tmrStart(opTmr, op);
   ngkFlush();
   flogf("\n\tfall() fallCmd to winch at %s", utlTime());
@@ -641,7 +643,7 @@ PhaseType deployPhase(void) {
   flogf(" sbe39@%3.1f", antDepth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
     antDepth(), ctdDepth(), utlDateTime());
-  tmrStart( deploy_tmr, boy.minute*60*2 );
+  tmrStart( deploy_tmr, MINUTE*60*2 );
   // wait until under 10m
   while (true) {
     antSample();
@@ -655,7 +657,7 @@ PhaseType deployPhase(void) {
   }
   flogf("\n\t| %4.2fm>10, watch for depth to settle down\n");
   // at most 5min to descend, already waited 2min
-  tmrStart(drop_tmr, boy.minute*5);
+  tmrStart(drop_tmr, MINUTE*5);
   while (true) {
     // must fall at least 1m in 15 sec
     utlNap(15);
