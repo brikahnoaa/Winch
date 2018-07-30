@@ -166,7 +166,7 @@ bool antRead(void) {
   char *p0, *p1, *p2;
   if (!antData()) return false;
   // data waiting
-  DBG0("antRead()");
+  DBG0("antRead()")
   // with auton there is no Executed, so look for #
   if (ant.auton)
     p0 = utlExpect(ant.port, utlBuf, "# ", 2);
