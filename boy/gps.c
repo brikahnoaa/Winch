@@ -168,8 +168,10 @@ int iridSig(void) {
     if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789")) {
       gps.signal = atoi(utlStr);
       flogf(" csq=%d", gps.signal);
-      if (gps.signal>gps.signalMin) return 0;
+      if (gps.signal>gps.signalMin+1) return 0;
     } // if CSQ
+  // accept min signal if its all we got
+  if (gps.signal>gps.signalMin) return 0;
   } // while timer
   return 2;
 } // iridSig
@@ -234,9 +236,9 @@ int iridDial(void) {
 
 ///
 // create a block of zero, send
-// uses: utlBuf=zero utlRet=comm
+// uses: utlBuf=zero utlRet=comm .hdrTry=3 .hdrPause=15
 int iridSendTest(int msgLen) {
-  int hdr1=13, hdr2=10, hdrTry=3, hdrPause=10;
+  int hdr1=13, hdr2=10;
   int min=48;
   int cs, i, bufLen;
   char *s;
@@ -264,16 +266,16 @@ int iridSendTest(int msgLen) {
   utlBuf[3] = (char) (cs >> 8);
   utlBuf[4] = (char) (cs & 0xFF);
   DBG2("%s", utlNonPrint(utlBuf))
-  while (hdrTry--) {
+  while (gps.hdrTry--) {
     flogf(" projHdr");
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
-    s = utlExpect(gps.port, land, "ACK", hdrPause);
+    s = utlExpect(gps.port, land, "ACK", gps.hdrPause);
     if (s) {
       DBG4("(%d)", s)
       break;
     }
   }
-  if (hdrTry < 0) return 2;
+  if (gps.hdrTry < 0) return 2;
   // send data
   flogf(" data");
   utlWriteBlock(gps.port, utlBuf, bufLen);

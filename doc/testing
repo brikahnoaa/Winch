@@ -8,3 +8,5 @@ BOY.TESTING=TRUE
   ignore starts>0
 GPS.SETTIME=FALSE
 
+boy.startph=2
+

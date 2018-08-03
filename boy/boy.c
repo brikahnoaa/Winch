@@ -122,6 +122,7 @@ PhaseType risePhase(void) {
   if (boy.cycle % 2) {
     // R,01,03
     result = riseRun(boy.currChkD, 0);
+    ngkSend(stopCmd_msg);
     if (result) {
       flogf("\n\t| rise fails at %3.1f m", antDepth());
       //??  return fall_pha;
@@ -237,7 +238,7 @@ int riseRun(float targetD, int try) {
   int est;        // estimated operation time
   MsgType msg;
   enum {targetT, ngkT, twentyT, fiveT};  // local timer names
-  flogf("riseRun(%3.1f, %d)", targetD, try);
+  flogf("\nriseRun(%3.1f, %d)", targetD, try);
   utlNap(15);
   antSample();
   antDataWait();
