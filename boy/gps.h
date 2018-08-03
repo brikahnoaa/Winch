@@ -12,6 +12,8 @@ typedef struct GpsInfo {
   char projHdr[16];         // ???csProjPlat
   char time[16];
   char logFile[64];
+  int hdrPause;             // wait sec for rudics header response (15)
+  int hdrTry;               // header retry (3)
   int redial;               // how many calls to make
   int rudResp;              // wait secs for rudics to respond to a block
   int signal;
