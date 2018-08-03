@@ -1,0 +1,1306 @@
+Saving 80780 bytes to BOY.PXE...
+
+C:\>
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 10, max 50
+---   ---
+Program: sys.c,  Build: Jul 26 2018 10:17:57
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 10
+Started: 07-30-18 16:57:59
+---   ---
+VEE: BOY.CYCLEMAX=6
+VEE: BOY.TESTING=TRUE
+VEE: BOY.NOIRID=TRUE
+VEE: BOY.NODATA=TRUE
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 10
+boy.testing
+boyMain(): starting with phase 0
+cycle 0 @07-30-18 16:58:02 
+deploy: testing sbe16, sbe39 sbe16@40.0 sbe39@26.0
+deployPhase()	| ant@26.0m buoy@40.0m 07-30-18 16:58:21
+deployPhase@26.00m 16:58:22
+	| 26.00m>10m, watch for depth to settle down
+ 26.0
+	| down, pause for 120s
+	| boy.dockD = 26.00
+	| go to surface, call home
+cycle 0 @07-30-18 17:00:38 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(2.1, 0)
++ngkSend(#R,01,00) at 17:01:20
+	riseFree() surfCmd to winch at 17:01:22
+	riseFree() 17:01:26 depth=26.0 velo=0.00
+	riseFree() 17:01:32 depth=24.4 velo=-0.45
++ngkRecv(%R,02,00) riseRsp 17:01:32, riseRsp from winch
+	riseFree() 17:01:38 depth=22.4 velo=-0.30
+	riseFree() 20sec 17:01:41 startD-nowD 4.7 
+	riseFree() 17:01:44 depth=20.4 velo=-0.43
+	riseFree() 17:01:50 depth=18.5 velo=-0.43
+	riseFree() 17:01:56 depth=16.5 velo=-0.45
+	riseFree() 17:02:02 depth=14.5 velo=-0.43
+	riseFree() 17:02:08 depth=12.5 velo=-0.30
+	riseFree() 17:02:14 depth=10.5 velo=-0.43
+	riseFree() 17:02:20 depth=8.6 velo=-0.43
+	riseFree() 17:02:26 depth=6.5 velo=-0.30
+	riseFree() 17:02:32 depth=4.5 velo=-0.45
+	riseFree() 17:02:38 depth=2.4 velo=-0.29
+	riseFree() reached targetD 2.1 at 17:02:38
+cycle 0 @07-30-18 17:02:39 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|0| 17:02:54 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|1| 17:03:10 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:03:10
+	| ant@1.2 17:03:11
+	| ant@1.1 17:03:11
+	| ant@0.8 17:03:12
+	| ant@0.9 17:03:13
+	| ant@1.3 17:03:13
+	| ant@1.6 17:03:14
+	| boy@13.2 17:03:14
+	| ant@1.3 17:03:15
+	| ant@0.9 17:03:15
+	| ant@1.4 17:03:16
+	| ant@1.4 17:03:17
+	| ant@1.0 17:03:17
+	| ant@0.8 17:03:18
+	| ant@1.0 17:03:19
+	| boy@13.2 17:03:19
+	| ant@1.4 17:03:19
+	| ant@1.5 17:03:20
+	| ant@1.1 17:03:21
+	| ant@1.4 17:03:21
+	| ant@1.6 17:03:22
+	| ant@1.0 17:03:23
+	| ant@1.0 17:03:23
+	| boy@13.2 17:03:23
+	| ant@0.8 17:03:24
+	| ant@1.0 17:03:24
+	| ant@1.3 17:03:25
+	| ant@1.5 17:03:26
+	| ant@1.0 17:03:26
+	| ant@0.9 17:03:27
+	| ant@1.5 17:03:28
+	| boy@13.2 17:03:28
+	| ant@1.0 17:03:28
+	| ant@1.0 17:03:29
+	| ant@1.3 17:03:30
+	| ant@0.9 17:03:30
+	| ant@1.3 17:03:31
+	| ant@1.5 17:03:32
+	| ant@0.8 17:03:32
+	| boy@13.2 17:03:33
+	| ant@1.4 17:03:33
+	| ant@1.6 17:03:34
+	| ant@1.1 17:03:34
+	| ant@1.5 17:03:35
+	| ant@1.3 17:03:36
+	| ant@1.3 17:03:36
+	| ant@1.0 17:03:37
+	| boy@13.2 17:03:37
+	| ant@0.8 17:03:38
+	| ant@0.9 17:03:38
+	| ant@1.4 17:03:39
+	| ant@1.0 17:03:40
+	| ant@0.8 17:03:40
+	| ant@1.0 17:03:41
+	| ant@1.5 17:03:41
+	| boy@13.2 17:03:42
+	| ant@1.1 17:03:42
+	| ant@0.8 17:03:43
+	| ant@1.3 17:03:43
+	| ant@1.3 17:03:44
+	| ant@0.8 17:03:45
+	| ant@1.6 17:03:45
+	| ant@1.3 17:03:46
+	| boy@13.2 17:03:46
+	| ant@1.3 17:03:47
+	| ant@0.9 17:03:47
+	| ant@1.4 17:03:48
+	| ant@1.2 17:03:49
+	| ant@1.0 17:03:49
+	| ant@1.2 17:03:50
+	| ant@1.1 17:03:51
+	| boy@13.2 17:03:51
+	| ant@1.5 17:03:51
+	| ant@1.3 17:03:52
+	| ant@1.1 17:03:53
+	| ant@1.6 17:03:53
+	| ant@0.8 17:03:54
+	| ant@1.1 17:03:55
+	| ant@1.0 17:03:55
+	| boy@13.2 17:03:55
+	| ant@1.4 17:03:56
+	| ant@0.8 17:03:57
+	| ant@1.4 17:03:57
+	| ant@1.2 17:03:58
+	| ant@1.1 17:03:59
+	| ant@0.9 17:03:59
+	| ant@0.9 17:04:00
+	| boy@13.2 17:04:00
+	| ant@1.1 17:04:00
+	| ant@0.8 17:04:01
+	| ant@1.3 17:04:02
+	| ant@1.3 17:04:02
+	| ant@1.3 17:04:03
+	| ant@1.1 17:04:04
+	| ant@1.3 17:04:04
+	| boy@13.2 17:04:05
+	| ant@1.5 17:04:05
+	| ant@0.9 17:04:06
+	| ant@0.9 17:04:06
+	| ant@1.3 17:04:07
+	| ant@0.9 17:04:08
+	| ant@0.9 17:04:08
+	| ant@1.2 17:04:09
+	| boy@13.2 17:04:09
+	| ant@1.1 17:04:10
+	| ant@1.3 17:04:10
+cycle 0 @07-30-18 17:04:11 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:04:26
++ngkSend(#F,01,00) at 17:04:27
+	fall() 17:04:33 depth=1.3
++ngkRecv(%F,02,00) fallRsp 17:04:38, fallRsp from winch
+	fall() 17:04:39 depth=0.9
+	fall() 17:04:45 depth=1.4
+	fall() 17:04:51 depth=0.8
+	fall() 17:04:57 depth=0.9
+	fall() 17:05:03 depth=0.8
+	fall() 17:05:09 depth=1.6
+	fall() 17:05:15 depth=1.2
+	fall() 17:05:21 depth=1.1
+	fall() 17:05:27 depth=1.2
+	fall() 17:05:33 depth=1.8 velo=0.17
+	fall() 17:05:39 depth=3.0 velo=0.17
+	fall() 17:05:45 depth=4.2 velo=0.17
+	fall() 17:05:51 depth=5.3 velo=0.17
+	fall() 17:05:57 depth=6.5 velo=0.17
+	fall() 17:06:03 depth=7.7 velo=0.17
+	fall() 17:06:09 depth=8.9 velo=0.26
+	fall() 17:06:15 depth=10.1 velo=0.26
+	fall() 17:06:21 depth=11.3 velo=0.26
+	fall() 17:06:27 depth=12.6 velo=0.17
+	fall() 17:06:33 depth=13.8 velo=0.17
+	fall() 17:06:39 depth=15.0 velo=0.18
+	fall() 17:06:45 depth=16.2 velo=0.17
+	fall() 17:06:51 depth=17.4 velo=0.17
+	fall() 17:06:57 depth=18.6 velo=0.18
+	fall() 17:07:03 depth=19.8 velo=0.17
+	fall() 17:07:09 depth=20.9 velo=0.17
+	fall() 17:07:15 depth=22.2 velo=0.17
+	fall() 17:07:21 depth=23.3 velo=0.17
+	fall() 17:07:27 depth=24.5 velo=0.26
+	fall() @25.1 near boy.dockD=26.0 17:07:29
+	fall() 17:07:33 depth=25.7 velo=0.26
++ngkRecv(#S,02,00) stopCmd 17:07:38, stopCmd from winch
+cycle 0 @07-30-18 17:07:39 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 1 @07-30-18 17:07:41 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(10.0, 0)
++ngkSend(#R,01,03) at 17:08:24
+	riseRun() riseCmd to winch at 17:08:25
+	riseRun() 17:08:30 depth=26.0 velo=0.00
++ngkRecv(%R,02,00) riseRsp 17:08:35, riseRsp from winch
+	riseRun() 17:08:36 depth=24.2 velo=-0.42
+	riseRun() 17:08:42 depth=22.2 velo=-0.45
+	riseRun() 20sec 17:08:45 startD-nowD 4.9 
+	riseRun() 17:08:48 depth=20.2 velo=-0.43
+	riseRun() 17:08:54 depth=18.2 velo=-0.30
+	riseRun() 17:09:00 depth=16.2 velo=-0.43
+	riseRun() 17:09:06 depth=14.3 velo=-0.43
+	riseRun() 17:09:12 depth=12.3 velo=-0.43
+	riseRun() 17:09:18 depth=10.3 velo=-0.43
+	riseRun() reached targetD 9.8 at 17:09:18
+oceanCurrChk()
+oceanCurr() 	| ant=9.8 boy=15.3 boy2ant=14.3 sideways=13.19
+	|current @ 9.8 = 13.2riseRun(2.1, 0) | fails at 1.3 m
+cycle 1 @07-30-18 17:10:01 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|2| 17:10:16 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|3| 17:10:33 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:10:33
+	| ant@1.1 17:10:33
+	| ant@1.5 17:10:34
+	| ant@1.4 17:10:35
+	| ant@1.1 17:10:35
+	| ant@0.9 17:10:36
+	| ant@1.0 17:10:37
+	| boy@13.2 17:10:37
+	| ant@1.2 17:10:37
+	| ant@1.6 17:10:38
+	| ant@1.2 17:10:39
+	| ant@1.0 17:10:39
+	| ant@1.6 17:10:40
+	| ant@1.6 17:10:41
+	| ant@1.4 17:10:41
+	| boy@13.2 17:10:42
+	| ant@0.8 17:10:42
+	| ant@1.2 17:10:43
+	| ant@1.2 17:10:43
+	| ant@1.5 17:10:44
+	| ant@1.2 17:10:45
+	| ant@1.1 17:10:45
+	| ant@1.4 17:10:46
+	| boy@13.2 17:10:46
+	| ant@1.5 17:10:47
+	| ant@1.1 17:10:47
+	| ant@1.0 17:10:48
+	| ant@1.3 17:10:49
+	| ant@0.9 17:10:49
+	| ant@1.2 17:10:50
+	| ant@1.4 17:10:51
+	| boy@13.2 17:10:51
+	| ant@1.4 17:10:51
+	| ant@1.3 17:10:52
+	| ant@0.9 17:10:52
+	| ant@1.6 17:10:53
+	| ant@1.4 17:10:54
+	| ant@1.2 17:10:54
+	| ant@0.9 17:10:55
+	| boy@13.2 17:10:55
+	| ant@1.2 17:10:56
+	| ant@1.3 17:10:56
+	| ant@1.0 17:10:57
+	| ant@1.3 17:10:58
+	| ant@0.9 17:10:58
+	| ant@1.5 17:10:59
+	| ant@1.1 17:11:00
+	| boy@13.2 17:11:00
+	| ant@1.1 17:11:00
+	| ant@1.4 17:11:01
+	| ant@1.0 17:11:02
+	| ant@1.0 17:11:02
+	| ant@1.5 17:11:03
+	| ant@1.5 17:11:04
+	| ant@1.2 17:11:04
+	| boy@13.2 17:11:04
+	| ant@1.2 17:11:05
+	| ant@1.0 17:11:06
+	| ant@1.0 17:11:06
+	| ant@1.6 17:11:07
+	| ant@1.5 17:11:08
+	| ant@1.3 17:11:08
+	| ant@0.9 17:11:09
+	| boy@13.2 17:11:09
+	| ant@1.4 17:11:09
+	| ant@1.1 17:11:10
+	| ant@1.0 17:11:11
+	| ant@0.8 17:11:11
+	| ant@1.5 17:11:12
+	| ant@1.4 17:11:13
+	| ant@1.5 17:11:13
+	| boy@13.2 17:11:14
+	| ant@1.0 17:11:14
+	| ant@1.3 17:11:15
+	| ant@1.1 17:11:15
+	| ant@1.2 17:11:16
+	| ant@1.6 17:11:17
+	| ant@1.1 17:11:17
+	| ant@1.0 17:11:18
+	| boy@13.2 17:11:18
+	| ant@1.6 17:11:19
+	| ant@1.2 17:11:19
+	| ant@0.9 17:11:20
+	| ant@0.9 17:11:21
+	| ant@0.9 17:11:21
+	| ant@1.2 17:11:22
+	| ant@1.0 17:11:23
+	| boy@13.2 17:11:23
+	| ant@1.2 17:11:23
+	| ant@1.0 17:11:24
+	| ant@1.2 17:11:25
+	| ant@0.9 17:11:25
+	| ant@1.2 17:11:26
+	| ant@1.4 17:11:26
+	| ant@1.5 17:11:27
+	| boy@13.2 17:11:27
+	| ant@1.5 17:11:28
+	| ant@0.9 17:11:28
+	| ant@1.3 17:11:29
+	| ant@1.0 17:11:30
+	| ant@1.0 17:11:30
+	| ant@0.9 17:11:31
+	| ant@0.8 17:11:32
+	| boy@13.2 17:11:32
+	| ant@1.6 17:11:32
+	| ant@1.4 17:11:33
+cycle 1 @07-30-18 17:11:34 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:11:49
++ngkSend(#F,01,00) at 17:11:50
+	fall() 17:11:56 depth=1.5
++ngkRecv(%F,02,00) fallRsp 17:12:01, fallRsp from winch
+	fall() 17:12:02 depth=1.1
+	fall() 17:12:08 depth=0.9
+	fall() 17:12:14 depth=1.6
+	fall() 17:12:20 depth=0.9
+	fall() 17:12:26 depth=1.3
+	fall() 17:12:32 depth=1.4
+	fall() 17:12:38 depth=1.5
+	fall() 17:12:44 depth=1.1
+	fall() 17:12:50 depth=1.3
+	fall() 17:12:56 depth=0.9
+	fall() 17:13:02 depth=1.2
+	fall() 17:13:08 depth=0.9
+	fall() 17:13:14 depth=1.4
+	fall() 17:13:20 depth=1.1
+	fall() 17:13:26 depth=1.3
+	fall() 17:13:32 depth=2.6 velo=0.17
+	fall() 17:13:38 depth=3.8 velo=0.17
+	fall() 17:13:44 depth=5.0 velo=0.17
+	fall() 17:13:50 depth=6.2 velo=0.19
+	fall() 17:13:56 depth=7.3 velo=0.17
+	fall() 17:14:02 depth=8.5 velo=0.17
+	fall() 17:14:08 depth=9.7 velo=0.17
+	fall() 17:14:14 depth=10.9 velo=0.17
+	fall() 17:14:20 depth=12.1 velo=0.26
+	fall() 17:14:26 depth=13.3 velo=0.26
+	fall() 17:14:32 depth=14.5 velo=0.26
+	fall() 17:14:38 depth=15.7 velo=0.27
+	fall() 17:14:44 depth=16.9 velo=0.27
+	fall() 17:14:50 depth=18.1 velo=0.26
+	fall() 17:14:56 depth=19.3 velo=0.27
+	fall() 17:15:02 depth=20.5 velo=0.28
+	fall() 17:15:08 depth=21.7 velo=0.26
+	fall() 17:15:14 depth=22.9 velo=0.19
+	fall() 17:15:20 depth=24.1 velo=0.27
+	fall() @25.0 near boy.dockD=26.0 17:15:24
+	fall() 17:15:26 depth=25.3 velo=0.26
+	fall() 17:15:32 depth=26.0 velo=0.00
++ngkRecv(#S,02,00) stopCmd 17:15:34, stopCmd from winch
+cycle 1 @07-30-18 17:15:34 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 2 @07-30-18 17:15:36 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(2.1, 0)
++ngkSend(#R,01,00) at 17:16:19
+	riseFree() surfCmd to winch at 17:16:20
+	riseFree() 17:16:25 depth=26.0 velo=0.00
++ngkRecv(%R,02,00) riseRsp 17:16:30, riseRsp from winch
+	riseFree() 17:16:31 depth=24.2 velo=-0.43
+	riseFree() 17:16:37 depth=22.2 velo=-0.45
+	riseFree() 20sec 17:16:40 startD-nowD 4.9 
+	riseFree() 17:16:43 depth=20.2 velo=-0.45
+	riseFree() 17:16:49 depth=18.2 velo=-0.31
+	riseFree() 17:16:55 depth=16.2 velo=-0.43
+	riseFree() 17:17:01 depth=14.2 velo=-0.45
+	riseFree() 17:17:07 depth=12.2 velo=-0.30
+	riseFree() 17:17:13 depth=10.3 velo=-0.43
+	riseFree() 17:17:19 depth=8.3 velo=-0.29
+	riseFree() 17:17:25 depth=6.3 velo=-0.30
+	riseFree() 17:17:31 depth=4.3 velo=-0.45
+	riseFree() 17:17:37 depth=2.3 velo=-0.29
+	riseFree() reached targetD 2.1 at 17:17:37
+cycle 2 @07-30-18 17:17:37 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|4| 17:17:53 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|5| 17:18:09 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:18:09
+	| ant@1.2 17:18:10
+	| ant@1.1 17:18:11
+	| ant@1.4 17:18:11
+	| ant@1.4 17:18:12
+	| ant@0.9 17:18:13
+	| ant@0.9 17:18:13
+	| boy@13.2 17:18:14
+	| ant@1.5 17:18:14
+	| ant@0.8 17:18:15
+	| ant@0.9 17:18:15
+	| ant@1.3 17:18:16
+	| ant@1.2 17:18:17
+	| ant@1.0 17:18:17
+	| ant@1.5 17:18:18
+	| boy@13.2 17:18:18
+	| ant@0.8 17:18:19
+	| ant@1.4 17:18:19
+	| ant@1.4 17:18:20
+	| ant@1.1 17:18:21
+	| ant@1.2 17:18:21
+	| ant@1.3 17:18:22
+	| ant@1.6 17:18:23
+	| boy@13.2 17:18:23
+	| ant@1.1 17:18:23
+	| ant@1.2 17:18:24
+	| ant@1.3 17:18:25
+	| ant@0.9 17:18:25
+	| ant@1.5 17:18:26
+	| ant@1.0 17:18:27
+	| ant@1.3 17:18:27
+	| boy@13.2 17:18:27
+	| ant@1.2 17:18:28
+	| ant@1.0 17:18:28
+	| ant@1.4 17:18:29
+	| ant@1.2 17:18:30
+	| ant@1.1 17:18:30
+	| ant@0.9 17:18:31
+	| ant@1.3 17:18:32
+	| boy@13.2 17:18:32
+	| ant@0.9 17:18:32
+	| ant@1.0 17:18:33
+	| ant@1.5 17:18:34
+	| ant@1.2 17:18:34
+	| ant@1.0 17:18:35
+	| ant@1.3 17:18:36
+	| ant@1.5 17:18:36
+	| boy@13.2 17:18:37
+	| ant@1.5 17:18:37
+	| ant@0.9 17:18:38
+	| ant@1.6 17:18:38
+	| ant@0.9 17:18:39
+	| ant@1.4 17:18:40
+	| ant@1.2 17:18:40
+	| ant@1.4 17:18:41
+	| boy@13.2 17:18:41
+	| ant@1.5 17:18:42
+	| ant@1.6 17:18:42
+	| ant@0.9 17:18:43
+	| ant@1.0 17:18:44
+	| ant@1.6 17:18:44
+	| ant@1.5 17:18:45
+	| ant@0.8 17:18:46
+	| boy@13.2 17:18:46
+	| ant@1.0 17:18:46
+	| ant@1.0 17:18:47
+	| ant@1.0 17:18:48
+	| ant@1.2 17:18:48
+	| ant@0.9 17:18:49
+	| ant@1.3 17:18:50
+	| ant@1.4 17:18:50
+	| boy@13.2 17:18:50
+	| ant@1.0 17:18:51
+	| ant@1.3 17:18:52
+	| ant@1.4 17:18:52
+	| ant@1.6 17:18:53
+	| ant@1.5 17:18:54
+	| ant@1.0 17:18:54
+	| ant@1.1 17:18:55
+	| boy@13.2 17:18:55
+	| ant@1.3 17:18:55
+	| ant@0.9 17:18:56
+	| ant@1.3 17:18:57
+	| ant@0.9 17:18:57
+	| ant@1.0 17:18:58
+	| ant@1.2 17:18:59
+	| ant@1.4 17:18:59
+	| boy@13.2 17:19:00
+	| ant@1.1 17:19:00
+	| ant@1.6 17:19:01
+	| ant@0.8 17:19:01
+	| ant@1.4 17:19:02
+	| ant@1.0 17:19:03
+	| ant@0.9 17:19:03
+	| ant@1.1 17:19:04
+	| boy@13.2 17:19:04
+	| ant@0.9 17:19:05
+	| ant@1.3 17:19:05
+	| ant@0.9 17:19:06
+	| ant@1.5 17:19:07
+	| ant@1.1 17:19:07
+	| ant@1.4 17:19:08
+	| ant@1.0 17:19:09
+	| boy@13.2 17:19:09
+	| ant@0.9 17:19:09
+	| ant@1.6 17:19:10
+cycle 2 @07-30-18 17:19:11 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:19:27
++ngkSend(#F,01,00) at 17:19:27
+	fall() 17:19:33 depth=1.4
++ngkRecv(%F,02,00) fallRsp 17:19:38, fallRsp from winch
+	fall() 17:19:39 depth=1.4
+	fall() 17:19:45 depth=1.4
+	fall() 17:19:51 depth=1.6
+	fall() 17:19:57 depth=1.1
+	fall() 17:20:03 depth=1.6
+	fall() 17:20:09 depth=1.5
+	fall() 17:20:15 depth=1.2
+	fall() 17:20:21 depth=1.5 velo=0.22
+	fall() 17:20:27 depth=1.4
+	fall() 17:20:33 depth=1.5
+	fall() 17:20:39 depth=2.6 velo=0.17
+	fall() 17:20:45 depth=3.8 velo=0.17
+	fall() 17:20:51 depth=5.0 velo=0.17
+	fall() 17:20:57 depth=6.2 velo=0.17
+	fall() 17:21:03 depth=7.4 velo=0.17
+	fall() 17:21:09 depth=8.6 velo=0.17
+	fall() 17:21:15 depth=9.8 velo=0.26
+	fall() 17:21:21 depth=11.0 velo=0.17
+	fall() 17:21:27 depth=12.2 velo=0.26
+	fall() 17:21:33 depth=13.5 velo=0.17
+	fall() 17:21:39 depth=14.7 velo=0.17
+	fall() 17:21:45 depth=15.9 velo=0.17
+	fall() 17:21:51 depth=17.0 velo=0.17
+	fall() 17:21:57 depth=18.2 velo=0.18
+	fall() 17:22:03 depth=19.4 velo=0.18
+	fall() 17:22:09 depth=20.6 velo=0.17
+	fall() 17:22:15 depth=21.8 velo=0.17
+	fall() 17:22:21 depth=23.0 velo=0.17
+	fall() 17:22:27 depth=24.2 velo=0.17
+	fall() @25.1 near boy.dockD=26.0 17:22:31
+	fall() 17:22:33 depth=25.4 velo=0.18
+	fall() 17:22:39 depth=26.0 velo=0.00
++ngkRecv(#S,02,00) stopCmd 17:22:40, stopCmd from winch
+cycle 2 @07-30-18 17:22:40 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 3 @07-30-18 17:22:42 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(10.0, 0)
++ngkSend(#R,01,03) at 17:23:25
+	riseRun() riseCmd to winch at 17:23:26
+	riseRun() 17:23:31 depth=26.0 velo=0.00
++ngkRecv(%R,02,00) riseRsp 17:23:36, riseRsp from winch
+	riseRun() 17:23:37 depth=24.2 velo=-0.29
+	riseRun() 17:23:43 depth=22.3 velo=-0.29
+	riseRun() 20sec 17:23:46 startD-nowD 4.8 
+	riseRun() 17:23:49 depth=20.3 velo=-0.29
+	riseRun() 17:23:55 depth=18.3 velo=-0.43
+	riseRun() 17:24:01 depth=16.4 velo=-0.43
+	riseRun() 17:24:07 depth=14.4 velo=-0.43
+	riseRun() 17:24:13 depth=12.2 velo=-0.29
+	riseRun() 17:24:19 depth=10.2 velo=-0.29
+	riseRun() reached targetD 9.8 at 17:24:20
+oceanCurrChk()
+oceanCurr() 	| ant=9.8 boy=15.3 boy2ant=14.3 sideways=13.20
+	|current @ 9.8 = 13.2riseRun(2.1, 0) | fails at 0.9 m
+cycle 3 @07-30-18 17:25:03 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|6| 17:25:18 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|7| 17:25:35 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:25:35
+	| ant@1.3 17:25:36
+	| ant@1.1 17:25:37
+	| ant@1.1 17:25:37
+	| ant@0.8 17:25:38
+	| ant@1.3 17:25:38
+	| ant@0.9 17:25:39
+	| boy@13.2 17:25:40
+	| ant@1.1 17:25:40
+	| ant@1.0 17:25:41
+	| ant@0.8 17:25:41
+	| ant@1.6 17:25:42
+	| ant@1.5 17:25:43
+	| ant@1.5 17:25:43
+	| ant@1.2 17:25:44
+	| boy@13.2 17:25:44
+	| ant@0.9 17:25:45
+	| ant@1.4 17:25:45
+	| ant@1.3 17:25:46
+	| ant@1.1 17:25:46
+	| ant@0.8 17:25:47
+	| ant@0.8 17:25:48
+	| ant@0.9 17:25:48
+	| boy@13.2 17:25:49
+	| ant@1.0 17:25:49
+	| ant@1.5 17:25:50
+	| ant@1.4 17:25:50
+	| ant@1.5 17:25:51
+	| ant@1.3 17:25:52
+	| ant@1.5 17:25:52
+	| ant@0.9 17:25:53
+	| boy@13.2 17:25:53
+	| ant@1.5 17:25:54
+	| ant@1.3 17:25:54
+	| ant@1.4 17:25:55
+	| ant@0.9 17:25:56
+	| ant@1.4 17:25:56
+	| ant@1.4 17:25:57
+	| ant@1.4 17:25:58
+	| boy@13.2 17:25:58
+	| ant@1.4 17:25:58
+	| ant@0.8 17:25:59
+	| ant@1.1 17:26:00
+	| ant@1.4 17:26:00
+	| ant@1.5 17:26:01
+	| ant@1.5 17:26:02
+	| boy@13.2 17:26:02
+	| ant@1.1 17:26:03
+	| ant@0.9 17:26:03
+	| ant@1.6 17:26:04
+	| ant@1.1 17:26:04
+	| ant@1.0 17:26:05
+	| ant@1.0 17:26:06
+	| ant@1.3 17:26:06
+	| boy@13.2 17:26:07
+	| ant@1.2 17:26:07
+	| ant@0.9 17:26:08
+	| ant@1.2 17:26:08
+	| ant@1.0 17:26:09
+	| ant@1.5 17:26:10
+	| ant@1.4 17:26:10
+	| ant@1.1 17:26:11
+	| boy@13.2 17:26:11
+	| ant@1.1 17:26:12
+	| ant@1.1 17:26:12
+	| ant@1.3 17:26:13
+	| ant@1.0 17:26:14
+	| ant@0.9 17:26:14
+	| ant@0.9 17:26:15
+	| ant@0.8 17:26:16
+	| boy@13.2 17:26:16
+	| ant@0.9 17:26:16
+	| ant@1.5 17:26:17
+	| ant@1.2 17:26:18
+	| ant@1.1 17:26:18
+	| ant@1.2 17:26:19
+	| ant@1.1 17:26:20
+	| ant@0.8 17:26:20
+	| boy@13.2 17:26:21
+	| ant@0.9 17:26:21
+	| ant@1.4 17:26:22
+	| ant@1.2 17:26:22
+	| ant@1.6 17:26:23
+	| ant@0.9 17:26:24
+	| ant@1.3 17:26:24
+	| ant@1.3 17:26:25
+	| boy@13.2 17:26:25
+	| ant@1.1 17:26:26
+	| ant@1.4 17:26:26
+	| ant@1.4 17:26:27
+	| ant@1.5 17:26:28
+	| ant@1.0 17:26:28
+	| ant@1.5 17:26:29
+	| ant@1.2 17:26:30
+	| boy@13.2 17:26:30
+	| ant@1.4 17:26:30
+	| ant@0.8 17:26:31
+	| ant@1.1 17:26:31
+	| ant@1.4 17:26:32
+	| ant@1.2 17:26:33
+	| ant@0.9 17:26:33
+	| ant@1.3 17:26:34
+	| boy@13.2 17:26:34
+	| ant@1.1 17:26:35
+	| ant@1.3 17:26:35
+cycle 3 @07-30-18 17:26:36 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:26:52
++ngkSend(#F,01,00) at 17:26:52
+	fall() 17:26:58 depth=1.3
++ngkRecv(%F,02,00) fallRsp 17:27:03, fallRsp from winch
+	fall() 17:27:04 depth=0.9
+	fall() 17:27:10 depth=1.0
+	fall() 17:27:16 depth=1.3
+	fall() 17:27:22 depth=1.2
+	fall() 17:27:28 depth=1.1
+	fall() 17:27:34 depth=1.6
+	fall() 17:27:40 depth=1.4
+	fall() 17:27:46 depth=1.4
+	fall() 17:27:52 depth=1.0
+	fall() 17:27:58 depth=0.9
+	fall() 17:28:04 depth=1.5
+	fall() 17:28:10 depth=1.0
+	fall() 17:28:16 depth=1.0
+	fall() 17:28:22 depth=1.6
+	fall() 17:28:28 depth=0.8
+	fall() 17:28:34 depth=2.0 velo=0.26
+	fall() 17:28:40 depth=3.4 velo=0.17
+	fall() 17:28:46 depth=4.5 velo=0.26
+	fall() 17:28:52 depth=5.7 velo=0.27
+	fall() 17:28:58 depth=6.9 velo=0.27
+	fall() 17:29:04 depth=8.1 velo=0.26
+	fall() 17:29:10 depth=9.3 velo=0.18
+	fall() 17:29:16 depth=10.5 velo=0.27
+	fall() 17:29:22 depth=11.7 velo=0.19
+	fall() 17:29:28 depth=12.9 velo=0.17
+	fall() 17:29:34 depth=14.1 velo=0.27
+	fall() 17:29:40 depth=15.3 velo=0.18
+	fall() 17:29:46 depth=16.5 velo=0.17
+	fall() 17:29:52 depth=17.7 velo=0.17
+	fall() 17:29:58 depth=18.9 velo=0.18
+	fall() 17:30:04 depth=20.1 velo=0.19
+	fall() 17:30:10 depth=21.3 velo=0.17
+	fall() 17:30:16 depth=22.5 velo=0.19
+	fall() 17:30:22 depth=23.7 velo=0.18
+	fall() 17:30:28 depth=24.9 velo=0.18
+	fall() @25.0 near boy.dockD=26.0 17:30:28
+	fall() 17:30:34 depth=26.0 velo=0.15
++ngkRecv(#S,02,00) stopCmd 17:30:38, stopCmd from winch
+cycle 3 @07-30-18 17:30:38 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 4 @07-30-18 17:30:40 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(2.1, 0)
++ngkSend(#R,01,00) at 17:31:23
+	riseFree() surfCmd to winch at 17:31:24
+	riseFree() 17:31:29 depth=26.0 velo=-0.01
++ngkRecv(%R,02,00) riseRsp 17:31:34, riseRsp from winch
+	riseFree() 17:31:35 depth=24.0 velo=-0.29
+	riseFree() 17:31:41 depth=22.1 velo=-0.29
+	riseFree() 20sec 17:31:44 startD-nowD 4.8 
+	riseFree() 17:31:47 depth=20.1 velo=-0.28
+	riseFree() 17:31:53 depth=18.1 velo=-0.28
+	riseFree() 17:31:59 depth=16.2 velo=-0.43
+	riseFree() 17:32:05 depth=14.1 velo=-0.29
+	riseFree() 17:32:11 depth=12.2 velo=-0.43
+	riseFree() 17:32:17 depth=10.0 velo=-0.29
+	riseFree() 17:32:23 depth=8.3 velo=-0.43
+	riseFree() 17:32:29 depth=6.0 velo=-0.29
+	riseFree() 17:32:35 depth=4.1 velo=-0.29
+	riseFree() reached targetD 2.1 at 17:32:41
+cycle 4 @07-30-18 17:32:41 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|8| 17:32:56 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|9| 17:33:13 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:33:13
+	| ant@0.9 17:33:14
+	| ant@0.8 17:33:14
+	| ant@1.5 17:33:15
+	| ant@1.3 17:33:16
+	| ant@1.2 17:33:16
+	| ant@1.0 17:33:17
+	| boy@13.2 17:33:18
+	| ant@0.9 17:33:18
+	| ant@1.0 17:33:18
+	| ant@1.1 17:33:19
+	| ant@1.4 17:33:20
+	| ant@1.2 17:33:20
+	| ant@1.3 17:33:21
+	| ant@1.3 17:33:22
+	| boy@13.2 17:33:22
+	| ant@1.0 17:33:22
+	| ant@1.4 17:33:23
+	| ant@1.5 17:33:24
+	| ant@1.1 17:33:24
+	| ant@1.2 17:33:25
+	| ant@1.0 17:33:26
+	| ant@1.5 17:33:26
+	| boy@13.2 17:33:27
+	| ant@1.2 17:33:27
+	| ant@1.2 17:33:28
+	| ant@1.1 17:33:28
+	| ant@0.9 17:33:29
+	| ant@1.5 17:33:30
+	| ant@0.9 17:33:30
+	| ant@1.2 17:33:31
+	| boy@13.2 17:33:31
+	| ant@1.2 17:33:32
+	| ant@1.0 17:33:32
+	| ant@1.4 17:33:33
+	| ant@1.2 17:33:33
+	| ant@1.6 17:33:34
+	| ant@1.2 17:33:35
+	| ant@0.8 17:33:35
+	| boy@13.2 17:33:36
+	| ant@1.5 17:33:36
+	| ant@1.3 17:33:37
+	| ant@1.3 17:33:37
+	| ant@1.2 17:33:38
+	| ant@1.3 17:33:39
+	| ant@1.3 17:33:39
+	| ant@1.2 17:33:40
+	| boy@13.2 17:33:40
+	| ant@0.9 17:33:41
+	| ant@1.3 17:33:41
+	| ant@1.5 17:33:42
+	| ant@0.8 17:33:43
+	| ant@1.4 17:33:43
+	| ant@0.9 17:33:44
+	| ant@1.2 17:33:45
+	| boy@13.2 17:33:45
+	| ant@1.0 17:33:45
+	| ant@0.8 17:33:46
+	| ant@1.5 17:33:47
+	| ant@1.6 17:33:47
+	| ant@1.0 17:33:48
+	| ant@1.2 17:33:49
+	| ant@0.9 17:33:49
+	| boy@13.2 17:33:49
+	| ant@0.9 17:33:50
+	| ant@0.9 17:33:50
+	| ant@1.0 17:33:51
+	| ant@1.0 17:33:52
+	| ant@1.2 17:33:52
+	| ant@1.3 17:33:53
+	| ant@1.5 17:33:54
+	| boy@13.2 17:33:54
+	| ant@1.4 17:33:54
+	| ant@1.4 17:33:55
+	| ant@1.3 17:33:56
+	| ant@1.1 17:33:56
+	| ant@0.9 17:33:57
+	| ant@1.3 17:33:58
+	| ant@1.4 17:33:58
+	| boy@13.2 17:33:59
+	| ant@1.1 17:33:59
+	| ant@0.8 17:34:00
+	| ant@0.9 17:34:00
+	| ant@0.9 17:34:01
+	| ant@0.8 17:34:02
+	| ant@1.3 17:34:02
+	| ant@0.9 17:34:03
+	| boy@13.2 17:34:03
+	| ant@1.5 17:34:04
+	| ant@1.2 17:34:04
+	| ant@1.6 17:34:05
+	| ant@1.1 17:34:06
+	| ant@1.4 17:34:06
+	| ant@1.1 17:34:07
+	| ant@1.3 17:34:07
+	| boy@13.2 17:34:08
+	| ant@1.0 17:34:08
+	| ant@1.0 17:34:09
+	| ant@1.5 17:34:09
+	| ant@1.5 17:34:10
+	| ant@1.3 17:34:11
+	| ant@1.2 17:34:11
+	| ant@1.5 17:34:12
+	| boy@13.2 17:34:12
+	| ant@1.0 17:34:13
+	| ant@0.8 17:34:13
+cycle 4 @07-30-18 17:34:14 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:34:30
++ngkSend(#F,01,00) at 17:34:30
+	fall() 17:34:36 depth=0.8
++ngkRecv(%F,02,00) fallRsp 17:34:41, fallRsp from winch
+	fall() 17:34:42 depth=1.3
+	fall() 17:34:48 depth=1.3
+	fall() 17:34:54 depth=0.9
+	fall() 17:35:00 depth=1.3
+	fall() 17:35:06 depth=1.0
+	fall() 17:35:12 depth=1.0
+	fall() 17:35:18 depth=1.1
+	fall() 17:35:24 depth=1.2
+	fall() 17:35:30 depth=1.2
+	fall() 17:35:36 depth=1.4
+	fall() 17:35:42 depth=2.6 velo=0.17
+	fall() 17:35:48 depth=3.8 velo=0.19
+	fall() 17:35:54 depth=5.0 velo=0.17
+	fall() 17:36:00 depth=6.2 velo=0.17
+	fall() 17:36:06 depth=7.4 velo=0.26
+	fall() 17:36:12 depth=8.6 velo=0.27
+	fall() 17:36:18 depth=9.9 velo=0.17
+	fall() 17:36:24 depth=11.0 velo=0.18
+	fall() 17:36:30 depth=12.2 velo=0.18
+	fall() 17:36:36 depth=13.4 velo=0.17
+	fall() 17:36:42 depth=14.6 velo=0.17
+	fall() 17:36:48 depth=15.8 velo=0.19
+	fall() 17:36:54 depth=17.0 velo=0.17
+	fall() 17:37:00 depth=18.2 velo=0.17
+	fall() 17:37:06 depth=19.4 velo=0.18
+	fall() 17:37:12 depth=20.6 velo=0.17
+	fall() 17:37:18 depth=21.7 velo=0.26
+	fall() 17:37:24 depth=22.9 velo=0.27
+	fall() 17:37:30 depth=24.1 velo=0.26
+	fall() @25.1 near boy.dockD=26.0 17:37:34
+	fall() 17:37:36 depth=25.5 velo=0.17
+	fall() 17:37:42 depth=26.0 velo=0.00
++ngkRecv(#S,02,00) stopCmd 17:37:43, stopCmd from winch
+cycle 4 @07-30-18 17:37:43 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 5 @07-30-18 17:37:45 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(10.0, 0)
++ngkSend(#R,01,03) at 17:38:28
+	riseRun() riseCmd to winch at 17:38:29
+	riseRun() 17:38:34 depth=26.0 velo=0.00
++ngkRecv(%R,02,00) riseRsp 17:38:39, riseRsp from winch
+	riseRun() 17:38:40 depth=24.2 velo=-0.29
+	riseRun() 17:38:46 depth=22.3 velo=-0.29
+	riseRun() 20sec 17:38:49 startD-nowD 4.8 
+	riseRun() 17:38:52 depth=20.3 velo=-0.29
+	riseRun() 17:38:58 depth=18.3 velo=-0.43
+	riseRun() 17:39:04 depth=16.2 velo=-0.29
+	riseRun() 17:39:10 depth=14.2 velo=-0.29
+	riseRun() 17:39:16 depth=12.2 velo=-0.28
+	riseRun() 17:39:22 depth=10.2 velo=-0.30
+	riseRun() reached targetD 9.8 at 17:39:23
+oceanCurrChk()
+oceanCurr() 	| ant=9.8 boy=15.3 boy2ant=14.3 sideways=13.20
+	|current @ 9.8 = 13.2riseRun(2.1, 0) | fails at 1.3 m
+cycle 5 @07-30-18 17:40:06 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|10| 17:40:21 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|11| 17:40:38 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:40:38
+	| ant@0.9 17:40:39
+	| ant@1.3 17:40:39
+	| ant@1.4 17:40:40
+	| ant@1.3 17:40:41
+	| ant@1.3 17:40:41
+	| ant@1.1 17:40:42
+	| boy@13.2 17:40:42
+	| ant@1.5 17:40:43
+	| ant@1.1 17:40:43
+	| ant@0.9 17:40:44
+	| ant@1.2 17:40:45
+	| ant@1.6 17:40:45
+	| ant@0.9 17:40:46
+	| ant@1.2 17:40:47
+	| boy@13.2 17:40:47
+	| ant@1.5 17:40:47
+	| ant@1.2 17:40:48
+	| ant@1.4 17:40:49
+	| ant@1.5 17:40:49
+	| ant@1.3 17:40:50
+	| ant@1.1 17:40:51
+	| ant@1.0 17:40:51
+	| boy@13.2 17:40:51
+	| ant@1.2 17:40:52
+	| ant@1.2 17:40:53
+	| ant@1.0 17:40:53
+	| ant@1.0 17:40:54
+	| ant@1.0 17:40:54
+	| ant@1.1 17:40:55
+	| ant@1.4 17:40:56
+	| boy@13.2 17:40:56
+	| ant@0.9 17:40:56
+	| ant@1.0 17:40:57
+	| ant@1.2 17:40:58
+	| ant@1.2 17:40:58
+	| ant@1.3 17:40:59
+	| ant@1.2 17:41:00
+	| ant@0.8 17:41:00
+	| boy@13.2 17:41:01
+	| ant@1.4 17:41:01
+	| ant@1.5 17:41:02
+	| ant@1.0 17:41:02
+	| ant@1.4 17:41:03
+	| ant@1.3 17:41:04
+	| ant@1.2 17:41:04
+	| ant@1.2 17:41:05
+	| boy@13.2 17:41:05
+	| ant@1.1 17:41:06
+	| ant@0.8 17:41:06
+	| ant@0.9 17:41:07
+	| ant@1.1 17:41:08
+	| ant@1.2 17:41:08
+	| ant@1.1 17:41:09
+	| ant@1.0 17:41:10
+	| boy@13.2 17:41:10
+	| ant@1.2 17:41:10
+	| ant@1.3 17:41:11
+	| ant@1.5 17:41:12
+	| ant@1.0 17:41:12
+	| ant@1.5 17:41:13
+	| ant@1.2 17:41:13
+	| ant@1.2 17:41:14
+	| boy@13.2 17:41:14
+	| ant@1.1 17:41:15
+	| ant@1.5 17:41:15
+	| ant@1.0 17:41:16
+	| ant@1.2 17:41:17
+	| ant@1.3 17:41:17
+	| ant@1.2 17:41:18
+	| ant@1.6 17:41:19
+	| boy@13.2 17:41:19
+	| ant@0.9 17:41:19
+	| ant@1.1 17:41:20
+	| ant@1.3 17:41:21
+	| ant@1.1 17:41:21
+	| ant@1.4 17:41:22
+	| ant@1.0 17:41:23
+	| ant@1.0 17:41:23
+	| boy@13.2 17:41:24
+	| ant@1.4 17:41:24
+	| ant@1.2 17:41:25
+	| ant@1.3 17:41:25
+	| ant@1.3 17:41:26
+	| ant@1.4 17:41:27
+	| ant@1.5 17:41:27
+	| ant@1.2 17:41:28
+	| boy@13.2 17:41:28
+	| ant@0.9 17:41:29
+	| ant@1.4 17:41:29
+	| ant@1.4 17:41:30
+	| ant@1.4 17:41:31
+	| ant@0.9 17:41:31
+	| ant@1.4 17:41:32
+	| ant@0.9 17:41:32
+	| boy@13.2 17:41:33
+	| ant@1.2 17:41:33
+	| ant@1.5 17:41:34
+	| ant@1.6 17:41:34
+	| ant@1.2 17:41:35
+	| ant@1.3 17:41:36
+	| ant@1.3 17:41:36
+	| ant@0.9 17:41:37
+	| boy@13.2 17:41:37
+	| ant@1.2 17:41:38
+	| ant@1.2 17:41:38
+cycle 5 @07-30-18 17:41:39 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:41:55
++ngkSend(#F,01,00) at 17:41:55
+	fall() 17:42:01 depth=1.4
++ngkRecv(%F,02,00) fallRsp 17:42:06, fallRsp from winch
+	fall() 17:42:07 depth=1.3
+	fall() 17:42:13 depth=1.4
+	fall() 17:42:19 depth=1.3
+	fall() 17:42:25 depth=1.4
+	fall() 17:42:31 depth=0.9
+	fall() 17:42:37 depth=0.8
+	fall() 17:42:43 depth=1.3
+	fall() 17:42:49 depth=1.1
+	fall() 17:42:55 depth=1.0
+	fall() 17:43:01 depth=1.4
+	fall() 17:43:07 depth=1.4
+	fall() 17:43:13 depth=1.4
+	fall() 17:43:19 depth=1.0
+	fall() 17:43:25 depth=1.6
+	fall() 17:43:31 depth=0.9
+	fall() 17:43:37 depth=2.2 velo=0.26
+	fall() 17:43:43 depth=3.5 velo=0.17
+	fall() 17:43:49 depth=4.6 velo=0.17
+	fall() 17:43:55 depth=5.8 velo=0.18
+	fall() 17:44:01 depth=7.0 velo=0.17
+	fall() 17:44:07 depth=8.2 velo=0.17
+	fall() 17:44:13 depth=9.4 velo=0.19
+	fall() 17:44:19 depth=10.6 velo=0.17
+	fall() 17:44:25 depth=11.8 velo=0.17
+	fall() 17:44:31 depth=13.0 velo=0.26
+	fall() 17:44:37 depth=14.2 velo=0.17
+	fall() 17:44:43 depth=15.3 velo=0.26
+	fall() 17:44:49 depth=16.7 velo=0.17
+	fall() 17:44:55 depth=17.9 velo=0.17
+	fall() 17:45:01 depth=19.0 velo=0.17
+	fall() 17:45:07 depth=20.2 velo=0.17
+	fall() 17:45:13 depth=21.4 velo=0.17
+	fall() 17:45:19 depth=22.6 velo=0.17
+	fall() 17:45:25 depth=23.8 velo=0.17
+	fall() 17:45:31 depth=25.0 velo=0.17
+	fall() @25.1 near boy.dockD=26.0 17:45:31
+	fall() 17:45:37 depth=26.0 velo=0.11
++ngkRecv(#S,02,00) stopCmd 17:45:40, stopCmd from winch
+cycle 5 @07-30-18 17:45:40 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+cycle 6 @07-30-18 17:45:42 risePhase()
+oceanCurrChk()
+oceanCurr() 	| ant=26.0 boy=40.0 boy2ant=14.3 sideways=2.86
+	|current @ 26.0 = 2.9riseRun(2.1, 0)
++ngkSend(#R,01,00) at 17:46:25
+	riseFree() surfCmd to winch at 17:46:26
+	riseFree() 17:46:31 depth=26.0 velo=0.00
++ngkRecv(%R,02,00) riseRsp 17:46:36, riseRsp from winch
+	riseFree() 17:46:37 depth=24.2 velo=-0.29
+	riseFree() 17:46:43 depth=22.3 velo=-0.29
+	riseFree() 20sec 17:46:46 startD-nowD 4.9 
+	riseFree() 17:46:49 depth=20.3 velo=-0.28
+	riseFree() 17:46:55 depth=18.3 velo=-0.29
+	riseFree() 17:47:01 depth=16.3 velo=-0.45
+	riseFree() 17:47:07 depth=14.3 velo=-0.29
+	riseFree() 17:47:13 depth=12.4 velo=-0.43
+	riseFree() 17:47:19 depth=10.2 velo=-0.29
+	riseFree() 17:47:25 depth=8.2 velo=-0.29
+	riseFree() 17:47:31 depth=6.3 velo=-0.29
+	riseFree() 17:47:37 depth=4.3 velo=-0.29
+	riseFree() 17:47:43 depth=2.4 velo=-0.29
+	riseFree() reached targetD 2.1 at 17:47:43
+cycle 6 @07-30-18 17:47:43 iridPhase()
+antAuton(1)	| startnow fail, retry ... startnow failed
+ctdAuton(1)
+-ERR(ctd)	|12| 17:47:59 ctdAuton: expected 'start logging'
+antAuton(0)	| stop fail, retry ... stop failed
+ctdAuton(0)
+-ERR(ctd)	|13| 17:48:15 ctdAuton: expected 'logging stopped'
+	| one minute stop drift
++ngkSend(#S,01,00) at 17:48:15
+	| ant@0.8 17:48:15
+	| ant@1.2 17:48:16
+	| ant@1.1 17:48:17
+	| ant@1.0 17:48:17
+	| ant@1.3 17:48:18
+	| ant@1.2 17:48:19
+	| boy@13.2 17:48:19
+	| ant@1.2 17:48:19
+	| ant@1.1 17:48:20
+	| ant@1.0 17:48:21
+	| ant@0.9 17:48:21
+	| ant@1.1 17:48:22
+	| ant@0.8 17:48:23
+	| ant@1.3 17:48:23
+	| boy@13.2 17:48:24
+	| ant@1.1 17:48:24
+	| ant@1.5 17:48:25
+	| ant@1.0 17:48:25
+	| ant@0.9 17:48:26
+	| ant@1.0 17:48:27
+	| ant@1.1 17:48:27
+	| ant@1.3 17:48:28
+	| boy@13.2 17:48:28
+	| ant@1.1 17:48:29
+	| ant@1.4 17:48:29
+	| ant@0.9 17:48:30
+	| ant@1.6 17:48:30
+	| ant@1.1 17:48:31
+	| ant@1.6 17:48:32
+	| ant@0.8 17:48:32
+	| boy@13.2 17:48:33
+	| ant@0.9 17:48:33
+	| ant@1.6 17:48:34
+	| ant@0.8 17:48:34
+	| ant@0.8 17:48:35
+	| ant@0.9 17:48:36
+	| ant@1.4 17:48:36
+	| ant@1.3 17:48:37
+	| boy@13.2 17:48:37
+	| ant@1.3 17:48:38
+	| ant@0.9 17:48:38
+	| ant@1.3 17:48:39
+	| ant@1.3 17:48:40
+	| ant@0.9 17:48:40
+	| ant@0.8 17:48:41
+	| ant@0.8 17:48:42
+	| boy@13.2 17:48:42
+	| ant@1.4 17:48:42
+	| ant@1.2 17:48:43
+	| ant@1.3 17:48:44
+	| ant@1.2 17:48:44
+	| ant@1.1 17:48:45
+	| ant@1.3 17:48:46
+	| ant@1.2 17:48:46
+	| boy@13.2 17:48:46
+	| ant@1.2 17:48:47
+	| ant@1.5 17:48:47
+	| ant@1.2 17:48:48
+	| ant@0.9 17:48:49
+	| ant@1.5 17:48:49
+	| ant@1.3 17:48:50
+	| ant@1.3 17:48:51
+	| boy@13.2 17:48:51
+	| ant@0.9 17:48:51
+	| ant@1.6 17:48:52
+	| ant@1.5 17:48:53
+	| ant@1.0 17:48:53
+	| ant@1.2 17:48:54
+	| ant@1.4 17:48:55
+	| ant@1.3 17:48:55
+	| boy@13.2 17:48:56
+	| ant@0.9 17:48:56
+	| ant@1.2 17:48:57
+	| ant@1.4 17:48:57
+	| ant@1.5 17:48:58
+	| ant@0.9 17:48:59
+	| ant@1.6 17:48:59
+	| ant@0.9 17:49:00
+	| boy@13.2 17:49:00
+	| ant@1.6 17:49:01
+	| ant@1.2 17:49:01
+	| ant@1.5 17:49:02
+	| ant@1.0 17:49:03
+	| ant@1.3 17:49:03
+	| ant@1.0 17:49:04
+	| ant@1.0 17:49:04
+	| boy@13.2 17:49:05
+	| ant@0.8 17:49:05
+	| ant@1.6 17:49:06
+	| ant@1.4 17:49:06
+	| ant@1.5 17:49:07
+	| ant@1.5 17:49:08
+	| ant@0.8 17:49:08
+	| ant@1.4 17:49:09
+	| boy@13.2 17:49:09
+	| ant@1.1 17:49:10
+	| ant@1.4 17:49:10
+	| ant@0.9 17:49:11
+	| ant@1.5 17:49:12
+	| ant@1.4 17:49:12
+	| ant@1.1 17:49:13
+	| ant@1.2 17:49:14
+	| boy@13.2 17:49:14
+	| ant@1.1 17:49:14
+	| ant@0.9 17:49:15
+cycle 6 @07-30-18 17:49:16 
+fallPhase()
+ngkFlush() 	| flushed out stopRsp
+	fall() fallCmd to winch at 17:49:31
++ngkSend(#F,01,00) at 17:49:32
+	fall() 17:49:38 depth=0.8
++ngkRecv(%F,02,00) fallRsp 17:49:43, fallRsp from winch
+	fall() 17:49:44 depth=1.3
+	fall() 17:49:50 depth=1.0
+	fall() 17:49:56 depth=1.1
+	fall() 17:50:02 depth=1.4
+	fall() 17:50:08 depth=1.5
+	fall() 17:50:14 depth=0.9
+	fall() 17:50:20 depth=1.4
+	fall() 17:50:26 depth=0.9
+	fall() 17:50:32 depth=1.4
+	fall() 17:50:38 depth=1.8 velo=0.17
+	fall() 17:50:44 depth=2.9 velo=0.17
+	fall() 17:50:50 depth=4.2 velo=0.17
+	fall() 17:50:56 depth=5.3 velo=0.17
+	fall() 17:51:02 depth=6.5 velo=0.17
+	fall() 17:51:08 depth=7.7 velo=0.18
+	fall() 17:51:14 depth=8.9 velo=0.26
+	fall() 17:51:20 depth=10.2 velo=0.17
+	fall() 17:51:26 depth=11.4 velo=0.17
+	fall() 17:51:32 depth=12.6 velo=0.18
+	fall() 17:51:38 depth=13.8 velo=0.17
+	fall() 17:51:44 depth=14.9 velo=0.17
+	fall() 17:51:50 depth=16.2 velo=0.19
+	fall() 17:51:56 depth=17.4 velo=0.17
+	fall() 17:52:02 depth=18.5 velo=0.17
+	fall() 17:52:08 depth=19.7 velo=0.18
+	fall() 17:52:14 depth=20.9 velo=0.17
+	fall() 17:52:20 depth=22.1 velo=0.26
+	fall() 17:52:26 depth=23.3 velo=0.27
+	fall() 17:52:32 depth=24.6 velo=0.18
+	fall() @25.1 near boy.dockD=26.0 17:52:34
+	fall() 17:52:38 depth=25.8 velo=0.17
++ngkRecv(#S,02,00) stopCmd 17:52:44, stopCmd from winch
+cycle 6 @07-30-18 17:52:44 dataPhase()
+SYS.LOG
+
+       1 file(s) copied
+
+mpcSleep() at 07-30-18 17:52:46
