@@ -6,6 +6,7 @@ typedef enum {
   rise_pha, irid_pha, fall_pha, data_pha,
   reboot_pha, error_pha
 } PhaseType;
+typedef enum { free_ris, run_ris } RiseType;
 
 // boy
 typedef struct BoyInfo {
@@ -34,7 +35,9 @@ typedef struct BoyInfo {
   int log;                // log filehandle
   int minute;             // set smaller to speed up test cycle (60)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
+  int fallOpTO;           // operation timeout constant
   int fallRetry;          // fall fails, retry times
+  int riseOpTO;           // operation timeout constant
   int riseRetry;          // rise fails, retry times
   int settleT;            // time to let deploy settle (120)
   int startPh;            // phase to start in (0)
@@ -53,9 +56,8 @@ static PhaseType fallPhase(void);
 static PhaseType errorPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
-static int rise(float targetD, int try);
-static int riseRun(float targetD, int try);
-static int riseFree(float targetD, int try);
+static int riseUp(float targetD, int try);
+static int rise(float targetD, RiseType runFree, int try);
 static int fall(int try);
 static int oceanCurrChk(void);
 static int oceanCurr(float *curr);

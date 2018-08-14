@@ -50,6 +50,9 @@ v3.wispr merge
 
 safe stop (auton)
 
+save auton data to files
+24hr detection: check time until cycleHour, wait for cycleMinute
+
 
 gpsAnt() iridAnt()
 gpsSig iridSig check sig level, return success
@@ -65,3 +68,5 @@ v antDepth antAuton(0) failed
 antDepth()->0.0 \\ -ERR(ant)	|0| 17:24:15 antRead: no Exec
 
 surface time 6min -> 5min + 1min
+
+look for stop response at end of irid phase, drift time
