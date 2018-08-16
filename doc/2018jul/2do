@@ -1,3 +1,9 @@
+. last day
+wispr settings
+vars: starts=0, clear test settings
+load app / boot app
+s16 s39 clear samples with test\s16 \s39
+
 . surf algor
 ..1 reel out
 v current check at 8m
@@ -70,3 +76,10 @@ antDepth()->0.0 \\ -ERR(ant)	|0| 17:24:15 antRead: no Exec
 surface time 6min -> 5min + 1min
 
 look for stop response at end of irid phase, drift time
+
+document tests
+
+remove initlogging from boy code - should be a manual step
+
+antGetSamples(): -29407 bytes to s39
+#gpsSetTime() whenever off by >2 secs

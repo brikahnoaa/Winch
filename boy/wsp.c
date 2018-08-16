@@ -58,7 +58,7 @@ void wspStop(void) {
 } // wspStop
 
 ///
-// wsp started. interact.
+// wsp storm check started. interact.
 int wspStorm(char *buf) {
   DBG0("wspStorm()")
   utlExpect(wsp.port, buf, "RDY", 200);
@@ -144,12 +144,16 @@ int wspDetect(int *detections) {
     if (tmrExp(day_tmr)) break;
   } // while day
   if (r) tmrStopAll();       // err
-  utlWrite(wsp.port, "$EXI*", EOL);
-  utlExpect(wsp.port, utlBuf, "FIN", 5);
+  wspExit();
   *detections = detTotal;
   flogf("\nwspDetect\t| total detections %d %s", detTotal, utlTime());
   return r;
 } // wspDetect
+
+void wspExit(void) {
+  utlWrite(wsp.port, "$EXI*", EOL);
+  utlExpect(wsp.port, utlBuf, "FIN", 5);
+} // wspEnd
 
 ///
 // query detections

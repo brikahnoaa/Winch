@@ -83,7 +83,6 @@ int gpsStats(void){
   strcpy(gps.time, utlStr);
   if (gps.setTime) {
     gpsSetTime();
-    gps.setTime = false;
   }
   flogf("\n");
   // lat lng
