@@ -10,15 +10,7 @@ void main(void){
   int r, detect=0;
   sysInit();
   mpcInit();
-  wspInit();
-  flogf("dataPhase()");
-  wspStart(wsp2_pam);
-  tmrStart(minute_tmr, 5*60);
-  while (!tmrExp(minute_tmr)) {}
-  r = wspQuery(&detect);
+  mpcPamDev(wsp1_pam);
   wspExit();
-  flogf("\ndataPhase detections: %d", detect);
-  wspStorm(utlBuf);
-  flogf("\nstorm: %s", utlBuf);
   wspStop();
 }

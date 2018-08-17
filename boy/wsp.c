@@ -80,9 +80,8 @@ int wspDetectMin(int minutes, int *detect) {
   int r;
   tmrStart(minute_tmr, minutes*60);
   while (!tmrExp(minute_tmr)) {}
-  r = wspQuery(&detect);
+  r = wspQuery(detect);
   wspExit();
-  flogf("\ndataPhase detections: %d", detect);
   return r;
 } // wspDetectMin
 
