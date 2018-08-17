@@ -224,8 +224,9 @@ PhaseType dataPhase(void) {
   if (boy.noData) return rise_pha;
   ctdStop();
   antStop();
-  wspStart(wsp1_pam);
-  success = wspDetect(&detect);
+  wspStart(wsp2_pam);
+  // test
+  success = wspDetectMin(5, &detect);
   flogf("\ndataPhase detections: %d", detect);
   global.det = detect;
   wspStorm(utlBuf);

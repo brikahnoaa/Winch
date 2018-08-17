@@ -21,12 +21,13 @@ typedef struct WspInfo {
   Serial port;                // mpcPamPort()
 } WspInfo;
 
-int wspQuery(int *det);
-int wspDetect(int *detections);
+static int wspQuery(int *det);
+int wspDetectDay(int *detections);
+int wspDetectMin(int minutes, int *detections);
 int wspSpace(float *disk);
 int wspStart(int card);
+int wspStorm(char *buf);
 void wspExit(void);
 void wspInit(void);
 void wspLog(char *str);
 void wspStop(void);
-int wspStorm(char *buf);

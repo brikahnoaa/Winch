@@ -75,12 +75,24 @@ void wspLog(char *str) {
 } // wspLog
 
 ///
+// test routine, run detection for minutes
+int wspDetectMin(int minutes, int *detect) {
+  int r;
+  tmrStart(minute_tmr, minutes*60);
+  while (!tmrExp(minute_tmr)) {}
+  r = wspQuery(&detect);
+  wspExit();
+  flogf("\ndataPhase detections: %d", detect);
+  return r;
+} // wspDetectMin
+
+///
 // log up to .detMax detections every .query minutes
 // while .duty% * .hour minutes
 // return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
 // uses: .day .day1 .duty .hour .detInt
 // sets: *detections
-int wspDetect(int *detections) {
+int wspDetectDay(int *detections) {
   // float free;
   long dayM, dutyM, dayS, hourS, dutyS, queryS;
   int day=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
