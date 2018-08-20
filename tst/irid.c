@@ -21,9 +21,13 @@ void main(void){
   flogf("\n%s\n", utlTime());
   gpsStats();
   flogf("\n%s\n", utlTime());
-  iridSig();
-  iridDial();
+  if (iridSig()) exit ;
+  if (iridDial()) exit ;
   iridSendTest(100);
+  iridHup();
+  //
+  if (iridSig()) exit ;
+  if (iridDial()) exit ;
   iridSendTest(100);
   iridHup();
   flogf("\n%s\n", utlTime());

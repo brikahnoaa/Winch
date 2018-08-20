@@ -115,6 +115,7 @@ void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
   antStop();
   boyStop();
+  ctdStop();
   ngkStop();
   pwrStop();
   wspStop();

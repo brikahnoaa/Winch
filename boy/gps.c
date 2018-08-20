@@ -125,7 +125,7 @@ bool gpsSetTime(void) {
   t.tm_sec = atoi(s);
   gpsSeconds = mktime(&t);
   diff = time(0) - gpsSeconds;
-  if (diff < -1 || diff > 1) {
+  if (diff < -1L || diff > 1L) {
     flogf("\ngpsSetTime()\t| off by %ld seconds", diff);
     RTCSetTime(gpsSeconds, NULL);
   }
@@ -167,10 +167,10 @@ int iridSig(void) {
     if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789")) {
       gps.signal = atoi(utlStr);
       flogf(" csq=%d", gps.signal);
-      if (gps.signal>gps.signalMin+1) return 0;
+      if (gps.signal>gps.signalMin) return 0;
     } // if CSQ
   // accept min signal if its all we got
-  if (gps.signal>gps.signalMin) return 0;
+  if (gps.signal>=gps.signalMin) return 0;
   } // while timer
   return 2;
 } // iridSig
@@ -237,7 +237,7 @@ int iridDial(void) {
 // create a block of zero, send
 // uses: utlBuf=zero utlRet=comm .hdrTry=3 .hdrPause=15
 int iridSendTest(int msgLen) {
-  int hdr1=13, hdr2=10;
+  int hdr1=13, hdr2=10, try=gps.hdrTry;
   int min=48;
   int cs, i, bufLen;
   char *s;
@@ -265,7 +265,7 @@ int iridSendTest(int msgLen) {
   utlBuf[3] = (char) (cs >> 8);
   utlBuf[4] = (char) (cs & 0xFF);
   DBG2("%s", utlNonPrint(utlBuf))
-  while (gps.hdrTry--) {
+  while (try--) {
     flogf(" projHdr");
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
     s = utlExpect(gps.port, land, "ACK", gps.hdrPause);
@@ -274,7 +274,7 @@ int iridSendTest(int msgLen) {
       break;
     }
   }
-  if (gps.hdrTry < 0) return 2;
+  if (try < 0) return 2;
   // send data
   flogf(" data");
   utlWriteBlock(gps.port, utlBuf, bufLen);

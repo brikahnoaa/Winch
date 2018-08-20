@@ -77,8 +77,8 @@ void antStop() {
   ant.log = 0;
   antDevice(cf2_dev);
   // just in case auton is on
-  utlWrite(ant.port, "stop", EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
+  if (ant.auton)
+    antAuton(false);
   PIOClear(ANT_PWR);
   ant.on = false;
 } // antStop

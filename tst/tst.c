@@ -1,38 +1,63 @@
-// ctdTst.c
+// gpsTst.c
 #include <utl.h>
-#include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
+#include <ant.h>
 #include <sys.h>
 
-extern CtdInfo ctd;
+extern GpsInfo gps;
 
 void main(void){
+  Serial port;
   char c;
   sysInit();
   mpcInit();
-  ctdInit();
-  ctdStart();
-  ctdAuton(true);
-  utlNap(ctd.sampleInt*3);
-  // ctdSample();
-  // ctdDataWait();
-  // ctdRead();
-  // flogf("\nctdDepth %2.1f", ctdDepth());
-  // ctdDataWait();
-  // ctdRead();
-  // flogf("\nctdDepth %2.1f", ctdDepth());
-  flogf("\nPress Q to exit\n");
+  antInit();
+  gpsInit();
+  //
+  antStart();
+  gpsStart();
+  // gpsStats();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\n%s\n", utlTime());
+  if (iridSig()) exit ;
+  if (iridDial()) exit ;
+  iridSendTest(100);
+  iridHup();
+  //
+  if (iridSig()) exit ;
+  if (iridDial()) exit ;
+  iridSendTest(100);
+  iridHup();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\nstop %s", utlTime());
+  /**/
+  port = gps.port;
+  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
   while (true) {
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      TUTxPutByte(ctd.port,c,false);
-    }
-    if (TURxQueuedCount(ctd.port)) {
-      c=TURxGetByte(ctd.port,false);
+      if (c=='C') {
+        antDevice(cf2_dev);
+        continue;
+      }
+      if (c=='A') {
+        antDevice(a3la_dev);
+        continue;
+      }
       cputc(c);
+      TUTxPutByte(port,c,false);
     }
   }
-  ctdAuton(false);
-  ctdStop();
+  /**/
+
+  gpsStop();
+  antStop();
 }
