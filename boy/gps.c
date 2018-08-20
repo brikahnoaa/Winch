@@ -125,7 +125,7 @@ bool gpsSetTime(void) {
   t.tm_sec = atoi(s);
   gpsSeconds = mktime(&t);
   diff = time(0) - gpsSeconds;
-  if (diff < -1L || diff > 1L) {
+  if (diff < -2L || diff > 2L) {
     flogf("\ngpsSetTime()\t| off by %ld seconds", diff);
     RTCSetTime(gpsSeconds, NULL);
   }

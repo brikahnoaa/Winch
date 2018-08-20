@@ -31,6 +31,7 @@ void ctdInit(void) {
   utlReadWait(ctd.port, utlBuf, 1);   // echo
   sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
   utlWrite(ctd.port, utlStr, EOL);
+  utlWrite(ctd.port, "stop", EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
   ctdStop();
 } // ctdInit
@@ -215,6 +216,7 @@ int ctdAuton(bool auton) {
     if (!s)
       {
       r = 1;
+      flogf("\nERR\t| %s", utlBuf);
       utlErr(ctd_err, "ctdAuton: expected 'logging stopped'");
       }
   } // if auton

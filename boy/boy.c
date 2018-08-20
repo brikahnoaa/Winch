@@ -178,17 +178,7 @@ PhaseType iridPhase(void) {
   } // while
   flogf("\n%s =====\n", utlTime());
   gpsSats();
-  tmrStart(minute_tmr, MINUTE);
-  while (!tmrExp(minute_tmr)) {
-    gpsStats();
-    antDevice(cf2_dev);
-    antSample();
-    antDataWait();
-    flogf("\nantDepth()->%4.2f", antDepth());
-    antDevice(a3la_dev);
-  } // while
-  flogf("\n%s ======\n", utlTime());
-  gpsStop();
+  gpsStats();
   antAuton(false);
   ctdAuton(false);
   flogf("\n\t| one minute stop drift");
@@ -202,6 +192,8 @@ PhaseType iridPhase(void) {
     if (ctdData()) 
       flogf("\n\t| boy@%3.1f %s", ctdDepth(), utlTime());
   }
+  gpsStats();
+  gpsStop();
   return fall_pha;
 } // iridPhase
 
