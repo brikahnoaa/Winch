@@ -56,6 +56,8 @@ void antStart(void) {
   utlExpect(ant.port, utlBuf, EXEC, 2);
   utlWrite(ant.port, "TxSampleNum=N", EOL);
   utlExpect(ant.port, utlBuf, EXEC, 2);
+  sprintf(utlStr, "sampleInterval=%d", ant.sampleInt);
+  utlWrite(ant.port, utlStr, EOL);
   utlWrite(ant.port, "SampleInterval=1", EOL);
   utlExpect(ant.port, utlBuf, EXEC, 2);
   utlWrite(ant.port, "txRealTime=n", EOL);

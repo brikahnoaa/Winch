@@ -51,6 +51,8 @@ void ctdStop(void){
     close(ctd.log);
     ctd.log = 0;
   }
+  if (ctd.auton)
+    ctdAuton(false);
   ctd.on = false;
 } // ctdStop
 
@@ -183,33 +185,41 @@ float ctdDepth(void) {
 // must get prompt after log starts, before STOP 
 // "start logging at = 08 Jul 2018 05:28:29, sample interval = 10 seconds\r\n"
 // sets: .auton
-void ctdAuton(bool auton) {
+int ctdAuton(bool auton) {
   char *s;
+  int r = 0;
   flogf("\nctdAuton(%d)", auton);
   if (auton) {
     // note - initlogging done at end of ctdGetSamples
     if (ctdPending())
       ctdDataWait();
     ctdPrompt();
-    utlWrite(ctd.port, "sampleInterval=10", EOL);
+    sprintf(utlStr, "sampleInterval=%d", ctd.sampleInt);
+    utlWrite(ctd.port, utlStr, EOL);
     utlExpect(ctd.port, utlStr, EXEC, 2);
     utlWrite(ctd.port, "txRealTime=n", EOL);
     utlExpect(ctd.port, utlStr, EXEC, 2);
     utlWrite(ctd.port, "startnow", EOL);
     s = utlExpect(ctd.port, utlStr, "start logging", 4);
-    if (!s)
+    if (!s) {
+      r = 1;
       utlErr(ctd_err, "ctdAuton: expected 'start logging'");
-    ctdPrompt();
+      }
+    // ctdPrompt();
   } else {
     ctdPrompt();
-    utlWrite(ctd.port, "stop", EOL);
-    utlExpect(ctd.port, utlStr, EXEC, 2);
+    // utlWrite(ctd.port, "stop", EOL);
+    // utlExpect(ctd.port, utlStr, EXEC, 2);
     utlWrite(ctd.port, "stop", EOL);
     s = utlExpect(ctd.port, utlBuf, "logging stopped", 4);
     if (!s)
+      {
+      r = 1;
       utlErr(ctd_err, "ctdAuton: expected 'logging stopped'");
+      }
   } // if auton
   ctd.auton = auton;
+  return r;
 } // ctdAuton
 
 ///

@@ -34,6 +34,9 @@ void boyMain() {
   ngkInit();
   wspInit();
   flogf("\ system starts %d", starts);
+  antStart();
+  ctdStart();
+  ngkStart();
   boy.phase = boy.startPh;
   if (boy.testing) 
     flogf("\nboy.testing");
@@ -110,9 +113,6 @@ PhaseType risePhase(void) {
   int result;
   flogf("risePhase()");
   if (boy.noRise) return irid_pha;
-  antStart();
-  ctdStart();
-  ngkStart();
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
@@ -154,39 +154,41 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
+  int r;
   flogf("iridPhase()");
+  if (boy.noIrid) return fall_pha;
   antStart();
   antAuton(true);
   ctdAuton(true);
   tmrStart(phase_tmr, 5*MINUTE);
-  if (!boy.noIrid) {
-    gpsStart();
-    flogf("\n%s ===\n", utlTime());
-    gpsSats();
+  gpsStart();
+  flogf("\n%s ===\n", utlTime());
+  gpsSats();
+  gpsStats();
+  while (!tmrExp(phase_tmr)) {
+    flogf("\n%s ====\n", utlTime());
+    // 0=success
+    if ((r = iridSig())) {
+      flogf("\n\t| err iridSig(%d)", r);
+      continue;
+    }
+    if (iridDial()) continue;
+    iridSendTest(100);
+    iridHup();
+  } // while
+  flogf("\n%s =====\n", utlTime());
+  gpsSats();
+  tmrStart(minute_tmr, MINUTE);
+  while (!tmrExp(minute_tmr)) {
     gpsStats();
-    while (!tmrExp(phase_tmr)) {
-      flogf("\n%s ===\n", utlTime());
-      // 0=success
-      if (iridSig()) continue;
-      if (iridDial()) continue;
-      iridSendTest(100);
-      iridHup();
-    } // while
-    flogf("\n%s ===\n", utlTime());
-    gpsSats();
-    flogf("\n%s ===\n", utlTime());
-    tmrStart(minute_tmr, MINUTE);
-    while (!tmrExp(minute_tmr)) {
-      gpsStats();
-      antDevice(cf2_dev);
-      antSample();
-      antDataWait();
-      flogf("\nantDepth()->%4.2f", antDepth());
-      antDevice(a3la_dev);
-    } // while
-    flogf("\n%s ===\n", utlTime());
-    gpsStop();
-  } // if irid
+    antDevice(cf2_dev);
+    antSample();
+    antDataWait();
+    flogf("\nantDepth()->%4.2f", antDepth());
+    antDevice(a3la_dev);
+  } // while
+  flogf("\n%s ======\n", utlTime());
+  gpsStop();
   antAuton(false);
   ctdAuton(false);
   flogf("\n\t| one minute stop drift");
@@ -224,6 +226,7 @@ PhaseType dataPhase(void) {
   if (boy.noData) return rise_pha;
   ctdStop();
   antStop();
+  // ngkStop();
   wspStart(wsp2_pam);
   // test
   success = wspDetectMin(5, &detect);
@@ -234,6 +237,9 @@ PhaseType dataPhase(void) {
   wspStop();
   if (success==5) sysStop("user stop in dataPhase");
   return rise_pha;
+  antStart();
+  ctdStart();
+  // ngkStart();
 } // dataPhase
 
 ///
@@ -538,16 +544,13 @@ int fall(int try) {
 // wait until under 10m, watch until not falling, wait 30s, riseUp()
 PhaseType deployPhase(void) {
   float depth, lastD;
-  enum {deploy_tmr, drop_tmr}
-  ngkStart();
+  enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
-  ctdStart();
   ctdSample();
   ctdDataWait();
   if (!ctdRead())
     utlErr(ctd_err, "sbe16 failure");
   flogf(" sbe16@%3.1f", ctdDepth());
-  antStart();
   antSample();
   antDataWait();
   if (!antRead())

@@ -14,6 +14,7 @@ typedef struct CtdInfo {
   float temp;
   int delay;                  // Delay seconds expected between polled samples
   int log;                    // log fileid
+  int sampleInt;              // sample Interval for auton
   time_t time;
   Serial port;                // same as mpc.port, ant.port
 } CtdInfo;
@@ -27,7 +28,7 @@ bool ctdPending(void);
 bool ctdPrompt(void);
 bool ctdRead(void);
 float ctdDepth(void);
-void ctdAuton(bool auton);
+int ctdAuton(bool auton);
 void ctdGetSamples(void);
 void ctdInit(void);
 void ctdSample(void);
