@@ -159,7 +159,7 @@ PhaseType iridPhase(void) {
   if (boy.noIrid) return fall_pha;
   antStart();
   antAuton(true);
-  tmrStart(phase_tmr, 5*MINUTE);
+  tmrStart(phase_tmr, boy.iridPh*MINUTE);
   gpsStart();
   flogf("\n%s ===\n", utlTime());
   gpsSats();
