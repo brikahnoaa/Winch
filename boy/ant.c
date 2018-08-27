@@ -56,10 +56,6 @@ void antStart(void) {
   utlExpect(ant.port, utlBuf, EXEC, 2);
   utlWrite(ant.port, "TxSampleNum=N", EOL);
   utlExpect(ant.port, utlBuf, EXEC, 2);
-  sprintf(utlStr, "sampleInterval=%d", ant.sampleInt);
-  utlWrite(ant.port, utlStr, EOL);
-  utlWrite(ant.port, "SampleInterval=1", EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
   utlWrite(ant.port, "txRealTime=n", EOL);
   utlExpect(ant.port, utlBuf, EXEC, 2);
   // just in case auton is on
@@ -147,7 +143,7 @@ void antSample(void) {
     if (strstr(utlBuf, "sleep"))
       antPrompt();      // wakeup
   } // antData()
-  if (!ant.auton && ant.storeSamp)
+  if (!ant.auton && ant.sampStore)
     utlWrite(ant.port, "TSSon", EOL);
   else
     utlWrite(ant.port, "TS", EOL);
@@ -415,6 +411,9 @@ void antAuton(bool auton) {
   flogf("\nantAuton(%d)", auton);
   antPrompt();
   if (auton) {
+    sprintf(utlStr, "sampleInterval=%d", ant.sampInt);
+    utlWrite(ant.port, utlStr, EOL);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);
     if (!utlExpect(ant.port, utlBuf, "-->", 2)) {
       flogf("\t| startnow fail, retry ...");
@@ -463,7 +462,7 @@ void antGetSamples(void) {
   // close log file if local only
   if (!ant.log)
     close(log);
-  if (ant.clearSamp) {
+  if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
     utlExpect(ant.port, utlBuf, "-->", 2);
     utlWrite(ant.port, "initLogging", EOL);

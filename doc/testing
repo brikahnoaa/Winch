@@ -10,3 +10,4 @@ GPS.SETTIME=FALSE
 
 boy.startph=2
 
+ant.storeSamp=false ctd.storeSamp=true

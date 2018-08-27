@@ -159,7 +159,6 @@ PhaseType iridPhase(void) {
   if (boy.noIrid) return fall_pha;
   antStart();
   antAuton(true);
-  ctdAuton(true);
   tmrStart(phase_tmr, 5*MINUTE);
   gpsStart();
   flogf("\n%s ===\n", utlTime());
@@ -180,20 +179,6 @@ PhaseType iridPhase(void) {
   gpsSats();
   gpsStats();
   antAuton(false);
-  ctdAuton(false);
-  flogf("\n\t| one minute stop drift");
-  ngkSend(stopCmd_msg);
-  antSample();
-  ctdSample();
-  tmrStart(minute_tmr, MINUTE);
-  while (!tmrExp(minute_tmr)) {
-    if (antData())
-      flogf("\n\t| ant@%3.1f %s", antDepth(), utlTime());
-    if (ctdData()) 
-      flogf("\n\t| boy@%3.1f %s", ctdDepth(), utlTime());
-  }
-  gpsStats();
-  gpsStop();
   return fall_pha;
 } // iridPhase
 

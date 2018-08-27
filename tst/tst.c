@@ -1,42 +1,63 @@
-// s39.c
+// gpsTst.c
 #include <utl.h>
-#include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
-#include <sys.h>
 #include <ant.h>
+#include <sys.h>
 
-extern AntInfo ant;
-extern CtdInfo ctd;
+extern GpsInfo gps;
 
 void main(void){
+  Serial port;
   char c;
   sysInit();
   mpcInit();
   antInit();
+  gpsInit();
+  //
   antStart();
-  flogf("\n");
-  antSample();
-  if (!antDataWait())
-    flogf("data wait fails\n");
-  if (!antRead())
-    flogf("read fails\n");
-  flogf("antDepth() -> %f\n", antDepth());
-  flogf("antTemp() -> %f\n", antTemp());
-  // antAuton(true);
-  flogf("\nPress any to talk, Q to exit\n");
-  flogf("connected to ant\n");
+  gpsStart();
+  // gpsStats();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\n%s\n", utlTime());
+  if (iridSig()) exit ;
+  if (iridDial()) exit ;
+  iridSendTest(100);
+  iridHup();
+  //
+  if (iridSig()) exit ;
+  if (iridDial()) exit ;
+  iridSendTest(100);
+  iridHup();
+  flogf("\n%s\n", utlTime());
+  gpsStats();
+  flogf("\nstop %s", utlTime());
+  /**/
+  port = gps.port;
+  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
   while (true) {
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      TUTxPutByte(ant.port,c,false);
-    }
-    while (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
+      if (c=='C') {
+        antDevice(cf2_dev);
+        continue;
+      }
+      if (c=='A') {
+        antDevice(a3la_dev);
+        continue;
+      }
       cputc(c);
+      TUTxPutByte(port,c,false);
     }
   }
-  // antAuton(false);
-  // antGetSamples();
-  utlStop("normal");
+  /**/
+
+  gpsStop();
+  antStop();
 }
