@@ -13,8 +13,8 @@ typedef struct RingNode {
 
 typedef struct AntInfo {
   bool auton;                 // autonomous mode, silent
-  bool clearSamp;             // clear after getSamples
-  bool storeSamp;             // store on device with TSSon - except auton
+  bool sampClear;             // clear after getSamples
+  bool sampStore;             // store on device with TSSon - except auton
   bool on;
   bool surf;                  // on surface
   char logFile[64];
@@ -26,7 +26,7 @@ typedef struct AntInfo {
   int delay;
   int log;
   int ringSize;               // number of nodes in the (depth,time) ring
-  int sampleInt;              // sample interval for auton
+  int sampInt;                // sample interval for auton
   time_t sampT;               // read time() of last sample 
   RingNode *ring;             // nodes in the (depth,time) ring
   AntType antenna;
