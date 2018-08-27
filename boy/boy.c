@@ -159,7 +159,7 @@ PhaseType iridPhase(void) {
   if (boy.noIrid) return fall_pha;
   antStart();
   antAuton(true);
-  tmrStart(phase_tmr, boy.iridPh*MINUTE);
+  tmrStart(phase_tmr, boy.iridOp*MINUTE);
   gpsStart();
   flogf("\n%s ===\n", utlTime());
   gpsSats();
@@ -238,7 +238,7 @@ int rise(float targetD, RiseType runFree, int try) {
   if (try > boy.riseRetry) return 2;
   // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
   // est = sec/meter * depth + fudge
-  est = 3*startD+boy.riseOpTO;
+  est = 3*startD+boy.riseOp;
   tmrStart(targetT, est);
   tmrStart(twentyT, 20);
   tmrStart(fiveT, 5);
@@ -523,6 +523,7 @@ PhaseType deployPhase(void) {
   float depth, lastD;
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
+  if (boy.noDeploy) return rise_pha;
   ctdSample();
   ctdDataWait();
   if (!ctdRead())

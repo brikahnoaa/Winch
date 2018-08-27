@@ -11,9 +11,10 @@ typedef enum { free_ris, run_ris } RiseType;
 // boy
 typedef struct BoyInfo {
   bool testing;
-  bool noData;            // for test (true)
-  bool noIrid;            // for test (true)
-  bool noRise;            // for test (true)
+  bool noData;            // for test (false)
+  bool noDeploy;          // for test (false)
+  bool noIrid;            // for test (false)
+  bool noRise;            // for test (false)
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water
@@ -32,13 +33,13 @@ typedef struct BoyInfo {
   int fileNum;            // current number for filename ####.dat ####.log
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
-  int iridPh;             // phase minutes
+  int iridOp;             // phase minutes
   int log;                // log filehandle
   int minute;             // set smaller to speed up test cycle (60)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
-  int fallOpTO;           // operation timeout constant
+  int fallOp;             // operation timeout 
   int fallRetry;          // fall fails, retry times
-  int riseOpTO;           // operation timeout constant
+  int riseOp;             // operation timeout
   int riseRetry;          // rise fails, retry times
   int settleT;            // time to let deploy settle (120)
   int startPh;            // phase to start in (0)
