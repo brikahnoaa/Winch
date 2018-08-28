@@ -17,13 +17,13 @@ void main(void){
   //
   antStart();
   gpsStart();
-  // gpsStats();
-  iridSig();
-  iridSendTest(12);
-  iridHup();
+  gpsSats();
+  gpsStats();
+  if (iridSig())
+    flogf("\niridSig\t| fail");
   /**/
   port = gps.port;
-  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
+  flogf("\nPress Q to exit, C:cf2, A:a3la; antenna:: G:gps, I:irid\n");
   while (true) {
     if (TURxQueuedCount(port)) {
       c=TURxGetByte(port,false);
@@ -38,6 +38,14 @@ void main(void){
       }
       if (c=='A') {
         antDevice(a3la_dev);
+        continue;
+      }
+      if (c=='G') {
+        antSwitch(gps_ant);
+        continue;
+      }
+      if (c=='I') {
+        antSwitch(irid_ant);
         continue;
       }
       cputc(c);

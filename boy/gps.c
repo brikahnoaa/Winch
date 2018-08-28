@@ -302,8 +302,6 @@ void iridHup(void) {
   int try=3;
   while (try--) {
     utlWriteBlock(gps.port, "+++", 3);
-    utlDelay(500);
-    utlWrite(gps.port, "at", EOL);
     if (utlExpect(gps.port, utlBuf, "OK", 5)) break;
   }
   utlWrite(gps.port, "at+chup", EOL);
