@@ -11,6 +11,7 @@ typedef enum { free_ris, run_ris } RiseType;
 // boy
 typedef struct BoyInfo {
   bool testing;
+  bool iridAuton;         // record depth during irid transfer
   bool noData;            // for test (false)
   bool noDeploy;          // for test (false)
   bool noIrid;            // for test (false)

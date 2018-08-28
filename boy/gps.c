@@ -151,6 +151,8 @@ int gpsSats(void){
       return 0;
     }
   } // while timeout
+  flogf("\ngpsSats\t| i got nothing");
+  flogf("\n'%s'", utlBuf);
   return 2;
 } // gpsSats
 
