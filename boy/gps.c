@@ -27,8 +27,8 @@ void gpsInit(void) {
   sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
   // poke in cs high and low bytes
   cs = iridCRC(gps.projHdr+5, 8);
-  gps.projHdr[3] = (char) (cs >> 8) & 0x00FF;
-  gps.projHdr[4] = (char) (cs & 0x00FF);
+  gps.projHdr[3] = (char) (cs >> 8) & 0xFF;
+  gps.projHdr[4] = (char) (cs & 0xFF);
 } // gpsInit
 
 ///
@@ -242,15 +242,16 @@ int iridSendTest(int msgLen) {
   int hdr1=13, hdr2=10, try=gps.hdrTry;
   int min=48;
   int cs, i, bufLen;
-  char *s;
+  char *s, *buff;
   char land[128];
-  RTCTimer rt;
+  // RTCTimer rt;
   if (msgLen<min)
     msgLen = min;
   DBG0("iridSendTest(%d)", msgLen)
   bufLen = msgLen+hdr2;
   msgLen += 5;
-  memset(utlBuf, 0, bufLen);
+  buff = malloc(bufLen);
+  memset(buff, 0, bufLen);
   DBG2("%s", utlNonPrint(gps.projHdr))
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
@@ -259,14 +260,15 @@ int iridSendTest(int msgLen) {
   // 1 byte of message type;  (‘T’ or ‘I’ =Text,‘B’= Binary, ‘Z’ = Zip 
   // 1 byte block number;
   // 1 byte number of blocks.
-  sprintf(utlBuf, "@@@cs%c%cT%c%c", 
-    (char) msgLen>>8, (char) msgLen & 0xFF, (char) 1, (char) 1);
-  sprintf(utlBuf+20, "Detected %d %s", global.det, utlDateTime());
+  sprintf(buff, "@@@cs%c%cT%c%c", 
+    (char) (msgLen>>8 & 0xFF), (char) (msgLen & 0xFF), 
+    (char) 1, (char) 1);
+  sprintf(buff+20, "Detected %d %s", global.det, utlDateTime());
   // poke in cs high and low bytes
-  cs = iridCRC(utlBuf+5, bufLen-5);
-  utlBuf[3] = (char) (cs >> 8);
-  utlBuf[4] = (char) (cs & 0xFF);
-  DBG2("%s", utlNonPrint(utlBuf))
+  cs = iridCRC(buff+5, bufLen-5);
+  buff[3] = (char) (cs >> 8);
+  buff[4] = (char) (cs & 0xFF);
+  DBG2("%s", utlNonPrint(buff))
   while (try--) {
     flogf(" projHdr");
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
@@ -278,11 +280,21 @@ int iridSendTest(int msgLen) {
   }
   if (try < 0) return 2;
   // send data
-  flogf(" data");
-  utlWriteBlock(gps.port, utlBuf, bufLen);
+  flogf(" data +%dms ", ((int)(9600/gps.rudBaud)));
+  // utlWriteBlock(gps.port, buff, bufLen);
+  for (i=0; i<=bufLen; i++) {
+    TUTxPutByte(gps.port, buff[i], 1);
+    if (TURxQueuedCount(gps.port)) {
+      utlRead(gps.port, utlStr);
+      flogf("\n{{%s}}", utlNonPrint(utlStr));
+    }
+    // delay some ms to lower effective baud rate
+    utlDelay((int)(9600/gps.rudBaud));
+  }
+
   // land ho!
-  utlBuf[0] = 0;
   flogf("\nland->");
+  /*
   tmrStart(rudics_tmr, gps.rudResp);
   RTCElapsedTimerSetup(&rt);
   while (!tmrExp(rudics_tmr)) {
@@ -292,6 +304,16 @@ int iridSendTest(int msgLen) {
         utlNonPrintBlock(utlBuf, i));
     }
   }
+  */
+  utlReadWait(gps.port, utlBuf, gps.rudResp);
+  if (strstr(utlBuf, "cmds")) {
+    utlReadWait(gps.port, utlBuf, gps.rudResp);
+    utlNonPrint(utlBuf);
+    utlReadWait(gps.port, utlBuf, gps.rudResp);
+    utlNonPrint(utlBuf);
+  }
+  utlWrite(gps.port, "done", NULL);
+  utlExpect(gps.port, utlBuf, "done", 5);
   utlWrite(gps.port, "done", NULL);
   return 0;
 } // iridSendTest
@@ -304,6 +326,7 @@ void iridHup(void) {
     utlWriteBlock(gps.port, "+++", 3);
     if (utlExpect(gps.port, utlBuf, "OK", 5)) break;
   }
+  utlWrite(gps.port, "at+clcc", EOL);
   utlWrite(gps.port, "at+chup", EOL);
   utlExpect(gps.port, utlBuf, "OK", 5);
 } // iridHup

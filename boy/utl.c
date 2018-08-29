@@ -102,7 +102,7 @@ char *utlExpect(Serial port, char *buf, char *expect, int wait) {
 // put block to serial; queue, don't block, it should all buffer
 void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
-  delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
+  delay = 2 * (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG3("[>>]=%d", sent)
   // DBG3(">>'%s'", utlNonPrintBlock(out, len))
