@@ -160,7 +160,7 @@ int gpsSats(void){
 // sets: gps.signal
 // rets: 0=success
 int iridSig(void) {
-  flogf("iridSig()");
+  DBG0("iridSig()")
   antSwitch(irid_ant);
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
@@ -210,7 +210,8 @@ int iridCRC(char *buf, int cnt) {
 int iridDial(void) {
   char str[32];
   int i;
-  flogf("\niridDial() %s", utlTime());
+  DBG0("iridDial()")
+  flogf(" %s", utlTime());
   utlWrite(gps.port, "at+cpas", EOL);
   if (!utlExpect(gps.port, utlStr, "OK", 5)) return 2;
   utlWrite(gps.port, "at+clcc", EOL);
@@ -242,6 +243,7 @@ int iridSendTest(int msgLen) {
   int hdr1=13, hdr2=10, try=gps.hdrTry;
   int min=48;
   int cs, i, bufLen;
+  int delay;
   char *s, *buff;
   char land[128];
   // RTCTimer rt;
@@ -280,7 +282,8 @@ int iridSendTest(int msgLen) {
   }
   if (try < 0) return 2;
   // send data
-  flogf(" data +%dms ", ((int)(9600/gps.rudBaud)));
+  delay = (int)(9600/gps.rudBaud)-1;
+  flogf(" data @%d +%dms ", gps.rudBaud, delay);
   // utlWriteBlock(gps.port, buff, bufLen);
   for (i=0; i<=bufLen; i++) {
     TUTxPutByte(gps.port, buff[i], 1);
@@ -289,34 +292,51 @@ int iridSendTest(int msgLen) {
       flogf("\n{{%s}}", utlNonPrint(utlStr));
     }
     // delay some ms to lower effective baud rate
-    utlDelay((int)(9600/gps.rudBaud));
+    utlDelay(delay);
   }
 
   // land ho!
-  flogf("\nland->");
-  /*
-  tmrStart(rudics_tmr, gps.rudResp);
-  RTCElapsedTimerSetup(&rt);
-  while (!tmrExp(rudics_tmr)) {
-    if (TURxQueuedCount(gps.port)) {
-      i = utlRead(gps.port, utlBuf);
-      flogf(" (%ld %d %s)", RTCElapsedTime(&rt)/1000, i, 
-        utlNonPrintBlock(utlBuf, i));
-    }
-  }
-  */
   utlReadWait(gps.port, utlBuf, gps.rudResp);
-  if (strstr(utlBuf, "cmds")) {
-    utlReadWait(gps.port, utlBuf, gps.rudResp);
-    utlNonPrint(utlBuf);
-    utlReadWait(gps.port, utlBuf, gps.rudResp);
-    utlNonPrint(utlBuf);
-  }
+  if (strstr(utlBuf, "cmds")) 
+    iridLandCmds(utlBuf);
   utlWrite(gps.port, "done", NULL);
   utlExpect(gps.port, utlBuf, "done", 5);
   utlWrite(gps.port, "done", NULL);
   return 0;
 } // iridSendTest
+
+///
+// read and format land cmds
+int iridLandCmds(char *buff) {
+  int r=0;
+  short len, tout;
+  char c=0;
+  DBG0("iridLandCmds()")
+  tout = gps.rudResp*1000;
+  // skip @@@
+  c = TURxGetByteWithTimeout(gps.port, gps.timeout*1000);
+  c = TURxGetByteWithTimeout(gps.port, tout);
+  c = TURxGetByteWithTimeout(gps.port, tout);
+  // cs byte 1
+  c = TURxGetByteWithTimeout(gps.port, tout);
+  // cs byte 2
+  c = TURxGetByteWithTimeout(gps.port, tout);
+  // len byte 1
+  c = TURxGetByteWithTimeout(gps.port, tout);
+  len = c;
+  // len byte 2
+  c = TURxGetByteWithTimeout(gps.port, tout);
+  len <<= 8;
+  len += c;
+  // 3 hdr bytes
+  r = (int) TURxGetBlock(gps.port, buff, 3, tout);
+  // cmds
+  r = (int) TURxGetBlock(gps.port, buff, (long) len, tout);
+  buff[len-5] = 0;
+  flogf("\nland(%d)->", r);
+  flogf("''%s''", utlNonPrint(utlBuf));
+  return r;
+} // iridLandCmds
 
 ///
 // call done
