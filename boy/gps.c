@@ -237,24 +237,17 @@ int iridDial(void) {
 } // iridDial
 
 ///
-// create a block of zero, send
-// uses: utlBuf=zero utlRet=comm .hdrTry=3 .hdrPause=15
-int iridSendTest(int msgLen) {
-  int hdr1=13, hdr2=10, try=gps.hdrTry;
-  int min=48;
-  int cs, i, bufLen;
-  int delay;
-  char *s, *buff;
-  char land[128];
-  // RTCTimer rt;
-  if (msgLen<min)
-    msgLen = min;
-  DBG0("iridSendTest(%d)", msgLen)
+// send block Num of Many
+// rets: 0=success 1=gps.hdrTry 2=block fail
+int iridSendBlock(char *buff, int msgLen, int blockNum, int blockMany) {
+  int hdr1=13, hdr2=10;
+  int cs, i, bufLen, blockLen, try, delay;
+  char *s;
+  DBG0("iridSendBlock(%d)", msgLen)
   bufLen = msgLen+hdr2;
-  msgLen += 5;
+  blockLen = msgLen+5;
   buff = malloc(bufLen);
-  memset(buff, 0, bufLen);
-  DBG2("%s", utlNonPrint(gps.projHdr))
+  DBG2("projHdr:%s", utlNonPrint(gps.projHdr))
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
   // 2 bytes of crc checksum;
@@ -262,26 +255,24 @@ int iridSendTest(int msgLen) {
   // 1 byte of message type;  (‘T’ or ‘I’ =Text,‘B’= Binary, ‘Z’ = Zip 
   // 1 byte block number;
   // 1 byte number of blocks.
-  sprintf(buff, "@@@cs%c%cT%c%c", 
-    (char) (msgLen>>8 & 0xFF), (char) (msgLen & 0xFF), 
-    (char) 1, (char) 1);
+  sprintf(buff, "@@@CS%c%cT%c%c", 
+    (char) (blockLen>>8 & 0xFF), (char) (blockLen & 0xFF), 
+    (char) blockNum, (char) blockMany);
   sprintf(buff+20, "Detected %d %s", global.det, utlDateTime());
   // poke in cs high and low bytes
   cs = iridCRC(buff+5, bufLen-5);
   buff[3] = (char) (cs >> 8);
   buff[4] = (char) (cs & 0xFF);
-  DBG2("%s", utlNonPrint(buff))
-  while (try--) {
-    flogf(" %s.%s", gps.project, gps.platform);
+  // DBG2("%s", utlNonPrint(buff))
+  s = NULL;
+  try = gps.hdrTry;
+  while (!s) {
+    if (--try < 0) return 1;
+    flogf(" %dof%d", blockNum, blockMany);
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
-    s = utlExpect(gps.port, land, "ACK", gps.hdrPause);
-    if (s) {
-      DBG4("(%d)", s)
-      break;
-    }
+    s = utlExpect(gps.port, utlStr, "ACK", gps.hdrPause);
   }
-  if (try < 0) return 2;
-  // send data
+  // send data, with extra delay ms to emulate lower baud rate
   delay = (int)(9600/gps.rudBaud)-1;
   flogf(" data @%d +%dms ", gps.rudBaud, delay);
   // utlWriteBlock(gps.port, buff, bufLen);
@@ -289,13 +280,21 @@ int iridSendTest(int msgLen) {
     TUTxPutByte(gps.port, buff[i], 1);
     if (TURxQueuedCount(gps.port)) {
       utlRead(gps.port, utlStr);
+      utlErr(gps_err, "iridSendBlock() transfer fail");
       flogf("\n{{%s}}", utlNonPrint(utlStr));
+      return 2;
     }
     // delay some ms to lower effective baud rate
     utlDelay(delay);
   }
+  return 0;
+} // iridSendBlock
 
+///
+// send file in chunks of gps.blockSize
+int iridSendFile(char *fname) {
   // land ho!
+  DBG0("iridSendFile(%s)", fname)
   utlReadWait(gps.port, utlBuf, gps.rudResp);
   if (strstr(utlBuf, "cmds")) 
     iridLandCmds(utlBuf);
@@ -303,7 +302,7 @@ int iridSendTest(int msgLen) {
   utlExpect(gps.port, utlBuf, "done", 5);
   utlWrite(gps.port, "done", NULL);
   return 0;
-} // iridSendTest
+} // iridSendFile
 
 ///
 // read and format land cmds

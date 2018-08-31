@@ -173,7 +173,7 @@ PhaseType iridPhase(void) {
       continue;
     }
     if (iridDial()) continue;
-    iridSendTest(boy.iridTest);
+    // iridSendFile(boy.sendFile);
     iridHup();
   } // while
   flogf("\n%s =====\n", utlTime());

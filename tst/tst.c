@@ -11,7 +11,11 @@ extern BoyInfo boy;
 
 void main(void){
   Serial port;
-  char c;
+  int len=boy.iridTest;
+  char c, *buff;
+  buff = malloc(len);
+  memset(buff, 0, len);
+  sprintf(buff, "Test String");
   sysInit();
   mpcInit();
   antInit();
@@ -25,7 +29,8 @@ void main(void){
   // flogf("\n%s\n", utlTime());
   if (iridSig()) exit ;
   if (iridDial()) exit ;
-  iridSendTest(boy.iridTest);
+  iridSendBlock(buff, len, 1, 1);
+  len = iridLandCmds(buff);
   iridHup();
   flogf("\n%s\n", utlTime());
   /**/

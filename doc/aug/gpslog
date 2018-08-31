@@ -1,0 +1,19 @@
+GPS Sats=08
+GPS Sats=08 Date=08-22-2018 Time=16:36:12.000
+gpsSetTime()	| off by 0 seconds
+ Lat=43:24.5023 N Lng=124:26.2569 W
+
+GPS Sats=07
+GPS Sats=07 Date=08-22-2018 Time=17:02:43.000
+gpsSetTime()	| off by -1 seconds
+ Lat=43:24.4893 N Lng=124:26.2584 W
+
+GPS Sats=08
+GPS Sats=08 Date=08-22-2018 Time=17:28:14.000
+gpsSetTime()	| off by 0 seconds
+ Lat=43:24.4922 N Lng=124:26.2572 W
+
+GPS Sats=07
+GPS Sats=07 Date=08-22-2018 Time=18:08:37.000
+gpsSetTime()	| off by -1 seconds
+ Lat=43:24.4924 N Lng=124:26.2689 W
