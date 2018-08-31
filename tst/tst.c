@@ -30,7 +30,9 @@ void main(void){
   if (iridSig()) exit ;
   if (iridDial()) exit ;
   iridSendBlock(buff, len, 1, 1);
-  len = iridLandCmds(buff);
+  utlReadWait(gps.port, utlBuf, gps.rudResp);
+  if (strstr(utlBuf, "cmds"))
+    len = iridLandCmds(buff);
   iridHup();
   flogf("\n%s\n", utlTime());
   /**/

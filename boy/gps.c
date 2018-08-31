@@ -337,7 +337,7 @@ int iridLandCmds(char *buff) {
   // cmds
   r = (int) TURxGetBlock(gps.port, buff, (long) len, gps.rudResp*1000);
   if (r!=len)
-    utlErr(gps_err, "iridLandCmds() short cmds");
+    utlErr(gps_err, "iridLandCmds() bad cmds");
   // if (TURxQueuedCount(gps.port)!=0)
   //   utlErr(gps_err, "iridLandCmds() long cmds");
   flogf("\nland(%d)->", r);
