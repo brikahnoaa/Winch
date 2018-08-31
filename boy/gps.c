@@ -272,7 +272,7 @@ int iridSendTest(int msgLen) {
   buff[4] = (char) (cs & 0xFF);
   DBG2("%s", utlNonPrint(buff))
   while (try--) {
-    flogf(" projHdr");
+    flogf(" %s.%s", gps.project, gps.platform);
     utlWriteBlock(gps.port, gps.projHdr, hdr1);
     s = utlExpect(gps.port, land, "ACK", gps.hdrPause);
     if (s) {
@@ -309,32 +309,40 @@ int iridSendTest(int msgLen) {
 // read and format land cmds
 int iridLandCmds(char *buff) {
   int r=0;
-  short len, tout;
-  char c=0;
+  short len;
   DBG0("iridLandCmds()")
-  tout = gps.rudResp*1000;
-  // skip @@@
-  c = TURxGetByteWithTimeout(gps.port, gps.timeout*1000);
-  c = TURxGetByteWithTimeout(gps.port, tout);
-  c = TURxGetByteWithTimeout(gps.port, tout);
-  // cs byte 1
-  c = TURxGetByteWithTimeout(gps.port, tout);
-  // cs byte 2
-  c = TURxGetByteWithTimeout(gps.port, tout);
-  // len byte 1
-  c = TURxGetByteWithTimeout(gps.port, tout);
-  len = c;
-  // len byte 2
-  c = TURxGetByteWithTimeout(gps.port, tout);
+  tmrStart(gps_tmr, gps.rudResp);
+  while (TURxQueuedCount(gps.port)<10)
+    if (tmrExp(gps_tmr)) {
+      utlErr(gps_err, "iridLandCmds() short header");
+      return 0;
+    }
+  // skip @@@ @@ or @
+  for (r=0; r<3; r++)
+    if (TURxPeekByte(gps.port, 0)=='@')
+      TURxGetByte(gps.port, 0);
+    else {
+      flogf("\niridLandCmds() expected @");
+      break;
+    }
+  // 2 CS bytes
+  TURxGetBlock(gps.port, buff, 2, 1);
+  // 2 len bytes
+  len = TURxGetByte(gps.port, 0);
   len <<= 8;
-  len += c;
+  len += TURxGetByte(gps.port, 0);
+  // block len = msg + len + 3
+  len -= 5;
   // 3 hdr bytes
-  r = (int) TURxGetBlock(gps.port, buff, 3, tout);
+  TURxGetBlock(gps.port, buff, 3, 1);
   // cmds
-  r = (int) TURxGetBlock(gps.port, buff, (long) len, tout);
-  buff[len-5] = 0;
+  r = (int) TURxGetBlock(gps.port, buff, (long) len, gps.rudResp*1000);
+  if (r!=len)
+    utlErr(gps_err, "iridLandCmds() short cmds");
+  // if (TURxQueuedCount(gps.port)!=0)
+  //   utlErr(gps_err, "iridLandCmds() long cmds");
   flogf("\nland(%d)->", r);
-  flogf("''%s''", utlNonPrint(utlBuf));
+  flogf("''%s''", utlNonPrintBlock(buff, r));
   return r;
 } // iridLandCmds
 
