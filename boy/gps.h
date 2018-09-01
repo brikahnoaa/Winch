@@ -17,6 +17,7 @@ typedef struct GpsInfo {
   int redial;               // how many calls to make (5)
   int rudBaud;              // effective baud rate for rudics (2400)
   int rudResp;              // wait secs for respond to a block (30)
+  int rudUsec;              // microsec delay from rudBaud
   int signal;
   int signalMin;
   int timeout;

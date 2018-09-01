@@ -4,12 +4,17 @@
 #include <mpc.h>
 #include <ant.h>
 #include <sys.h>
+#include <boy.h>
 
 extern GpsInfo gps;
+extern BoyInfo boy;
 
 void main(void){
-  Serial port;
-  char c;
+  // Serial port;
+  // char c;
+  char *buff;
+  int len, cnt;
+  int i, r;
   sysInit();
   mpcInit();
   antInit();
@@ -17,23 +22,30 @@ void main(void){
   //
   antStart();
   gpsStart();
-  // gpsStats();
-  flogf("\n%s\n", utlTime());
-  gpsStats();
-  flogf("\n%s\n", utlTime());
-  if (iridSig()) exit ;
-  if (iridDial()) exit ;
-  iridSendTest(100);
-  iridHup();
   //
+  len = boy.iridTest;
+  cnt = boy.testCnt;
+  printf("Using block len boy.iridTest=%d, block count boy.testCnt=%d \n",
+    len, cnt);
+  buff = malloc(len);
+  memset(buff, 0, len);
+  sprintf(buff, "Test String");
+  // gpsStats();
+  // flogf("\n%s\n", utlTime());
+  // gpsStats();
+  // flogf("\n%s\n", utlTime());
   if (iridSig()) exit ;
   if (iridDial()) exit ;
-  iridSendTest(100);
+  for (i=1; i<=cnt; i++) {
+    r = iridSendBlock(buff, len, i, cnt);
+    printf("(%d)", r);
+  }
+  utlReadWait(gps.port, utlBuf, gps.rudResp);
+  if (strstr(utlBuf, "cmds"))
+    len = iridLandCmds(buff);
   iridHup();
   flogf("\n%s\n", utlTime());
-  gpsStats();
-  flogf("\nstop %s", utlTime());
-  /**/
+  /*
   port = gps.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la\n");
   while (true) {
@@ -56,7 +68,7 @@ void main(void){
       TUTxPutByte(port,c,false);
     }
   }
-  /**/
+  */
 
   gpsStop();
   antStop();
