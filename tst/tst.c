@@ -4,6 +4,7 @@
 #include <mpc.h>
 #include <ant.h>
 #include <sys.h>
+#include <tmr.h>
 #include <boy.h>
 
 extern GpsInfo gps;
@@ -23,9 +24,9 @@ void main(void){
   antStart();
   gpsStart();
   //
-  len = boy.iridTest;
+  len = boy.testSize;
   cnt = boy.testCnt;
-  cprintf("\nlength boy.iridTest=%d, count boy.testCnt=%d ", len, cnt);
+  cprintf("\nlength boy.testSize=%d, count boy.testCnt=%d ", len, cnt);
   cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
   buff = malloc(len);
   // gpsStats();
@@ -38,15 +39,27 @@ void main(void){
     memset(buff, 0, len);
     sprintf(buff, "%d of %d =%d @%d", i, cnt, len, gps.rudBaud);
     r = iridSendBlock(buff, len, i, cnt);
-    utlNap(1);
-    cprintf("(%d)", r);
+    cprintf("(%d)\n", r);
   }
-  r = TURxGetBlock(gps.port, utlBuf, 4, gps.rudResp*1000);
-  if (r!=4)
-    flogf("\nbad land, %d bytes", r);
-  uprintf("''%s''", utlNonPrintBlock(utlBuf,4));
+  // r = TURxGetBlock(gps.port, utlBuf, 5, gps.rudResp*1000);
+  tmrStart(gps_tmr, gps.rudResp);
+  tmrStart(sec_tmr, 3);
+  memset(utlBuf, 0, 9);
+  for (r=0; r<5; r++) {
+    if (TURxQueuedCount(gps.port)) 
+      utlBuf[r] = TURxGetByte(gps.port, false);
+    if (tmrExp(gps_tmr)) {
+      flogf("\nbad land, %d bytes", r);
+      break;
+    }
+  }
+  flogf("land (%d) ''%s''", r, utlNonPrintBlock(utlBuf,r));
   if (strstr(utlBuf, "cmds"))
     len = iridLandCmds(buff);
+  flogf("landcmds (%d)", len);
+  utlNap(1);
+  utlRead(gps.port, utlBuf);
+  flogf("\n land also said '%s'", utlBuf);
   iridHup();
   iridSig();
   flogf("\n%s\n", utlTime());

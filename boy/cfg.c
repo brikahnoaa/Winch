@@ -42,6 +42,7 @@ typedef struct CfgParam {
 static CfgParam cfgP[] = {
   {"asC", "ant.sampClear",  &ant.sampClear,   'b',  "true"},
   {"asS", "ant.sampStore",  &ant.sampStore,   'b',  "false"},
+  {"as3", "ant.sbe39",      &ant.sbe39,       'b',  "true"},
   {"alF", "ant.logFile",    &ant.logFile,     'c',  "s39"},
   {"asD", "ant.subD",       &ant.subD,        'f',  "3.49"},
   {"asD", "ant.surfD",      &ant.surfD,       'f',  "1.14"},
@@ -68,7 +69,6 @@ static CfgParam cfgP[] = {
   {"biF", "boy.iridFreq",   &boy.iridFreq,    'i',  "1"},
   {"biH", "boy.iridHour",   &boy.iridHour,    'i',  "1"},
   {"biO", "boy.iridOp",     &boy.iridOp,      'i',  "5"},
-  {"biT", "boy.iridTest",   &boy.iridTest,    'i',  "64"},
   {"bnD", "boy.ngkDelay",   &boy.ngkDelay,    'i',  "8"},
   {"bfO", "boy.fallOp",     &boy.fallOp,      'i',  "30"},
   {"bfR", "boy.fallRetry",  &boy.fallRetry,   'i',  "3"},
@@ -77,6 +77,7 @@ static CfgParam cfgP[] = {
   {"bsT", "boy.settleT",    &boy.settleT,     'i',  "120"},
   {"bsP", "boy.startPh",    &boy.startPh,     'i',  "0"},
   {"btC", "boy.testCnt",    &boy.testCnt,     'i',  "3"},
+  {"btS", "boy.testSize",   &boy.testSize,    'i',  "64"},
   {"ccS", "ctd.clearSamp",  &ctd.clearSamp,   'b',  "true"},
   {"csS", "ctd.storeSamp",  &ctd.storeSamp,   'b',  "true"},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c',  "s16"},

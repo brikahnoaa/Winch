@@ -35,7 +35,6 @@ typedef struct BoyInfo {
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
   int iridOp;             // phase minutes
-  int iridTest;           // send test file
   int log;                // log filehandle
   int minute;             // set smaller to speed up test cycle (60)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
@@ -46,6 +45,7 @@ typedef struct BoyInfo {
   int settleT;            // time to let deploy settle (120)
   int startPh;            // phase to start in (0)
   int testCnt;            // counter used in testing (3)
+  int testSize;           // send test file
   PhaseType phase;        // deploy, data, rise, irid, fall, error
   PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
   Serial port;            // sbe16 or ant mod

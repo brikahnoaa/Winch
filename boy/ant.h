@@ -13,9 +13,10 @@ typedef struct RingNode {
 
 typedef struct AntInfo {
   bool auton;                 // autonomous mode, silent
+  bool on;
   bool sampClear;             // clear after getSamples
   bool sampStore;             // store on device with TSSon - except auton
-  bool on;
+  bool sbe39;                 // init and use sbe39
   bool surf;                  // on surface
   char logFile[64];
   char samCmd[16];            // TS or TSSon

@@ -47,21 +47,23 @@ void antStart(void) {
   // get cf2 startup message
   utlExpect(ant.port, utlBuf, "ok", 6);
   DBG1("%s", utlBuf)
-  // state
-  ant.auton = false;
-  tmrStop(s39_tmr);
-  antPrompt();
-  sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
-  utlWrite(ant.port, utlStr, EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
-  utlWrite(ant.port, "TxSampleNum=N", EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
-  utlWrite(ant.port, "txRealTime=n", EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
-  // just in case auton is on
-  utlWrite(ant.port, "stop", EOL);
-  utlExpect(ant.port, utlBuf, EXEC, 2);
   antReset();
+  // state
+  if (ant.sbe39) {
+    ant.auton = false;
+    tmrStop(s39_tmr);
+    antPrompt();
+    sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
+    utlWrite(ant.port, utlStr, EOL);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
+    utlWrite(ant.port, "TxSampleNum=N", EOL);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
+    utlWrite(ant.port, "txRealTime=n", EOL);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
+    // just in case auton is on
+    utlWrite(ant.port, "stop", EOL);
+    utlExpect(ant.port, utlBuf, EXEC, 2);
+  }
 } // antStart
 
 ///

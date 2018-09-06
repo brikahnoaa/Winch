@@ -4,6 +4,7 @@
 #include <mpc.h>
 #include <ant.h>
 #include <sys.h>
+#include <tmr.h>
 #include <boy.h>
 
 extern GpsInfo gps;
@@ -23,27 +24,44 @@ void main(void){
   antStart();
   gpsStart();
   //
-  len = boy.iridTest;
+  len = boy.testSize;
   cnt = boy.testCnt;
-  printf("Using block len boy.iridTest=%d, block count boy.testCnt=%d \n",
-    len, cnt);
+  cprintf("\nlength boy.testSize=%d, count boy.testCnt=%d ", len, cnt);
+  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
   buff = malloc(len);
-  memset(buff, 0, len);
-  sprintf(buff, "Test String");
   // gpsStats();
   // flogf("\n%s\n", utlTime());
   // gpsStats();
   // flogf("\n%s\n", utlTime());
-  if (iridSig()) exit ;
-  if (iridDial()) exit ;
+  if (iridSig()) return;
+  if (iridDial()) return;
   for (i=1; i<=cnt; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d", i, cnt, len, gps.rudBaud);
     r = iridSendBlock(buff, len, i, cnt);
-    printf("(%d)", r);
+    cprintf("(%d)\n", r);
   }
-  utlReadWait(gps.port, utlBuf, gps.rudResp);
+  // r = TURxGetBlock(gps.port, utlBuf, 5, gps.rudResp*1000);
+  tmrStart(gps_tmr, gps.rudResp);
+  tmrStart(sec_tmr, 3);
+  memset(utlBuf, 0, 9);
+  for (r=0; r<5; r++) {
+    if (TURxQueuedCount(gps.port)) 
+      utlBuf[r] = TURxGetByte(gps.port, false);
+    if (tmrExp(gps_tmr)) {
+      flogf("\nbad land, %d bytes", r);
+      break;
+    }
+  }
+  flogf("land (%d) ''%s''", r, utlNonPrintBlock(utlBuf,r));
   if (strstr(utlBuf, "cmds"))
     len = iridLandCmds(buff);
+  flogf("landcmds (%d)", len);
+  utlNap(1);
+  utlRead(gps.port, utlBuf);
+  flogf("\n land also said '%s'", utlBuf);
   iridHup();
+  iridSig();
   flogf("\n%s\n", utlTime());
   /*
   port = gps.port;
