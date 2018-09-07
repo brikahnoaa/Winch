@@ -58,7 +58,8 @@
 
 // sync with utlInit()
 typedef enum {
-    ant_err, boy_err, cfg_err, ctd_err, gps_err, ngk_err, wsp_err, log_err, 
+    ant_err, boy_err, cfg_err, ctd_err, gps_err, ngk_err, rud_err, wsp_err, 
+    log_err, 
     sizeof_err} ErrType;
 
 typedef struct GlobalInfo {

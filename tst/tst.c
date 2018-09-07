@@ -41,25 +41,9 @@ void main(void){
     r = iridSendBlock(buff, len, i, cnt);
     cprintf("(%d)\n", r);
   }
-  // r = TURxGetBlock(gps.port, utlBuf, 5, gps.rudResp*1000);
-  tmrStart(gps_tmr, gps.rudResp);
-  tmrStart(sec_tmr, 3);
-  memset(utlBuf, 0, 9);
-  for (r=0; r<5; r++) {
-    if (TURxQueuedCount(gps.port)) 
-      utlBuf[r] = TURxGetByte(gps.port, false);
-    if (tmrExp(gps_tmr)) {
-      flogf("\nbad land, %d bytes", r);
-      break;
-    }
-  }
-  flogf("land (%d) ''%s''", r, utlNonPrintBlock(utlBuf,r));
+  iridLandResp(utlBuf);
   if (strstr(utlBuf, "cmds"))
     len = iridLandCmds(buff);
-  flogf("landcmds (%d)", len);
-  utlNap(1);
-  utlRead(gps.port, utlBuf);
-  flogf("\n land also said '%s'", utlBuf);
   iridHup();
   iridSig();
   flogf("\n%s\n", utlTime());

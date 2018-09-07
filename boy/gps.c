@@ -307,6 +307,24 @@ int iridSendFile(char *fname) {
 } // iridSendFile
 
 ///
+// we just sent the last block, should get cmds or data directive
+int iridLandResp(char *buff) {
+  int r, len=5;
+  tmrStart(gps_tmr, gps.rudResp);
+  memset(buff, 0, 9);
+  for (r=0; r<5; r++) {
+    if (TURxQueuedCount(gps.port))
+      buff[r] = TURxGetByte(gps.port, true);
+    if (tmrExp(gps_tmr)) {
+      utlErr(rud_err, "timeout on land response");
+      break;
+    }
+  }
+  flogf("\niridLandResp(%s)->%d", utlNonPrintBlock(buff,r), r);
+  return r;
+} // iridLandResp
+
+///
 // read and format land cmds
 int iridLandCmds(char *buff) {
   int i, hdr=7;
