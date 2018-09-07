@@ -231,7 +231,8 @@ char *utlDateTimeBrief(void) {
 // format non-printable string; null terminate
 // returns: global static char *utl.ret
 char *utlNonPrint (char *in) {
-  char ch, *out = utl.ret;
+  unsigned char ch;
+  char *out = utl.ret;
   int i, o;
   // walk thru input until 0 or BUFSZ
   i = o = 0;
@@ -252,7 +253,8 @@ char *utlNonPrint (char *in) {
 // format non-printable string; null terminate
 // returns: global static char *utl.ret
 char *utlNonPrintBlock (char *in, int len) {
-  char ch, *out = utl.ret;
+  unsigned char ch;
+  char *out = utl.ret;
   int i, o;
   // copy len bytes
   i = o = 0;
