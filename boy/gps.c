@@ -313,14 +313,11 @@ int iridLandResp(char *buff) {
   tmrStart(gps_tmr, gps.rudResp);
   memset(buff, 0, 9);
   for (r=0; r<5; r++) {
-    if (TURxQueuedCount(gps.port))
-      buff[r] = TURxGetByte(gps.port, true);
-    if (tmrExp(gps_tmr)) {
-      utlErr(rud_err, "timeout on land response");
-      break;
-    }
+    while (TURxQueuedCount(gps.port)==0)
+      if (tmrExp(gps_tmr)) return 0;
+    buff[r] = TURxGetByte(gps.port, true);
   }
-  flogf("\niridLandResp(%s)->%d", utlNonPrintBlock(buff,r), r);
+  flogf("\niridLandResp(%s)", utlNonPrintBlock(buff,r));
   return r;
 } // iridLandResp
 
@@ -328,8 +325,8 @@ int iridLandResp(char *buff) {
 // read and format land cmds
 int iridLandCmds(char *buff) {
   int i, hdr=7;
-  char c, cs[2];
-  short len;
+  unsigned char c;
+  short len, msgLen;
   DBG0("iridLandCmds()")
   tmrStart(gps_tmr, gps.rudResp);
   // skip @@@ @@ or @ - protocol is bad, first CS byte could = @
@@ -338,45 +335,41 @@ int iridLandCmds(char *buff) {
     while (TURxQueuedCount(gps.port)==0)
       if (tmrExp(gps_tmr)) return 0;
     c = TURxPeekByte(gps.port, 0);
-    if (c=='@') {
-      DBG4("@")
-      TURxGetByte(gps.port, 0);
-    } else {
-      DBG4("\n!ERR\t| iridLandCmds() expected @, saw %02x at [%d]", c, i)
+    DBG4("%s", utlNonPrintBlock(&c,1))
+    if (c=='@') 
+      TURxGetByte(gps.port, false);
+    else 
       break;
-    }
   }
   if (i==0) return 0;
-  // wait for fixed hdr
-    for (i=0; i<hdr; i++) {
-    if (TURxQueuedCount(gps.port))
-      buff[i++]=TURxGetByte(gps.port, false);
-    if (tmrExp(gps_tmr)) {
-      flogf("\n!ERR\t| iridLandCmds(%d) '%s'", i, utlNonPrintBlock(buff, i));
-      return 0;
-    }
+  // @@@ 2 CS bytes, 2 len bytes, 'C', 1, 1
+  for (i=0; i<hdr; i++) {
+    // wait for byte
+    while (TURxQueuedCount(gps.port)==0)
+      if (tmrExp(gps_tmr)) return 0;
+    buff[i]=TURxGetByte(gps.port, false);
   }
+  DBG4("hdr(%s)", utlNonPrintBlock(buff, hdr))
   // 2 CS bytes
-  TURxGetBlock(gps.port, cs, 2, 1);
-  DBG4("CS(%s)", utlNonPrintBlock(cs, 2))
+  DBG4("CS(%s)", utlNonPrintBlock(buff, 2))
   // 2 len bytes
-  len = TURxGetByte(gps.port, 0);
+  len = buff[2];
   len <<= 8;
-  len += TURxGetByte(gps.port, 0);
-  // block len = msg + len + 3
-  len -= 5;
-  DBG4("len(%d)", len)
-  // 3 hdr bytes
-  TURxGetBlock(gps.port, buff, 3, 1);
-  DBG4("hdr(%s)", utlNonPrintBlock(buff, 3))
+  len += buff[3];
+  // block len = msgLen + hdr - CS
+  msgLen = len - (hdr - 2);
+  // C 1 1
+  if (!(buff[4]=='C' && buff[5]==1 && buff[6]==1)) {
+    utlErr(rud_err, "land response header err");
+    return 0;
+  }
+  DBG4("len(%d)", msgLen)
   // cmds
-  for (i=0; i<len; i++) {
-    if (TURxQueuedCount(gps.port)) 
-      buff[i++]=TURxGetByte(gps.port, false);
-    if (tmrExp(gps_tmr)) {
-      flogf("\n!ERR\t| iridLandCmds(%d) '%s'", i, utlNonPrintBlock(buff, i));
-      return 0;
-    }
+  for (i=0; i<msgLen; i++) {
+    // wait for byte
+    while (TURxQueuedCount(gps.port)==0)
+      if (tmrExp(gps_tmr)) return 0;
+    buff[i]=TURxGetByte(gps.port, false);
   }
   flogf("\nland(%d)->", i);
   flogf("''%s''", utlNonPrintBlock(buff, i));
