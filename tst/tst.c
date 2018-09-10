@@ -1,77 +1,68 @@
-// gpsTst.c
+// winchTst.c - move winch
 #include <utl.h>
-#include <gps.h>
 #include <mpc.h>
-#include <ant.h>
 #include <sys.h>
-#include <tmr.h>
-#include <boy.h>
+#include <ngk.h>
 
-extern GpsInfo gps;
-extern BoyInfo boy;
+#define CTRL_C 3
+
+void winchTstHelp(void);
+
+void winchTstHelp() {
+  cprintf(
+    "? help q quit ^C quit \n"
+    "B buoyRsp F fallRsp R riseRsp S stopRsp W statRsp \n"
+    "b buoyCmd f fallCmd r riseCmd s stopCmd w statCmd u surfCmd \n"
+    );
+}
 
 void main(void){
-  // Serial port;
-  // char c;
-  char *buff;
-  int len, cnt;
-  int i, r;
+  char c;
+  MsgType msg;
   sysInit();
   mpcInit();
-  antInit();
-  gpsInit();
-  //
-  antStart();
-  gpsStart();
-  //
-  len = boy.testSize;
-  cnt = boy.testCnt;
-  cprintf("\nlength boy.testSize=%d, count boy.testCnt=%d ", len, cnt);
-  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
-  buff = malloc(len);
-  // gpsStats();
-  // flogf("\n%s\n", utlTime());
-  // gpsStats();
-  // flogf("\n%s\n", utlTime());
-  if (iridSig()) return;
-  if (iridDial()) return;
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d", i, cnt, len, gps.rudBaud);
-    r = iridSendBlock(buff, len, i, cnt);
-    cprintf("(%d)\n", r);
-  }
-  iridLandResp(utlBuf);
-  if (strstr(utlBuf, "cmds"))
-    len = iridLandCmds(buff);
-  iridHup();
-  iridSig();
-  flogf("\n%s\n", utlTime());
-  /*
-  port = gps.port;
-  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
-  while (true) {
-    if (TURxQueuedCount(port)) {
-      c=TURxGetByte(port,false);
-      cputc(c);
-    }
-    if (cgetq()) {
-      c=cgetc();
-      if (c=='Q') break;
-      if (c=='C') {
-        antDevice(cf2_dev);
-        continue;
-      }
-      if (c=='A') {
-        antDevice(a3la_dev);
-        continue;
-      }
-      cputc(c);
-      TUTxPutByte(port,c,false);
-    }
-  }
-  */
+  DBG0("dbg0")
+  DBG1("dbg1")
+  DBG2("dbg2")
+  winchTstHelp();
+  ngkInit();
+  while (true) { // command
+    ciflush();
+    cprintf("\nCommand: ");
+    cdrain();
 
-  gpsStop();
-  antStop();
+    while (true) { // input
+      // amodem
+      ngkRecv(&msg);
+      if (msg!=null_msg) {
+        cprintf("\n winch>> '%s' @ %s", ngkMsgName(msg), utlTime());
+        break; // while input
+      } 
+      // keyboard
+      if (cgetq()) {
+        c = cgetc();
+        cputc(c);
+        cputc('\n');
+        switch (c) {
+        case CTRL_C: BIOSResetToPicoDOS();
+        case 'q': BIOSResetToPicoDOS();
+        case '?': winchTstHelp(); break;
+        case 'B': ngkSend(buoyRsp_msg); break;
+        case 'F': ngkSend(fallRsp_msg); break;
+        case 'R': ngkSend(riseRsp_msg); break;
+        case 'S': ngkSend(stopRsp_msg); break;
+        case 'W': ngkSend(statRsp_msg); break;
+        case 'b': ngkSend(buoyCmd_msg); break;
+        case 'f': ngkSend(fallCmd_msg); break;
+        case 'r': ngkSend(riseCmd_msg); break;
+        case 's': ngkSend(stopCmd_msg); break;
+        case 'u': ngkSend(surfCmd_msg); break;
+        case 'w': ngkSend(statCmd_msg); break;
+        default: cprintf("??");
+        } // switch
+        break; // while input
+      } // if key
+    } // while input
+  } // while command
 }
+

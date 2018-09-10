@@ -1,8 +1,8 @@
 // winchTst.c - move winch
-#include <com.h>
+#include <utl.h>
 #include <mpc.h>
-#include <ngk.h>
 #include <sys.h>
+#include <ngk.h>
 
 #define CTRL_C 3
 
@@ -11,8 +11,8 @@ void winchTstHelp(void);
 void winchTstHelp() {
   cprintf(
     "? help q quit ^C quit \n"
-    "B buoyRsp F dropRsp R riseRsp S stopRsp W statRsp \n"
-    "b buoyCmd f dropCmd r riseCmd s stopCmd w statCmd u surfCmd \n"
+    "B buoyRsp F fallRsp R riseRsp S stopRsp W statRsp \n"
+    "b buoyCmd f fallCmd r riseCmd s stopCmd w statCmd u surfCmd \n"
     );
 }
 
@@ -33,7 +33,7 @@ void main(void){
 
     while (true) { // input
       // amodem
-      msg = ngkRecv();
+      ngkRecv(&msg);
       if (msg!=null_msg) {
         cprintf("\n winch>> '%s' @ %s", ngkMsgName(msg), utlTime());
         break; // while input
@@ -48,12 +48,12 @@ void main(void){
         case 'q': BIOSResetToPicoDOS();
         case '?': winchTstHelp(); break;
         case 'B': ngkSend(buoyRsp_msg); break;
-        case 'F': ngkSend(dropRsp_msg); break;
+        case 'F': ngkSend(fallRsp_msg); break;
         case 'R': ngkSend(riseRsp_msg); break;
         case 'S': ngkSend(stopRsp_msg); break;
         case 'W': ngkSend(statRsp_msg); break;
         case 'b': ngkSend(buoyCmd_msg); break;
-        case 'f': ngkSend(dropCmd_msg); break;
+        case 'f': ngkSend(fallCmd_msg); break;
         case 'r': ngkSend(riseCmd_msg); break;
         case 's': ngkSend(stopCmd_msg); break;
         case 'u': ngkSend(surfCmd_msg); break;
