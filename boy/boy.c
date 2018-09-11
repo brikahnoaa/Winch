@@ -118,34 +118,12 @@ PhaseType risePhase(void) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
-  // testing
-  if (boy.cycle % 2) {
-    // R,01,03
-    result = rise(boy.currChkD, run_ris, 0);
-    ngkSend(stopCmd_msg);
-    if (result) {
-      flogf("\n\t| rise fails at %3.1f m", antDepth());
-      //??  return fall_pha;
-    }
-    // if current is too strong at midway
-    if (oceanCurrChk()) {
-      sysAlarm(midwayCurr_alm);
-      //?? return fall_pha;
-    }
-    // surface, 1 meter below float level
-    result = rise(antSurfD()+1, run_ris, 0);
-    if (result) {
-      flogf(" | fails at %3.1f m", antDepth());
-      //?? return fall_pha;
-    }
-  } else {
-    // R,01,00
-    result = rise(antSurfD()+1, free_ris, 0);
-    ngkSend(stopCmd_msg);
-    if (result) {
-      flogf("\n\t| rise fails at %3.1f m", antDepth());
-      //??  return fall_pha;
-    }
+  // R,01,00
+  result = rise(antSurfD()+1, free_ris, 0);
+  ngkSend(stopCmd_msg);
+  if (result) {
+    flogf("\n\t| rise fails at %3.1f m", antDepth());
+    //??  return fall_pha;
   }
   return irid_pha;
 } // risePhase
