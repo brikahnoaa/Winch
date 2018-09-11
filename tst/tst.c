@@ -6,6 +6,8 @@
 
 #define CTRL_C 3
 
+extern NgkInfo ngk;
+
 void winchTstHelp(void);
 
 void winchTstHelp() {
@@ -17,6 +19,7 @@ void winchTstHelp() {
 }
 
 void main(void){
+  // int i;
   char c;
   MsgType msg;
   sysInit();
@@ -33,10 +36,11 @@ void main(void){
 
     while (true) { // input
       // amodem
+      utlNap(2);
+      cprintf(".");
       ngkRecv(&msg);
       if (msg!=null_msg) {
         cprintf("\n winch>> '%s' @ %s", ngkMsgName(msg), utlTime());
-        break; // while input
       } 
       // keyboard
       if (cgetq()) {
@@ -46,6 +50,7 @@ void main(void){
         switch (c) {
         case CTRL_C: BIOSResetToPicoDOS();
         case 'q': BIOSResetToPicoDOS();
+        case 'Q': BIOSResetToPicoDOS();
         case '?': winchTstHelp(); break;
         case 'B': ngkSend(buoyRsp_msg); break;
         case 'F': ngkSend(fallRsp_msg); break;
@@ -60,7 +65,6 @@ void main(void){
         case 'w': ngkSend(statCmd_msg); break;
         default: cprintf("??");
         } // switch
-        break; // while input
       } // if key
     } // while input
   } // while command

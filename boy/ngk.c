@@ -6,7 +6,7 @@
 
 #define MDM_BAUD 4800L
 #define BUOY_ID '2'
-#define WINCH_ID '1'
+#define WINCH_ID '1'    // aka ngk.winchId
 #define EOL "\r\n"
 
 NgkInfo ngk = {
@@ -67,7 +67,7 @@ void ngkSend(MsgType msg) {
   char str[128];
   // copy msgStr and change id character // e.g. "#R,0X,00"
   strcpy(str, ngk.msgStr[msg]);
-  str[4]=WINCH_ID;
+  str[4] = '0' + ngk.winchId;
   flogf("\n+ngkSend(%s) at %s", str, utlTime());
   TUTxWaitCompletion(ngk.port);
   TURxFlush(ngk.port);
@@ -87,24 +87,16 @@ MsgType ngkRecvWait(MsgType *msg, int wait) {
 } // ngkRecvWait
 
 ///
-// ngkRecvWait and return string
-char *ngkRecvMsg(int wait) {
-  MsgType msg;
-  if (ngkRecvWait(&msg, wait)!=null_msg)
-    return ngkMsgName(msg);
-  else
-    return "timeout";
-} // ngkRecvWait
-
-///
 // get winch message if available and parse it
 // respond immediately to stopcmd buoycmd
 // uses: ngk.expect
 // sets: ngk.on ngk.expect .lastRecv 
 // returns: msg
 MsgType ngkRecv(MsgType *msg) {
-  if (!ngkRead(utlBuf))
-    return null_msg;
+  if (!ngkRead(utlBuf)) {
+    *msg = null_msg;
+    return *msg;
+  }
   flogf("\n+ngkRecv(%s)", utlBuf);
   *msg = msgParse(utlBuf);
   // amodem will repeat message if not OK

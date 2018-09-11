@@ -16,6 +16,7 @@ typedef struct NgkInfo {
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
   int timeout[sizeof_msg];      // count
+  int winchId;                  // 1
   MsgType lastRecv;
   MsgType lastSend;
   Serial port;

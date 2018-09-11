@@ -421,7 +421,7 @@ int riseUp(float targetD, int try) {
   // stop - either normal or due to err
   for (i=0; i<boy.riseRetry; i++) {
     ngkSend(stopCmd_msg);
-    msg = ngkRecvWait(&msg, boy.ngkDelay*2);
+    ngkRecvWait(&msg, boy.ngkDelay*2);
     if (msg==stopRsp_msg || msg==stopCmd_msg) break;
   }
   // ?? if (msg!=stopRsp_msg) damnation
