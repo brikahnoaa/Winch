@@ -26,10 +26,10 @@ typedef struct GpsInfo {
   Serial port;
 } GpsInfo;
 
+static int gpsSats(void);
 static int iridCRC(char *buf, int cnt);
 static int iridPrompt(void);
 bool gpsSetTime(void);
-int gpsSats(void);
 int gpsStart(void);
 int gpsStats(void);
 int iridDial(void);

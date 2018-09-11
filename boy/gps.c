@@ -137,7 +137,6 @@ bool gpsSetTime(void) {
 // sets: gps.sats
 // rets: 0=success
 int gpsSats(void){
-  antSwitch(gps_ant);
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlNap(2);
@@ -161,7 +160,6 @@ int gpsSats(void){
 // rets: 0=success
 int iridSig(void) {
   flogf("\niridSig()");
-  antSwitch(irid_ant);
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlWrite(gps.port, "at+csq", EOL);

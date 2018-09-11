@@ -144,13 +144,14 @@ PhaseType iridPhase(void) {
   tmrStart(phase_tmr, boy.iridOp*MINUTE);
   gpsStart();
   flogf("\n%s ===\n", utlTime());
-  gpsSats();
+  antSwitch(gps_ant);
   gpsStats();
+  antSwitch(irid_ant);
   while (!tmrExp(phase_tmr)) {
     flogf("\n%s ====\n", utlTime());
     // 0=success
     if ((r = iridSig())) {
-      flogf("\n\t| err iridSig(%d)", r);
+      flogf("\nERR\t| iridSig(%d)", r);
       continue;
     }
     if (iridDial()) continue;
@@ -158,10 +159,9 @@ PhaseType iridPhase(void) {
     iridHup();
   } // while
   flogf("\n%s =====\n", utlTime());
-  gpsSats();
+  antSwitch(gps_ant);
   gpsStats();
-  if (boy.iridAuton) 
-    antAuton(false);
+  antAuton(false);
   return fall_pha;
 } // iridPhase
 
