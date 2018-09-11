@@ -409,8 +409,14 @@ void antSwitch(AntType antenna) {
 ///
 // turn autonomous on/off, with no output. Fetch with antGetSamples()
 // sets: .auton
-void antAuton(bool auton) {
-  flogf("\nantAuton(%d)", auton);
+// rets: 0=good 1=off 2=badResponse
+int antAuton(bool auton) {
+  int r=0;
+  flogf("\nantAuton(%s)", auton?"true":"false");
+  if (!ant.on) {
+    r = 1;
+    antStart();
+  }
   antPrompt();
   if (auton) {
     sprintf(utlStr, "sampleInterval=%d", ant.sampInt);
@@ -426,6 +432,7 @@ void antAuton(bool auton) {
   } else {
     utlWrite(ant.port, "stop", EOL);
     if (!utlExpect(ant.port, utlBuf, "-->", 2)) {
+      r = 2;
       flogf("\t| stop fail, retry ...");
       utlWrite(ant.port, "stop", EOL);
       if (!utlExpect(ant.port, utlBuf, "-->", 2)) 
@@ -435,6 +442,7 @@ void antAuton(bool auton) {
     TURxFlush(ant.port);
   } // if auton
   ant.auton = auton;
+  return r;
 }
 
 ///

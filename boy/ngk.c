@@ -93,15 +93,14 @@ MsgType ngkRecvWait(MsgType *msg, int wait) {
 // sets: ngk.on ngk.expect .lastRecv 
 // returns: msg
 MsgType ngkRecv(MsgType *msg) {
-  if (!ngkRead(utlBuf)) {
-    *msg = null_msg;
+  *msg = null_msg;
+  if (!ngkRead(utlBuf)) 
     return *msg;
-  }
-  flogf("\n+ngkRecv(%s)", utlBuf);
   *msg = msgParse(utlBuf);
   // amodem will repeat message if not OK
   if (*msg!=mangled_msg) 
     utlWrite(ngk.port, "OK", EOL);
+  flogf("\n+ngkRecv(%s)", utlBuf);
   flogf(" %s %s", ngk.msgName[*msg], utlTime());
   if (*msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();

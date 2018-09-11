@@ -113,6 +113,9 @@ PhaseType risePhase(void) {
   int result;
   flogf("risePhase()");
   if (boy.noRise) return irid_pha;
+  // *Start() returns immed if already on (*.on = true)
+  antStart();
+  ctdStart();
   // if current is too strong at bottom
   if (oceanCurrChk()) {
     sysAlarm(bottomCurr_alm);
@@ -193,9 +196,9 @@ PhaseType dataPhase(void) {
   flogf("\nstorm: %s", utlBuf);
   wspStop();
   if (success==5) sysStop("user stop in dataPhase");
-  return rise_pha;
   antStart();
   ctdStart();
+  return rise_pha;
   // ngkStart();
 } // dataPhase
 
@@ -217,7 +220,7 @@ int rise(float targetD, RiseType runFree, int try) {
   if (startD < targetD) return 1;
   if (try > boy.riseRetry) return 2;
   // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
-  // est = sec/meter * depth + fudge
+  // est = sec/meter(3) * depth + fudge for possible current drift
   est = 3*startD+boy.riseOp;
   tmrStart(targetT, est);
   tmrStart(twentyT, 20);
@@ -230,13 +233,8 @@ int rise(float targetD, RiseType runFree, int try) {
   tmrStart(ngkT, boy.ngkDelay*2);
   flogf("\n\t | %s sent to winch at %s", 
     (runFree==run_ris)?"riseCmd":"surfCmd", utlTime());
-  ctdPrompt();
-  ctdSample();
-  antSample();
   while (!stopB && !errB) {       // redundant, loop exits by break;
     utlX();
-    if (ctdData())
-      ctdRead();
     // check: target, winch, 20s, 5s
     if (antData())
       nowD = antDepth();
@@ -257,8 +255,9 @@ int rise(float targetD, RiseType runFree, int try) {
     if (ngkRecv(&msg)!=null_msg) {
       flogf(", %s from winch", ngkMsgName(msg));
       if (msg==stopCmd_msg) {
+        // surface detect by winch
         if (runFree==run_ris)
-          // riseRun - keep going
+          // run_ris = keep rolling out cable
           ngkSend(riseCmd_msg);
         tmrStop(targetT);
         stopB = true;
