@@ -33,6 +33,7 @@ void main(void){
   // flogf("\n%s\n", utlTime());
   // gpsStats();
   // flogf("\n%s\n", utlTime());
+  antSwitch(irid_ant);
   if (iridSig()) return;
   if (iridDial()) return;
   for (i=1; i<=cnt; i++) {

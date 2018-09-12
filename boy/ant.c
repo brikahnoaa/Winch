@@ -50,7 +50,8 @@ void antStart(void) {
   antReset();
   // state
   if (ant.sbe39) {
-    ant.auton = false;
+    if (ant.auton)
+      antAuton(false);
     tmrStop(s39_tmr);
     antPrompt();
     sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
