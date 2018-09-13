@@ -212,7 +212,7 @@ int iridDial(void) {
   flogf(" %s", utlTime());
   // set up timing for data
   //  10^6 * 10bits / rudBaud
-  gps.rudUsec = (int) (pow(10, 7) / gps.rudBaud);
+  gps.rudUsec = (int) ((pow(10, 6)*10) / gps.rudBaud);
   utlWrite(gps.port, "at+cpas", EOL);
   if (!utlExpect(gps.port, utlStr, "OK", 5)) return 2;
   utlWrite(gps.port, "at+clcc", EOL);
@@ -241,14 +241,15 @@ int iridDial(void) {
 ///
 // send block Num of Many
 // rets: 0=success 1=gps.hdrTry 2=block fail
-int iridSendBlock(char *msg, int msgLen, int blockNum, int blockMany) {
+int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
   int hdr1=13, hdr2=10;
-  int cs, i, bufLen, blockLen, try;
+  int cs, i, bufSz, blockSz, sendSz, try;
+  long uDelay;
   char *s, *buff;
-  DBG0("iridSendBlock(%d,%d,%d)", msgLen, blockNum, blockMany)
-  bufLen = msgLen+hdr2;
-  blockLen = msgLen+5;
-  buff = malloc(bufLen);
+  DBG0("iridSendBlock(%d,%d,%d)", msgSz, blockNum, blockMany)
+  bufSz = msgSz+hdr2;
+  blockSz = msgSz+5;
+  buff = malloc(bufSz);
   DBG2("projHdr:%s", utlNonPrint(gps.projHdr))
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
@@ -258,31 +259,40 @@ int iridSendBlock(char *msg, int msgLen, int blockNum, int blockMany) {
   // 1 byte block number;
   // 1 byte number of blocks.
   sprintf(buff, "@@@CS%c%cT%c%c", 
-    (char) (blockLen>>8 & 0xFF), (char) (blockLen & 0xFF), 
+    (char) (blockSz>>8 & 0xFF), (char) (blockSz & 0xFF), 
     (char) blockNum, (char) blockMany);
-  memcpy(buff+hdr2, msg, msgLen);
+  memcpy(buff+hdr2, msg, msgSz);
   // poke in cs high and low bytes
-  cs = iridCRC(buff+5, bufLen-5);
+  cs = iridCRC(buff+5, bufSz-5);
   buff[3] = (char) (cs>>8 & 0xFF);
   buff[4] = (char) (cs & 0xFF);
-  // DBG2("%s", utlNonPrint(buff))
-  // first block? send hdr
+  // first block? sendHdr
   if (blockNum==1) {
     s = NULL;
     try = gps.hdrTry;
     while (!s) {
-      if (--try < 0) return 1;
+      if (try-- <= 0) return 1;
       flogf(" hdr");
       utlWriteBlock(gps.port, gps.projHdr, hdr1);
       s = utlExpect(gps.port, utlStr, "ACK", gps.hdrPause);
     }
-  }
+    flogf("\n");
+  } // sendHdr
   flogf(" %dof%d", blockNum, blockMany);
-  // extra delay us per byte to emulate lower baud rate
   // send data
-  for (i=0; i<bufLen; i++) {
-    TUTxPutByte(gps.port, buff[i], false);
-    RTCDelayMicroSeconds((long) gps.rudUsec);
+  sendSz = gps.sendSz;
+  uDelay = (long) sendSz * gps.rudUsec;
+  DBG4(" {%d %d %ld}", sendSz, gps.rudUsec, uDelay)
+  for (i=0; i<bufSz; i+=sendSz) {
+    // TUTxPutByte(gps.port, buff[i], false);
+    // RTCDelayMicroSeconds((long) gps.rudUsec);
+    if (i+sendSz>bufSz) {
+      sendSz = bufSz-i;
+      uDelay = (long) sendSz * gps.rudUsec;
+    }
+    TUTxPutBlock(gps.port, buff+i, (long) sendSz, 9999);
+    // extra delay us per byte to emulate lower baud rate
+    RTCDelayMicroSeconds(uDelay);
     utlX();
   }
   return 0;
@@ -324,7 +334,7 @@ int iridLandResp(char *buff) {
 int iridLandCmds(char *buff) {
   int i, hdr=7;
   unsigned char c;
-  short len, msgLen;
+  short len, msgSz;
   DBG0("iridLandCmds()")
   tmrStart(gps_tmr, gps.rudResp);
   // skip @@@ @@ or @ - protocol is bad, first CS byte could = @
@@ -354,16 +364,16 @@ int iridLandCmds(char *buff) {
   len = buff[2];
   len <<= 8;
   len += buff[3];
-  // block len = msgLen + hdr - CS
-  msgLen = len - (hdr - 2);
+  // block len = msgSz + hdr - CS
+  msgSz = len - (hdr - 2);
   // C 1 1
   if (!(buff[4]=='C' && buff[5]==1 && buff[6]==1)) {
     utlErr(rud_err, "land response header err");
     return 0;
   }
-  DBG4("len(%d)", msgLen)
+  DBG4("len(%d)", msgSz)
   // cmds
-  for (i=0; i<msgLen; i++) {
+  for (i=0; i<msgSz; i++) {
     // wait for byte
     while (TURxQueuedCount(gps.port)==0)
       if (tmrExp(gps_tmr)) return 0;

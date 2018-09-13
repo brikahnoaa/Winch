@@ -38,7 +38,9 @@ void main(void){
   if (iridDial()) return;
   for (i=1; i<=cnt; i++) {
     memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d", i, cnt, len, gps.rudBaud);
+    sprintf(buff, "%d of %d =%d @%d [%d]", 
+      i, cnt, len, gps.rudBaud, gps.sendSz);
+    buff[len-1] = 'Z';
     r = iridSendBlock(buff, len, i, cnt);
     cprintf("(%d)\n", r);
   }
