@@ -1,0 +1,529 @@
+
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 31, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 31
+Started: 09-16-18 01:51:35
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018015142 x0D ' <<'datetime=09162018015142 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 01:51:57 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A '
+mpcSleep() at 09-16-18 01:52:49
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set gps.platform=
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 32, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 32
+Started: 09-16-18 01:56:18
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018015625 x0D ' <<'datetime=09162018015625 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 01:56:40 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A ) @ @ @ hdr(y xE4  x00 &C x01  x01 ) CS(y xE4 ) len(33)
+land(33)->''SendData() x0A SendData() x0A SendData() x0A '' >>'data' hdr [>>]=13 <<' x0D ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' [>>]=3 <<' x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' >>'at+chup x0D ' <<' x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A '
+iridSig() >>'at+csq x0D ' <<' x0D  x0A OK x0D  x0A '
+01:57:32
+ >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+C:\>	
+Bad command or file name
+
+C:\>set gps.platform=test
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9  8 
+startCheck(): starts 33, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 33
+Started: 09-16-18 01:59:21
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=TEST
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018015928 x0D ' <<'datetime=09162018015928 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 01:59:43 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A NO CARRIER x0D  x0A ' (0) >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13 hdr [>>]=13(1)
+ >>'data' [>>]=3 [>>]=3 [>>]=3
+mpcSleep() at 09-16-18 02:02:06
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 34, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 34
+Started: 09-16-18 02:02:59
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=TEST
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018020306 x0D ' <<'datetime=09162018020306 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:03:22 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A '
+mpcSleep() at 09-16-18 02:04:18
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+C:\>set gps.platform=Q001
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 35, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 35
+Started: 09-16-18 02:12:01
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=Q001
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018021208 x0D ' <<'datetime=09162018021208 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:12:24 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13
+mpcSleep() at 09-16-18 02:13:31
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set gps.platform=LR01
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 36, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 36
+Started: 09-16-18 02:13:56
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=LR01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018021401 x0D ' <<'datetime=09162018021401 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:14:15 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A ) @ @ @ hdr(y xE4  x00 &C x01  x01 ) CS(y xE4 ) len(33)
+land(33)->''SendData() x0A SendData() x0A SendData() x0A '' >>'data' hdr [>>]=13 <<' x0D ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' [>>]=3 <<' x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' >>'at+chup x0D ' <<' x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A '
+iridSig() >>'at+csq x0D ' <<' x0D  x0A OK x0D  x0A '
+02:15:09
+ >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+C:\>set gps.platform=Q002
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9  8 
+startCheck(): starts 37, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 37
+Started: 09-16-18 02:16:57
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=Q002
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018021705 x0D ' <<'datetime=09162018021705 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:17:20 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13
+mpcSleep() at 09-16-18 02:18:35
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set gps.platform=LR01
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 38, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 38
+Started: 09-16-18 02:19:14
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=LR01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018021921 x0D ' <<'datetime=09162018021921 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:19:37 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A ) @ @ @ hdr(y xE4  x00 &C x01  x01 ) CS(y xE4 ) len(33)
+land(33)->''SendData() x0A SendData() x0A SendData() x0A '' >>'data' hdr [>>]=13 <<' x0D ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' [>>]=3 <<' x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' >>'at+chup x0D ' <<' x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A '
+iridSig() >>'at+csq x0D ' <<' x0D  x0A OK x0D  x0A '
+02:20:29
+ >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+C:\>set gps.platform=RA01
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 39, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 39
+Started: 09-16-18 02:27:09
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=RA01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018022717 x0D ' <<'datetime=09162018022717 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:27:32 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A ) @ @ @ hdr( xE1 | x00  x0B C x01  x01 ) CS( xE1 |) len(6)
+land(6)->''abcde x0A '' >>'data' hdr [>>]=13 <<' x0D ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' [>>]=3 <<' x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' >>'at+chup x0D ' <<' x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A '
+iridSig() >>'at+csq x0D ' <<' x0D  x0A OK x0D  x0A '
+02:28:23
+ >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+C:\>tst
+
+===
+=== added =3
+===
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 40, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 40
+Started: 09-16-18 02:30:12
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=RA01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018023019 x0D ' <<'datetime=09162018023019 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:4 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=4 02:30:35 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(ACK x0A c) >>'data' hdr [>>]=13 <<'mds x0A ' <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13
+mpcSleep() at 09-16-18 02:31:51
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9  8 
+startCheck(): starts 41, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 41
+Started: 09-16-18 02:35:27
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=RA01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018023534 x0D ' <<'datetime=09162018023534 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:35:50 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A NO CARRIER x0D  x0A ' (0) >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13 hdr [>>]=13
+mpcSleep() at 09-16-18 02:37:38
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+===
+=== removed =3
+===
+Bad command or file name
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 42, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 42
+Started: 09-16-18 02:38:03
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=RA01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018023808 x0D ' <<'datetime=09162018023808 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:38:23 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13 hdr [>>]=13(1)
+ >>'data' [>>]=3 [>>]=3 [>>]=3 >>'at+clcc x0D ' >>'at+chup x0D ' <<' x0D  x0A ERROR x0D  x0A  x0D  x0A OK x0D  x0A '
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:4 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=4
+02:40:49
+ >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 43, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 43
+Started: 09-16-18 02:42:21
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+VEE: GPS.PLATFORM=RA01
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018024227 x0D ' <<'datetime=09162018024227 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 02:42:41 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A '
+mpcSleep() at 09-16-18 02:43:32
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>

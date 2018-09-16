@@ -1,0 +1,282 @@
+
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set dbg3=3
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 24, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 24
+Started: 09-15-18 21:03:03
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09152018210310 x0D ' <<'datetime=09152018210310 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 21:03:25 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A ) @ @ @ hdr( x80 k x00 ?C x01  x01 ) CS( x80 k) len(58)
+land(58)->''Senddata() [0xC9C9]Senddata() [0xC9C9]Senddata() [0xC9C9] x0A '' >>'data' hdr [>>]=13 <<' x0D ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) >>'data' [>>]=3 <<' x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' >>'at+chup x0D ' <<' x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A '
+iridSig() >>'at+csq x0D ' <<' x0D  x0A OK x0D  x0A '
+21:04:19
+ >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+C:\>set dbg3=
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 25, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 25
+Started: 09-16-18 01:09:32
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() csq=5 01:09:58 CONNECT 9600rudBaud@1000 +10000us  hdr
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A ) @ @ @ hdr( x80 k x00 ?C x01  x01 ) CS( x80 k) len(58)
+land(58)->''Senddata() [0xC9C9]Senddata() [0xC9C9]Senddata() [0xC9C9] x0A '' hdr
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A )
+iridSig() csq=5
+01:10:58
+
+@@@ ===
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 26, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 26
+Started: 09-16-18 01:20:58
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() csq=5 01:21:24 CONNECT 9600rudBaud@1000 +10000us  hdr
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(done x0A ) hdr hdr hdr(1)
+
+mpcSleep() at 09-16-18 01:23:50
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 27, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 27
+Started: 09-16-18 01:23:57
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() csq=5 01:24:22 CONNECT 9600rudBaud@1000 +10000us  hdr
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  hdr hdr
+mpcSleep() at 09-16-18 01:25:46
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set dbg3=3
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 28, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 28
+Started: 09-16-18 01:26:03
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A <Timeout msg='2 min inactivity timeout, returning to sleep'/> x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018012611 x0D ' <<'datetime=09162018012611 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 01:26:26 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A '
+mpcSleep() at 09-16-18 01:27:30
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 29, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 29
+Started: 09-16-18 01:30:08
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018013016 x0D ' <<'datetime=09162018013016 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 01:30:30 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13
+mpcSleep() at 09-16-18 01:31:51
+pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 30, max 50
+---   ---
+Program: sys.c,  Build: Sep 12 2018 09:16:03
+System Parameters: CF2 SN 12997, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 30
+Started: 09-16-18 01:32:52
+---   ---
+VEE: BOY.TESTING=TRUE
+VEE: BOY.CYCLEMAX=1
+VEE: BOY.NORISE=TRUE
+VEE: BOY.NODATA=TRUE
+VEE: BOY.IRIDAUTON=FALSE
+VEE: BOY.NODEPLOY=TRUE
+VEE: GPS.PLATFORM=TEST
+VEE: GPS.SENDSZ=16
+VEE: GPS.RUDBAUD=1000
+VEE: BOY.TESTSIZE=1024
+VEE: BOY.TESTCNT=2
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=09162018013259 x0D ' <<'datetime=09162018013259 x0D  x0A <Executed/> x0D  x0A ' >>'TxSampleNum=N x0D ' <<'TxSampleNum=N x0D  x0A <Executed/> x0D  x0A ' >>'txRealTime=n x0D ' <<'txRealTime=n x0D  x0A <Executed/> x0D  x0A ' >>'stop x0D ' <<'stop x0D  x0A <ERROR type='NOT ALLOWED' msg='Inactive command'/> x0D  x0A <Executed/> x0D  x0A ' <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=1024, count boy.testCnt=2 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 01:33:14 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600rudBaud@1000 +10000us  hdr [>>]=13 <<'ACK x0A '
+ 1of1  {16 10000 160000}(0)
+
+iridLandResp(cmds x0A )  x0D  >>'data' hdr [>>]=13 <<' x0D  x0A NO CARRIER x0D  x0A ' hdr [>>]=13
+mpcSleep() at 09-16-18 01:34:25

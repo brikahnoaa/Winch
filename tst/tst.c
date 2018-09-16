@@ -41,12 +41,13 @@ void main(void){
     sprintf(buff, "%d of %d =%d @%d [%d]", 
       i, cnt, len, gps.rudBaud, gps.sendSz);
     buff[len-1] = 'Z';
-    r = iridSendBlock(buff, len, i, cnt);
+    r = iridSendBlock(buff, len, 1, 1);
     cprintf("(%d)\n", r);
+    iridLandResp(utlBuf);
+    if (strstr(utlBuf, "cmds"))
+      len = iridLandCmds(buff);
+    utlWrite(gps.port, "data", "");
   }
-  iridLandResp(utlBuf);
-  if (strstr(utlBuf, "cmds"))
-    len = iridLandCmds(buff);
   iridHup();
   iridSig();
   flogf("\n%s\n", utlTime());
