@@ -86,6 +86,31 @@ int wspDetectMin(int minutes, int *detect) {
 } // wspDetectMin
 
 ///
+// run detection for %wsp.dutyC of remainder of this hour
+int wspDetectHour(int *detect) {
+  struct tm *tim;
+  time_t secs;
+  int min, hour=60;
+  //
+  time(&secs);
+  tim = localtime(&secs);
+  // tim->tm_hour tim->tm_min tim->tm_sec
+  // rest until duty*minutes in 2nd part of hour
+  min = hour-wsp.duty-tm_min;
+  utlNap(min*60);
+  min=wsp.duty; 
+  while (min>0) {
+    if (min>wsp.detInt) 
+      utlNap(detInt*60);
+    else
+      utlNap(min*60);
+    wspQuery(&detections);
+    wspLog(detections);
+    min-=wsp.detInt;
+  } // duty
+} // wspDetectHour
+
+///
 // log up to .detMax detections every .query minutes
 // while .duty% * .hour minutes
 // return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
