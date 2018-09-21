@@ -239,15 +239,31 @@ int iridDial(void) {
 } // iridDial
 
 ///
+// send proj hdr
+int iridProjHdr(void) {
+  int try, hdr=13;
+  char *s=NULL;
+  try = gps.hdrTry;
+  while (!s) {
+    if (try-- <= 0) return 1;
+    flogf(" proj");
+    utlWriteBlock(gps.port, gps.projHdr, hdr);
+    s = utlExpect(gps.port, utlStr, "ACK", gps.hdrPause);
+  }
+  flogf("\n");
+  return 0;
+} // iridProjHdr
+
+///
 // send block Num of Many
 // rets: 0=success 1=gps.hdrTry 2=block fail
 int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
-  int hdr1=13, hdr2=10;
-  int cs, i, bufSz, blockSz, sendSz, try;
+  int hdr=10;
+  int cs, i, bufSz, blockSz, sendSz;
   long uDelay;
-  char *s, *buff;
+  char *buff;
   DBG0("iridSendBlock(%d,%d,%d)", msgSz, blockNum, blockMany)
-  bufSz = msgSz+hdr2;
+  bufSz = msgSz+hdr;
   blockSz = msgSz+5;
   buff = malloc(bufSz);
   DBG2("projHdr:%s", utlNonPrint(gps.projHdr))
@@ -261,23 +277,11 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
   sprintf(buff, "@@@CS%c%cT%c%c", 
     (char) (blockSz>>8 & 0xFF), (char) (blockSz & 0xFF), 
     (char) blockNum, (char) blockMany);
-  memcpy(buff+hdr2, msg, msgSz);
+  memcpy(buff+hdr, msg, msgSz);
   // poke in cs high and low bytes
   cs = iridCRC(buff+5, bufSz-5);
   buff[3] = (char) (cs>>8 & 0xFF);
   buff[4] = (char) (cs & 0xFF);
-  // first block? sendHdr
-  if (blockNum==1) {
-    s = NULL;
-    try = gps.hdrTry;
-    while (!s) {
-      if (try-- <= 0) return 1;
-      flogf(" hdr");
-      utlWriteBlock(gps.port, gps.projHdr, hdr1);
-      s = utlExpect(gps.port, utlStr, "ACK", gps.hdrPause);
-    }
-    flogf("\n");
-  } // sendHdr
   flogf(" %dof%d", blockNum, blockMany);
   // send data
   sendSz = gps.sendSz;

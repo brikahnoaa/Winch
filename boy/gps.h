@@ -36,6 +36,7 @@ int gpsStats(void);
 int iridDial(void);
 int iridLandCmds(char *buff);
 int iridLandResp(char *buff);
+int iridProjHdr(void);
 int iridSendBlock(char *buff, int msgLen, int blockNum, int blockMany);
 int iridSendFile(char *fname);
 int iridSig(void);

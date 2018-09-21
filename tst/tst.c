@@ -36,6 +36,7 @@ void main(void){
   antSwitch(irid_ant);
   if (iridSig()) return;
   if (iridDial()) return;
+  if (iridProjHdr()) return;
   for (i=1; i<=cnt; i++) {
     memset(buff, 0, len);
     sprintf(buff, "%d of %d =%d @%d [%d]", 
@@ -50,6 +51,7 @@ void main(void){
       utlWrite(gps.port, "data", "");
     else
       utlWrite(gps.port, "done", "");
+    utlDelay(100);
   }
   iridHup();
   iridSig();

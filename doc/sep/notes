@@ -1,0 +1,7 @@
+crash or abrupt exit?: 
+' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+length boy.testSize=4000, count boy.testCnt=1 
+baud gps.rudBaud=1000
+iridSig() >>'at+csq x0D '
+Application error 1 [0x1]
+
