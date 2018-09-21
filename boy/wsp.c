@@ -87,7 +87,7 @@ int wspDetectMin(int minutes, int *detect) {
 
 ///
 // run detection for %wsp.dutyC of remainder of this hour
-int wspDetectHour(int *detect) {
+int wspDetectHour(int *detections) {
   struct tm *tim;
   time_t secs;
   int min, hour=60;
@@ -95,21 +95,25 @@ int wspDetectHour(int *detect) {
   time(&secs);
   tim = localtime(&secs);
   // tim->tm_hour tim->tm_min tim->tm_sec
-  // rest until duty*minutes in 2nd part of hour
-  min = hour-wsp.duty-tm_min;
-  utlNap(min*60);
+  // duty cycle rest phase comes first
+  min = (hour-wsp.duty)-tim->tm_min;
+  if (min>0)
+    utlNap(min*60);
+  // rest phase of duty cycle is past
   min=wsp.duty; 
   while (min>0) {
     if (min>wsp.detInt) 
-      utlNap(detInt*60);
+      utlNap(wsp.detInt*60);
     else
       utlNap(min*60);
+    min-=wsp.detInt;
     wspQuery(&detections);
     wspLog(detections);
-    min-=wsp.detInt;
   } // duty
+  return 0;
 } // wspDetectHour
 
+/*
 ///
 // log up to .detMax detections every .query minutes
 // while .duty% * .hour minutes
@@ -185,6 +189,7 @@ int wspDetectDay(int *detections) {
   flogf("\nwspDetect\t| total detections %d %s", detTotal, utlTime());
   return r;
 } // wspDetect
+*/
 
 void wspExit(void) {
   utlWrite(wsp.port, "$EXI*", EOL);

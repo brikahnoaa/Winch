@@ -45,8 +45,11 @@ void main(void){
     cprintf("(%d)\n", r);
     iridLandResp(utlBuf);
     if (strstr(utlBuf, "cmds"))
-      len = iridLandCmds(buff);
-    utlWrite(gps.port, "data", "");
+      r = iridLandCmds(buff);
+    if (i<cnt)
+      utlWrite(gps.port, "data", "");
+    else
+      utlWrite(gps.port, "done", "");
   }
   iridHup();
   iridSig();
