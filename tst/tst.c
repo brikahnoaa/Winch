@@ -52,9 +52,11 @@ void main(void){
     if (i<cnt)
       utlWrite(gps.port, "data", "");
     else
-      utlWrite(gps.port, "done", "");
+      break;
     utlDelay(500);
   }
+  utlWrite(gps.port, "done", "");
+  utlDelay(500);
   iridHup();
   iridSig();
   flogf("\n%s\n", utlTime());

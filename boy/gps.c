@@ -406,11 +406,10 @@ void iridHup(void) {
   }
   utlWrite(gps.port, "at+clcc", EOL);
   if (utlExpect(gps.port, utlBuf, "OK", 5))
-    flogf("\n%s", utlBuf);
+    flogf("\nclcc->%s", utlNonPrint(utlBuf));
   utlWrite(gps.port, "at+chup", EOL);
   if (utlExpect(gps.port, utlBuf, "OK", 5))
-    flogf("\n%s", utlBuf);
-  flogf("\nHUP");
+    flogf("\nchup->%s", utlNonPrint(utlBuf));
 } // iridHup
 
 ///
