@@ -51,7 +51,7 @@ void main(void){
       utlWrite(gps.port, "data", "");
     else
       utlWrite(gps.port, "done", "");
-    utlDelay(100);
+    utlDelay(500);
   }
   iridHup();
   iridSig();

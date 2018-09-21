@@ -323,13 +323,17 @@ int iridSendFile(char *fname) {
 int iridLandResp(char *buff) {
   int r, len=5;
   tmrStart(gps_tmr, gps.rudResp);
-  memset(buff, 0, 9);
-  for (r=0; r<5; r++) {
+  memset(buff, 0, len);
+  for (r=0; r<len; r++) {
     while (TURxQueuedCount(gps.port)==0)
       if (tmrExp(gps_tmr)) return 0;
     buff[r] = TURxGetByte(gps.port, true);
+    // looks like a bug in how "cmds" is sent, sometimes 0x0d in front
+      if (buff[r]==0x0A)
+    break;
   }
-  flogf("\niridLandResp(%s)", utlNonPrintBlock(buff,r));
+  buff[r]=0;
+  flogf("\nLandResp(%s)", utlNonPrint(buff));
   return r;
 } // iridLandResp
 
