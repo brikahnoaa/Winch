@@ -320,8 +320,9 @@ int iridSendFile(char *fname) {
 
 ///
 // we just sent the last block, should get cmds or data directive
+// 5 char the first time, six after
 int iridLandResp(char *buff) {
-  int r, len=5;
+  int r, len=6;
   tmrStart(gps_tmr, gps.rudResp);
   memset(buff, 0, len);
   for (r=0; r<len; r++) {
