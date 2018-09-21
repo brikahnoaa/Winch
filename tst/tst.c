@@ -14,7 +14,7 @@ void main(void){
   // Serial port;
   // char c;
   char *buff;
-  int len, cnt;
+  int l, len, cnt;
   int i, r;
   sysInit();
   mpcInit();
@@ -46,7 +46,9 @@ void main(void){
     cprintf("(%d)\n", r);
     iridLandResp(utlBuf);
     if (strstr(utlBuf, "cmds"))
-      r = iridLandCmds(buff);
+      r = iridLandCmds(buff, &l);
+    else
+      break;
     if (i<cnt)
       utlWrite(gps.port, "data", "");
     else

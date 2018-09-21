@@ -305,13 +305,14 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 ///
 // send file in chunks of gps.blockSize
 int iridSendFile(char *fname) {
+  int len;
   // land ho!
   DBG0("iridSendFile(%s)", fname)
   // cmds0x0A
   TURxGetBlock(gps.port, utlBuf, 5, gps.rudResp*1000);
   utlBuf[4] = 0;
   if (strstr(utlBuf, "cmds")) 
-    iridLandCmds(utlBuf);
+    iridLandCmds(utlBuf, &len);
   utlWrite(gps.port, "done", NULL);
   utlExpect(gps.port, utlBuf, "done", 5);
   utlWrite(gps.port, "done", NULL);
@@ -319,38 +320,41 @@ int iridSendFile(char *fname) {
 } // iridSendFile
 
 ///
-// we just sent the last block, should get cmds or data directive
+// we just sent the last block, should get cmds or done
+// looks like a bug in how "cmds" is sent, sometimes 0x0d in front
 // 5 char the first time, six after
+// rets: 0=success 1=respTO
 int iridLandResp(char *buff) {
   int r, len=6;
   tmrStart(gps_tmr, gps.rudResp);
   memset(buff, 0, len);
   for (r=0; r<len; r++) {
     while (TURxQueuedCount(gps.port)==0)
-      if (tmrExp(gps_tmr)) return 0;
+      if (tmrExp(gps_tmr)) return 1;
     buff[r] = TURxGetByte(gps.port, true);
-    // looks like a bug in how "cmds" is sent, sometimes 0x0d in front
-      if (buff[r]==0x0A)
-    break;
+    if (buff[r]==0x0A)
+      break;
   }
   buff[r]=0;
   flogf("\nLandResp(%s)", utlNonPrint(buff));
-  return r;
+  return 0;
 } // iridLandResp
 
 ///
 // read and format land cmds
-int iridLandCmds(char *buff) {
+// rets: *buff\0 0=success 1=@TO 2=0@ 3=hdrTO 4=hdr!C11 
+int iridLandCmds(char *buff, int *len) {
   int i, hdr=7;
   unsigned char c;
-  short len, msgSz;
+  short msgSz;
   DBG0("iridLandCmds()")
   tmrStart(gps_tmr, gps.rudResp);
-  // skip @@@ @@ or @ - protocol is bad, first CS byte could = @
+  *len = 0;
+  // skip @@@ @@ or @ - protocol is sloppy, first CS byte could = @
   for (i=0; i<3; i++) {
     // wait for byte
     while (TURxQueuedCount(gps.port)==0)
-      if (tmrExp(gps_tmr)) return 0;
+      if (tmrExp(gps_tmr)) return 1;
     c = TURxPeekByte(gps.port, 0);
     DBG4("%s", utlNonPrintBlock(&c,1))
     if (c=='@') 
@@ -358,39 +362,36 @@ int iridLandCmds(char *buff) {
     else 
       break;
   }
-  if (i==0) return 0;
+  if (i==0) return 2;
   // @@@ 2 CS bytes, 2 len bytes, 'C', 1, 1
   for (i=0; i<hdr; i++) {
     // wait for byte
     while (TURxQueuedCount(gps.port)==0)
-      if (tmrExp(gps_tmr)) return 0;
+      if (tmrExp(gps_tmr)) return 3;
     buff[i]=TURxGetByte(gps.port, false);
   }
-  DBG4("hdr(%s)", utlNonPrintBlock(buff, hdr))
   // 2 CS bytes
-  DBG4("CS(%s)", utlNonPrintBlock(buff, 2))
   // 2 len bytes
-  len = buff[2];
-  len <<= 8;
-  len += buff[3];
-  // block len = msgSz + hdr - CS
-  msgSz = len - (hdr - 2);
+  msgSz = buff[2];
+  msgSz <<= 8;
+  msgSz += buff[3];
+  // block length = msgSz + hdr - CS
+  msgSz = msgSz - (hdr - 2);
   // C 1 1
-  if (!(buff[4]=='C' && buff[5]==1 && buff[6]==1)) {
-    utlErr(rud_err, "land response header err");
-    return 0;
-  }
-  DBG4("len(%d)", msgSz)
+  if (!(buff[4]=='C' && buff[5]==1 && buff[6]==1)) 
+    return 4;
   // cmds
+  *len = msgSz;
+  memset(buff, 0, msgSz+1);
   for (i=0; i<msgSz; i++) {
     // wait for byte
     while (TURxQueuedCount(gps.port)==0)
-      if (tmrExp(gps_tmr)) return 0;
+      if (tmrExp(gps_tmr)) return 5;
     buff[i]=TURxGetByte(gps.port, false);
   }
-  flogf("\nland(%d)->", i);
-  flogf("''%s''", utlNonPrintBlock(buff, i));
-  return i;
+  flogf("\nCMDS(%d)->", msgSz);
+  flogf("''%s''", utlNonPrintBlock(buff, msgSz));
+  return 0;
 } // iridLandCmds
 
 ///
@@ -398,14 +399,18 @@ int iridLandCmds(char *buff) {
 void iridHup(void) {
   int try=3;
   while (try--) {
-    utlNap(1);
+    utlDelay(1500);
     utlWriteBlock(gps.port, "+++", 3);
-    utlNap(1);
+    utlDelay(1500);
     if (utlExpect(gps.port, utlBuf, "OK", 2)) break;
   }
   utlWrite(gps.port, "at+clcc", EOL);
+  if (utlExpect(gps.port, utlBuf, "OK", 5))
+    flogf("\n%s", utlBuf);
   utlWrite(gps.port, "at+chup", EOL);
-  utlExpect(gps.port, utlBuf, "OK", 5);
+  if (utlExpect(gps.port, utlBuf, "OK", 5))
+    flogf("\n%s", utlBuf);
+  flogf("\nHUP");
 } // iridHup
 
 ///
