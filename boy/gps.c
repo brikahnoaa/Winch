@@ -303,26 +303,46 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 } // iridSendBlock
 
 ///
+// land ho!
 // send file in chunks of gps.blockSize
 int iridSendFile(char *fname) {
-  int len;
-  // land ho!
-  DBG0("iridSendFile(%s)", fname)
-  // cmds0x0A
-  TURxGetBlock(gps.port, utlBuf, 5, gps.rudResp*1000);
-  utlBuf[4] = 0;
-  if (strstr(utlBuf, "cmds")) 
-    iridLandCmds(utlBuf, &len);
-  utlWrite(gps.port, "done", NULL);
-  utlExpect(gps.port, utlBuf, "done", 5);
-  utlWrite(gps.port, "done", NULL);
+  int fh, len, block;
+  struct stat fileinfo;
+  flogf("\niridSendFile(%s)", fname);
+  fh = open(fname, O_RDONLY);
+  if (fh<0) return 1;
+  stat(fname, &fileinfo);
+  len = fileinfo.st_size;
+  while (len>0) {
+    if (len>=gps.fileSz)
+      block = read(fh, utlBuf, gps.fileSz);
+    else
+      block = read(fh, utlBuf, len);
+    if (block<0) return 2;
+    if (block==0) return 3;
+    iridSendBlock(utlBuf, block, 1, 1);
+    len -= block;
+  } // send
   return 0;
 } // iridSendFile
+
+/*
+  if (iridLandResp(utlStr)) return 4;
+  if (strstr(utlBuf, "done")) {
+    // done done done done?
+    utlWrite(gps.port, "done", NULL);
+    utlExpect(gps.port, utlBuf, "done", 1);
+    utlWrite(gps.port, "done", NULL);
+    return 0;
+  } // done
+  if (strstr(utlBuf, "cmds")) 
+    if (iridLandCmds(utlBuf, &len)) return 5;
+ */
 
 ///
 // we just sent the last block, should get cmds or done
 // looks like a bug in how "cmds" is sent, sometimes 0x0d in front
-// 5 char the first time, six after
+// 5 char the first time, six after; read until \n 0x0a
 // rets: 0=success 1=respTO
 int iridLandResp(char *buff) {
   int r, len=6;

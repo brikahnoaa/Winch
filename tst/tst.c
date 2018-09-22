@@ -38,13 +38,8 @@ void main(void){
   if (iridDial()) return;
   if (iridProjHdr()) return;
   for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, gps.rudBaud, gps.sendSz);
-    buff[len-1] = 'Z';
-    r = iridSendBlock(buff, len, 1, 1);
-    cprintf("(%d)\n", r);
-    iridLandResp(utlBuf);
+    if (iridSendFile("log\\ctd.log")) return;
+    if (iridLandResp(utlBuf)) return;
     if (strstr(utlBuf, "cmds"))
       r = iridLandCmds(buff, &l);
     else

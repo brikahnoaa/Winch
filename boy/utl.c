@@ -179,7 +179,7 @@ char *utlTime(void) {
   time_t secs;
 
   time(&secs);
-  tim = localtime(&secs);
+  tim = gmtime(&secs);
   sprintf(utl.ret, "%02d:%02d:%02d",
           tim->tm_hour, tim->tm_min, tim->tm_sec);
   return utl.ret;
@@ -193,7 +193,7 @@ char *utlDate(void) {
   time_t secs;
   
   time(&secs);
-  tim = localtime(&secs);
+  tim = gmtime(&secs);
   sprintf(utl.ret, "%02d-%02d-%02d", tim->tm_mon+1,
           tim->tm_mday, tim->tm_year - 100);
   return utl.ret;
@@ -206,7 +206,7 @@ char *utlDateTime(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
-  tim = localtime(&secs);
+  tim = gmtime(&secs);
   sprintf(utl.ret, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon+1,
           tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
@@ -220,7 +220,7 @@ char *utlDateTimeBrief(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
-  tim = localtime(&secs);
+  tim = gmtime(&secs);
   sprintf(utl.ret, "%02d%02d%04d%02d%02d%02d", tim->tm_mon+1,
           tim->tm_mday, tim->tm_year + 1900, tim->tm_hour,
           tim->tm_min, tim->tm_sec);
@@ -276,13 +276,19 @@ void utlPet() { TickleSWSR(); }              // pet the watchdog
 ///
 // takes a base name and makes a full path, opens file, writes dateTime
 // ?? moves existing file to backup dir
-// rets: fileID
+// rets: fileID or 0=err
 int utlLogFile(char *fname) {
   int log;
-  char path[64];
+  char path[64], day[4];
+  struct tm *tim;
+  time_t secs;
   DBG0("utlLogFile(%s)", fname)
+  time(&secs);
+  tim = gmtime(&secs);
+  sprintf(day, "%03d", tim->tm_yday);
   path[0]=0;
   strcat(path, "log\\");
+  strcat(path, day);
   strcat(path, fname);
   strcat(path, ".log");
   DBG1("(%s)", path)
