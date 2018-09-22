@@ -218,12 +218,17 @@ int iridDial(void) {
   utlWrite(gps.port, "at+clcc", EOL);
   if (!utlExpect(gps.port, utlStr, "OK", 5)) return 3;
   utlMatchAfter(str, utlStr, "+CLCC:", "0123456789");
-  if (!strcmp(str, "006")==0) 
+  if (!strcmp(str, "006")==0) {
     utlWrite(gps.port, "at+chup", EOL);
+    if (!utlExpect(gps.port, utlStr, "OK", 5)) return 4;
+  }
   sprintf(str, "atd%s", gps.phoneNum);
   // dial
   for (i=0; i<gps.redial; i++) {
-    utlNap(3);
+    // fails "NO CONNECT" without this pause
+    utlNap(4);
+    // flush
+    utlRead(gps.port, utlStr);
     utlWrite(gps.port, str, EOL);
     utlReadWait(gps.port, utlStr, CALL_DELAY);
     DBG1("%s", utlStr);
