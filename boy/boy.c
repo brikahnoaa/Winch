@@ -187,7 +187,7 @@ PhaseType dataPhase(void) {
   ctdStop();
   antStop();
   // ngkStop();
-  wspStart(wsp2_pam);
+  wspStart();
   // test
   success = wspDetectMin(5, &detect);
   flogf("\ndataPhase detections: %d", detect);

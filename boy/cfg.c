@@ -110,7 +110,7 @@ static CfgParam cfgP[] = {
   {"won", "wsp.on",         &wsp.on,          'b',  "true"},
   {"wlo", "wsp.logging",    &wsp.logging,     'b',  "true"},
   {"wlF", "wsp.logFile",    &wsp.logFile,     'c',  "wsp"},
-  {"wca", "wsp.card",       &wsp.card,        'i',  "1"},
+  {"wca", "wsp.card",       &wsp.card,        'i',  "2"},
   {"wcs", "wsp.cards",      &wsp.cards,       'i',  "2"},
   {"wcS", "wsp.cfSize",     &wsp.cfSize,      'i',  "512"},
   {"wdI", "wsp.detInt",     &wsp.detInt,      'i',  "10"},
@@ -118,6 +118,9 @@ static CfgParam cfgP[] = {
   {"wdu", "wsp.duty",       &wsp.duty,        'i',  "50"},
   {"wfM", "wsp.freeMin",    &wsp.freeMin,     'i',  "5"},
   {"wga", "wsp.gain",       &wsp.gain,        'i',  "1"},
+  {"who", "wsp.hour",       &wsp.hour,        'i',  "4"},
+  {"wmi", "wsp.minute",     &wsp.minute,      'i',  "60"},
+  {"wmm", "wsp.minimum",    &wsp.minimum,     'i',  "4"},
 };
 
 

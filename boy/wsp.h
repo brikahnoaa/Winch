@@ -14,8 +14,10 @@ typedef struct WspInfo {
   int duty;                   // percent of cycle to run wispr (50%)
   int freeMin;                // free disk min GB, else go on to new wispr
   int gain;                   // mic sensitivity
+  int hour;                   // hour of day to finish cycle and rise
   int log;                    // log fileid
-  int riseH;                  // hour of day to rise
+  int minimum;                // need at least this much to start (3min)
+  int minute;                 // seconds in a minute, for fast tests (60)
   Serial port;                // mpcPamPort()
 } WspInfo;
 
@@ -24,7 +26,7 @@ int wspDetectDay(int *detections);
 int wspDetectHour(int *detections);
 int wspDetectMin(int minutes, int *detections);
 int wspSpace(float *disk);
-int wspStart(int card);
+int wspStart(void);
 int wspStorm(char *buf);
 void wspExit(void);
 void wspInit(void);

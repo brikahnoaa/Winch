@@ -18,37 +18,45 @@ void wspInit(void) {
   PIOClear(PAM_12);
   PIOClear(PAM_34);
   tmrStop(wsp_tmr);
-  if (strlen(wsp.logFile))
-    wsp.log = utlLogFile(wsp.logFile);
-} // wspInit
-
-///
-// turn on, disk free > wsp.freeMin
-// sets: wsp.card
-int wspStart(int card) {
-  DBG0("wspStart()")
   mpcPamDev(wsp1_pam);
   mpcPamPulse(WISPR_PWR_OFF);
   mpcPamDev(wsp2_pam);
   mpcPamPulse(WISPR_PWR_OFF);
   mpcPamDev(wsp3_pam);
   mpcPamPulse(WISPR_PWR_OFF);
+  mpcPamDev(null_pam);
+} // wspInit
+
+///
+// turn on, disk free > wsp.freeMin
+// ?? needs more checks
+// sets: wsp.card
+// rets: 0=success 
+int wspStart(void) {
+  DBG0("wspStart()")
   // select, power on
-  mpcPamDev(card);
+  mpcPamDev(wsp.card);
   mpcPamPulse(WISPR_PWR_ON);
-  wsp.card =  card;
+  if (strlen(wsp.logFile))
+    wsp.log = utlLogFile(wsp.logFile);
   // expect df output
   // utlExpect(wsp.port, utlBuf, "/mnt", 40);
   // ?? check free disk, maybe increment card
   // flogf("\n%s\n", utlBuf);
-  return card;
+  return 0;
 } // wspStart
 
 ///
 // stop current card
 void wspStop(void) {
+  int i;
+  // try for graceful shutdown, 3x
+  for (i=0;i<3;i++) {
+    utlWrite(wsp.port, "$EXI*", EOL);
+    if (utlExpect(wsp.port, utlBuf, "FIN", 5))
+      break;
+  }
   mpcPamPulse(WISPR_PWR_OFF);
-  utlDelay(100);
   wsp.card = null_pam;
   mpcPamDev(null_pam);
   if (wsp.log) {
@@ -71,7 +79,12 @@ int wspStorm(char *buf) {
 ///
 // ?? replace with log to wsp.log
 void wspLog(char *str) {
-  flogf("%s\n", str);
+  if (wsp.log) {
+    sprintf(utlStr, "%s\n", str);
+    write(wsp.log, utlStr, strlen(utlStr));
+  } else {
+    flogf("\nwspLog(%s)", str);
+  }
 } // wspLog
 
 ///
@@ -81,35 +94,52 @@ int wspDetectMin(int minutes, int *detect) {
   tmrStart(minute_tmr, minutes*60);
   while (!tmrExp(minute_tmr)) {}
   r = wspQuery(detect);
-  wspExit();
+  wspStop();
   return r;
 } // wspDetectMin
 
 ///
-// run detection for %wsp.dutyC of remainder of this hour
+// run detection for wsp.duty minutes at end of hour
 int wspDetectHour(int *detections) {
   struct tm *tim;
   time_t secs;
-  int min, hour=60;
-  //
+  int min, hour=60, remains, rest, duty, detect;
+  DBG0("wspDetectHour()")
+  utlLogTime();
+  min = wsp.minute;   // when not testing, min=60
+  duty = wsp.duty; 
   time(&secs);
   tim = localtime(&secs);
   // tim->tm_hour tim->tm_min tim->tm_sec
-  // duty cycle rest phase comes first
-  min = (hour-wsp.duty)-tim->tm_min;
-  if (min>0)
-    utlNap(min*60);
-  // rest phase of duty cycle is past
-  min=wsp.duty; 
-  while (min>0) {
-    if (min>wsp.detInt) 
-      utlNap(wsp.detInt*60);
+  remains = hour - tim->tm_min;
+  // need at least wsp.minimum to start/stop
+  if (remains<=wsp.minimum) return 1;
+  // rest first
+  if (remains>duty) {
+    rest = remains-duty;
+    flogf("\nwispr:\t| rest for %d", rest);
+    utlLogTime();
+    utlNap(rest*min);
+  } else {
+    // no time for full duty
+    duty = remains;
+  }
+  // duty calls
+  flogf("\nwispr:\t| run for %d", duty);
+  utlLogTime();
+  if (wspStart()) return 2;
+  while (duty>0) {
+    if (duty>wsp.detInt) 
+      utlNap(wsp.detInt*min);
     else
-      utlNap(min*60);
-    min-=wsp.detInt;
-    wspQuery(&detections);
-    wspLog(detections);
+      utlNap(duty*min);
+    duty -= wsp.detInt;
+    wspQuery(&detect);
+    *detections += detect;
   } // duty
+  wspStop();
+  // need to capture stats ??
+  flogf("\n\t| total detect = %d", detections);
   return 0;
 } // wspDetectHour
 
@@ -192,8 +222,6 @@ int wspDetectDay(int *detections) {
 */
 
 void wspExit(void) {
-  utlWrite(wsp.port, "$EXI*", EOL);
-  utlExpect(wsp.port, utlBuf, "FIN", 5);
 } // wspEnd
 
 ///

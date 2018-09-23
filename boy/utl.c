@@ -172,12 +172,17 @@ int utlReadWait(Serial port, char *in, int wait) {
 // ?? check out __DATE__, __TIME__
 
 ///
+// write time to log file
+void utlLogTime(void) {
+  flogf(" %s", utlTime());
+}
+
+///
 // HH:MM:SS now
 // returns: global static char *utl.ret
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
-
   time(&secs);
   tim = gmtime(&secs);
   sprintf(utl.ret, "%02d:%02d:%02d",

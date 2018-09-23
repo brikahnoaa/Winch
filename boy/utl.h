@@ -97,6 +97,7 @@ int utlReadWait(Serial port, char *in, int wait);
 void utlDelay(int milli);
 void utlErr( ErrType err, char *str);
 void utlInit(void);
+void utlLogTime(void);
 void utlNap(int sec);
 void utlPet(void);
 void utlSleep(void);
