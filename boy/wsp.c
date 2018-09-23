@@ -25,6 +25,7 @@ void wspInit(void) {
   mpcPamDev(wsp3_pam);
   mpcPamPulse(WISPR_PWR_OFF);
   mpcPamDev(null_pam);
+  wsp.on = false;
 } // wspInit
 
 ///
@@ -34,15 +35,16 @@ void wspInit(void) {
 // rets: 0=success 
 int wspStart(void) {
   DBG0("wspStart()")
+  if (strlen(wsp.logFile))
+    wsp.log = utlLogFile(wsp.logFile);
   // select, power on
   mpcPamDev(wsp.card);
   mpcPamPulse(WISPR_PWR_ON);
-  if (strlen(wsp.logFile))
-    wsp.log = utlLogFile(wsp.logFile);
   // expect df output
   // utlExpect(wsp.port, utlBuf, "/mnt", 40);
   // ?? check free disk, maybe increment card
   // flogf("\n%s\n", utlBuf);
+  wsp.on = true;
   return 0;
 } // wspStart
 
@@ -51,11 +53,20 @@ int wspStart(void) {
 void wspStop(void) {
   int i;
   // try for graceful shutdown, 3x
-  for (i=0;i<3;i++) {
-    utlWrite(wsp.port, "$EXI*", EOL);
-    if (utlExpect(wsp.port, utlBuf, "FIN", 5))
-      break;
-  }
+  if (wsp.on) {
+    for (i=0;i<3;i++) {
+      utlWrite(wsp.port, "$EXI*", EOL);
+      if (utlExpect(wsp.port, utlBuf, "FIN", 5))
+        break;
+    }
+    if (wsp.storm) {
+      wspStorm(utlBuf);
+      wspLog(utlBuf);
+    }
+    if (!utlExpect(wsp.port, utlBuf, "done", 10))
+      flogf("wsp stop fail");
+    wsp.on = false;
+  } // wisp.on
   mpcPamPulse(WISPR_PWR_OFF);
   wsp.card = null_pam;
   mpcPamDev(null_pam);
@@ -69,7 +80,7 @@ void wspStop(void) {
 // wsp storm check started. interact.
 int wspStorm(char *buf) {
   DBG0("wspStorm()")
-  utlExpect(wsp.port, buf, "RDY", 200);
+  if (!utlExpect(wsp.port, buf, "RDY", 200)) return 1;
   utlWrite(wsp.port, "$WS?*", EOL);
   utlReadWait(wsp.port, buf, 10);
   flogf("\nwspStorm prediction: %s", buf);
@@ -99,25 +110,54 @@ int wspDetectMin(int minutes, int *detect) {
 } // wspDetectMin
 
 ///
+// run detection for each hour until witching hour
+// rets: 0=success 1=watchdog 2=wDH fail
+int wspDetectDay(int *detections) {
+  struct tm *tim;
+  time_t secs;
+  int i, currHr, doneHr, waitHr;
+  DBG0("wspDetectDay()")
+  doneHr = wsp.hour;
+  // tim->tm_hour tim->tm_min tim->tm_sec
+  time(&secs);
+  tim = gmtime(&secs);
+  currHr = tim->tm_hour;
+  // wrap around math, 24hr diff
+  waitHr = (24+doneHr-currHr)%24;
+  flogf("\n starting wispr detection; end in hour %d", doneHr);
+  flogf(", %d hours to run", waitHr);
+  utlLogTime();
+  tmrStart(day_tmr, waitHr*60*60);
+  for (i=0;i<waitHr;i++) {
+    if (wspDetectHour(detections)) return 2;
+    // watchdog
+    if (tmrExp(day_tmr)) return 1;
+  }
+  return 0;
+} // wspDetectDay
+
+///
 // run detection for wsp.duty minutes at end of hour
+// rets: 0=success 1=watchdog
 int wspDetectHour(int *detections) {
   struct tm *tim;
   time_t secs;
-  int min, hour=60, remains, rest, duty, detect;
+  int min, hour, remains, rest, duty, detect;
   DBG0("wspDetectHour()")
-  utlLogTime();
   min = wsp.minute;   // when not testing, min=60
   duty = wsp.duty; 
-  time(&secs);
-  tim = localtime(&secs);
+  tmrStart(hour_tmr, 60*60+60);   // hour and a minute
   // tim->tm_hour tim->tm_min tim->tm_sec
-  remains = hour - tim->tm_min;
+  time(&secs);
+  tim = gmtime(&secs);
+  hour = tim->tm_hour;
+  remains = 60 - tim->tm_min;
   // need at least wsp.minimum to start/stop
   if (remains<=wsp.minimum) return 1;
   // rest first
   if (remains>duty) {
     rest = remains-duty;
-    flogf("\nwispr:\t| rest for %d", rest);
+    flogf("\nwispr:\t| rest for %d min", rest);
     utlLogTime();
     utlNap(rest*min);
   } else {
@@ -125,7 +165,7 @@ int wspDetectHour(int *detections) {
     duty = remains;
   }
   // duty calls
-  flogf("\nwispr:\t| run for %d", duty);
+  flogf("\nwispr:\t| run for %d min", duty);
   utlLogTime();
   if (wspStart()) return 2;
   while (duty>0) {
@@ -135,11 +175,21 @@ int wspDetectHour(int *detections) {
       utlNap(duty*min);
     duty -= wsp.detInt;
     wspQuery(&detect);
+    flogf(" [%d]", detect);
     *detections += detect;
+    // watchdog
+    if (tmrExp(hour_tmr)) break;
   } // duty
   wspStop();
+  // wait until we are on to next hour
+  while (hour==tim->tm_hour) {
+    time(&secs);
+    tim = gmtime(&secs);
+    utlNap(5);
+    // watchdog
+    if (tmrExp(hour_tmr)) return 1;
+  }
   // need to capture stats ??
-  flogf("\n\t| total detect = %d", detections);
   return 0;
 } // wspDetectHour
 

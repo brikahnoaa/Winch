@@ -5,3 +5,5 @@ baud gps.rudBaud=1000
 iridSig() >>'at+csq x0D '
 Application error 1 [0x1]
 
+/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r -W
+-W for fake detections

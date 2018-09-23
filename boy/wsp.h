@@ -5,6 +5,7 @@
 typedef struct WspInfo {
   bool on;                    // run wispr
   bool logging;
+  bool storm;                 // run storm detect
   char logFile[32];
   int card;                   // current wispr card in use
   int cards;                  // number of cards installed
@@ -21,7 +22,7 @@ typedef struct WspInfo {
   Serial port;                // mpcPamPort()
 } WspInfo;
 
-static int wspQuery(int *det);
+int wspQuery(int *det);
 int wspDetectDay(int *detections);
 int wspDetectHour(int *detections);
 int wspDetectMin(int minutes, int *detections);

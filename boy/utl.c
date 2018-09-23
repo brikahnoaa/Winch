@@ -303,6 +303,7 @@ int utlLogFile(char *fname) {
     utlErr(log_err, utl.str);
     return 0;
   } else {
+    flogf("\nlog file\t| %s", path);
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
     write(log, utl.str, strlen(utl.str));
     return log;
