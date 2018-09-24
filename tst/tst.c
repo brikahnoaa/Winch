@@ -1,33 +1,41 @@
-// ctdTst.c
+// s39.c
 #include <utl.h>
-#include <wsp.h>
+#include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
+#include <ant.h>
 
-extern WspInfo wsp;
+extern AntInfo ant;
+extern CtdInfo ctd;
 
 void main(void){
   char c;
-  Serial port;
   sysInit();
   mpcInit();
-  port = mpcPamPort();
-  wspInit();
-  // mpcPamDev(wsp2_pam);
-  flogf("\nPress q=exit, w=wspStart s=wspStop x=poweroff\n");
+  antInit();
+  antStart();
+  antSample();
+  if (!antDataWait())
+    flogf("\ndata wait fail, no response from sbe39");
+  if (!antRead())
+    flogf("\nread fails");
+  flogf("\nantDepth() -> %f", antDepth());
+  flogf("\nantTemp() -> %f", antTemp());
+  // antAuton(true);
+  flogf("\n\nPress any to talk, Q to exit");
+  flogf("\nconnected to ant");
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      if (c=='q') return;
-      if (c=='w') wspStart(wsp.card);
-      if (c=='s') wspStop();
-      if (c=='x') mpcPamPulse(WISPR_PWR_OFF);
-      cputc(c);
-      TUTxPutByte(port,c,false);
+      if (c=='Q') break;
+      TUTxPutByte(ant.port,c,false);
     }
-    if (TURxQueuedCount(port)) {
-      c=TURxGetByte(port,false);
+    while (TURxQueuedCount(ant.port)) {
+      c=TURxGetByte(ant.port,false);
       cputc(c);
     }
   }
+  // antAuton(false);
+  // antGetSamples();
+  utlStop("\nnormal");
 }

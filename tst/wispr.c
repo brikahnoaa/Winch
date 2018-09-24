@@ -12,13 +12,13 @@ void main(void){
   sysInit();
   mpcInit();
   port = mpcPamPort();
-  wspInit();
   // mpcPamDev(wsp2_pam);
-  flogf("\nPress q=exit, w=wspStart s=wspStop x=poweroff\n");
+  flogf("\nPress q=exit, i=wspInit w=wspStart s=wspStop x=poweroff\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='q') return;
+      if (c=='i') wspInit();
       if (c=='w') wspStart(wsp.card);
       if (c=='s') wspStop();
       if (c=='x') mpcPamPulse(WISPR_PWR_OFF);

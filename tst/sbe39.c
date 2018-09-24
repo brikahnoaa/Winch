@@ -14,17 +14,16 @@ void main(void){
   mpcInit();
   antInit();
   antStart();
-  flogf("\n");
   antSample();
   if (!antDataWait())
-    flogf("data wait fails\n");
+    flogf("\ndata wait fail, no response from sbe39");
   if (!antRead())
-    flogf("read fails\n");
-  flogf("antDepth() -> %f\n", antDepth());
-  flogf("antTemp() -> %f\n", antTemp());
+    flogf("\nread fails");
+  flogf("\nantDepth() -> %f", antDepth());
+  flogf("\nantTemp() -> %f", antTemp());
   // antAuton(true);
-  flogf("\nPress any to talk, Q to exit\n");
-  flogf("connected to ant\n");
+  flogf("\n\nPress any to talk, Q to exit");
+  flogf("\nconnected to ant");
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -38,5 +37,5 @@ void main(void){
   }
   // antAuton(false);
   // antGetSamples();
-  utlStop("normal");
+  utlStop("\nnormal");
 }
