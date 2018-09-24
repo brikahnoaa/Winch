@@ -14,16 +14,9 @@ void main(void){
   r = wspDetectDay(&detect);
   switch (r) {
   case 1: flogf("\nDay watchdog"); break;
-  case 2: flogf("\nHour watchdog"); break;
+  case 11: flogf("\nhour.watchdog"); break;
+  case 12: flogf("\nhour.startFail"); break;
+  case 13: flogf("\nhour.minimum"); break;
   }
-  /*
-  utlNap(100);
-  for (i=0;i<5;i++){
-    wspQuery(&detect);
-    flogf("\ndetected %d", detect);
-    utlLogTime();
-    utlNap(60);
-  }
-  */
   flogf("\nwspDetectHour() total (%d)", detect);
 }

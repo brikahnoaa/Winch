@@ -63,7 +63,7 @@ static CfgParam cfgP[] = {
   {"bfT", "boy.fallVTest",  &boy.fallVTest,   'f',  "0.2"},
   {"brA", "boy.rateAccu",   &boy.rateAccu,    'f',  "1.5"},
   {"brT", "boy.riseVTest",  &boy.riseVTest,   'f',  "0.33"},
-  {"bcy", "boy.cycle",      &boy.cycle,       'i',  "0"},
+  {"bcy", "boy.cycle",      &boy.cycle,       'i',  "1"},
   {"bcM", "boy.cycleMax",   &boy.cycleMax,    'i',  "0"},
   {"bfN", "boy.fileNum",    &boy.fileNum,     'i',  "1"},
   {"biF", "boy.iridFreq",   &boy.iridFreq,    'i',  "1"},

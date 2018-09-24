@@ -4,6 +4,7 @@
 #include <mpc.h>
 #include <sys.h>
 
+extern WspInfo wsp;
 
 void main(void){
   char c;
@@ -13,12 +14,14 @@ void main(void){
   port = mpcPamPort();
   wspInit();
   // mpcPamDev(wsp2_pam);
-  wspStart(wsp1_pam);
-  flogf("\nPress Q to exit\n");
+  flogf("\nPress q=exit, w=wspStart s=wspStop x=poweroff\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      if (c=='Q') return;
+      if (c=='q') return;
+      if (c=='w') wspStart(wsp.card);
+      if (c=='s') wspStop();
+      if (c=='x') mpcPamPulse(WISPR_PWR_OFF);
       cputc(c);
       TUTxPutByte(port,c,false);
     }

@@ -31,14 +31,14 @@ void wspInit(void) {
 ///
 // turn on, disk free > wsp.freeMin
 // ?? needs more checks
-// sets: wsp.card
-// rets: 0=success 
-int wspStart(void) {
+// sets: wsp.on .card
+// rets: 0=success >=nextCard
+int wspStart(int card) {
   DBG0("wspStart()")
   if (strlen(wsp.logFile))
     wsp.log = utlLogFile(wsp.logFile);
   // select, power on
-  mpcPamDev(wsp.card);
+  mpcPamDev(card);
   mpcPamPulse(WISPR_PWR_ON);
   // expect df output
   // utlExpect(wsp.port, utlBuf, "/mnt", 40);
@@ -64,12 +64,12 @@ void wspStop(void) {
       wspLog(utlBuf);
     }
     if (!utlExpect(wsp.port, utlBuf, "done", 10))
-      flogf("wsp stop fail");
+      flogf("\nwspStop\t| err: expected 'done', not seen...");
     wsp.on = false;
   } // wisp.on
   mpcPamPulse(WISPR_PWR_OFF);
-  wsp.card = null_pam;
-  mpcPamDev(null_pam);
+  // wsp.card = null_pam;
+  // mpcPamDev(null_pam);
   if (wsp.log) {
     close(wsp.log);
     wsp.log = 0;
@@ -111,11 +111,11 @@ int wspDetectMin(int minutes, int *detect) {
 
 ///
 // run detection for each hour until witching hour
-// rets: 0=success 1=watchdog 2=wDH fail
+// rets: 0=success 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
 int wspDetectDay(int *detections) {
   struct tm *tim;
   time_t secs;
-  int i, currHr, doneHr, waitHr;
+  int i, r, currHr, doneHr, waitHr;
   DBG0("wspDetectDay()")
   doneHr = wsp.hour;
   // tim->tm_hour tim->tm_min tim->tm_sec
@@ -129,7 +129,8 @@ int wspDetectDay(int *detections) {
   utlLogTime();
   tmrStart(day_tmr, waitHr*60*60);
   for (i=0;i<waitHr;i++) {
-    if (wspDetectHour(detections)) return 2;
+    r = wspDetectHour(detections);
+    if (r) return 10+r;
     // watchdog
     if (tmrExp(day_tmr)) return 1;
   }
@@ -138,7 +139,7 @@ int wspDetectDay(int *detections) {
 
 ///
 // run detection for wsp.duty minutes at end of hour
-// rets: 0=success 1=watchdog
+// rets: 0=success 1=watchdog 2=startFail 3=minimum
 int wspDetectHour(int *detections) {
   struct tm *tim;
   time_t secs;
@@ -153,7 +154,7 @@ int wspDetectHour(int *detections) {
   hour = tim->tm_hour;
   remains = 60 - tim->tm_min;
   // need at least wsp.minimum to start/stop
-  if (remains<=wsp.minimum) return 1;
+  if (remains<=wsp.minimum) return 3;
   // rest first
   if (remains>duty) {
     rest = remains-duty;
@@ -167,7 +168,7 @@ int wspDetectHour(int *detections) {
   // duty calls
   flogf("\nwispr:\t| run for %d min", duty);
   utlLogTime();
-  if (wspStart()) return 2;
+  if (wspStart(wsp.card)) return 2;
   while (duty>0) {
     if (duty>wsp.detInt) 
       utlNap(wsp.detInt*min);
@@ -177,7 +178,7 @@ int wspDetectHour(int *detections) {
     wspQuery(&detect);
     flogf(" [%d]", detect);
     *detections += detect;
-    // watchdog
+    // watchdog - returns err below
     if (tmrExp(hour_tmr)) break;
   } // duty
   wspStop();
@@ -192,87 +193,6 @@ int wspDetectHour(int *detections) {
   // need to capture stats ??
   return 0;
 } // wspDetectHour
-
-/*
-///
-// log up to .detMax detections every .query minutes
-// while .duty% * .hour minutes
-// return: 0 no err, 1 disk space, 2 no response, 3 bad DXN
-// uses: .day .day1 .duty .hour .detInt
-// sets: *detections
-int wspDetectDay(int *detections) {
-  // float free;
-  long dayM, dutyM, dayS, hourS, dutyS, queryS;
-  int day=0, cycleCnt=1, detTotal=0, det=0, r=0;  // r==0 means no err
-  enum {day_tmr, hour_tmr, duty_tmr, query_tmr};
-  if (boyCycle()==1) 
-    day = wsp.day1;
-  else
-    day = wsp.day;
-  dayM = day * wsp.hour;
-  dutyM = (int) wsp.hour*wsp.duty/100; // (60, 50)
-  dayS = dayM*60;
-  hourS = wsp.hour*60;
-  dutyS = dutyM*60;
-  queryS = wsp.detInt*60;
-  flogf("\nwspDetect()\t| day=%dh, hour=%dm, duty=%d%%, detInt=%dm",
-    day, wsp.hour, wsp.duty, wsp.detInt);
-  flogf("\nsecs %ld %ld %ld %ld %s", 
-    dayS, hourS, dutyS, queryS, utlTime());
-  // check disk space
-  // if (wspSpace(&free)) r = 2;     // fail
-  // if (free*wsp.cfSize<wsp.freeMin) r = 1;
-  // DBG2("\nfree: %3.1f GB: %3.1f err: %d\n", free, free*wsp.cfSize, r)
-  // while no err and tmr
-  tmrStart(day_tmr, dayS);
-  // day
-  while (!r) {
-    if (cgetq() && cgetc()=='q') { r = 5; continue; }
-    if (tmrQuery(day_tmr)<hourS) continue;
-    tmrStart(hour_tmr, hourS);
-    tmrStart(duty_tmr, dutyS);
-    flogf("\nwspDetect\t| hour %d %s", cycleCnt++, utlTime());
-    // hour
-    while (!r) {
-      // duty
-      while (!r) {
-        if (cgetq() && cgetc()=='q') { r = 5; continue; }
-        if (tmrQuery(duty_tmr)<queryS) continue;
-        tmrStart(query_tmr, queryS);
-        // query
-        while (!r) {
-          if (cgetq() && cgetc()=='q') { r = 5; continue; }
-          pwrNap(5);
-          if (tmrExp(query_tmr)) break;
-        } // while det_tmr
-        // detections
-        if (r) break; // ??
-        r = wspQuery(&det);
-        detTotal += det;
-        flogf("\nwspDetect\t| detected %d %s", det, utlTime());
-        // short naps avoids extra loops
-        if (tmrExp(duty_tmr)) break;
-      } // while duty
-      flogf("\nwspDetect\t| duty cycle %s", utlTime());
-      // wait until hour ends
-      while (!r && !tmrExp(hour_tmr)) {
-        if (cgetq() && cgetc()=='q') { r = 5; continue; }
-        pwrNap(5);
-      }
-      break;
-    } // while hour
-    if (tmrExp(day_tmr)) break;
-  } // while day
-  if (r) tmrStopAll();       // err
-  wspExit();
-  *detections = detTotal;
-  flogf("\nwspDetect\t| total detections %d %s", detTotal, utlTime());
-  return r;
-} // wspDetect
-*/
-
-void wspExit(void) {
-} // wspEnd
 
 ///
 // query detections

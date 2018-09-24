@@ -1,29 +1,33 @@
-// wspTst.c
+// ctdTst.c
 #include <utl.h>
 #include <wsp.h>
 #include <mpc.h>
 #include <sys.h>
 
+extern WspInfo wsp;
 
 void main(void){
-  int detect=0;
-  int r;
+  char c;
+  Serial port;
   sysInit();
   mpcInit();
+  port = mpcPamPort();
   wspInit();
-  r = wspDetectDay(&detect);
-  switch (r) {
-  case 1: flogf("\nDay watchdog"); break;
-  case 2: flogf("\nHour watchdog"); break;
+  // mpcPamDev(wsp2_pam);
+  flogf("\nPress q=exit, w=wspStart s=wspStop x=poweroff\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='q') return;
+      if (c=='w') wspStart(wsp.card);
+      if (c=='s') wspStop();
+      if (c=='x') mpcPamPulse(WISPR_PWR_OFF);
+      cputc(c);
+      TUTxPutByte(port,c,false);
+    }
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
   }
-  /*
-  utlNap(100);
-  for (i=0;i<5;i++){
-    wspQuery(&detect);
-    flogf("\ndetected %d", detect);
-    utlLogTime();
-    utlNap(60);
-  }
-  */
-  flogf("\nwspDetectHour() total (%d)", detect);
 }

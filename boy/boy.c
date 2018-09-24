@@ -65,8 +65,6 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       boy.cycle++;
-      sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
-      execstr(utlBuf);
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
@@ -77,9 +75,12 @@ void boyMain() {
     } // switch
     boy.phasePrev = boy.phase;
     boy.phase = phaseNext;
-    // ignor if cycleMax==0
+    // check these every phase
     if (boy.cycleMax && (boy.cycle > boy.cycleMax)) 
       sysStop("cycleMax reached");
+    // new day
+    // sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
+    // execstr(utlBuf);
   } // while true
 } // boyMain() 
 
@@ -187,15 +188,14 @@ PhaseType dataPhase(void) {
   ctdStop();
   antStop();
   // ngkStop();
-  wspStart();
-  // test
-  success = wspDetectMin(5, &detect);
-  flogf("\ndataPhase detections: %d", detect);
+  success = wspDetectDay(&detect);
+  switch (success) {
+  case 1: flogf("\nDay watchdog"); break;
+  case 11: flogf("\nhour.watchdog"); break;
+  case 12: flogf("\nhour.startFail"); break;
+  case 13: flogf("\nhour.minimum"); break;
+  }
   global.det = detect;
-  wspStorm(utlBuf);
-  flogf("\nstorm: %s", utlBuf);
-  wspStop();
-  if (success==5) sysStop("user stop in dataPhase");
   antStart();
   ctdStart();
   return rise_pha;

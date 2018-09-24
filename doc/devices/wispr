@@ -1,3 +1,37 @@
+Sun, Sep 23, 2018  2:34:24 PM
+wsp --> 
+(60 sec)
+$GPS*
+(10 sec)
+$NGN*
+(10 sec)
+"$EXI*" -> $FIN*
+(2:15)
+$RDY*
+"$WS?*" -> $NLW*,09/23/18,21:36:49,0026,0002*done
+(2:30)
+done
+
+ starting wispr detection; end in hour 20, 3 hours to run 17:35:56
+wispr:	| run for 25 min 17:35:56
+log file	| log\265wsp.log [12] [16] [7]
+wspStorm prediction: $NLW*,09/23/18,18:03:34,0026,0002*
+
+wispr:	| rest for 27 min 18:03:22
+wispr:	| run for 30 min 18:30:23
+log file	| log\265wsp.log [0] [0] [0]wsp stop fail
+Hour watchdog
+wspDetectHour() total (35)
+Application error 27 [0x1B]
+
+#echo "checking com1 for shell escape"
+#echo "?" >> /dev/ttyBF1
+#read -t 3 a < /dev/ttyBF1
+#if [ "$a" == "!!" ]; then
+#       hush < /dev/ttyBF1 > /dev/ttyBF1
+/bin/wispr -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r
+
+
 Mon, May 14, 2018  9:05:11 AM
 code.
 "$DX?,%d*\n", dtx   call to the wsp board with max_detections

@@ -89,7 +89,8 @@ void mpcPamDev(MpcPamType pam) {
 ///
 void mpcPamPulse(int pin) {
   PIOSet(pin);
-  utlDelay(1);
+  // RTCDelayMicroSeconds((long)100);
+  utlDelay(100);
   PIOClear(pin);
 } // mpcPamPulse
 
