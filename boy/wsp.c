@@ -77,6 +77,14 @@ void wspStop(void) {
 } // wspStop
 
 ///
+// send gps, gain to wispr
+int wspSetup(char *gps, int gain) {
+// ??
+  if (*gps) return gain;
+  return 0;
+} // wspSetup
+
+///
 // wsp storm check started. interact.
 int wspStorm(char *buf) {
   DBG0("wspStorm()")
@@ -196,21 +204,22 @@ int wspDetectHour(int *detections) {
 
 ///
 // query detections
+// rets: 0=success 1=badData
 int wspQuery(int *det) {
-  int r=0;
   char *s, query[32];
   TURxFlush(wsp.port);
+  *det = 0;
   sprintf(query, "$DX?,%d*", wsp.detMax);
   utlWrite(wsp.port, query, EOL);
   utlReadWait(wsp.port, utlBuf, 16);
   wspLog(utlBuf);
   // total det
   s = strtok(utlBuf, "$,");
-  if (!strstr(s, "DXN")) r = 3;
+  if (!strstr(s, "DXN")) return 1;
   s = strtok(NULL, ",");
   *det = atoi(s);
   DBG1("detected %d", det)
-  return r;
+  return 0;
 } // wspQuery
 
 ///

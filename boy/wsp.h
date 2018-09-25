@@ -26,6 +26,7 @@ int wspQuery(int *det);
 int wspDetectDay(int *detections);
 int wspDetectHour(int *detections);
 int wspDetectMin(int minutes, int *detections);
+int wspSetup(char *gps, int gain);
 int wspSpace(float *disk);
 int wspStart(int card);
 int wspStorm(char *buf);

@@ -135,7 +135,7 @@ bool antDataWait(void) {
 } // antDataWait
 
 ///
-// if !tmrOn request sample
+// flush; if !tmrOn request sample
 // sets: s39_tmr
 void antSample(void) {
   if (antPending()) return;
