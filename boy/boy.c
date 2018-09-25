@@ -418,8 +418,8 @@ PhaseType deployPhase(void) {
   flogf(" sbe39@%3.1f", antDepth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
     antDepth(), ctdDepth(), utlDateTime());
-  flogf("\n\t| wait up to %d minutes to reach bottom", boy.deployWt);
-  tmrStart( deploy_tmr, MINUTE*boy.deployWt );
+  flogf("\n\t| wait up to %d minutes to reach bottom", boy.depWait);
+  tmrStart( deploy_tmr, MINUTE*boy.depWait );
   // wait until under 10m
   while (true) {
     antSample();
@@ -428,7 +428,7 @@ PhaseType deployPhase(void) {
     flogf("\ndeployPhase@%4.2fm %s", depth, utlTime());
     if (depth>10) break;
     if (tmrExp(deploy_tmr)) 
-      sysStop("deployP() 2 hour timeout");
+      sysStop("deployP() shipside timeout");
     utlNap(30);
   }
   flogf("\n\t| %4.2fm>10m, watch for depth to settle down\n", depth);
@@ -445,8 +445,8 @@ PhaseType deployPhase(void) {
     if (depth-lastD<1.0) break;
     if (tmrExp(drop_tmr)) break;
   }
-  flogf("\n\t| down, pause for %ds", boy.settleT);
-  utlNap(boy.settleT);      // default 120sec
+  flogf("\n\t| down, pause for %ds", boy.depSettle);
+  utlNap(boy.depSettle);      // default 120sec
   // we are down
   boy.dockD = depth;
   flogf("\n\t| boy.dockD = %4.2f", boy.dockD);

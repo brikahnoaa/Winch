@@ -31,7 +31,8 @@ typedef struct BoyInfo {
   float riseVTest;        // meters/min of the most recent rise 
   int cycle;
   int cycleMax;           // limit number of cycles, i.e. test deployment
-  int deployWt;           // wait until deployed after start (240min)
+  int depWait;            // wait until deployed after start (240min)
+  int depSettle;          // time to let deploy settle (120)
   int fallOp;             // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times
   int fileNum;            // current number for filename ####.dat ####.log
@@ -43,7 +44,6 @@ typedef struct BoyInfo {
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int riseOp;             // operation timeout minutes (30)
   int riseRetry;          // rise fails, retry times
-  int settleT;            // time to let deploy settle (120)
   int startPh;            // phase to start in (0)
   int stayDown;           // stay down for days, expecting storm (0)
   int testCnt;            // counter used in testing (3)
