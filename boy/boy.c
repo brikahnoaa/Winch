@@ -65,6 +65,12 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       boy.cycle++;
+      // masters told us to stay down a few days
+      if (boy.stayDown>0) {
+        boy.stayDown--;
+        utlNap(MINUTE*15);
+        phaseNext=data_pha;
+      }
       break;
     case reboot_pha:
       phaseNext = rebootPhase();

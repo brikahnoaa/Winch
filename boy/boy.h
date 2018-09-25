@@ -32,6 +32,8 @@ typedef struct BoyInfo {
   int cycle;
   int cycleMax;           // limit number of cycles, i.e. test deployment
   int deployWt;           // wait until deployed after start (240min)
+  int fallOp;             // operation timeout minutes (30)
+  int fallRetry;          // fall fails, retry times
   int fileNum;            // current number for filename ####.dat ####.log
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
@@ -39,12 +41,11 @@ typedef struct BoyInfo {
   int log;                // log filehandle
   int minute;             // set smaller to speed up test cycle (60)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
-  int fallOp;             // operation timeout 
-  int fallRetry;          // fall fails, retry times
-  int riseOp;             // operation timeout
+  int riseOp;             // operation timeout minutes (30)
   int riseRetry;          // rise fails, retry times
   int settleT;            // time to let deploy settle (120)
   int startPh;            // phase to start in (0)
+  int stayDown;           // stay down for days, expecting storm (0)
   int testCnt;            // counter used in testing (3)
   int testSize;           // send test file
   PhaseType phase;        // deploy, data, rise, irid, fall, error
