@@ -31,6 +31,7 @@ typedef struct BoyInfo {
   float riseVTest;        // meters/min of the most recent rise 
   int cycle;
   int cycleMax;           // limit number of cycles, i.e. test deployment
+  int deployWt;           // wait until deployed after start (240min)
   int fileNum;            // current number for filename ####.dat ####.log
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
