@@ -515,7 +515,8 @@ PhaseType deployPhase(void) {
   flogf(" sbe39@%3.1f", antDepth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
     antDepth(), ctdDepth(), utlDateTime());
-  tmrStart( deploy_tmr, MINUTE*60*2 );
+  flogf("\n\t| wait up to %d minutes to reach bottom", boy.deployWt);
+  tmrStart( deploy_tmr, MINUTE*boy.deployWt );
   // wait until under 10m
   while (true) {
     antSample();
