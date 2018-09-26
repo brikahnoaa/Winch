@@ -105,9 +105,9 @@ hpsStats ()
 	  printf ("Humidity = %7.1f %\n", humi);
 	  break;
 	}
-      PIOClear (ADREF_SHDN_PIN);
-      PIOClear (HPSENS_PWR_ON);
     }
+    PIOClear (ADREF_SHDN_PIN);
+    PIOClear (HPSENS_PWR_ON);
   return 0;
 }				// hpsStats
 
