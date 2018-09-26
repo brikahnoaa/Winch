@@ -80,8 +80,10 @@ int startCheck(void) {
   VEEStoreStr("STARTS", str);
   // log file is not open yet
   cprintf("\nstartCheck(): starts %d, max %d", cnt, max);
-  if (cnt>max)
+  if (cnt>max) {
     sysStop("starts>max");
+    BIOSResetToPicoDOS();
+  }
   return cnt;
 } // startCheck
 
@@ -119,8 +121,6 @@ void sysStop(char *out) {
   ngkStop();
   pwrStop();
   wspStop();
-  utlSleep();
-  BIOSReset();
 } // sysStop
 
 ///

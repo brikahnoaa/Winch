@@ -338,6 +338,7 @@ void utlSleep(void) {
 // stop called often
 void utlStop(char *out) {
   sysStop(out);
+  BIOSResetToPicoDOS();
 } // utlStop
 
 ///

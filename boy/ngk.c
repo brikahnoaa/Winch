@@ -157,8 +157,8 @@ char * ngkMsgName(MsgType msg) {
 void ngkBuoyRsp(void) {
   ngkSend(buoyRsp_msg);
   utlDelay(20);
-  ngkSend(fallCmd_msg);
-  utlSleep();
+  // ngkSend(fallCmd_msg);
+  // BIOSReset();
 } // ngkBuoyRsp
 
 ///
