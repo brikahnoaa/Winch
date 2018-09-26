@@ -12,10 +12,12 @@ typedef struct GpsInfo {
   char projHdr[16];         // ???csProjPlat
   char time[16];
   char logFile[64];
-  int fileSz;               // how many bytes to upload in a file/block
+  int fileBlock;            // how many bytes to upload in a file block (512)
+  int fileMax;              // how many bytes max in a file (3000)
   int fileCnt;              // how many files to upload in a connection
   int hdrPause;             // wait sec for rudics header response (20)
   int hdrTry;               // header retry (3)
+  int hupMs;                // ms +++ ms for HUP (2000)
   int redial;               // how many calls to make (5)
   int rudBaud;              // effective baud rate for rudics (2400)
   int rudResp;              // wait secs for respond to a block (30)

@@ -68,7 +68,7 @@ void ngkSend(MsgType msg) {
   // copy msgStr and change id character // e.g. "#R,0X,00"
   strcpy(str, ngk.msgStr[msg]);
   str[4] = '0' + ngk.winchId;
-  flogf("\n+ngkSend(%s) at %s", str, utlTime());
+  flogf("\n\t\t+ngkSend(%s) at %s", str, utlTime());
   TUTxWaitCompletion(ngk.port);
   TURxFlush(ngk.port);
   utlWrite(ngk.port, str, EOL);
@@ -100,7 +100,7 @@ MsgType ngkRecv(MsgType *msg) {
   // amodem will repeat message if not OK
   if (*msg!=mangled_msg) 
     utlWrite(ngk.port, "OK", EOL);
-  flogf("\n+ngkRecv(%s)", utlBuf);
+  flogf("\n\t\t+ngkRecv(%s)", utlBuf);
   flogf(" %s %s", ngk.msgName[*msg], utlTime());
   if (*msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();

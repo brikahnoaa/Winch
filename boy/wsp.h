@@ -15,7 +15,7 @@ typedef struct WspInfo {
   int duty;                   // percent of cycle to run wispr (50%)
   int freeMin;                // free disk min GB, else go on to new wispr
   int gain;                   // mic sensitivity
-  int hour;                   // hour of day to finish cycle and rise
+  int hour;                   // hour of day to finish cycle and rise (7)
   int log;                    // log fileid
   int minimum;                // need at least this much to start (3min)
   int minute;                 // seconds in a minute, for fast tests (60)

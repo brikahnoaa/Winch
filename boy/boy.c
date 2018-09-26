@@ -68,7 +68,7 @@ void boyMain() {
       // masters told us to stay down a few days
       if (boy.stayDown>0) {
         boy.stayDown--;
-        utlNap(MINUTE*15);
+        if (!boy.testing) utlNap(MINUTE*15);
         phaseNext=data_pha;
       }
       break;
@@ -219,7 +219,7 @@ int rise(float targetD, int try) {
   int est;        // estimated operation time
   MsgType msg;
   enum {opT, ngkT, twentyT, fiveT};  // local timer names
-  flogf("\nrise(%3.1f, %s, %d)", targetD, try);
+  flogf("\nrise(%3.1f, %d)", targetD, try);
   // utlNap(15);
   antSample();
   antDataWait();
@@ -260,7 +260,7 @@ int rise(float targetD, int try) {
     }
     // winch
     if (ngkRecv(&msg)!=null_msg) {
-      flogf(", %s from winch", ngkMsgName(msg));
+      flogf("\nrise()\t| %s from winch", ngkMsgName(msg));
       // surface detect by winch
       if (msg==stopCmd_msg) break;
       // rise rsp
@@ -268,11 +268,12 @@ int rise(float targetD, int try) {
         tmrStop(ngkT);
       // target stop
       if (msg==stopRsp_msg) {
-        if (!targetB)
-          flogf("\n ERR \t| unexpected stopRsp");
-          // ?? are we really stopped?
-        break;
-      } // stopRsp
+        if (targetB)
+          break;
+          // we are good to go
+        flogf("\n ERR \t| unexpected stopRsp");
+      }
+      // ?? are we really stopped?
     }
     if (tmrExp(ngkT)) {
       flogf("\n ERR \t| no response from winch %s", utlTime());
@@ -286,8 +287,8 @@ int rise(float targetD, int try) {
       if (startD-nowD < 2) {
         // by now we should have moved up 4 meters in 13.5s
         flogf("ERR < 2m");
-        errB = true;
-        break;
+        // errB = true;
+        // break;
       } else {
         twentyB = true;
         lastD = nowD;
@@ -358,7 +359,7 @@ int fall(float targetD, int try) {
     }
     // winch
     if (ngkRecv(&msg)!=null_msg) {
-      flogf(", %s from winch", ngkMsgName(msg));
+      flogf("\nfall()\t| %s from winch", ngkMsgName(msg));
       if (msg==fallRsp_msg)
         tmrStop(ngkTmr);
       // reached dock, probably
@@ -488,13 +489,13 @@ int oceanCurr(float *curr) {
   // solve for b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
-  flogf("\noceanCurr() \t| ant=%3.1f boy=%3.1f", aD, cD);
+  flogf("\noceanCurr()\t| ant=%3.1f boy=%3.1f", aD, cD);
   if (a<0) {
-    flogf("\noceanCurr() \t| ERR sbe16-sbe39<0");
+    flogf("\noceanCurr()\t| ERR sbe16-sbe39<0");
     return 2;
   }
   if (c<a) {
-    flogf("\noceanCurr() \t| ERR boy2ant<cD-aD");
+    flogf("\noceanCurr()\t| ERR boy2ant<cD-aD");
     // ?? update boy2ant?
     // return 3;
   }
@@ -516,7 +517,7 @@ int oceanCurrChk() {
     utlErr(boy_err, " oceanCurr failed");
     return -1;
   }
-  flogf("\n\t|current @ %.1f = %.1f", antDepth(), sideways);
+  flogf("\n\t\t\t| lateral @ %.1f = %.1f", antDepth(), sideways);
   if (sideways>boy.currMax) {
     flogf(" too strong, cancel ascent");
     // ignore current when dbg ?? should be setting

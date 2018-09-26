@@ -117,7 +117,7 @@ void ctdSample(void) {
     if (strstr(utlBuf, "time out"))
       ctdPrompt();      // wakeup
   } // ctdData()
-  if (!ctd.auton && ctd.storeSamp)
+  if (!ctd.auton && ctd.sampStore)
     utlWrite(ctd.port, "TSSon", EOL);
   else
     utlWrite(ctd.port, "TS", EOL);

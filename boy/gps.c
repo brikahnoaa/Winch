@@ -308,8 +308,8 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 } // iridSendBlock
 
 ///
-// land ho!
-// send file in chunks of gps.blockSize
+// land ho! already did iridDial and iridProjHdr
+// send fname as separate files of max gps.fileMax
 int iridSendFile(char *fname) {
   int fh, len, block;
   struct stat fileinfo;
@@ -319,8 +319,8 @@ int iridSendFile(char *fname) {
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
   while (len>0) {
-    if (len>=gps.fileSz)
-      block = read(fh, utlBuf, gps.fileSz);
+    if (len>=gps.fileMax)
+      block = read(fh, utlBuf, gps.fileMax);
     else
       block = read(fh, utlBuf, len);
     if (block<0) return 2;
@@ -330,19 +330,6 @@ int iridSendFile(char *fname) {
   } // send
   return 0;
 } // iridSendFile
-
-/*
-  if (iridLandResp(utlStr)) return 4;
-  if (strstr(utlBuf, "done")) {
-    // done done done done?
-    utlWrite(gps.port, "done", NULL);
-    utlExpect(gps.port, utlBuf, "done", 1);
-    utlWrite(gps.port, "done", NULL);
-    return 0;
-  } // done
-  if (strstr(utlBuf, "cmds")) 
-    if (iridLandCmds(utlBuf, &len)) return 5;
- */
 
 ///
 // we just sent the last block, should get cmds or done
@@ -424,9 +411,9 @@ int iridLandCmds(char *buff, int *len) {
 void iridHup(void) {
   int try=3;
   while (try--) {
-    utlDelay(1500);
+    utlDelay(gps.hupMs);
     utlWriteBlock(gps.port, "+++", 3);
-    utlDelay(1500);
+    utlDelay(gps.hupMs);
     if (utlExpect(gps.port, utlBuf, "OK", 2)) break;
   }
   utlWrite(gps.port, "at+clcc", EOL);

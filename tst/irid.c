@@ -1,4 +1,4 @@
-// gpsTst.c
+// irid.c
 #include <utl.h>
 #include <gps.h>
 #include <mpc.h>
@@ -6,9 +6,11 @@
 #include <sys.h>
 #include <tmr.h>
 #include <boy.h>
+#include <cfg.h>
 
 extern GpsInfo gps;
 extern BoyInfo boy;
+extern SysInfo sys;
 
 void main(void){
   // Serial port;
@@ -29,10 +31,8 @@ void main(void){
   cprintf("\nlength boy.testSize=%d, count boy.testCnt=%d ", len, cnt);
   cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
   buff = malloc(len);
+  // antSwitch(gps_ant);
   // gpsStats();
-  // flogf("\n%s\n", utlTime());
-  // gpsStats();
-  // flogf("\n%s\n", utlTime());
   antSwitch(irid_ant);
   if (iridSig()) return;
   if (iridDial()) return;
@@ -48,38 +48,20 @@ void main(void){
   }
   iridLandResp(utlBuf);
   if (strstr(utlBuf, "cmds"))
-    r = iridLandCmds(buff, &l);
+    r = iridLandCmds(utlBuf, &l);
+  utlBuf[l] = 0;
+  strcpy(buff, utlBuf);
   utlDelay(500);
   utlWrite(gps.port, "done", "");
   utlDelay(500);
   iridHup();
   iridSig();
   flogf("\n%s\n", utlTime());
-  /*
-  port = gps.port;
-  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
-  while (true) {
-    if (TURxQueuedCount(port)) {
-      c=TURxGetByte(port,false);
-      cputc(c);
-    }
-    if (cgetq()) {
-      c=cgetc();
-      if (c=='Q') break;
-      if (c=='C') {
-        antDevice(cf2_dev);
-        continue;
-      }
-      if (c=='A') {
-        antDevice(a3la_dev);
-        continue;
-      }
-      cputc(c);
-      TUTxPutByte(port,c,false);
-    }
-  }
-  */
-
+  flogf("\nsetting '%s'", utlNonPrint(buff));
+  cfgString(buff);
+  flogf("\nsys.program = %s", sys.program);
+  // antSwitch(gps_ant);
+  // gpsStats();
   gpsStop();
   antStop();
 }

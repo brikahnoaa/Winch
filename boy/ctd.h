@@ -5,7 +5,7 @@
 typedef struct CtdInfo {
   bool auton;
   bool clearSamp;             // clear stored samples
-  bool storeSamp;             // store on device with TSSon - except auton
+  bool sampStore;             // store on device with TSSon - except auton
   bool on;
   bool sbe39;                 // init and use sbe39
   char logFile[32];
