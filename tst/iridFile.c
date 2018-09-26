@@ -7,7 +7,6 @@
 #include <tmr.h>
 #include <boy.h>
 #include <cfg.h>
-#include <hps.h>
 
 extern GpsInfo gps;
 extern BoyInfo boy;
@@ -22,8 +21,6 @@ void main(void){
   i=0;
   sysInit();
   mpcInit();
-  hpsStats();
-  utlStop("hpsens");
   antInit();
   gpsInit();
   //
