@@ -65,6 +65,9 @@ void boyMain() {
       phaseNext = dataPhase();
       boyEngLog();
       eng.cycle++;
+      // restart ctd to reopen log
+      ctdStop();
+      ctdStart();
       // masters told us to stay down a few days
       if (boy.stayDown>0) {
         boy.stayDown--;
