@@ -60,6 +60,8 @@ void boyMain() {
       break;
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
+      if (boy.stop) 
+        utlStop("remote stop cmd");
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
