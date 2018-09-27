@@ -132,14 +132,14 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // R,01,00
-  strcpy(eng.riseStart, utlTime());
+  sprintf(eng.riseStart, "%s @%.1f", utlTime(), antDepth());
   result = rise(antSurfD()+1, 0);
   if (result) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
   eng.surfD = antDepth();
-  strcpy(eng.riseDone, utlTime());
+  sprintf(eng.riseDone, "%s @%.1f", utlTime(), antDepth());
   return irid_pha;
 } // risePhase
 
@@ -584,8 +584,8 @@ void boyEngLog(void) {
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "ocean current lateral = %.2f\n", eng.oceanCurr);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise start %s, rise end %s\n", 
-    eng.riseStart, eng.riseDone);
+  sprintf(utlStr, "rise start %s\n", eng.riseStart);
+  sprintf(utlStr, "rise end %s\n", eng.riseDone);
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "dock depth %.1f, surf depth %.1f, meters %.1f\n",
     eng.dockD, eng.surfD, eng.dockD-eng.surfD);

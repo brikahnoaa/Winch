@@ -65,11 +65,11 @@ typedef enum {
 typedef struct EngInfo {
   char gpsStart[64];
   char gpsDrift[64];
-  char lat[32];
-  char lng[32];
-  char program[32];
-  char riseStart[32];
-  char riseDone[32];
+  char lat[64];
+  char lng[64];
+  char program[64];
+  char riseStart[64];
+  char riseDone[64];
   float dockD;
   float oceanCurr;
   float surfD;
