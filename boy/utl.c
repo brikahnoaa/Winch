@@ -279,27 +279,31 @@ char *utlNonPrintBlock (char *in, int len) {
 void utlPet() { TickleSWSR(); }              // pet the watchdog
 
 ///
+// rets: path\name
+void utlLogPathName(char *path, char *base, int day) {
+  char day000[4];
+  sprintf(day000, "%03d", day);
+  path[0]=0;
+  strcat(path, "log\\");
+  strcat(path, day000);
+  strcat(path, base);
+  strcat(path, ".log");
+  DBG1("(%s)", path)
+  return;
+} // utlLogPathName
+
+///
 // takes a base name and makes a full path, opens file, writes dateTime
 // ?? moves existing file to backup dir
 // rets: fileID or 0=err
-int utlLogFile(char *fname) {
+int utlLogFile(char *base) {
   int log;
-  char path[64], day[4];
-  struct tm *tim;
-  time_t secs;
-  DBG0("utlLogFile(%s)", fname)
-  time(&secs);
-  tim = gmtime(&secs);
-  sprintf(day, "%03d", tim->tm_yday);
-  path[0]=0;
-  strcat(path, "log\\");
-  strcat(path, day);
-  strcat(path, fname);
-  strcat(path, ".log");
-  DBG1("(%s)", path)
+  char path[64];
+  DBG0("utlLogFile(%s)", base)
+  utlLogPathName(path, base, com.cycle);
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
-    sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", fname, log, path);
+    sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", base, log, path);
     utlErr(log_err, utl.str);
     return 0;
   } else {

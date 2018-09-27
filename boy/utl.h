@@ -91,7 +91,8 @@ char *utlExpect(Serial port, char *buf, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
-int utlLogFile(char *fname);
+int utlLogFile(char *base);
+void utlLogPathName(char *path, char *base, int day);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);
