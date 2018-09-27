@@ -89,20 +89,20 @@ hpsStats ()
 	{
 	case 0:
 	  curr = output * 1000.;	//Current in mA
-	  printf ("Current  = %7.1f mA\n", curr);
+	  flogf ("\nCurrent  = %7.1f mA", curr);
 	  break;
 	case 1:
 	  volt = output * 100.;	//Voltage in V
-	  printf ("Bat Volt = %7.1f V\n", volt);
+	  flogf ("\nBat Volt = %7.1f V", volt);
 	  break;
 	case 2:
 	  //output=(output*0.4+0.040)*2439.0;//pressure
 	  pres = (output * 0.4 + 0.040) * 2494.0;	//pressure
-	  printf ("Pressure = %7.1f mBar\n", pres);
+	  flogf ("\nPressure = %7.1f mBar", pres);
 	  break;
 	case 3:
 	  humi = (output * 2 - 0.831) / 0.029;	//humidity
-	  printf ("Humidity = %7.1f %\n", humi);
+	  flogf ("\nHumidity = %7.1f %", humi);
 	  break;
 	}
     }

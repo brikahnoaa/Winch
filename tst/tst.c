@@ -1,74 +1,35 @@
-// iridFile.c
+// ctdTst.c
 #include <utl.h>
-#include <gps.h>
+#include <ctd.h>
 #include <mpc.h>
-#include <ant.h>
 #include <sys.h>
-#include <tmr.h>
-#include <boy.h>
-#include <cfg.h>
-#include <hps.h>
 
-extern GpsInfo gps;
-extern BoyInfo boy;
-extern SysInfo sys;
+extern CtdInfo ctd;
 
 void main(void){
-  // Serial port;
-  // char c;
-  char *buff;
-  int l, len, cnt;
-  int i, r;
-  i=0;
+  char c;
   sysInit();
   mpcInit();
-  hpsStats();
-  utlStop("hpsens");
-  antInit();
-  gpsInit();
-  //
-  antStart();
-  gpsStart();
-  //
-  len = boy.testSize;
-  cnt = boy.testCnt;
-  cprintf("\nlength boy.testSize=%d, count boy.testCnt=%d ", len, cnt);
-  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
-  buff = malloc(len);
-  // antSwitch(gps_ant);
-  // gpsStats();
-  antSwitch(irid_ant);
-  if (iridSig()) return;
-  if (iridDial()) return;
-  if (iridProjHdr()) return;
-  /*
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, gps.rudBaud, gps.sendSz);
-    buff[len-1] = 'Z';
-    r = iridSendBlock(buff, len, i, cnt);
-    cprintf("(%d)\n", r);
-    // utlDelay(500);
+  ctdInit();
+  ctdStart();
+  ctdSample();
+  ctdDataWait();
+  ctdRead();
+  flogf("\nctdDepth %2.1f", ctdDepth());
+  ctdDataWait();
+  ctdRead();
+  flogf("\nctdDepth %2.1f", ctdDepth());
+  flogf("\nPress Q to exit\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
   }
-   */
-  iridSendFile("test\\test.log");
-  iridLandResp(utlBuf);
-  if (strstr(utlBuf, "cmds"))
-    r = iridLandCmds(utlBuf, &l);
-  utlBuf[l] = 0;
-  strcpy(buff, utlBuf);
-  utlDelay(500);
-  utlWrite(gps.port, "done", "");
-  utlDelay(500);
-  iridHup();
-  iridSig();
-  flogf("\n%s\n", utlTime());
-  flogf("\nsetting '%s'", utlNonPrint(buff));
-  cfgString(buff);
-  flogf("\nsys.program = %s", sys.program);
-  // antSwitch(gps_ant);
-  // gpsStats();
-  gpsStop();
-  antStop();
+  ctdStop();
 }

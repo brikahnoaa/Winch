@@ -24,7 +24,8 @@ CtdInfo ctd;
 void ctdInit(void) {
   DBG0("ctdInit()")
   ctd.port = mpcPamPort();
-  ctdStart();
+  mpcPamDev(sbe16_pam);
+  ctd.on = true;
   if (!ctdPrompt())
     utlErr(ctd_err, "ctd: no prompt");
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
@@ -141,7 +142,7 @@ bool ctdRead(void) {
     return false;
   } // not data
   if (ctd.log) 
-    write(ctd.log, utlBuf, strlen(utlBuf));
+    write(ctd.log, utlBuf, strlen(utlBuf)-2); // no S>
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
