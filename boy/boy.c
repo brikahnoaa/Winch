@@ -132,14 +132,14 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // R,01,00
-  strcpy(eng.riseStart, utlTime);
+  strcpy(eng.riseStart, utlTime());
   result = rise(antSurfD()+1, 0);
   if (result) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
   eng.surfD = antDepth();
-  strcpy(eng.riseDone, utlTime);
+  strcpy(eng.riseDone, utlTime());
   return irid_pha;
 } // risePhase
 
