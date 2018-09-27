@@ -112,6 +112,7 @@ PhaseType rebootPhase(void) {
   ngkRecvWait(&msg, 30);
   ngkSend(fallCmd_msg);
   ngkRecvWait(&msg, 30);
+  BIOSReset();
   return deploy_pha;
 } // reboot()
 
