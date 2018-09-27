@@ -25,10 +25,16 @@ void mpcInit(void) {
   ushort nsRAM, nsFlash, nsCF;
   short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
   short rx, tx;
+  int i;
   uchar iopins[] = {27, 28, 31, 32, 33, 34, 35, 48, 50, 0};
   uchar systempins[] = {15, 16, 17, 18, 19, 20, 0};
   uchar outputpins[] = {1, 21, 22, 23, 24, 25, 26, 29, 30, 37, 42, 0};
-  PIOMirrorList(outputpins);
+  flogf("\nset outputs low");
+  for (i=0; outputpins[i]!=0; i++) {
+    PIOClear(outputpins[i]);
+    flogf(" %d", outputpins[i]);
+  }
+  // PIOMirrorList(outputpins);
   // setup pam port, shared by wispr and science ctd sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
