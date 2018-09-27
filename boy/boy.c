@@ -94,7 +94,7 @@ void boyMain() {
 // open log
 void boyInit(void) {
   DBG0("boyInit()")
-  boy.log = utlLogFile(boy.logFile);
+  // boy.log = utlLogFile(boy.logFile);
 } // boyInit
 
 /// 
@@ -143,7 +143,7 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  int r=0, x;
+  int r=0;
   flogf("iridPhase()");
   if (boy.noIrid) return fall_pha;
   antStart();
@@ -156,40 +156,40 @@ PhaseType iridPhase(void) {
   gpsStats();
   sprintf(eng.gpsStart, "%s : %s", eng.lat, eng.lng);
   antSwitch(irid_ant);
-  // x is our progress
-  x = 1;
   while (!tmrExp(phase_tmr)) {
     // 0=success
     flogf("\n%s ====\n", utlTime());
-    if (x==1) {
-      if ((r = iridSig())) {
-        flogf("\nERR\t| iridSig()->%d", r);
-        continue;
-      } else x++;
-    } // sig
-    if (x==2) {
-      if ((r = iridDial())) {
-        flogf("\nERR\t| iridDial()->%d", r);
-        continue;
-      } else x++;
-    } // dial
-    if (x==3) {
-      utlLogPathName(utlStr, "eng", eng.cycle-1);
-      if ((r = iridSendFile(utlStr))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
-        continue;
-      } else x++;
-    } // eng file
-    if (x==4) {
-      utlLogPathName(utlStr, "s16", eng.cycle-1);
-      if ((r = iridSendFile(utlStr))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
-        continue;
-      } else x++;
-    } // data file
-    if (x==5) 
-      iridHup();
+    iridHup();
+    if ((r = iridSig())) {
+      flogf("\nERR\t| iridSig()->%d", r);
+      continue;
+    } 
+    if ((r = iridDial())) {
+      flogf("\nERR\t| iridDial()->%d", r);
+      continue;
+    } 
+    if ((r = iridProjHdr())) {
+      flogf("\nERR\t| iridProjHdr()->%d", r);
+      continue;
+    } 
+    utlLogPathName(utlStr, "eng", eng.cycle-1);
+    if ((r = iridSendFile(utlStr))) {
+      flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+      continue;
+    } 
+    utlLogPathName(utlStr, "s16", eng.cycle-1);
+    if ((r = iridSendFile(utlStr))) {
+      flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+      continue;
+    } 
+    utlLogPathName(utlStr, "eng", eng.cycle-1);
+    if ((r = iridSendFile(utlStr))) {
+      flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+      continue;
+    } 
     // hup and done
+    iridHup();
+    break;
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
@@ -574,7 +574,7 @@ void boyEngLog(void) {
   int log;
   log = utlLogFile("eng");
   utlBuf[0] = 0;
-  sprintf(utlStr, "eng log %s\n", utlDateTime());
+  sprintf(utlStr, "%s eng log %s\n", eng.program, utlDateTime());
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "cycle %d\n", eng.cycle);
   strcat(utlBuf, utlStr);

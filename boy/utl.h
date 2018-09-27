@@ -67,6 +67,7 @@ typedef struct EngInfo {
   char gpsDrift[64];
   char lat[32];
   char lng[32];
+  char program[32];
   char riseStart[32];
   char riseDone[32];
   float dockD;

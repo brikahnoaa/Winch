@@ -1,45 +1,45 @@
-// s39.c
+// iridFile.c
 #include <utl.h>
-#include <ctd.h>
+#include <gps.h>
 #include <mpc.h>
-#include <sys.h>
 #include <ant.h>
+#include <sys.h>
+#include <tmr.h>
+#include <boy.h>
+#include <cfg.h>
 
-extern AntInfo ant;
-extern CtdInfo ctd;
+extern GpsInfo gps;
+extern BoyInfo boy;
+extern SysInfo sys;
 
 void main(void){
-  char c;
+  // Serial port;
+  char *buff;
+  // int l, r;
   sysInit();
   mpcInit();
   antInit();
+  gpsInit();
+  //
   antStart();
-  antSample();
-  if (!antDataWait())
-    flogf("\ndata wait fail, no response from sbe39");
-  if (!antRead())
-    flogf("\nread fails");
-  flogf("\nantDepth() -> %f", antDepth());
-  flogf("\nantTemp() -> %f", antTemp());
-  antDataWait();
-  antRead();
-  flogf("\nantDepth() -> %f", antDepth());
-  flogf("\nantTemp() -> %f", antTemp());
-  // antAuton(true);
-  flogf("\n\nPress any to talk, Q to exit");
-  flogf("\nconnected to ant");
-  while (true) {
-    if (cgetq()) {
-      c=cgetc();
-      if (c=='Q') break;
-      TUTxPutByte(ant.port,c,false);
-    }
-    while (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
-      cputc(c);
-    }
+  gpsStart();
+  //
+  buff = malloc(1024);
+  // antSwitch(gps_ant);
+  // gpsStats();
+  antSwitch(irid_ant);
+  tmrStart(minute_tmr, 5*60);
+  while (!tmrExp(minute_tmr)) {
+    if (iridSig()) continue;
+    if (iridDial()) continue;
+    if (iridProjHdr()) continue;
+    if (iridSendFile("log\\001eng.log")) continue;
+    if (iridSendFile("log\\001s16.log")) continue;
+    iridHup();
+    break;
   }
-  // antAuton(false);
-  // antGetSamples();
-  utlStop("\nnormal");
+  utlDelay(500);
+    flogf("\nsys.program = %s", sys.program);
+  gpsStop();
+  antStop();
 }

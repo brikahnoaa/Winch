@@ -3,6 +3,7 @@
 #include <gps.h>
 #include <ant.h>
 #include <tmr.h>
+#include <cfg.h>
 
 // gps and iridium routines have a lot of ways to fail, so return 0 or errcode
 //
@@ -311,25 +312,44 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 // land ho! already did iridDial and iridProjHdr
 // send fname as separate files of max gps.fileMax
 int iridSendFile(char *fname) {
-  int fh, len, block;
+  int l, r, fh, len, block;
   struct stat fileinfo;
   flogf("\niridSendFile(%s)", fname);
   fh = open(fname, O_RDONLY);
   if (fh<0) return 1;
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
-  while (len>0) {
-    if (len>=gps.fileMax)
-      block = read(fh, utlBuf, gps.fileMax);
-    else
-      block = read(fh, utlBuf, len);
-    if (block<0) return 2;
-    if (block==0) return 3;
-    iridSendBlock(utlBuf, block, 1, 1);
-    len -= block;
-  } // send
+  if (len>=gps.fileMax)
+    block = read(fh, utlBuf, gps.fileMax);
+  else
+    block = read(fh, utlBuf, len);
+  iridSendBlock(utlBuf, block, 1, 1);
+  flogf(" [[%d]]", block);
+  iridLandResp(utlStr);
+  if (strstr(utlStr, "cmds"))
+    r = iridLandCmds(utlBuf, &l);
+  utlBuf[l] = 0;
+  iridProcessCmds(utlBuf);
+  utlWrite(gps.port, "data", "");
   return 0;
 } // iridSendFile
+
+///
+// process cmds from Land. could be a.b=c;d.e=f
+int iridProcessCmds(char *buff) {
+  char *p0;
+  int r=0;
+  p0 = strtok(buff, ";");
+  while (p0) {
+    if (strstr(p0, "=")) {
+      flogf("\nsetting '%s'", utlNonPrint(p0));
+      if (cfgString(p0))
+        r++;
+    }
+    p0 = strtok(NULL, ";");
+  }
+  return r;
+} // iridProcessCmds
 
 ///
 // we just sent the last block, should get cmds or done
@@ -422,6 +442,9 @@ void iridHup(void) {
   utlWrite(gps.port, "at+chup", EOL);
   if (utlExpect(gps.port, utlBuf, "OK", 5))
     flogf("\nchup->%s", utlNonPrint(utlBuf));
+  utlWrite(gps.port, "at+clcc", EOL);
+  if (utlExpect(gps.port, utlBuf, "OK", 5))
+    flogf("\nclcc->%s", utlNonPrint(utlBuf));
 } // iridHup
 
 ///

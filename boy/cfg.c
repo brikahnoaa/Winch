@@ -50,7 +50,7 @@ static CfgParam cfgP[] = {
   {"ade", "ant.delay",      &ant.delay,       'i',  "3"},
   {"asI", "ant.sampInt",    &ant.sampInt,     'i',  "10"},
   {"arS", "ant.ringSize",   &ant.ringSize,    'i',  "5"},
-  {"biA", "boy.iridAuton",  &boy.iridAuton,   'b',  "true"},
+  {"biA", "boy.iridAuton",  &boy.iridAuton,   'b',  "false"},
   {"bnD", "boy.noData",     &boy.noData,      'b',  "false"},
   {"bne", "boy.noDeploy",   &boy.noDeploy,    'b',  "false"},
   {"bnI", "boy.noIrid",     &boy.noIrid,      'b',  "false"},
