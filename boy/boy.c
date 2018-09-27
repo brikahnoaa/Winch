@@ -153,6 +153,7 @@ PhaseType risePhase(void) {
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
   int r=0;
+  int helloB=0, engB=0;
   flogf("iridPhase()");
   if (boy.noIrid) return fall_pha;
   antStart();
@@ -181,17 +182,21 @@ PhaseType iridPhase(void) {
       flogf("\nERR\t| iridProjHdr()->%d", r);
       continue;
     } 
-    sprintf(utlStr, "hello.txt");
-    if ((r = iridSendFile(utlStr))) {
-      flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
-      continue;
-    } 
+    if (!helloB) {
+      sprintf(utlStr, "hello.txt");
+      if ((r = iridSendFile(utlStr))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+        continue;
+      } else helloB=1;
+    }
     utlNap(boy.filePause);
-    utlLogPathName(utlStr, "eng", eng.cycle-1);
-    if ((r = iridSendFile(utlStr))) {
-      flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
-      continue;
-    } 
+    if (!engB) {
+      utlLogPathName(utlStr, "eng", eng.cycle-1);
+      if ((r = iridSendFile(utlStr))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+        continue;
+      } else engB=1;
+    }
     utlNap(boy.filePause);
     utlLogPathName(utlStr, "s16", eng.cycle-1);
     if ((r = iridSendFile(utlStr))) {
