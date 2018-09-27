@@ -316,7 +316,10 @@ int iridSendFile(char *fname) {
   struct stat fileinfo;
   flogf("\niridSendFile(%s)", fname);
   fh = open(fname, O_RDONLY);
-  if (fh<0) return 1;
+  if (fh<0) {
+    flogf("\nERR\t| iridSendFile cannot open %s", fname);
+    return 0;
+  }
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
   if (len>=gps.fileMax)
@@ -325,7 +328,7 @@ int iridSendFile(char *fname) {
     block = read(fh, utlBuf, len);
   iridSendBlock(utlBuf, block, 1, 1);
   flogf(" [[%d]]", block);
-  iridLandResp(utlStr);
+  if ((r = iridLandResp(utlStr))) return 10+r;
   if (strstr(utlStr, "cmds"))
     r = iridLandCmds(utlBuf, &l);
   utlBuf[l] = 0;
@@ -369,6 +372,8 @@ int iridLandResp(char *buff) {
   }
   buff[r]=0;
   flogf("\nLandResp(%s)", utlNonPrint(buff));
+  if (!strstr(buff, "cmds") && !strstr(buff, "done"))
+    return 2;
   return 0;
 } // iridLandResp
 
@@ -440,11 +445,7 @@ void iridHup(void) {
   if (utlExpect(gps.port, utlBuf, "OK", 5))
     flogf("\nclcc->%s", utlNonPrint(utlBuf));
   utlWrite(gps.port, "at+chup", EOL);
-  if (utlExpect(gps.port, utlBuf, "OK", 5))
-    flogf("\nchup->%s", utlNonPrint(utlBuf));
-  utlWrite(gps.port, "at+clcc", EOL);
-  if (utlExpect(gps.port, utlBuf, "OK", 5))
-    flogf("\nclcc->%s", utlNonPrint(utlBuf));
+  utlExpect(gps.port, utlBuf, "OK", 5);
 } // iridHup
 
 ///
