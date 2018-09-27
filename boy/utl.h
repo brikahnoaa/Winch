@@ -62,10 +62,19 @@ typedef enum {
     log_err, 
     sizeof_err} ErrType;
 
-typedef struct CommonInfo {
-  int det;
+typedef struct EngInfo {
+  char gpsStart[64];
+  char gpsDrift[64];
+  char lat[32];
+  char lng[32];
+  char riseStart[32];
+  char riseDone[32];
+  float dockD;
+  float oceanCurr;
+  float surfD;
+  int detect;
   int cycle;
-} CommonInfo;
+} EngInfo;
 
 typedef struct UtlInfo {
   bool ignoreCon;             // ignore console input
@@ -82,7 +91,7 @@ typedef TUPort * Serial;
 extern char *utlBuf;
 extern char *utlStr;
 extern char *utlRet;      // returned by some char *utlFuncs()
-extern CommonInfo com;
+extern EngInfo eng;
 
 char *utlDate(void);
 char *utlDateTime(void);

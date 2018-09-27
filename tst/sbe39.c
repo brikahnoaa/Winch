@@ -21,6 +21,10 @@ void main(void){
     flogf("\nread fails");
   flogf("\nantDepth() -> %f", antDepth());
   flogf("\nantTemp() -> %f", antTemp());
+  antDataWait();
+  antRead();
+  flogf("\nantDepth() -> %f", antDepth());
+  flogf("\nantTemp() -> %f", antTemp());
   // antAuton(true);
   flogf("\n\nPress any to talk, Q to exit");
   flogf("\nconnected to ant");

@@ -29,13 +29,13 @@ typedef struct BoyInfo {
   float riseVFirst;       // meters/min of the first rise 
   float riseVLast;        // meters/min of the most recent rise 
   float riseVTest;        // meters/min of the most recent rise 
+  float surfD;            // depth floating at surface
   int cycle;
   int cycleMax;           // limit number of cycles, i.e. test deployment
   int depWait;            // wait until deployed after start (240min)
   int depSettle;          // time to let deploy settle (120)
   int fallOp;             // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times
-  int fileNum;            // current number for filename ####.dat ####.log
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
   int iridOp;             // phase minutes
@@ -53,6 +53,8 @@ typedef struct BoyInfo {
   Serial port;            // sbe16 or ant mod
   time_t deployT;         // startup time
   time_t phaseT;          // time this phase started
+  time_t riseStart;
+  time_t riseDone;
 } BoyInfo;
 
 static PhaseType iridPhase(void);
@@ -71,6 +73,7 @@ static void boyStat(char *buffer);
 
 bool boyDocked(float depth);
 int boyCycle(void);
+void boyEngLog(void);
 void boyInit(void);
 void boyFlush(void);
 void boyMain(void);

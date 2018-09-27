@@ -89,9 +89,11 @@ int gpsStats(void){
   utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS");
   flogf(" Lat=%s", utlStr);
   strcpy(gps.lat, utlStr);
+  strcpy(eng.lat, utlStr);
   utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS");
   flogf(" Lng=%s", utlStr);
   strcpy(gps.lng, utlStr);
+  strcpy(eng.lng, utlStr);
   return 0;
 } // gpsStats
 

@@ -13,7 +13,7 @@
 char *utlBuf, *utlStr;     
 
 UtlInfo utl;
-CommonInfo com;
+EngInfo eng;
 
 ///
 // malloc static buffers (heap is 384K, stack only 16K)
@@ -300,7 +300,7 @@ int utlLogFile(char *base) {
   int log;
   char path[64];
   DBG0("utlLogFile(%s)", base)
-  utlLogPathName(path, base, com.cycle);
+  utlLogPathName(path, base, eng.cycle);
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
     sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", base, log, path);

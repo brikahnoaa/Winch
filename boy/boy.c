@@ -47,7 +47,7 @@ void boyMain() {
     utlX();
     // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
-    flogf("\ncycle %d @%s ", com.cycle, utlDateTime());
+    flogf("\ncycle %d @%s ", eng.cycle, utlDateTime());
     switch (boy.phase) {
     case deploy_pha:
       phaseNext = deployPhase();
@@ -63,7 +63,8 @@ void boyMain() {
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
-      com.cycle++;
+      boyEngLog();
+      eng.cycle++;
       // masters told us to stay down a few days
       if (boy.stayDown>0) {
         boy.stayDown--;
@@ -81,7 +82,7 @@ void boyMain() {
     boy.phasePrev = boy.phase;
     boy.phase = phaseNext;
     // check these every phase
-    if (boy.cycleMax && (com.cycle > boy.cycleMax)) 
+    if (boy.cycleMax && (eng.cycle > boy.cycleMax)) 
       utlStop("cycleMax reached");
     // new day
     // sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
@@ -128,11 +129,13 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // R,01,00
+  strcpy(eng.riseStart, utlTime);
   result = rise(antSurfD()+1, 0);
   if (result) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
+  strcpy(eng.riseDone, utlTime);
   return irid_pha;
 } // risePhase
 
@@ -140,32 +143,58 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  int r;
+  int r=0, x;
   flogf("iridPhase()");
   if (boy.noIrid) return fall_pha;
   antStart();
   if (boy.iridAuton) 
     antAuton(true);
-  tmrStart(phase_tmr, boy.iridOp*MINUTE);
   gpsStart();
+  tmrStart(phase_tmr, boy.iridOp*MINUTE);
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
   gpsStats();
+  sprintf(eng.gpsStart, "%s : %s", eng.lat, eng.lng);
   antSwitch(irid_ant);
+  // x is our progress
+  x = 1;
   while (!tmrExp(phase_tmr)) {
-    flogf("\n%s ====\n", utlTime());
     // 0=success
-    if ((r = iridSig())) {
-      flogf("\nERR\t| iridSig(%d)", r);
-      continue;
-    }
-    if (iridDial()) continue;
-    // iridSendFile(boy.sendFile);
-    iridHup();
+    flogf("\n%s ====\n", utlTime());
+    if (x==1) {
+      if ((r = iridSig())) {
+        flogf("\nERR\t| iridSig()->%d", r);
+        continue;
+      } else x++;
+    } // sig
+    if (x==2) {
+      if ((r = iridDial())) {
+        flogf("\nERR\t| iridDial()->%d", r);
+        continue;
+      } else x++;
+    } // dial
+    if (x==3) {
+      utlLogPathName(utlStr, "eng", eng.cycle-1);
+      if ((r = iridSendFile(utlStr))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+        continue;
+      } else x++;
+    } // eng file
+    if (x==4) {
+      utlLogPathName(utlStr, "s16", eng.cycle-1);
+      if ((r = iridSendFile(utlStr))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+        continue;
+      } else x++;
+    } // data file
+    if (x==5) 
+      iridHup();
+    // hup and done
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
   gpsStats();
+  sprintf(eng.gpsDrift, "%s : %s", eng.lat, eng.lng);
   antAuton(false);
   return fall_pha;
 } // iridPhase
@@ -201,7 +230,7 @@ PhaseType dataPhase(void) {
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  com.det = detect;
+  eng.detect = detect;
   antStart();
   //ctdStart();
   return rise_pha;
@@ -449,6 +478,7 @@ PhaseType deployPhase(void) {
   utlNap(boy.depSettle);      // default 120sec
   // we are down
   boy.dockD = depth;
+  eng.dockD = depth;
   flogf("\n\t| boy.dockD = %4.2f", boy.dockD);
   flogf("\n\t| go to surface, call home");
   return rise_pha;
@@ -517,6 +547,7 @@ int oceanCurrChk() {
     return -1;
   }
   flogf("\n\t\t\t| lateral @ %.1f = %.1f", antDepth(), sideways);
+  eng.oceanCurr = sideways;
   if (sideways>boy.currMax) {
     flogf(" too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
@@ -538,3 +569,29 @@ bool boyDocked(float depth) {
   if (boy.dockD==0.0) return false;
   else return (abs(depth-boy.dockD)<1.0);
 }
+
+void boyEngLog(void) {
+  int log;
+  log = utlLogFile("eng");
+  utlBuf[0] = 0;
+  sprintf(utlStr, "eng log %s\n", utlDateTime());
+  strcat(utlBuf, utlStr);
+  sprintf(utlStr, "cycle %d\n", eng.cycle);
+  strcat(utlBuf, utlStr);
+  sprintf(utlStr, "ocean current lateral = %.2f\n", eng.oceanCurr);
+  strcat(utlBuf, utlStr);
+  sprintf(utlStr, "rise start %s, rise end %s\n", 
+    eng.riseStart, eng.riseDone);
+  strcat(utlBuf, utlStr);
+  sprintf(utlStr, "dock depth %.1f, surf depth %.1f, meters %.1f\n",
+    eng.dockD, eng.surfD, eng.dockD-eng.surfD);
+  strcat(utlBuf, utlStr);
+  sprintf(utlStr, "gps start %s\n", eng.gpsStart);
+  strcat(utlBuf, utlStr);
+  sprintf(utlStr, "gps drift %s\n", eng.gpsDrift);
+  strcat(utlBuf, utlStr);
+  //
+  flogf("%s", utlBuf);
+  write(log, utlBuf, strlen(utlBuf));
+  close(log);
+} // boyEngLog
