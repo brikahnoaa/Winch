@@ -4,8 +4,6 @@
 #include <ant.h>
 #include <tmr.h>
 
-extern GlobalInfo global;
-
 // gps and iridium routines have a lot of ways to fail, so return 0 or errcode
 //
 #define EOL "\r"

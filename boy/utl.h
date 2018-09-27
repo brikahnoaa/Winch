@@ -62,9 +62,10 @@ typedef enum {
     log_err, 
     sizeof_err} ErrType;
 
-typedef struct GlobalInfo {
+typedef struct CommonInfo {
   int det;
-} GlobalInfo;
+  int cycle;
+} CommonInfo;
 
 typedef struct UtlInfo {
   bool ignoreCon;             // ignore console input
@@ -81,6 +82,7 @@ typedef TUPort * Serial;
 extern char *utlBuf;
 extern char *utlStr;
 extern char *utlRet;      // returned by some char *utlFuncs()
+extern CommonInfo com;
 
 char *utlDate(void);
 char *utlDateTime(void);

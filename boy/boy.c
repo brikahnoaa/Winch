@@ -15,7 +15,6 @@
 
 #define MINUTE 60
 
-extern GlobalInfo global;
 BoyInfo boy;
 
 ///
@@ -48,7 +47,7 @@ void boyMain() {
     utlX();
     // sysFlush();                    // flush all log file buffers
     boy.phaseT = time(0);
-    flogf("\ncycle %d @%s ", boy.cycle, utlDateTime());
+    flogf("\ncycle %d @%s ", com.cycle, utlDateTime());
     switch (boy.phase) {
     case deploy_pha:
       phaseNext = deployPhase();
@@ -64,7 +63,7 @@ void boyMain() {
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
-      boy.cycle++;
+      com.cycle++;
       // masters told us to stay down a few days
       if (boy.stayDown>0) {
         boy.stayDown--;
@@ -82,8 +81,8 @@ void boyMain() {
     boy.phasePrev = boy.phase;
     boy.phase = phaseNext;
     // check these every phase
-    if (boy.cycleMax && (boy.cycle > boy.cycleMax)) 
-      sysStop("cycleMax reached");
+    if (boy.cycleMax && (com.cycle > boy.cycleMax)) 
+      utlStop("cycleMax reached");
     // new day
     // sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
     // execstr(utlBuf);
@@ -173,7 +172,7 @@ PhaseType iridPhase(void) {
 
 ///
 PhaseType fallPhase() {
-  flogf("\nfallPhase()");
+  flogf("fallPhase()");
   if (boy.noRise) return data_pha;
   fall(boy.currChkD, 0);
   oceanCurrChk();
@@ -202,7 +201,7 @@ PhaseType dataPhase(void) {
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  global.det = detect;
+  com.det = detect;
   antStart();
   //ctdStart();
   return rise_pha;
@@ -429,7 +428,7 @@ PhaseType deployPhase(void) {
     flogf("\ndeployPhase@%4.2fm %s", depth, utlTime());
     if (depth>10) break;
     if (tmrExp(deploy_tmr)) 
-      sysStop("deployP() shipside timeout");
+      utlStop("deployP() shipside timeout");
     utlNap(30);
   }
   flogf("\n\t| %4.2fm>10m, watch for depth to settle down\n", depth);
@@ -539,9 +538,3 @@ bool boyDocked(float depth) {
   if (boy.dockD==0.0) return false;
   else return (abs(depth-boy.dockD)<1.0);
 }
-
-///
-// cycle number
-int boyCycle(void) {
-  return boy.cycle;
-} // boyCycle
