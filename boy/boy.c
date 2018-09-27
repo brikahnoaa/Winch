@@ -64,6 +64,9 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       boyEngLog();
+      sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
+      execstr(utlBuf);
+      // new day
       eng.cycle++;
       // restart ctd to reopen log
       ctdStop();
@@ -87,9 +90,6 @@ void boyMain() {
     // check these every phase
     if (boy.cycleMax && (eng.cycle > boy.cycleMax)) 
       utlStop("cycleMax reached");
-    // new day
-    sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
-    execstr(utlBuf);
     if (boy.reset) BIOSReset();
   } // while true
 } // boyMain() 
@@ -585,7 +585,7 @@ void boyEngLog(void) {
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "cycle %d\n", eng.cycle);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "ocean current lateral = %.2f\n", eng.oceanCurr);
+  sprintf(utlStr, "current lateral = %.2f\n", eng.oceanCurr);
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "rise start %s\n", eng.riseStart);
   sprintf(utlStr, "rise end %s\n", eng.riseDone);
