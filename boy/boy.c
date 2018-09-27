@@ -588,6 +588,7 @@ void boyEngLog(void) {
   sprintf(utlStr, "current lateral = %.2f\n", eng.oceanCurr);
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "rise start %s\n", eng.riseStart);
+  strcat(utlBuf, utlStr);
   sprintf(utlStr, "rise end %s\n", eng.riseDone);
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "dock depth %.1f, surf depth %.1f, meters %.1f\n",
