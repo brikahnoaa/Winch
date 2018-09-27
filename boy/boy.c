@@ -186,11 +186,13 @@ PhaseType iridPhase(void) {
       flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
       continue;
     } 
+    utlNap(boy.filePause);
     utlLogPathName(utlStr, "eng", eng.cycle-1);
     if ((r = iridSendFile(utlStr))) {
       flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
       continue;
     } 
+    utlNap(boy.filePause);
     utlLogPathName(utlStr, "s16", eng.cycle-1);
     if ((r = iridSendFile(utlStr))) {
       flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);

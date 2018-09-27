@@ -38,6 +38,7 @@ typedef struct BoyInfo {
   int depSettle;          // time to let deploy settle (120)
   int fallOp;             // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times
+  int filePause;          // pause between sending files
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
   int iridOp;             // phase minutes
