@@ -110,6 +110,8 @@ PhaseType rebootPhase(void) {
   ngkRecvWait(&msg, 30);
   ngkSend(stopCmd_msg);
   ngkRecvWait(&msg, 30);
+  ngkSend(fallCmd_msg);
+  ngkRecvWait(&msg, 30);
   return deploy_pha;
 } // reboot()
 
