@@ -85,8 +85,9 @@ void boyMain() {
     if (boy.cycleMax && (eng.cycle > boy.cycleMax)) 
       utlStop("cycleMax reached");
     // new day
-    // sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
-    // execstr(utlBuf);
+    sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
+    execstr(utlBuf);
+    if (boy.reset) BIOSReset();
   } // while true
 } // boyMain() 
 
@@ -529,7 +530,7 @@ int oceanCurr(float *curr) {
   if (c<a) {
     flogf("\noceanCurr()\t| ERR boy2ant<cD-aD");
     // ?? update boy2ant?
-    // return 3;
+    return 3;
   }
   b=sqrt(pow(c,2)-pow(a,2));
   flogf(" sideways=%4.2f", b);
