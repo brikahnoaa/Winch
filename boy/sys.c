@@ -54,8 +54,10 @@ int sysInit(void) {
 void preRun(int delay) {
   char c;
   utlPet();
-  ciflush();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
+  utlDelay(1000);
+  ciflush();
+  // start
   cprintf("You have %d seconds ", delay);
   while(--delay) {
     c = SCIRxGetCharWithTimeout(1000); // 1 second
