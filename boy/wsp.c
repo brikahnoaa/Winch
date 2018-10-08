@@ -162,7 +162,10 @@ int wspDetectHour(int *detections) {
   hour = tim->tm_hour;
   remains = 60 - tim->tm_min;
   // need at least wsp.minimum to start/stop
-  if (remains<=wsp.minimum) return 3;
+  if (remains<=wsp.minimum) {
+    utlNap(remains*min);
+    return 0;
+  }
   // rest first
   if (remains>duty) {
     rest = remains-duty;
@@ -176,6 +179,7 @@ int wspDetectHour(int *detections) {
   // duty calls
   flogf("\nwispr:\t| run for %d min", duty);
   utlLogTime();
+  // ?? not handled right on return
   if (wspStart(wsp.card)) return 2;
   while (duty>0) {
     if (duty>wsp.detInt) 
@@ -186,7 +190,7 @@ int wspDetectHour(int *detections) {
     wspQuery(&detect);
     flogf(" [%d]", detect);
     *detections += detect;
-    // watchdog - returns err below
+    // watchdog
     if (tmrExp(hour_tmr)) break;
   } // duty
   wspStop();
@@ -196,7 +200,7 @@ int wspDetectHour(int *detections) {
     tim = gmtime(&secs);
     utlNap(5);
     // watchdog
-    if (tmrExp(hour_tmr)) return 1;
+    if (tmrExp(hour_tmr)) break;
   }
   // need to capture stats ??
   return 0;

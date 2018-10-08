@@ -534,15 +534,16 @@ int oceanCurr(float *curr) {
   // solve for b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
-  flogf("\noceanCurr()\t| ant=%3.1f boy=%3.1f", aD, cD);
+  flogf("\noceanCurr()\t| ant=%4.2f boy=%4.2f", aD, cD);
   if (a<0) {
     flogf("\noceanCurr()\t| ERR sbe16-sbe39<0");
     return 2;
   }
   if (c<a) {
-    flogf("\noceanCurr()\t| ERR boy2ant<cD-aD");
+    flogf("\noceanCurr()\t| boy2ant<cD-aD, updating boy.boy2ant");
+    boy.boy2ant = a;
+    c=boy.boy2ant;
     // ?? update boy2ant?
-    return 3;
   }
   b=sqrt(pow(c,2)-pow(a,2));
   flogf(" sideways=%4.2f", b);
