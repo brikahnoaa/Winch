@@ -11,4 +11,4 @@ cod/war/
 *.swp
 *.swo
 # log or *.log
-*.log
+#*.log
