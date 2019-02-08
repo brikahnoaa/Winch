@@ -1,0 +1,422 @@
+
+C:\>set boy.norise=true
+
+C:\>set
+SYS.QPBC=32
+GPS.FILEMAX=1000
+STARTS=6
+SHUTDOWN=
+normal
+BOY.NORISE=TRUE
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 7, max 50
+---   ---
+Program: sys.c,  Build: Sep 27 2018 12:14:36
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 7
+Started: 10-15-18 16:36:11
+---   ---
+VEE: GPS.FILEMAX=1000
+VEE: BOY.NORISE=TRUE
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 7
+log file	| log\001s16.log
+boyMain(): starting with phase 5
+cycle 1 @10-15-18 16:36:26 rebootPhase()	| stop stop fall continue
+		+ngkSend(#S,01,00) at 16:36:27
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set boy.testing=true
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 8, max 50
+---   ---
+Program: sys.c,  Build: Sep 27 2018 12:14:36
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 8
+Started: 10-15-18 16:37:09
+---   ---
+VEE: GPS.FILEMAX=1000
+VEE: BOY.NORISE=TRUE
+VEE: BOY.TESTING=TRUE
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 8
+log file	| log\001s16.log
+boy.testing
+boyMain(): starting with phase 0
+cycle 1 @10-15-18 16:37:21 
+deploy: testing sbe16, sbe39 sbe16@-0.1 sbe39@0.0
+deployPhase()	| ant@0.0m buoy@-0.1m 10-15-18 16:37:24
+	| wait up to 240 minutes to reach bottom
+deployPhase@0.05m 16:37:25
+deployPhase@0.05m 16:37:56
+deployPhase@0.06m 16:38:27
+deployPhase@0.05m 16:38:58
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>set boy.nodeploy=true
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 9, max 50
+---   ---
+Program: sys.c,  Build: Sep 27 2018 12:14:36
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 9
+Started: 10-15-18 16:48:32
+---   ---
+VEE: GPS.FILEMAX=1000
+VEE: BOY.NORISE=TRUE
+VEE: BOY.TESTING=TRUE
+VEE: BOY.NODEPLOY=TRUE
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 system starts 9
+log file	| log\001s16.log
+boy.testing
+boyMain(): starting with phase 0
+cycle 1 @10-15-18 16:48:48 
+deploy: testing sbe16, sbe39
+cycle 1 @10-15-18 16:48:48 risePhase()
+cycle 1 @10-15-18 16:48:48 iridPhase()
+16:48:52 ===
+
+GPS Sats=10 Date=10-15-2018 Time=16:49:35.000
+gpsSetTime()	| off by 0 seconds
+ Lat=44:37.2552 N Lng=124:02.6509 W
+16:49:36 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=4 16:50:01 CONNECT 9600rudBaud@1000 +10000us  proj proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(56)->''wsp.minute=50;gps.hdrTry=5;gps.redial=10;gps.hdrPause=30''
+setting 'wsp.minute=50'
+setting 'gps.hdrTry=5'
+setting 'gps.redial=10'
+setting 'gps.hdrPause=30'
+iridSendFile(log\000eng.log) 1of1 [[12]]
+LandResp( x0D cmds)
+CMDS(13)->''wsp.minute=50''
+setting 'wsp.minute=50'
+iridSendFile(log\000s16.log) 1of1 [[15]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A 
+16:50:59 =====
+
+GPS Sats=10 Date=10-15-2018 Time=16:51:15.000
+gpsSetTime()	| off by 0 seconds
+ Lat=44:37.2551 N Lng=124:02.6516 W
+antAuton(false)	| stop fail, retry ... stop failed
+cycle 1 @10-15-18 16:51:26 fallPhase()
+cycle 1 @10-15-18 16:51:27 dataPhase()
+ starting wispr detection; end in hour 7, 15 hours to run 16:51:27
+wispr:	| run for 9 min 16:51:27
+log file	| log\001wsp.log [0]
+wspStop	| err: expected 'done', not seen...
+Day watchdog
+log file	| log\001eng.logLARA eng log 10-15-18 17:02:45
+cycle 1
+current lateral = 0.00
+rise start 
+rise end 
+dock depth 0.0, surf depth 0.0, meters 0.0
+gps start 44:37.2552 N : 124:02.6509 W
+gps drift 44:37.2551 N : 124:02.6516 W
+
+SYS.LOG
+
+       1 file(s) copied
+
+log file	| log\002s16.log
+cycle 2 @10-15-18 17:02:46 risePhase()
+cycle 2 @10-15-18 17:02:46 iridPhase()
+17:02:50 ===
+
+GPS Sats=10 Date=10-15-2018 Time=17:03:33.000
+gpsSetTime()	| off by -1 seconds
+ Lat=44:37.2556 N Lng=124:02.6513 W
+17:03:34 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=5 17:04:05 CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\001eng.log) 1of1 [[445]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\001s16.log) 1of1 [[1000]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A 
+17:05:10 =====
+
+GPS Sats=09 Date=10-15-2018 Time=17:05:26.000
+gpsSetTime()	| off by 0 seconds
+ Lat=44:37.2557 N Lng=124:02.6518 W
+antAuton(false)	| stop fail, retry ... stop failed
+cycle 2 @10-15-18 17:05:37 fallPhase()
+cycle 2 @10-15-18 17:05:38 dataPhase()
+ starting wispr detection; end in hour 7, 14 hours to run 17:05:38
+wispr:	| rest for 25 min 17:05:38
+wispr:	| run for 30 min 17:26:28
+log file	| log\002wsp.log
+wspStop	| err: expected 'done', not seen...
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 10, max 50
+---   ---
+Program: sys.c,  Build: Sep 27 2018 12:14:36
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 10
+Started: 10-15-18 20:00:03
+---   ---
+VEE: GPS.FILEMAX=1000
+VEE: BOY.NORISE=TRUE
+VEE: BOY.TESTING=TRUE
+VEE: BOY.NODEPLOY=TRUE
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+-ERR(ctd)	|0| 20:00:21 ctd: no prompt system starts 10
+log file	| log\001s16.log
+boy.testing
+boyMain(): starting with phase 0
+cycle 1 @10-15-18 20:00:35 
+deploy: testing sbe16, sbe39
+cycle 1 @10-15-18 20:00:35 risePhase()
+cycle 1 @10-15-18 20:00:35 iridPhase()
+20:00:39 ===
+
+GPS Sats=05 Date=10-15-2018 Time=20:01:10.000
+gpsSetTime()	| off by -1 seconds
+ Lat=44:37.2525 N Lng=124:02.6509 W
+20:01:11 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=3 20:01:40 CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\000eng.log) 1of1 [[12]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\000s16.log) 1of1 [[15]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A 
+20:02:33 =====
+
+GPS Sats=05 Date=10-15-2018 Time=20:02:49.000
+gpsSetTime()	| off by -1 seconds
+ Lat=44:37.2557 N Lng=124:02.6511 W
+antAuton(false)	| stop fail, retry ... stop failed
+cycle 1 @10-15-18 20:03:00 fallPhase()
+cycle 1 @10-15-18 20:03:01 dataPhase()
+ starting wispr detection; end in hour 7, 11 hours to run 20:03:01
+wispr:	| rest for 27 min 20:03:01
+wispr:	| run for 30 min 20:30:01
+log file	| log\001wsp.log [0] [0] [0]
+wspStop	| err: expected 'done', not seen...
+Day watchdog
+log file	| log\001eng.logLARA eng log 10-15-18 21:03:51
+cycle 1
+current lateral = 0.00
+rise start 
+rise end 
+dock depth 0.0, surf depth 0.0, meters 0.0
+gps start 44:37.2525 N : 124:02.6509 W
+gps drift 44:37.2557 N : 124:02.6511 W
+
+SYS.LOG
+
+       1 file(s) copied
+
+log file	| log\002s16.log
+cycle 2 @10-15-18 21:03:52 risePhase()
+cycle 2 @10-15-18 21:03:53 iridPhase()
+21:03:56 ===
+
+GPS Sats=10 Date=10-15-2018 Time=21:04:42.000
+gpsSetTime()	| off by -1 seconds
+ Lat=44:37.2552 N Lng=124:02.6509 W
+21:04:43 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=3 21:05:16 CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\001eng.log) 1of1 [[678]]
+ERR	| iridSendFile()->11
+21:06:19 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=5 21:06:44 (0) (1) CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\001eng.log) 1of1 [[678]]
+ERR	| iridSendFile()->11
+21:08:39 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=5 21:09:09 CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\001eng.log) 1of1 [[678]]
+ERR	| iridSendFile()->11
+21:10:12 =====
+
+gpsSats	| i got nothing
+'
+
++PD:
+
+UTC Date=10-15-2018
+
+Invalid Position Fix
+
+Satellites Used=00
+
+
+
+OK
+
+'
+antAuton(false)	| stop fail, retry ... stop failed
+cycle 2 @10-15-18 21:11:25 fallPhase()
+cycle 2 @10-15-18 21:11:25 dataPhase()
+ starting wispr detection; end in hour 7, 10 hours to run 21:11:25
+wispr:	| rest for 19 min 21:11:25
+wispr:	| run for 30 min 21:30:25
+log file	| log\002wsp.log [0] [0] [0]
+wspStop	| err: expected 'done', not seen...
+Day watchdog
+log file	| log\002eng.logLARA eng log 10-15-18 22:04:15
+cycle 2
+current lateral = 0.00
+rise start 
+rise end 
+dock depth 0.0, surf depth 0.0, meters 0.0
+gps start 44:37.2552 N : 124:02.6509 W
+gps drift 44:37.2552 N : 124:02.6509 W
+
+SYS.LOG
+
+       1 file(s) copied
+
+log file	| log\003s16.log
+cycle 3 @10-15-18 22:04:16 risePhase()
+cycle 3 @10-15-18 22:04:16 iridPhase()
+22:04:24 ===
+
+GPS Sats=10 Date=10-15-2018 Time=22:05:10.000
+gpsSetTime()	| off by 0 seconds
+ Lat=44:37.2557 N Lng=124:02.6522 W
+22:05:12 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=5 22:05:41 CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\002eng.log) 1of1 [[495]]
+ERR	| iridSendFile()->11
+22:06:42 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=5 22:07:06 CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\002eng.log) 1of1 [[495]]
+ERR	| iridSendFile()->11
+22:08:09 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A 
+iridSig() csq=5 22:08:36 (0) (1) CONNECT 9600rudBaud@1000 +10000us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\002eng.log) 1of1 [[495]]
+ERR	| iridSendFile()->11
+22:10:26 =====
+
+gpsSats	| i got nothing
+'
+
++PD:
+
+UTC Date=10-15-2018
+
+Invalid Position Fix
+
+Satellites Used=00
+
+
+
+OK
+
+'
+antAuton(false)	| stop fail, retry ... stop failed
+cycle 3 @10-15-18 22:11:39 fallPhase()
+cycle 3 @10-15-18 22:11:39 dataPhase()
+ starting wispr detection; end in hour 7, 9 hours to run 22:11:39
+wispr:	| rest for 19 min 22:11:39
+wispr:	| run for 30 min 22:30:39
+log file	| log\003wsp.log [0] [0] [0]
+wspStop	| err: expected 'done', not seen...
+wispr:	| rest for 26 min 23:04:18
+wispr:	| run for 30 min 23:30:18
+log file	| log\003wsp.log
