@@ -1,0 +1,81 @@
+cycle 3 @09-28-18 19:10:50 fallPhase()
+	fall() fallCmd to winch at 19:11:06
+		+ngkSend(#F,01,00) at 19:11:06
+	fall() 19:11:12 depth=2.7
+	fall() 19:11:18 depth=2.4
+		+ngkRecv(%F,02,00) fallRsp 19:11:18
+fall()	| fallRsp from winch
+	fall() 19:11:24 depth=3.5 velo=-0.12
+	fall() 19:11:30 depth=5.9 velo=0.53
+...
+	fall() 19:12:00 depth=9.9 velo=0.12
+		+ngkSend(#S,01,00) at 19:12:01
+	fall() 19:12:06 depth=11.4 velo=0.35
+		+ngkRecv(%S,02,00) stopRsp 19:12:11
+fall()	| stopRsp from winch
+oceanCurrChk()
+...
+	fall() fallCmd to winch at 19:12:54
+		+ngkSend(#F,01,00) at 19:12:54
+	fall() 19:13:00 depth=10.0 velo=-0.14
+	fall() 19:13:06 depth=10.9 velo=0.19
+	fall() WARN no response from winch 19:13:11
+	fall() 19:13:12 depth=11.9 velo=0.11
+...
+	fall() 19:15:00 depth=29.7 velo=-0.07
+		+ngkRecv(#S,02,00) stopCmd 19:15:01
+fall()	| stopCmd from winch
+...
+cycle 8 @09-29-18 07:18:41 fallPhase()
+	fall() fallCmd to winch at 07:18:57
+		+ngkSend(#F,01,00) at 07:18:57
+	fall() 07:19:03 depth=1.7
+	fall() 07:19:09 depth=1.6 velo=0.09
+	fall() WARN no response from winch 07:19:14
+	fall() 07:19:15 depth=1.7
+	fall() 07:19:21 depth=1.7
+...
+	fall() 07:48:51 depth=1.6
+	fall() 07:48:57 depth=1.7
+fall() ERR 	| fall timeout 1800s @ 1.8, stop
+	fall() ERR retry 1
+		+ngkSend(#S,01,00) at 07:48:58
+	fall() fallCmd to winch at 07:49:30
+		+ngkSend(#F,01,00) at 07:49:30
+	fall() 07:49:36 depth=1.6
+		+ngkRecv(%F,02,00) fallRsp 07:49:41
+fall()	| fallRsp from winch
+	fall() 07:49:42 depth=2.2 velo=0.32
+	...
+	fall() 07:50:30 depth=8.8 velo=0.18
+	fall() 07:50:36 depth=9.6 velo=0.16
+		+ngkSend(#S,01,00) at 07:50:38
+	fall() 07:50:42 depth=10.2 velo=0.06
+	fall() 07:50:48 depth=10.9 velo=0.05
+		+ngkRecv(%S,02,00) stopRsp 07:50:48
+fall()	| stopRsp from winch
+oceanCurrChk()
+    ...
+	fall() fallCmd to winch at 07:51:31
+		+ngkSend(#F,01,00) at 07:51:31
+	fall() 07:51:37 depth=9.6
+	fall() 07:51:43 depth=9.4
+	fall() WARN no response from winch 07:51:48
+	fall() 07:51:49 depth=9.3
+	...
+	fall() 08:21:25 depth=8.8
+	fall() 08:21:31 depth=8.7 velo=-0.07
+fall() ERR 	| fall timeout 1800s @ 8.7, stop
+	fall() ERR retry 1
+		+ngkSend(#S,01,00) at 08:21:32
+	fall() fallCmd to winch at 08:22:04
+		+ngkSend(#F,01,00) at 08:22:04
+	fall() 08:22:10 depth=9.0 velo=0.03
+	fall() 08:22:16 depth=9.2 velo=0.12
+	fall() WARN no response from winch 08:22:21
+	fall() 08:22:22 depth=10.9 velo=0.19
+	fall() 08:22:28 depth=12.0 velo=0.18
+	...
+	fall() 08:24:10 depth=29.7
+		+ngkRecv(#S,02,00) stopCmd 08:24:13
+fall()	| stopCmd from winch
