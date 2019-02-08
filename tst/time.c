@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <tmr.h>
 
 char *clockTimeDate(char *out);
 
@@ -15,7 +16,13 @@ char * clockTimeDate(char *out) {
   return out;
 } // clockTimeDate
 
+#define waitHr 20
+
 void main(void) {
-  char scratch[128];
-  printf( "%s\n", clockTimeDate(scratch));
+  int i=0, mnt=5;
+  tmrStart(day_tmr, waitHr*60*60);
+  while (!tmrExp(day_tmr)) {
+    printf( " %d, %ld", i, tmrQuery(day_tmr));
+    utlNap( 60*mnt);
+    i += mnt;
 }

@@ -1,4 +1,4 @@
-// gpsTst.c
+// rudics.c
 #include <utl.h>
 #include <gps.h>
 #include <mpc.h>
