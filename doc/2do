@@ -1,5 +1,20 @@
+Thu, Feb 21, 2019  9:57:01 AM
+. options
+not on by default
+.. ice
+.. no rise in storm
+
+Sat, Feb  9, 2019  3:17:10 PM
+. rise fall
+tolerate bad commun
+.. data phase
+... set rise time
+... collect data
+one hour, then check current against rise hour; repeat
+... storm check (get tougher each day)
+. boy.stop = remote stop cmd
+
 Tue, Jun 26, 2018  3:45:55 PM
-. set winch schedule to pull down every day, just to be sure
 . run out line through entire call phase
 . gather data for extended line, antMod depth with brake on
 . GPS time -> cf2 -> wispr

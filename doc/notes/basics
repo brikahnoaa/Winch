@@ -1,0 +1,13 @@
+how to get started programming
+.1 install tools
+.. notes/project/cygwin:install:
+.. vim
+ for x in tar/dots.tar tar/ssh.tar; do tar xf $i; done
+.. persistor
+.2 load code
+ git clone git@github.com:brikahnoaa/Winch.git
+.. .gitignore cod/war, so make war
+ pushd ~/Winch/cod; tar xf War.tar; popd
+
+Tue, Feb 12, 2019  9:14:18 AM
+

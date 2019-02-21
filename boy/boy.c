@@ -65,20 +65,10 @@ void boyMain() {
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
-      boyEngLog();
-      sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
-      execstr(utlBuf);
       // new day
       eng.cycle++;
-      // restart ctd to reopen log
-      ctdStop();
-      ctdStart();
-      // masters told us to stay down a few days
-      if (boy.stayDown>0) {
-        boy.stayDown--;
-        if (!boy.testing) utlNap(MINUTE*15);
-        phaseNext=data_pha;
-      }
+      // + moved log file manip to iridPhase
+      // + moved stayDown check to dataPhase
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
@@ -154,9 +144,13 @@ PhaseType risePhase(void) {
 PhaseType iridPhase(void) {
   int r=0;
   int helloB=0, engB=0;
-  flogf("iridPhase()");
   if (boy.noIrid) return fall_pha;
+  flogf("iridPhase()");
   antStart();
+  // log file mgmt
+  boyEngLog();
+  sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
+  execstr(utlBuf);
   if (boy.iridAuton) 
     antAuton(true);
   gpsStart();
@@ -249,7 +243,12 @@ PhaseType dataPhase(void) {
   eng.detect = detect;
   antStart();
   //ctdStart();
-  return rise_pha;
+  // masters told us to stay down a few days
+  if (boy.stayDown>0) {
+    boy.stayDown--;
+    return data_pha;
+  } else 
+return rise_pha;
   // ngkStart();
 } // dataPhase
 
@@ -612,4 +611,7 @@ void boyEngLog(void) {
   flogf("%s", utlBuf);
   write(log, utlBuf, strlen(utlBuf));
   close(log);
+  // restart ctd to reopen log // ??
+  ctdStop();
+  ctdStart();
 } // boyEngLog
