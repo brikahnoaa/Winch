@@ -1,8 +1,16 @@
 Thu, Feb 21, 2019  9:57:01 AM
 . options
-not on by default
+Tue, Feb 26, 2019  8:59:09 AM
+. test
+.. multiple rise per day?
+.. shorter minutes?
+. not on by default
 .. ice
 .. no rise when wind storm
+
+: time algor
+ now - 2am - before?-add24hrs
+ test
 
 Sat, Feb  9, 2019  3:17:10 PM
 . rise fall
@@ -13,6 +21,9 @@ tolerate bad commun
 one hour, then check current against rise hour; repeat
 ... storm check (get tougher each day)
 . boy.stop = remote stop cmd
+. data collection
+.. engineering data redux
+.. chem data
 
 Tue, Jun 26, 2018  3:45:55 PM
 . run out line through entire call phase
