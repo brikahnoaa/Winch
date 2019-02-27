@@ -22,6 +22,7 @@ extern MpcInfo mpc;
 extern NgkInfo ngk;
 extern PwrInfo pwr;
 extern SysInfo sys;
+extern TstInfo tst;
 extern UtlInfo utl;
 extern WspInfo wsp;
 
@@ -53,11 +54,7 @@ static CfgParam cfgP[] = {
   {"bre", "boy.reset",      &boy.reset,       'b',  "false"},
   {"bst", "boy.stop",       &boy.stop,        'b',  "false"},
   {"biA", "boy.iridAuton",  &boy.iridAuton,   'b',  "false"},
-  {"bnD", "boy.noData",     &boy.noData,      'b',  "false"},
-  {"bne", "boy.noDeploy",   &boy.noDeploy,    'b',  "false"},
-  {"bnI", "boy.noIrid",     &boy.noIrid,      'b',  "false"},
-  {"bnR", "boy.noRise",     &boy.noRise,      'b',  "false"},
-  {"bte", "boy.testing",    &boy.testing,     'b',  "false"},
+  {"btt", "boy.test",       &boy.test,        'b',  "false"},
   {"blF", "boy.logFile",    &boy.logFile,     'c',  "boy"},
   {"bat", "boy.ant2tip",    &boy.ant2tip,     'f',  "2.35"},
   {"bba", "boy.boy2ant",    &boy.boy2ant,     'f',  "14.29"},
@@ -80,14 +77,11 @@ static CfgParam cfgP[] = {
   {"brR", "boy.riseRetry",  &boy.riseRetry,   'i',  "3"},
   {"bsP", "boy.startPh",    &boy.startPh,     'i',  "0"},
   {"bsD", "boy.stayDown",   &boy.stayDown,    'i',  "0"},
-  {"btC", "boy.testCnt",    &boy.testCnt,     'i',  "3"},
-  {"btS", "boy.testSize",   &boy.testSize,    'i',  "64"},
   {"ccS", "ctd.clearSamp",  &ctd.clearSamp,   'b',  "false"},
   {"csS", "ctd.sampStore",  &ctd.sampStore,   'b',  "true"},
   {"clF", "ctd.logFile",    &ctd.logFile,     'c',  "s16"},
   {"cde", "ctd.delay",      &ctd.delay,       'i',  "6"},
   {"csI", "ctd.sampleInt",  &ctd.sampleInt,   'i',  "10"},
-  {"ecy", "eng.cycle",      &eng.cycle,       'i',  "1"},
   {"gsT", "gps.setTime",    &gps.setTime,     'b',  "true"},
   {"gph", "gps.phoneNum",   &gps.phoneNum,    'c',  "0088160000519"},
   {"gpl", "gps.platform",   &gps.platform,    'c',  "LR01"},
@@ -112,6 +106,12 @@ static CfgParam cfgP[] = {
   {"pvM", "pwr.voltsMin",   &pwr.voltsMin,    'f',  "12.5"},
   {"spg", "sys.program",    &sys.program,     'c',  "LARA"},
   {"sve", "sys.version",    &sys.version,     'c',  "4.0"},
+  {"tnD", "tst.noData",     &tst.noData,      'b',  "false"},
+  {"tne", "tst.noDeploy",   &tst.noDeploy,    'b',  "false"},
+  {"tnI", "tst.noIrid",     &tst.noIrid,      'b',  "false"},
+  {"tnR", "tst.noRise",     &tst.noRise,      'b',  "false"},
+  {"ttC", "tst.testCnt",    &tst.testCnt,     'i',  "3"},
+  {"ttS", "tst.testSize",   &tst.testSize,    'i',  "64"},
   {"uiC", "utl.ignoreCon",  &utl.ignoreCon,   'b',  "false"},
   {"won", "wsp.on",         &wsp.on,          'b',  "false"},
   {"wlo", "wsp.logging",    &wsp.logging,     'b',  "true"},

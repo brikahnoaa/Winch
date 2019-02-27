@@ -8,20 +8,21 @@
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
-// the globals below are used by all modules, malloc'd in utlInit()
-// utl.ret is returned by some char *utlFuncs()
+// the globals below are used by all modules; buffers malloc'd in utlInit()
 char *utlBuf, *utlStr;     
+int cycle;
 
 UtlInfo utl;
-EngInfo eng;
+// utl.ret is semi-global, it is returned by some char *utlFuncs()
 
 ///
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
   DBG2("utlInit()")
+  // utl.ret is semi-global, it is returned by some char *utlFuncs()
+  utl.ret = malloc(BUFSZ);
   utl.buf = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
-  utl.ret = malloc(BUFSZ);
   utlBuf = malloc(BUFSZ);
   utlStr = malloc(BUFSZ);
   // sync with enum ErrType
@@ -300,7 +301,7 @@ int utlLogFile(char *base) {
   int log;
   char path[64];
   DBG0("utlLogFile(%s)", base)
-  utlLogPathName(path, base, eng.cycle);
+  utlLogPathName(path, base, sys.cycle);
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
     sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", base, log, path);

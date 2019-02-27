@@ -1,4 +1,4 @@
-// dbg.h  common to all
+// dbg.h  common to all included by utl.h
 #define DBG_H
 
 typedef struct DbgInfo {
@@ -10,7 +10,17 @@ typedef struct DbgInfo {
   bool dbg4;
 } DbgInfo;
 
+typedef struct TstInfo {
+  bool noData;            // for test (false)
+  bool noDeploy;          // for test (false)
+  bool noIrid;            // for test (false)
+  bool noRise;            // for test (false)
+  int testCnt;            // testing irid
+  int testSize;           // testing irid
+} TstInfo;
+
 extern DbgInfo dbg;
+extern TstInfo tst;
 
 ///
 // the DBG* global vars are used in macros

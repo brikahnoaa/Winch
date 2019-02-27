@@ -16,13 +16,15 @@
 #define MINUTE 60
 
 BoyInfo boy;
+extern TstInfo tst;
 
 ///
 // deploy or reboot, then loop over phases data/rise/irid/fall
-// sets: boy.phase .phasePrev
+// sets: phase phasePrev
 void boyMain() {
-  PhaseType phaseNext;
+  PhaseType phase, phaseNext, phasePrev;
   int starts;
+  time_t phaseStart;
   starts = sysInit();
   mpcInit();
   pwrInit();
@@ -36,19 +38,19 @@ void boyMain() {
   antStart();
   ctdStart();
   ngkStart();
-  boy.phase = boy.startPh;
-  if (boy.testing) 
-    flogf("\nboy.testing");
+  phase = boy.startPh;
+  if (boy.test) 
+    flogf("\nboy.test testing mode");
   else if (starts>1) 
-    boy.phase = reboot_pha;
-  flogf("\nboyMain(): starting with phase %d", boy.phase);
+    phase = reboot_pha;
+  flogf("\nboyMain(): starting with phase %d", phase);
     
   while (true) {
     utlX();
     // sysFlush();                    // flush all log file buffers
-    boy.phaseT = time(0);
-    flogf("\ncycle %d @%s ", eng.cycle, utlDateTime());
-    switch (boy.phase) {
+    phaseStart = time(0);
+    flogf("\ncycle %d @%s ", cycle, utlDateTime());
+    switch (phase) {
     case deploy_pha:
       phaseNext = deployPhase();
       break;
@@ -66,7 +68,7 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       // new day
-      eng.cycle++;
+      cycle++;
       // + moved log file manip to iridPhase
       // + moved stayDown check to dataPhase
       break;
@@ -77,11 +79,13 @@ void boyMain() {
       phaseNext = errorPhase();
       break;
     } // switch
-    boy.phasePrev = boy.phase;
-    boy.phase = phaseNext;
+    phasePrev = phase;
+    phase = phaseNext;
     // check these every phase
-    if (boy.cycleMax && (eng.cycle > boy.cycleMax)) 
+    // ?? only if testing
+    if (boy.cycleMax && (cycle > boy.cycleMax)) 
       utlStop("cycleMax reached");
+    // ?? reset after fall phase only
     if (boy.reset) BIOSReset();
   } // while true
 } // boyMain() 
@@ -98,7 +102,6 @@ void boyInit(void) {
 // figure out whats happening, continue as possible
 // load info from saved previous phase
 // ask antmod for our velocity
-// sets: boy.phase
 PhaseType rebootPhase(void) {
   MsgType msg;
   flogf("rebootPhase()\t| stop stop fall continue");
@@ -117,7 +120,7 @@ PhaseType rebootPhase(void) {
 PhaseType risePhase(void) {
   int result;
   flogf("risePhase()");
-  if (boy.noRise) return irid_pha;
+  if (boy.test && tst.noRise) return irid_pha;
   // *Start() returns immed if already on (*.on = true)
   antStart();
   //ctdStart();
@@ -144,12 +147,12 @@ PhaseType risePhase(void) {
 PhaseType iridPhase(void) {
   int r=0;
   int helloB=0, engB=0;
-  if (boy.noIrid) return fall_pha;
+  if (boy.test && tst.noIrid) return fall_pha;
   flogf("iridPhase()");
   antStart();
   // log file mgmt
   boyEngLog();
-  sprintf(utlBuf, "copy sys.log log\\sys%03d.log", boy.cycle);
+  sprintf(utlBuf, "copy sys.log log\\sys%03d.log", cycle);
   execstr(utlBuf);
   if (boy.iridAuton) 
     antAuton(true);
@@ -185,14 +188,14 @@ PhaseType iridPhase(void) {
     }
     utlNap(boy.filePause);
     if (!engB) {
-      utlLogPathName(utlStr, "eng", eng.cycle-1);
+      utlLogPathName(utlStr, "eng", cycle-1);
       if ((r = iridSendFile(utlStr))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
         continue;
       } else engB=1;
     }
     utlNap(boy.filePause);
-    utlLogPathName(utlStr, "s16", eng.cycle-1);
+    utlLogPathName(utlStr, "s16", cycle-1);
     if ((r = iridSendFile(utlStr))) {
       flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
       continue;
@@ -212,7 +215,7 @@ PhaseType iridPhase(void) {
 ///
 PhaseType fallPhase() {
   flogf("fallPhase()");
-  if (boy.noRise) return data_pha;
+  if (boy.test && tst.noRise) return data_pha;
   fall(boy.currChkD, 0);
   oceanCurrChk();
   fall(0, 0);
@@ -229,7 +232,7 @@ PhaseType fallPhase() {
 PhaseType dataPhase(void) {
   int success, detect;
   flogf("dataPhase()");
-  if (boy.noData) return rise_pha;
+  if (boy.test && tst.noData) return rise_pha;
   //ctdStop();
   antStop();
   // ngkStop();
@@ -449,7 +452,7 @@ PhaseType deployPhase(void) {
   float depth, lastD;
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
-  if (boy.noDeploy) return rise_pha;
+  if (boy.test && tst.noDeploy) return rise_pha;
   ctdSample();
   ctdDataWait();
   if (!ctdRead())
@@ -592,7 +595,7 @@ void boyEngLog(void) {
   utlBuf[0] = 0;
   sprintf(utlStr, "%s eng log %s\n", eng.program, utlDateTime());
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "cycle %d\n", eng.cycle);
+  sprintf(utlStr, "cycle %d\n", cycle);
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "current lateral = %.2f\n", eng.oceanCurr);
   strcat(utlBuf, utlStr);

@@ -1,8 +1,9 @@
 // dbg.c
-// #include<dbg.h> in utl.h
+// #include<dbg.h> is in utl.h
 #include<utl.h>
-
+// dbg and tst are global due to extern in dbg.h
 DbgInfo dbg;
+TstInfo tst;
 
 ///
 // the DBG* global vars are used in macros

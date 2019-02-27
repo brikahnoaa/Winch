@@ -1,9 +1,17 @@
-Thu, Feb 21, 2019  9:57:01 AM
-. options
 Tue, Feb 26, 2019  8:59:09 AM
+sed -i 's/boy.testCnt/tst\.testCnt/'
+check utlLogPathName(x,x,x)
+. ugly
+.. iridPhase while loop to send the types of files
+. remote reset
+boy.reset is wrong variable
+reset after fall phase only
 . test
 .. multiple rise per day?
 .. shorter minutes?
+.. tst.various - put all the test garbage in one placy
+boy.test to activate
+boy.noRise .noIrid .noData .noDeploy .testing .cycleMax .testCnt .testSize
 . not on by default
 .. ice
 .. no rise when wind storm
@@ -11,6 +19,13 @@ Tue, Feb 26, 2019  8:59:09 AM
 : time algor
  now - 2am - before?-add24hrs
  test
+
+. wspr
+.. storm check control from lara, not wspr start file
+.. set clock
+
+Thu, Feb 21, 2019  9:57:01 AM
+. options
 
 Sat, Feb  9, 2019  3:17:10 PM
 . rise fall

@@ -8,22 +8,16 @@ typedef enum {
 } PhaseType;
 typedef enum { free_ris, run_ris } RiseType;
 
-// boy
-typedef struct BoyInfo {
-  bool reset;             // remote reset (false)
-  bool stop;              // remote stop (false)
-  bool testing;
-  bool iridAuton;         // record depth during irid transfer
-  bool noData;            // for test (false)
-  bool noDeploy;          // for test (false)
-  bool noIrid;            // for test (false)
-  bool noRise;            // for test (false)
-  char logFile[32];       // log file
-  float ant2tip;          // meters from antmod ctd to antenna tip
-  float boy2ant;          // meters from buoy ctd to ant ctd under still water
-  float currChkD;         // stop at this depth to check ocean current
-  float currMax;          // too much ocean current
-  float dockD;            // Depth when docked in winch
+typedef struct EngGrp {
+  char gpsInitLat[64];
+  char gpsInitLng[64];
+  char gpsDriftLat[64];
+  char gpsDriftLng[64];
+  char riseInit[64];
+  char riseDone[64];
+  float dockD;
+  float oceanCurr;
+  float surfD;
   float fallVFirst;       // meters/s of the first fall
   float fallVLast;        // meters/s of the most recent fall 
   float fallVTest;        // m/s from tests
@@ -31,11 +25,25 @@ typedef struct BoyInfo {
   float riseVFirst;       // meters/min of the first rise 
   float riseVLast;        // meters/min of the most recent rise 
   float riseVTest;        // meters/min of the most recent rise 
+} EngGrp;
+
+// boy
+typedef struct BoyInfo {
+  bool reset;             // remote reset (false)
+  bool stop;              // remote stop (false)
+  bool test;              // test mode - activate tst.*
+  bool iridAuton;         // record depth during irid transfer
+  char logFile[32];       // log file
+  float ant2tip;          // meters from antmod ctd to antenna tip
+  float boy2ant;          // meters from buoy ctd to ant ctd under still water
+  float currChkD;         // stop at this depth to check ocean current
+  float currMax;          // too much ocean current
+  float dockD;            // Depth when docked in winch
   float surfD;            // depth floating at surface
-  int cycle;
-  int cycleMax;           // limit number of cycles, i.e. test deployment
+  int cycleMax;           // max # of cycles or days
   int depWait;            // wait until deployed after start (240min)
   int depSettle;          // time to let deploy settle (120)
+  int detect;
   int fallOp;             // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times
   int filePause;          // pause between sending files
@@ -49,15 +57,12 @@ typedef struct BoyInfo {
   int riseRetry;          // rise fails, retry times
   int startPh;            // phase to start in (0)
   int stayDown;           // stay down for days, expecting storm (0)
-  int testCnt;            // counter used in testing (3)
-  int testSize;           // send test file
-  PhaseType phase;        // deploy, data, rise, irid, fall, error
-  PhaseType phasePrev;    // deploy, data, rise, irid, fall, error
-  Serial port;            // sbe16 or ant mod
-  time_t deployT;         // startup time
-  time_t phaseT;          // time this phase started
+  time_t fallStart;
+  time_t fallDone;
   time_t riseStart;
   time_t riseDone;
+  Serial port;            // sbe16 or ant mod
+  EngGrp eng;             // engineering data group
 } BoyInfo;
 
 static PhaseType iridPhase(void);
