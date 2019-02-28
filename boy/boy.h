@@ -8,13 +8,15 @@ typedef enum {
 } PhaseType;
 typedef enum { free_ris, run_ris } RiseType;
 
+// boy data
 typedef struct EngGrp {
   char gpsInitLat[64];
   char gpsInitLng[64];
   char gpsDriftLat[64];
   char gpsDriftLng[64];
-  char riseInit[64];
-  char riseDone[64];
+  char program[64];
+  char riseBgn[64];
+  char riseEnd[64];
   float dockD;
   float oceanCurr;
   float surfD;
@@ -25,9 +27,12 @@ typedef struct EngGrp {
   float riseVFirst;       // meters/min of the first rise 
   float riseVLast;        // meters/min of the most recent rise 
   float riseVTest;        // meters/min of the most recent rise 
+  int detect;
+  GpsStats gpsStatsA;     // initial stats, just surfaced
+  GpsStats gpsStatsZ;     // final stats, irid done
 } EngGrp;
 
-// boy
+// boy params
 typedef struct BoyInfo {
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
@@ -43,7 +48,6 @@ typedef struct BoyInfo {
   int cycleMax;           // max # of cycles or days
   int depWait;            // wait until deployed after start (240min)
   int depSettle;          // time to let deploy settle (120)
-  int detect;
   int fallOp;             // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times
   int filePause;          // pause between sending files
@@ -61,8 +65,8 @@ typedef struct BoyInfo {
   time_t fallDone;
   time_t riseStart;
   time_t riseDone;
+  EngGrp eng;             // engineering group
   Serial port;            // sbe16 or ant mod
-  EngGrp eng;             // engineering data group
 } BoyInfo;
 
 static PhaseType iridPhase(void);

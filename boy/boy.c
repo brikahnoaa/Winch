@@ -1,8 +1,5 @@
 // boy.c
-
 #include <utl.h>
-#include <boy.h> 
-
 #include <ant.h> 
 #include <ctd.h>
 #include <gps.h>
@@ -12,11 +9,11 @@
 #include <sys.h>
 #include <tmr.h>
 #include <wsp.h>
+#include <boy.h> 
 
 #define MINUTE 60
 
 BoyInfo boy;
-extern TstInfo tst;
 
 ///
 // deploy or reboot, then loop over phases data/rise/irid/fall
@@ -130,14 +127,14 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // R,01,00
-  sprintf(eng.riseStart, "%s @%.1f", utlTime(), antDepth());
+  sprintf(boy.eng.riseA, "%s @%.1f", utlTime(), antDepth());
   result = rise(antSurfD()+1, 0);
   if (result) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
-  eng.surfD = antDepth();
-  sprintf(eng.riseDone, "%s @%.1f", utlTime(), antDepth());
+  boy.eng.surfD = antDepth();
+  sprintf(boy.eng.riseEnd, "%s @%.1f", utlTime(), antDepth());
   return irid_pha;
 } // risePhase
 
@@ -145,8 +142,6 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  int r=0;
-  int helloB=0, engB=0;
   if (boy.test && tst.noIrid) return fall_pha;
   flogf("iridPhase()");
   antStart();
@@ -156,12 +151,27 @@ PhaseType iridPhase(void) {
   execstr(utlBuf);
   if (boy.iridAuton) 
     antAuton(true);
+  if (iridPhaseDo()) { // 0==success
+    // ?? check for fail
+  }
+  if (boy.iridAuton) 
+    antAuton(false);
+  return fall_pha;
+} // iridPhase
+
+int iridPhaseDo(void) {
+  int r=0;
+  int helloB=0, engB=0;
   gpsStart();
   tmrStart(phase_tmr, boy.iridOp*MINUTE);
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
-  gpsStats();
-  sprintf(eng.gpsStart, "%s : %s", eng.lat, eng.lng);
+  r = gpsDateTime(&boy.gpsStatsA) | gpsLatLng(&boy.gpsStatsA);
+  if (r) { // 0==success
+    // ??
+  } else {
+    // eng ??
+  }
   antSwitch(irid_ant);
   while (!tmrExp(phase_tmr)) {
     // 0=success
@@ -206,11 +216,13 @@ PhaseType iridPhase(void) {
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
-  gpsStats();
-  sprintf(eng.gpsDrift, "%s : %s", eng.lat, eng.lng);
-  antAuton(false);
-  return fall_pha;
-} // iridPhase
+  r = gpsDateTime(&boy.gpsStatsA) | gpsLatLng(&boy.gpsStatsA);
+  if (r) { // 0==success
+    // ??
+  } else {
+    // eng ??
+  }
+} // iridPhaseDo
 
 ///
 PhaseType fallPhase() {
@@ -243,7 +255,7 @@ PhaseType dataPhase(void) {
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  eng.detect = detect;
+  beg.eng.detect = detect;
   antStart();
   //ctdStart();
   // masters told us to stay down a few days
@@ -496,7 +508,7 @@ PhaseType deployPhase(void) {
   utlNap(boy.depSettle);      // default 120sec
   // we are down
   boy.dockD = depth;
-  eng.dockD = depth;
+  beg.eng.dockD = depth;
   flogf("\n\t| boy.dockD = %4.2f", boy.dockD);
   flogf("\n\t| go to surface, call home");
   return rise_pha;
@@ -566,7 +578,7 @@ int oceanCurrChk() {
     return -1;
   }
   flogf("\n\t\t\t| lateral @ %.1f = %.1f", antDepth(), sideways);
-  eng.oceanCurr = sideways;
+  beg.eng.oceanCurr = sideways;
   if (sideways>boy.currMax) {
     flogf(" too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
@@ -593,22 +605,22 @@ void boyEngLog(void) {
   int log;
   log = utlLogFile("eng");
   utlBuf[0] = 0;
-  sprintf(utlStr, "%s eng log %s\n", eng.program, utlDateTime());
+  sprintf(utlStr, "%s eng log %s\n", beg.eng.program, utlDateTime());
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "cycle %d\n", cycle);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "current lateral = %.2f\n", eng.oceanCurr);
+  sprintf(utlStr, "current lateral = %.2f\n", beg.eng.oceanCurr);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise start %s\n", eng.riseStart);
+  sprintf(utlStr, "rise begin %s\n", beg.eng.riseBgn);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise end %s\n", eng.riseDone);
+  sprintf(utlStr, "rise end %s\n", beg.eng.riseEnd);
   strcat(utlBuf, utlStr);
   sprintf(utlStr, "dock depth %.1f, surf depth %.1f, meters %.1f\n",
-    eng.dockD, eng.surfD, eng.dockD-eng.surfD);
+    beg.eng.dockD, beg.eng.surfD, beg.eng.dockD-beg.eng.surfD);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "gps start %s\n", eng.gpsStart);
+  sprintf(utlStr, "gps start %s\n", beg.eng.gpsStatsA);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "gps drift %s\n", eng.gpsDrift);
+  sprintf(utlStr, "gps drift %s\n", beg.eng.gpsStatsZ);
   strcat(utlBuf, utlStr);
   //
   flogf("%s", utlBuf);

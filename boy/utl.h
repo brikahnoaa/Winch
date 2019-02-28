@@ -53,7 +53,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+// dbg is shared by all
 #include <dbg.h>
 
 // sync with utlInit()
@@ -74,7 +74,6 @@ typedef struct EngInfo {
   float oceanCurr;
   float surfD;
   int detect;
-  int cycle;
 } EngInfo;
 
 typedef struct UtlInfo {
@@ -92,7 +91,7 @@ typedef TUPort * Serial;
 extern char *utlBuf;
 extern char *utlStr;
 extern char *utlRet;      // returned by some char *utlFuncs()
-extern EngInfo eng;
+extern int cycle;
 
 char *utlDate(void);
 char *utlDateTime(void);

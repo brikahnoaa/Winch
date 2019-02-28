@@ -1,16 +1,19 @@
 // gps.h
 #define GPS_H
 
+typedef struct GpsStats {
+  char lat[16];             // 45:67.8900N
+  char lng[16];             // 123:45.6789W
+  char date[16];
+  char time[16];
+} GpsStats;
+
 typedef struct GpsInfo {
   bool setTime;             // flag, reset time via gps, starts true
   char phoneNum[16];
-  char date[16];
-  char lat[16];             // 45:67.8900N
-  char lng[16];             // 123:45.6789W
   char platform[16];        // rudicsland
   char project[16];         // rudicsland
   char projHdr[16];         // ???csProjPlat
-  char time[16];
   char logFile[64];
   int fileBlock;            // how many bytes to upload in a file block (512)
   int fileMax;              // how many bytes max in a file (3000)
@@ -36,7 +39,8 @@ static int iridCRC(char *buf, int cnt);
 static int iridPrompt(void);
 bool gpsSetTime(void);
 int gpsStart(void);
-int gpsStats(void);
+int gpsDateTime(GpsStats *stats);
+int gpsLatLng(GpsStats *stats);
 int iridDial(void);
 int iridLandCmds(char *buff, int *len);
 int iridLandResp(char *buff);

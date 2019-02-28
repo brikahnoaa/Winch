@@ -3,6 +3,7 @@ sed -i 's/boy.testCnt/tst\.testCnt/'
 check utlLogPathName(x,x,x)
 . ugly
 .. iridPhase while loop to send the types of files
+.. utlLogFile utlLogPathName
 . remote reset
 boy.reset is wrong variable
 reset after fall phase only

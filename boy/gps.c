@@ -62,41 +62,44 @@ void gpsStop(void) {
 } // gpsStop
 
 ///
-// get gps info; date, time, lon, lat
-// sets: .date .time .lng .lat
+// get gps .date .time 
+// sets: .date .time 
 // return: 0=success
-int gpsStats(void){
-  DBG0("gpsStats()")
+int gpsDateTime(GpsStats *stats){
+  DBG0("gpsDateTime()")
   if (gpsSats()) return 1;
   // date
   utlWrite(gps.port, "at+pd", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 2;
   utlMatchAfter(utlStr, utlBuf, "Date=", "-0123456789");
   flogf(" Date=%s", utlStr);
-  strcpy(gps.date, utlStr);
+  strcpy(stats->date, utlStr);
   // time
   utlWrite(gps.port, "at+pt", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 3;
   utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789");
   flogf(" Time=%s", utlStr);
-  strcpy(gps.time, utlStr);
-  if (gps.setTime) {
-    gpsSetTime();
-  }
-  flogf("\n");
-  // lat lng
+  strcpy(stats->time, utlStr);
+  if (gps.setTime) 
+    gpsSetTime(stats->time);
+} // gpsDateTime
+
+// get gps .lat .lng
+// sets: .lng .lat 
+// return: 0=success
+int gpsLatLng(GpsStats *stats){
+  DBG0("gpsLatLng()")
+  if (gpsSats()) return 1;
   utlWrite(gps.port, "at+pl", EOL);
   if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
   utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS");
   flogf(" Lat=%s", utlStr);
-  strcpy(gps.lat, utlStr);
-  strcpy(eng.lat, utlStr);
+  strcpy(stats->lat, utlStr);
   utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS");
   flogf(" Lng=%s", utlStr);
-  strcpy(gps.lng, utlStr);
-  strcpy(eng.lng, utlStr);
+  strcpy(stats->lng, utlStr);
   return 0;
-} // gpsStats
+} // gpsLatLng
 
 ///
 // uses: .date .time
