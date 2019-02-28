@@ -38,7 +38,6 @@ int sysInit(void) {
   utlInit();              // malloc global utlStr
   logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
   cfgInit();
-  strcpy(eng.program, sys.program);
   // make serial queues larger = 64K (rudics max block size)
   params = TUGetDefaultParams();
   params->rxqsz = qsize;

@@ -1,5 +1,6 @@
 // dbg.h  common to all included by utl.h
-#define DBG_H
+#ifndef H_DBG
+#define H_DBG
 
 typedef struct DbgInfo {
   bool dbgx;
@@ -85,3 +86,5 @@ void dbg1(bool on);
 void dbg2(bool on);
 void dbg3(bool on);
 void dbgLevel(int i);
+
+#endif

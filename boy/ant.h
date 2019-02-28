@@ -1,5 +1,6 @@
 // ant.h
-#define ANT_H
+#ifndef H_ANT
+#define H_ANT
 
 typedef enum { null_dev, cf2_dev, a3la_dev } DevType;
 typedef enum { null_ant, gps_ant, irid_ant } AntType;
@@ -65,3 +66,5 @@ void antStop(void);
 void antSwitch(AntType antenna);
 Serial antPort(void);
 AntType antAntenna(void);
+
+#endif

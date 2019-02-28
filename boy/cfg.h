@@ -1,5 +1,6 @@
 // cfg.h
-#define CFG_H
+#ifndef H_CFG
+#define H_CFG
 
 #define SYS_CFG "SYS.CFG"
 
@@ -21,3 +22,5 @@ bool cfgString(char *str);
 int cfgRead(char *file);
 void cfgDump(void);
 void cfgInit(void);
+
+#endif

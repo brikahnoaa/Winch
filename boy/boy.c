@@ -14,6 +14,7 @@
 #define MINUTE 60
 
 BoyInfo boy;
+BoyData boyd;
 
 ///
 // deploy or reboot, then loop over phases data/rise/irid/fall
@@ -45,8 +46,8 @@ void boyMain() {
   while (true) {
     utlX();
     // sysFlush();                    // flush all log file buffers
-    phaseStart = time(0);
-    flogf("\ncycle %d @%s ", cycle, utlDateTime());
+    time(&phaseStart);
+    flogf("\ncycle %d @%s ", all.cycle, utlDateTime());
     switch (phase) {
     case deploy_pha:
       phaseNext = deployPhase();
@@ -65,7 +66,7 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       // new day
-      cycle++;
+      all.cycle++;
       // + moved log file manip to iridPhase
       // + moved stayDown check to dataPhase
       break;
@@ -80,7 +81,7 @@ void boyMain() {
     phase = phaseNext;
     // check these every phase
     // ?? only if testing
-    if (boy.cycleMax && (cycle > boy.cycleMax)) 
+    if (boy.cycleMax && (all.cycle > boy.cycleMax)) 
       utlStop("cycleMax reached");
     // ?? reset after fall phase only
     if (boy.reset) BIOSReset();
@@ -91,7 +92,7 @@ void boyMain() {
 // open log
 void boyInit(void) {
   DBG0("boyInit()")
-  // boy.log = utlLogFile(boy.logFile);
+  // boyd.log = utlLogFile(boy.logFile);
 } // boyInit
 
 /// 
@@ -127,14 +128,14 @@ PhaseType risePhase(void) {
     //?? return fall_pha;
   }
   // R,01,00
-  sprintf(boy.eng.riseA, "%s @%.1f", utlTime(), antDepth());
+  time(&boyd.riseBgn);
   result = rise(antSurfD()+1, 0);
   if (result) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
     //??  return fall_pha;
   }
-  boy.eng.surfD = antDepth();
-  sprintf(boy.eng.riseEnd, "%s @%.1f", utlTime(), antDepth());
+  boyd.surfD = antDepth();
+  time(&boyd.riseEnd);
   return irid_pha;
 } // risePhase
 
@@ -147,7 +148,7 @@ PhaseType iridPhase(void) {
   antStart();
   // log file mgmt
   boyEngLog();
-  sprintf(utlBuf, "copy sys.log log\\sys%03d.log", cycle);
+  sprintf(utlBuf, "copy sys.log log\\sys%03d.log", all.cycle);
   execstr(utlBuf);
   if (boy.iridAuton) 
     antAuton(true);
@@ -166,8 +167,8 @@ int iridPhaseDo(void) {
   tmrStart(phase_tmr, boy.iridOp*MINUTE);
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
-  r = gpsDateTime(&boy.gpsStatsA) | gpsLatLng(&boy.gpsStatsA);
-  if (r) { // 0==success
+  if (gpsDateTime(&boyd.gpsBgn) | gpsLatLng(&boyd.gpsBgn)) {
+    // 0==success
     // ??
   } else {
     // eng ??
@@ -198,14 +199,14 @@ int iridPhaseDo(void) {
     }
     utlNap(boy.filePause);
     if (!engB) {
-      utlLogPathName(utlStr, "eng", cycle-1);
+      utlLogPathName(utlStr, "eng", all.cycle-1);
       if ((r = iridSendFile(utlStr))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
         continue;
       } else engB=1;
     }
     utlNap(boy.filePause);
-    utlLogPathName(utlStr, "s16", cycle-1);
+    utlLogPathName(utlStr, "s16", all.cycle-1);
     if ((r = iridSendFile(utlStr))) {
       flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
       continue;
@@ -216,12 +217,13 @@ int iridPhaseDo(void) {
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
-  r = gpsDateTime(&boy.gpsStatsA) | gpsLatLng(&boy.gpsStatsA);
-  if (r) { // 0==success
+  if (gpsDateTime(&boyd.gpsEnd) | gpsLatLng(&boyd.gpsEnd)) {
+    // 0==success
     // ??
   } else {
     // eng ??
   }
+  return r;
 } // iridPhaseDo
 
 ///
@@ -255,7 +257,7 @@ PhaseType dataPhase(void) {
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  beg.eng.detect = detect;
+  boyd.detect = detect;
   antStart();
   //ctdStart();
   // masters told us to stay down a few days
@@ -507,9 +509,8 @@ PhaseType deployPhase(void) {
   flogf("\n\t| down, pause for %ds", boy.depSettle);
   utlNap(boy.depSettle);      // default 120sec
   // we are down
-  boy.dockD = depth;
-  beg.eng.dockD = depth;
-  flogf("\n\t| boy.dockD = %4.2f", boy.dockD);
+  boyd.dockD = depth;
+  flogf("\n\t| boyd.dockD = %4.2f", boyd.dockD);
   flogf("\n\t| go to surface, call home");
   return rise_pha;
 } // deployPhase
@@ -578,7 +579,7 @@ int oceanCurrChk() {
     return -1;
   }
   flogf("\n\t\t\t| lateral @ %.1f = %.1f", antDepth(), sideways);
-  beg.eng.oceanCurr = sideways;
+  boyd.oceanCurr = sideways;
   if (sideways>boy.currMax) {
     flogf(" too strong, cancel ascent");
     // ignore current when dbg ?? should be setting
@@ -597,30 +598,29 @@ void boyFlush(void) {} // ??
 ///
 // do not use until 
 bool boyDocked(float depth) {
-  if (boy.dockD==0.0) return false;
-  else return (abs(depth-boy.dockD)<1.0);
+  if (boyd.dockD==0.0) return false;
+  else return (abs(depth-boyd.dockD)<1.0);
 }
 
 void boyEngLog(void) {
   int log;
   log = utlLogFile("eng");
   utlBuf[0] = 0;
-  sprintf(utlStr, "%s eng log %s\n", beg.eng.program, utlDateTime());
+  sprintf(utlStr, "eng log %s\n", utlDateTime());
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "cycle %d\n", cycle);
+  sprintf(utlStr, "cycle %d\n", all.cycle);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "current lateral = %.2f\n", beg.eng.oceanCurr);
+  sprintf(utlStr, "oceanCurr = %.2f\n", boyd.oceanCurr);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise begin %s\n", beg.eng.riseBgn);
+  sprintf(utlStr, "rise begin %s\n", boyd.riseBgn);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise end %s\n", beg.eng.riseEnd);
+  sprintf(utlStr, "rise end %s\n", boyd.riseEnd);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "dock depth %.1f, surf depth %.1f, meters %.1f\n",
-    beg.eng.dockD, beg.eng.surfD, beg.eng.dockD-beg.eng.surfD);
+  sprintf(utlStr, "dockD %.1f, surfD %.1f\n", boyd.dockD, boyd.surfD);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "gps start %s\n", beg.eng.gpsStatsA);
+  sprintf(utlStr, "gps start %s\n", boyd.gpsBgn);
   strcat(utlBuf, utlStr);
-  sprintf(utlStr, "gps drift %s\n", beg.eng.gpsStatsZ);
+  sprintf(utlStr, "gps drift %s\n", boyd.gpsEnd);
   strcat(utlBuf, utlStr);
   //
   flogf("%s", utlBuf);

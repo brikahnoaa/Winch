@@ -1,5 +1,6 @@
 // ngk.h
-#define NGK_H
+#ifndef H_NGK
+#define H_NGK
 
 typedef enum {
   null_msg=0,
@@ -35,3 +36,5 @@ void ngkInit(void);
 void ngkSend(MsgType msg);
 void ngkStart(void);
 void ngkStop(void);
+
+#endif

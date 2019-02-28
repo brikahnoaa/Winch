@@ -1,3 +1,5 @@
+#ifndef H_HPS
+#define H_HPS
 /*******************************************************************************
 ** ADS8345.h based on Max146.h (compatible with ADS8344)
 **
@@ -80,3 +82,5 @@ float Ads8345RawToVolts (ushort raw, float vref, bool);
 
 #endif //      __Ads8345_H
 int hpsStats(void);
+
+#endif

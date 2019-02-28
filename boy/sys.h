@@ -1,5 +1,6 @@
 // sys.h
-#define SYS_H
+#ifndef H_SYS
+#define H_SYS
 
 #define STARTS "0"
 #define STARTS_MAX "50"
@@ -40,3 +41,5 @@ void sysAlarm(AlarmType alm);
 void sysInfo(char *out);
 void sysStop(char *out);
 void sysFlush(void);
+
+#endif

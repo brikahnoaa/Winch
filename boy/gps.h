@@ -1,11 +1,12 @@
 // gps.h
-#define GPS_H
+#ifndef H_GPS
+#define H_GPS
 
 typedef struct GpsStats {
-  char lat[16];             // 45:67.8900N
-  char lng[16];             // 123:45.6789W
-  char date[16];
-  char time[16];
+  char lat[32];             // 45:67.8900N
+  char lng[32];             // 123:45.6789W
+  char date[32];
+  char time[32];
 } GpsStats;
 
 typedef struct GpsInfo {
@@ -34,13 +35,10 @@ typedef struct GpsInfo {
   Serial port;
 } GpsInfo;
 
-static int gpsSats(void);
-static int iridCRC(char *buf, int cnt);
-static int iridPrompt(void);
-bool gpsSetTime(void);
-int gpsStart(void);
+bool gpsSetTime(GpsStats *stats);
 int gpsDateTime(GpsStats *stats);
 int gpsLatLng(GpsStats *stats);
+int gpsStart(void);
 int iridDial(void);
 int iridLandCmds(char *buff, int *len);
 int iridLandResp(char *buff);
@@ -49,6 +47,11 @@ int iridProjHdr(void);
 int iridSendBlock(char *buff, int msgLen, int blockNum, int blockMany);
 int iridSendFile(char *fname);
 int iridSig(void);
+static int gpsSats(void);
+static int iridCRC(char *buf, int cnt);
+static int iridPrompt(void);
 void gpsInit(void);
 void gpsStop(void);
 void iridHup(void);
+
+#endif

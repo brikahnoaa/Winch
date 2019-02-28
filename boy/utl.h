@@ -1,5 +1,6 @@
 // utl.h - utility and shared stuff
-#define UTL_H
+#ifndef H_UTL
+#define H_UTL
 
 #define STRSZ 128
 #define BUFSZ 4096
@@ -62,19 +63,7 @@ typedef enum {
     log_err, 
     sizeof_err} ErrType;
 
-typedef struct EngInfo {
-  char gpsStart[64];
-  char gpsDrift[64];
-  char lat[64];
-  char lng[64];
-  char program[64];
-  char riseStart[64];
-  char riseDone[64];
-  float dockD;
-  float oceanCurr;
-  float surfD;
-  int detect;
-} EngInfo;
+typedef TUPort * Serial;
 
 typedef struct UtlInfo {
   bool ignoreCon;             // ignore console input
@@ -85,13 +74,15 @@ typedef struct UtlInfo {
   int errCnt[sizeof_err];
 } UtlInfo;
 
-typedef TUPort * Serial;
+typedef struct AllInfo {
+  int cycle;
+} AllInfo;
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern char *utlBuf;
 extern char *utlStr;
 extern char *utlRet;      // returned by some char *utlFuncs()
-extern int cycle;
+extern AllInfo all;
 
 char *utlDate(void);
 char *utlDateTime(void);
@@ -117,3 +108,5 @@ void utlStop(char *out);
 void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
 void utlWriteBlock(Serial port, char *out, int len);
+
+#endif

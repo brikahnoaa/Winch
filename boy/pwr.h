@@ -1,5 +1,6 @@
 // pwr.h
-#define PWR_H
+#ifndef H_PWR
+#define H_PWR
 
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
@@ -45,3 +46,5 @@ static void pwrLogWrite(ushort *);
 static void pwrOpenLog(long);
 void pwrInit(void);
 void pwrStop(void);
+
+#endif

@@ -1,6 +1,6 @@
 // wsp.h
-
-#define WSP_H
+#ifndef H_WSP
+#define H_WSP
 
 typedef struct WspInfo {
   bool on;                    // run wispr
@@ -33,3 +33,5 @@ int wspStorm(char *buf);
 void wspInit(void);
 void wspLog(char *str);
 void wspStop(void);
+
+#endif

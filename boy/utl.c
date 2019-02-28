@@ -10,7 +10,8 @@
 
 // the globals below are used by all modules; buffers malloc'd in utlInit()
 char *utlBuf, *utlStr;     
-int cycle;
+// all is a global structure for shared data: all.cycle
+AllInfo all;
 
 UtlInfo utl;
 // utl.ret is semi-global, it is returned by some char *utlFuncs()
@@ -301,7 +302,7 @@ int utlLogFile(char *base) {
   int log;
   char path[64];
   DBG0("utlLogFile(%s)", base)
-  utlLogPathName(path, base, sys.cycle);
+  utlLogPathName(path, base, all.cycle);
   log = open(path, O_APPEND | O_CREAT | O_RDWR);
   if (log<=0) {
     sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", base, log, path);

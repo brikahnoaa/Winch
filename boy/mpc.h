@@ -1,5 +1,6 @@
 // mpc.h
-#define MPC_H
+#ifndef H_MPC
+#define H_MPC
 
 #define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
 #define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
@@ -24,3 +25,5 @@ void mpcInit(void);
 void mpcSleep(void);
 void mpcStop(void);
 Serial mpcPamPort(void);
+
+#endif

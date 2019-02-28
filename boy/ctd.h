@@ -1,6 +1,6 @@
 // ctd.h
-
-#define CTD_H
+#ifndef H_CTD
+#define H_CTD
 
 typedef struct CtdInfo {
   bool auton;
@@ -35,3 +35,5 @@ void ctdInit(void);
 void ctdSample(void);
 void ctdStart(void);
 void ctdStop(void);
+
+#endif

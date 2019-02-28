@@ -81,7 +81,8 @@ int gpsDateTime(GpsStats *stats){
   flogf(" Time=%s", utlStr);
   strcpy(stats->time, utlStr);
   if (gps.setTime) 
-    gpsSetTime(stats->time);
+    gpsSetTime(stats);
+  return 0;
 } // gpsDateTime
 
 // get gps .lat .lng
@@ -102,25 +103,24 @@ int gpsLatLng(GpsStats *stats){
 } // gpsLatLng
 
 ///
-// uses: .date .time
 // sets: system time
-bool gpsSetTime(void) {
+bool gpsSetTime(GpsStats *stats) {
   struct tm t;
   time_t gpsSeconds, diff;
   char *s;
-  DBG0("gpsSetTime(%s %s)", gps.date, gps.time);
-  if (!gps.date || !gps.time) {
+  DBG0("gpsSetTime(%s %s)", stats->date, stats->time);
+  if (!stats->date || !stats->time) {
     flogf("\ngpsSetTime()\t| called with null data");
     return false;
   }
-  strcpy(utlStr, gps.date);
+  strcpy(utlStr, stats->date);
   if (!(s = strtok(utlStr, " -:."))) return false;
   t.tm_mon = atoi(s) - 1;
   if (!(s = strtok(NULL, " -:."))) return false;
   t.tm_mday = atoi(s);
   if (!(s = strtok(NULL, " -:."))) return false;
   t.tm_year = atoi(s) - 1900;
-  strcpy(utlStr, gps.time);
+  strcpy(utlStr, stats->time);
   if (!(s = strtok(utlStr, " -:."))) return false;
   t.tm_hour = atoi(s);
   if (!(s = strtok(NULL, " -:."))) return false;
