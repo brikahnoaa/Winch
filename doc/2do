@@ -1,3 +1,45 @@
+Fri, Mar  1, 2019  4:23:42 PM
+. errors to fix
+.. data cycle, to only go up once a day
+.. write file, send file - lost ability
+. improvements this april
+.. stay down command (X days)
+.. disk space wspr, # of reboots, cf2 disk space
+.. voltage info, water column data, detections, storm
+.. set gain, gps time every wspr start (hourly)
+.. commands sent to buoy, stored and sent back to land after processing
+. test cycle
+.. change gain remote
+. planned, if we have time 
+..1 in case of failure to create files, execute reboot
+..2 collect data from sbe16 and sbe39 both during descent
+..3 special test - at 10m. go up, stop, do measurements, come back down
+..4 spectrogram only before rise, not every shutdown
+..5 automatic timeout on surface, detected by winch params not buoy code
+..6 calendar - season to stay down
+
+from haru:
+CF2 program to work on (3/1/2019)
+1. Send command from shore
+a. Pre-amp gain (CF2 to WISPR)
+b. Change of rise time
+c. Cancelling the rises for the following multiple days
+i. How many days? (1-250 days, e.g., sea ice season)
+d. Change the % of duty cycle.
+2. Send data from the buoy
+a. CF2 stores the WISPR detections and attach a file for data transmission
+b. Battery voltage
+c. Free data space of WISPR
+d. Run the “spectrogram8kHz” before rise. Send the wind speed and noise level.
+e. Measure the tilt angle of mooring from the two CTDs.
+f. Stored SBE16 data of previous falling
+g. Stored SBE39 data while rising
+3. Keep data transmission size under 10 kB per rise.
+a. If the buoy stays for many days (e.g., 180 days), there are a lot files to send. What is
+the good strategy to catch up the file transmission? Send multiple files per rise? If so,
+in what order (e.g., old -&gt;new or new-old?)
+
+
 Tue, Feb 26, 2019  8:59:09 AM
 sed -i 's/boy.testCnt/tst\.testCnt/'
 check utlLogPathName(x,x,x)
