@@ -7,8 +7,8 @@ typedef struct WspInfo {
   bool logging;
   bool storm;                 // run storm detect
   char logFile[32];
-  int card;                   // current wispr card in use
-  int cards;                  // number of cards installed
+  int cardUse;                // current wispr card in use
+  int cardsNum;               // number of cards installed
   int cfSize;                 // size of CF card
   int detInt;                 // how often to log detections (10 min)
   int detMax;                 // max detections to be logged (10)
@@ -17,8 +17,8 @@ typedef struct WspInfo {
   int gain;                   // mic sensitivity
   int hour;                   // hour of day to finish cycle and rise (7)
   int log;                    // log fileid
-  int minimum;                // need at least this much to start (3min)
-  int minute;                 // seconds in a minute, for fast tests (60)
+  int minimum;                // min minutes needed to start wispr
+  time_t riseT;               // time to rise
   Serial port;                // mpcPamPort()
 } WspInfo;
 
@@ -30,6 +30,7 @@ int wspSetup(char *gps, int gain);
 int wspSpace(float *disk);
 int wspStart(int card);
 int wspStorm(char *buf);
+time_t wspRiseT(int riseHour);
 void wspInit(void);
 void wspLog(char *str);
 void wspStop(void);

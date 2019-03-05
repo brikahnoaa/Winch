@@ -11,6 +11,12 @@
 WspInfo wsp;
 
 ///
+// run wspr until we pass the target time .riseT
+// algor: set riseT, wspHour, (storm check), check time v riseT
+// wspr runs for a clock hour (or part of) between checks
+// pass gain, gpstime at power up, start on command line
+
+///
 // sets: wsp.port .wspPending
 void wspInit(void) {
   DBG0("wspInit()")
@@ -68,7 +74,7 @@ void wspStop(void) {
     wsp.on = false;
   } // wisp.on
   mpcPamPulse(WISPR_PWR_OFF);
-  // wsp.card = null_pam;
+  // wsp.cardUse = null_pam;
   // mpcPamDev(null_pam);
   if (wsp.log) {
     close(wsp.log);
@@ -83,6 +89,26 @@ int wspSetup(char *gps, int gain) {
   if (*gps) return gain;
   return 0;
 } // wspSetup
+
+///
+// calculate rise time
+// today at riseHour; if past, add 24hrs
+time_t wspRiseT(int riseHour) {
+  time_t r, now;
+  struct tm *tmPtr, tmLoc;
+  // get time, break it down
+  time(&now);
+  tmPtr = gmtime(&now);
+  memcpy(&tmLoc, tmPtr, sizeof(struct tm));
+  // check the hour, is it past?
+  tmLoc.tm_hour = riseHour;
+  r = mktime(&tmLoc);
+  if (r<now) {
+    // next day same hour
+    r += 24*60*60;
+  }
+  return r;
+} // wspRiseT
 
 ///
 // wsp storm check started. interact.
@@ -153,7 +179,7 @@ int wspDetectHour(int *detections) {
   time_t secs;
   int min, hour, remains, rest, duty, detect;
   DBG0("wspDetectHour()")
-  min = wsp.minute;   // when not testing, min=60
+  min = 60;   // when not testing, min=60
   duty = wsp.duty; 
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute
   // tim->tm_hour tim->tm_min tim->tm_sec
@@ -180,7 +206,7 @@ int wspDetectHour(int *detections) {
   flogf("\nwispr:\t| run for %d min", duty);
   utlLogTime();
   // ?? not handled right on return
-  if (wspStart(wsp.card)) return 2;
+  if (wspStart(wsp.cardUse)) return 2;
   while (duty>0) {
     if (duty>wsp.detInt) 
       utlNap(wsp.detInt*min);
