@@ -15,6 +15,9 @@ WspInfo wsp;
 // algor: set riseT, wspHour, (storm check), check time v riseT
 // wspr runs for a clock hour (or part of) between checks
 // pass gain, gpstime at power up, start on command line
+//
+// wspInit selects one card, but all off
+// wspStart powers wsp.cardUse
 
 ///
 // sets: wsp.port .wspPending
@@ -37,6 +40,7 @@ void wspInit(void) {
 ///
 // turn on, disk free > wsp.freeMin
 // ?? needs more checks
+// ?? increment to next card if data full
 // sets: wsp.on .card
 // rets: 0=success >=nextCard
 int wspStart(int card) {
@@ -55,15 +59,18 @@ int wspStart(int card) {
 } // wspStart
 
 ///
-// stop current card
-void wspStop(void) {
-  int i;
+// stop wsp.cardUse
+int wspStop(void) {
+  int i, r=1;
   // try for graceful shutdown, 3x
   if (wsp.on) {
     for (i=0;i<3;i++) {
       utlWrite(wsp.port, "$EXI*", EOL);
-      if (utlExpect(wsp.port, utlBuf, "FIN", 5))
+      if (utlExpect(wsp.port, utlBuf, "FIN", 5)) {
+        // success
+        r=0;
         break;
+      }
     }
     if (wsp.storm) {
       wspStorm(utlBuf);
@@ -74,10 +81,9 @@ void wspStop(void) {
     wsp.on = false;
   } // wisp.on
   mpcPamPulse(WISPR_PWR_OFF);
-  // wsp.cardUse = null_pam;
-  // mpcPamDev(null_pam);
   if (wsp.log) {
-    close(wsp.log);
+    // close log
+    if (close(wsp.log)) utlCloseErr( "wsp.log" );
     wsp.log = 0;
   }
 } // wspStop
@@ -92,7 +98,7 @@ int wspSetup(char *gps, int gain) {
 
 ///
 // calculate rise time
-// today at riseHour; if past, add 24hrs
+// rets: today at riseHour, or if past add 24hrs
 time_t wspRiseT(int riseHour) {
   time_t r, now;
   struct tm *tmPtr, tmLoc;
@@ -267,4 +273,68 @@ int wspSpace(float *free) {
   *free = atof(s);
   return 0;
 } // wspChkCF
+
+/*
+ * wispr doc <winchProj\LARASystem5.doc>
+ *
+   $GPS ,%ld, %8.3f,%7.3f*	Cr  GPS time, long and lat    	CF2->WISPR
+   $DX?,%ld,%ld*                	Cr  Inq detections            	CF2->WISPR
+   $DXN ,%d* 			Cr  Num of detections         	WISPR->CF2
+   $ACK* 			Cr  Send ACK for each line    WISPR->CF2
+   $NGN,%d* 			Cr  New gain (0-3)            	CF2->WISPR
+   $EXI* 			Cr  End logging              	CF2->WISPR
+   $DET,%d* 			Cr  Detection parameter	WISPR->CF2
+   $DFP* 			Cr  Inq disk space   		CF2->WISPR
+   $DFP,%5.2f* 		Cr  Reply disk space avail %  WISPR->CF2
+
+The followings are descriptions of the wispr command line parameters.  
+Options:           	DESCRIPTION                                	DEFAULT
+-M {mode}   	Processing mode number                     	 [ 1 ]*
+-T {secs}   	Size of ADC data buffers in seconds     	[up to 8 seconds]
+-F {level}        	Sets flac compression level                	[ 2, 3]
+-s {bitshift}     	Sets data bitshift                         	[ 8 ]
+-o {organization} 	Organization in FLAC metadata string       	[ none ]
+-b {number}       	Number of data buffers per file           	[10 ]
+-n {nclick}       	Min number of click for detection         	[ 10 ]
+-q {nbufs}        	data snipet option (not implemented yet)   	[ ? ]
+-i {number}       	Number buffers to skip between file        	[ 10 ]
+-p {prefix}       	Data file name prefix                      	[ wispr_ ]
+-l {filename}     	Log file name                              	[no log file ]
+-v {level}        	Verbose level (0=none)                     	[ 0 ]
+-L                	Enable LEDs                                	[ disabled ]
+-r                	Request GPS time, lat/lon and gain at start	[ disabled ] 
+	wait GPS signal for 17 sec, for free disk space 57 sec
+-W                	Simulated test detection mode              	[ disabled ] 
+-f	sampling frequency 62500, 93750, 125000	 [125000]
+	If wispr_kw (Killer whale) 93750 is default
+-g	gain 0, 1, 2, 3 (additonal gain with 6dB incr)  [0]
+-h	print help
+-C	number of files to record
+x	cpu usage time
+
+One single program can be operated in the following 5 different modes.
+*Modes
+- Mode 1: Record continuously, no detection functionality
+- Mode 2: Record continuously with detection functionality
+- Mode 3: Record intermittently. 
+  Skip specified number of buffers between files. 
+- Mode 4: Run beak whale detection function only. 
+  Process incoming data continuously with the detection function
+  but only write a file when a detection appeared.
+- Mode 5: Run beak whale detection function and record data intermittently.
+  Same idea as mode 4 + record data intermittently. 
+  How many encounters were missed or to monitor noise levels regularly.
+**-r	Send interrupt to ext processor to receive GPS time, lat/lon
+  and gain during the first 17-second start up, and wait for 5 sec. 
+  Default is to receive the GPS time, lat/lon and gain without interrupt. 
+  Send % of free space of CF card 40 sec later  (57 sec after start up).
+
+***Simulated test detection mode (bench test only)
+  Test the detection performance by overwriting AD buffer content with 
+  a short wave file of a specfic species clicks/calls before processing 
+  the buffer.  File name has to be bw_test.wav.  
+  Detection results are stored in detections.dtx.
+ *
+ */
+
 
