@@ -1,4 +1,4 @@
-// ctdTst.c
+// wispr.c
 #include <utl.h>
 #include <wsp.h>
 #include <mpc.h>
@@ -11,17 +11,17 @@ void main(void){
   Serial port;
   sysInit();
   mpcInit();
-  port = mpcPamPort();
   // mpcPamDev(wsp2_pam);
-  flogf("\nPress q=exit, i=wspInit w=wspStart s=wspStop x=poweroff\n");
+  port = mpcPamPort();
+  flogf("\nPress Q=quit I=wspInit W=wspStart S=wspStop X=poweroff\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      if (c=='q') return;
-      if (c=='i') wspInit();
-      if (c=='w') wspStart(wsp.card);
-      if (c=='s') wspStop();
-      if (c=='x') mpcPamPulse(WISPR_PWR_OFF);
+      if (c=='Q') return;
+      if (c=='I') wspInit();
+      if (c=='W') wspStart(wsp.cardUse);
+      if (c=='S') wspStop();
+      if (c=='X') mpcPamPulse(WISPR_PWR_OFF);
       cputc(c);
       TUTxPutByte(port,c,false);
     }

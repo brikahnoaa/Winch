@@ -316,6 +316,15 @@ int utlLogFile(char *base) {
   }
 } // utlLogFile
 
+/// file handling error - FATAL
+// log error and shutdown
+void utlCloseErr(char *str) {
+  DBG0("utlCloseErr(%s)", str)
+  sprintf(utl.str, "utlCloseErr(%s): close error", str);
+  utlErr(log_err, utl.str);
+  // ?? reboot
+} // utlCloseErr
+
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {

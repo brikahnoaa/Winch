@@ -97,6 +97,7 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);
 int utlReadWait(Serial port, char *in, int wait);
+void utlCloseErr(char *str);
 void utlDelay(int milli);
 void utlErr( ErrType err, char *str);
 void utlInit(void);

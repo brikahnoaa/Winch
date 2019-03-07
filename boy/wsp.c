@@ -86,6 +86,7 @@ int wspStop(void) {
     if (close(wsp.log)) utlCloseErr( "wsp.log" );
     wsp.log = 0;
   }
+  return r;
 } // wspStop
 
 ///

@@ -29,10 +29,10 @@ int wspDetectMin(int minutes, int *detections);
 int wspSetup(char *gps, int gain);
 int wspSpace(float *disk);
 int wspStart(int card);
+int wspStop(void);
 int wspStorm(char *buf);
 time_t wspRiseT(int riseHour);
 void wspInit(void);
 void wspLog(char *str);
-void wspStop(void);
 
 #endif
