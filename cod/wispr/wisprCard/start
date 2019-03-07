@@ -1,0 +1,36 @@
+#!/bin/sh
+# WISPR control script.
+#
+
+/bin/ifconfig eth0 192.168.0.20
+# Uncomment these to cut cpu freq in half
+echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+
+cp /mnt/wispr_bw /bin
+cp /mnt/spectrogram8kHz /bin/spectrogram
+chmod 777 /bin/wispr_bw
+chmod 777 /bin/spectrogram
+
+echo " "
+echo "--- Embedded Ocean Systems WISPR V1.0 ---"
+
+i=0
+while [ $i -lt 3 ]; do
+  echo -n ">" > /dev/ttyBF1
+  if read -t 3 line < /dev/ttyBF1; then
+    echo "$line"
+    eval "$line"
+    # clear cache to free memory ??
+    sync; echo 3 > /proc/sys/vm/drop_caches
+  else
+    i=$( expr $i + 1 )
+  fi
+done
+
+echo "done" > /dev/ttyBF0
+echo -n "!" > /dev/ttyBF1
+if mount | grep /mnt; then
+  echo umounting /mnt ...
+  exec /sbin/umount /mnt
+fi

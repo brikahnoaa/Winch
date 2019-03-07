@@ -335,6 +335,17 @@ One single program can be operated in the following 5 different modes.
   a short wave file of a specfic species clicks/calls before processing 
   the buffer.  File name has to be bw_test.wav.  
   Detection results are stored in detections.dtx.
+
+#/bin/wispr_bw -T8 -b15 -M2 -F2 -l wispr.log -v2 -r -g0  
+#/bin/wispr_bw -T8 -b15 -M2 -F2 -v2 -g0  
+#/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r
+#/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r -W
+
+/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r
+# remount and run spector
+mount /dev/sda1 /mnt
+/bin/spectrogram -T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log
+
  *
  */
 

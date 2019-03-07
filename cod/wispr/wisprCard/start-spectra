@@ -1,0 +1,67 @@
+#!/bin/sh
+# WISPR control script.
+# 
+
+#mount -t devpts devpts /dev/pts
+
+/bin/ifconfig eth0 192.168.0.20
+#dhcpcd &
+
+cp /mnt/console_prompt /bin
+chmod 777 /bin/console_prompt
+cp /mnt/wispr_bw /bin
+cp /mnt/spectrogram8kHz /bin/spectrogram
+chmod 777 /bin/wispr_bw
+chmod 777 /bin/spectrogram
+
+count=10
+quit='q'
+echo " "
+echo "--- Embedded Ocean Systems WISPR V1.0 ---"
+echo "Starting recording and detection."
+echo "Enter 'q' to stop."
+while [ "$count" -gt 0 ]
+do
+    val=`console_prompt -t 100`
+    if [ "$val" = "$quit" ]; then
+       exit 1
+    fi
+    count=`expr "$count" - 1`
+done
+
+# Uncomment these to cut cpu freq in half
+echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+
+# to check it type cat /proc/cpuinfo
+sleep 1
+
+# df /mnt > /dev/ttyBF1
+
+#echo "checking com1 for shell escape"
+#echo "?" >> /dev/ttyBF1
+#read -t 3 a < /dev/ttyBF1
+#if [ "$a" == "!!" ]; then 
+#	hush < /dev/ttyBF1 > /dev/ttyBF1
+#fi
+
+# clear cache to free memory
+sync; echo 3 > /proc/sys/vm/drop_caches
+sleep 1
+
+# Start detection/recording 
+echo "WISPR recording and detection starting"
+
+#/bin/wispr_bw -T8 -b15 -M2 -F2 -l wispr.log -v2 -r -g0  
+#/bin/wispr_bw -T8 -b15 -M2 -F2 -v2 -g0  
+#/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r
+#/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r -W
+
+/bin/wispr_bw -l wispr.log -v2 -T8 -b15 -M2 -F2 -g0 -r
+# remount and run spector
+#mount /dev/sda1 /mnt
+#/bin/spectrogram -T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log
+
+sleep 1
+echo "done" > /dev/ttyBF1
+echo "done"
