@@ -29,6 +29,7 @@ void main(void){
       case 'S':
         utlWrite(port, "/bin/spectrogram -T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log", NULL);
         utlRead(port, utlBuf);
+        flogf("-> %s \n", utlBuf);
         utlWrite(port, "", "\n");
         utlRead(port, utlBuf);
         wspStorm(utlBuf);
