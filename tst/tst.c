@@ -13,17 +13,34 @@ void main(void){
   mpcInit();
   // mpcPamDev(wsp2_pam);
   port = mpcPamPort();
-  flogf("\nPress Q=quit I=wspInit W=wspStart S=wspStop X=poweroff\n");
+  flogf("\nPress Q=quit I=wspInit W=wspStart X=wspStop S=storm\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      if (c=='Q') return;
-      if (c=='I') wspInit();
-      if (c=='W') wspStart(wsp.cardUse);
-      if (c=='S') wspStop();
-      if (c=='X') mpcPamPulse(WISPR_PWR_OFF);
-      cputc(c);
-      TUTxPutByte(port,c,false);
+      switch (c) {
+      case 'Q':
+        return;
+      case 'I':
+        wspInit();
+        break;
+      case 'W':
+        wspStart(wsp.cardUse);
+        break;
+      case 'S':
+        utlWrite(port, "/bin/spectrogram -T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log", NULL);
+        utlRead(port, utlBuf);
+        utlWrite(port, "", "\n");
+        utlRead(port, utlBuf);
+        wspStorm(utlBuf);
+        utlNonPrint(utlBuf);
+        break;
+      case 'X':
+        wspStop();
+        mpcPamPulse(WISPR_PWR_OFF);
+        break;
+      default:
+        TUTxPutByte(port,c,false);
+      }
     }
     if (TURxQueuedCount(port)) {
       c=TURxGetByte(port,false);
