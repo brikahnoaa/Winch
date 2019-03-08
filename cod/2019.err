@@ -1,0 +1,8 @@
+Thu, Mar 07, 2019  3:08:26 PM
+bad wispr!
+root:/> rm /mnt/*.flac
+FAT: Filesystem error (dev sda1)
+    fat_free_clusters: deleting FAT entry beyond EOF
+    File system has been set read-only
+root:/>
+

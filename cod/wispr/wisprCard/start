@@ -15,16 +15,17 @@ chmod 777 /bin/spectrogram
 echo " "
 echo "--- Embedded Ocean Systems WISPR V1.0 ---"
 
-i=0
-while [ $i -lt 3 ]; do
+while
   echo -n ">" > /dev/ttyBF1
-  if read -t 3 line < /dev/ttyBF1; then
+  line=""
+  read -t 9 line < /dev/ttyBF1
+do
+  if [ -n "$line" ]; then
     echo "$line"
     eval "$line"
+    sync
     # clear cache to free memory ??
-    sync; echo 3 > /proc/sys/vm/drop_caches
-  else
-    i=$( expr $i + 1 )
+    echo 3 > /proc/sys/vm/drop_caches
   fi
 done
 

@@ -72,30 +72,17 @@ int wspStop(void) {
         break;
       }
     }
-    if (wsp.storm) {
-      wspStorm(utlBuf);
-      wspLog(utlBuf);
-    }
-    if (!utlExpect(wsp.port, utlBuf, "done", 10))
-      flogf("\nwspStop\t| err: expected 'done', not seen...");
     wsp.on = false;
   } // wisp.on
   mpcPamPulse(WISPR_PWR_OFF);
   if (wsp.log) {
     // close log
-    if (close(wsp.log)) utlCloseErr( "wsp.log" );
+    if (close(wsp.log)) 
+      utlCloseErr( "wsp.log" );
     wsp.log = 0;
   }
   return r;
 } // wspStop
-
-///
-// send gps, gain to wispr
-int wspSetup(char *gps, int gain) {
-// ??
-  if (*gps) return gain;
-  return 0;
-} // wspSetup
 
 ///
 // calculate rise time
@@ -345,6 +332,7 @@ One single program can be operated in the following 5 different modes.
 # remount and run spector
 mount /dev/sda1 /mnt
 /bin/spectrogram -T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log
+72/02/16 09:49:30 Wait for 20 sec CF2 inquiry $WS?*
 
  *
  */

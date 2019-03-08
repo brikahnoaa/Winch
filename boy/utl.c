@@ -299,11 +299,12 @@ void utlLogPathName(char *path, char *base, int day) {
 // ?? moves existing file to backup dir
 // rets: fileID or 0=err
 int utlLogFile(char *base) {
-  int log;
+  int log, flags;
   char path[64];
   DBG0("utlLogFile(%s)", base)
   utlLogPathName(path, base, all.cycle);
-  log = open(path, O_APPEND | O_CREAT | O_RDWR);
+  flags = O_APPEND | O_CREAT | O_WRONLY;
+  log = open(path, flags );
   if (log<=0) {
     sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", base, log, path);
     utlErr(log_err, utl.str);
