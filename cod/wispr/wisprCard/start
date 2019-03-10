@@ -14,7 +14,7 @@ chmod 777 /bin/spectrogram
 
 echo " "
 echo "--- Embedded Ocean Systems WISPR V1.0 ---"
-echo -n "<hello/>" > /dev/ttyBF1
+echo -n "<hello />" > /dev/ttyBF1
 
 while
   echo -n "<wispr>" > /dev/ttyBF1
@@ -40,6 +40,7 @@ done
 
 echo
 echo done
+echo -n "<exit />" > /dev/ttyBF1
 if mount | grep -q /mnt; then
   echo umount /mnt
   umount /mnt

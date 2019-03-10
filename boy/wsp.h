@@ -2,10 +2,11 @@
 #ifndef H_WSP
 #define H_WSP
 
-#define WSP_WELCOME "<hello/>"
+#define WSP_HELLO "<hello />"
 #define WSP_OPEN "<wispr>"
 #define WSP_OK "<ok />"
 #define WSP_CLOSE "</wispr>"
+#define WSP_EXIT "<exit />"
 typedef struct WspInfo {
   bool on;                    // run wispr
   char logFile[32];           // wispr.log

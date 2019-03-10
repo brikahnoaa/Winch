@@ -54,7 +54,7 @@ int wspCardSwap(void) {
 } // wspCardSwap
 
 ///
-// select card, turn on, disk free > wsp.freeMin
+// select card, turn on
 // uses: .card
 // sets: wsp.on 
 // rets: 0=success >=nextCard
@@ -67,7 +67,7 @@ int wspStart(void) {
   // select, power on
   mpcPamDev(wsp.card);
   mpcPamPulse(WISPR_PWR_ON);
-  if (!utlExpect(wsp.port, utlBuf, WSP_WELCOME, 12)) {
+  if (!utlExpect(wsp.port, utlBuf, WSP_HELLO, 12)) {
     utlErr(wsp_err, "wsp start fail");
     return 1;
   }
@@ -77,26 +77,19 @@ int wspStart(void) {
 ///
 // stop wsp.card
 int wspStop(void) {
-  int i, r=1;
+  int r=0;
   DBG0("wspStop()")
-  // try for graceful shutdown, 3x
-  if (wsp.on) {
-    for (i=0;i<3;i++) {
-      utlWrite(wsp.port, "$EXI*", EOL);
-      if (!utlExpect(wsp.port, utlBuf, "FIN", 5)) {
-        // success
-        r=0;
-        break;
-      }
-      flogf("\nwspStop(): expected FIN, got '%s'", utlBuf);
-    }
-    wsp.on = false;
-  } // wisp.on
   if (wsp.log) {
     // close log
     if (close(wsp.log)) 
       utlCloseErr( "wsp.log" );
     wsp.log = 0;
+  }
+  if (!utlExpect(wsp.port, utlBuf, WSP_EXIT, 12)) {
+    utlErr(wsp_err, "wsp exit fail");
+    return 1;
+  } else {
+    wspInit();
   }
   return r;
 } // wspStop
@@ -156,12 +149,14 @@ void wspLog(char *str) {
 int wspDetectM(int *detect, int minutes) {
   int r=0, det=0;
   DBG0( "wspDetectM(%d)", minutes )
+  //
+  // open program
   if (!utlExpect(wsp.port, utlStr, WSP_OPEN, 12)) return 1;
-  // run program
   strcpy( utlStr, wsp.wisprCmd );
   strcat( utlStr, wsp.wisprFlag );
   utlWrite( wsp.port, utlStr, EOL );
   if (!utlExpect(wsp.port, utlStr, WSP_OK, 2)) return 2;
+  //
   // run for minutes; every .detInt, query and reset.
   // query also at end of minutes
   tmrStart(data_tmr, wsp.detInt*60);
@@ -176,8 +171,15 @@ int wspDetectM(int *detect, int minutes) {
   } // minute_tmr
   if (wspQuery(&det)) return 10;
   *detect += det;
-  if (wspStop()) return 20;
-  if (!utlExpect(wsp.port, utlStr, WSP_CLOSE, 12)) return 3;
+  //
+  // close program
+  utlWrite(wsp.port, "$EXI*", EOL);
+  if (!utlExpect(wsp.port, utlBuf, "FIN", 5)) {
+    flogf("\nwspStop(): expected FIN, got '%s'", utlBuf);
+    return 3;
+  }
+  if (!utlExpect(wsp.port, utlStr, WSP_CLOSE, 12)) return 4;
+  // success
   return 0;
 } // wspDetectM
 
