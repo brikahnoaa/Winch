@@ -94,13 +94,13 @@ MsgType ngkRecvWait(MsgType *msg, int wait) {
 // returns: msg
 MsgType ngkRecv(MsgType *msg) {
   *msg = null_msg;
-  if (!ngkRead(utlBuf)) 
+  if (!ngkRead(all.buf)) 
     return *msg;
-  *msg = msgParse(utlBuf);
+  *msg = msgParse(all.buf);
   // amodem will repeat message if not OK
   if (*msg!=mangled_msg) 
     utlWrite(ngk.port, "OK", EOL);
-  flogf("\n\t\t+ngkRecv(%s)", utlBuf);
+  flogf("\n\t\t+ngkRecv(%s)", all.buf);
   flogf(" %s %s", ngk.msgName[*msg], utlTime());
   if (*msg==buoyCmd_msg) {     // async, invisible
     ngkBuoyRsp();
@@ -163,9 +163,9 @@ void ngkBuoyRsp(void) {
 
 ///
 void ngkFlush(void) { 
-  while (ngkRead(utlStr)) 
+  while (ngkRead(all.str)) 
     flogf("\nngkFlush() \t| flushed out %s", 
-      ngkMsgName( msgParse(utlStr) ));
+      ngkMsgName( msgParse(all.str) ));
   TURxFlush(ngk.port);
   TUTxFlush(ngk.port);
 } // ngkFlush

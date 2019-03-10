@@ -9,7 +9,7 @@ void main(void){
   mpcInit();
   wspInit();
   wspStart(wsp2_pam);
-  wspStorm(utlBuf);
-  flogf("storm: %s\n", utlBuf);
+  wspStorm(all.buf);
+  flogf("storm: %s\n", all.buf);
   wspStop();
 }

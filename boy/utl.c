@@ -73,7 +73,7 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
     strncpy(out, here, len);
   out[len] = 0;
   return len;
-} // utlStrMatchAfter
+} // all.strMatchAfter
 
 ///
 // readWait(1) until we get the expected string (or timeout)

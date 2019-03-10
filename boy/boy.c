@@ -148,8 +148,8 @@ PhaseType iridPhase(void) {
   antStart();
   // log file mgmt
   boyEngLog();
-  sprintf(utlBuf, "copy sys.log log\\sys%03d.log", all.cycle);
-  execstr(utlBuf);
+  sprintf(all.buf, "copy sys.log log\\sys%03d.log", all.cycle);
+  execstr(all.buf);
   if (boy.iridAuton) 
     antAuton(true);
   if (iridPhaseDo()) { // 0==success
@@ -191,24 +191,24 @@ int iridPhaseDo(void) {
       continue;
     } 
     if (!helloB) {
-      sprintf(utlStr, "hello.txt");
-      if ((r = iridSendFile(utlStr))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+      sprintf(all.str, "hello.txt");
+      if ((r = iridSendFile(all.str))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
       } else helloB=1;
     }
     utlNap(boy.filePause);
     if (!engB) {
-      utlLogPathName(utlStr, "eng", all.cycle-1);
-      if ((r = iridSendFile(utlStr))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+      utlLogPathName(all.str, "eng", all.cycle-1);
+      if ((r = iridSendFile(all.str))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
       } else engB=1;
     }
     utlNap(boy.filePause);
-    utlLogPathName(utlStr, "s16", all.cycle-1);
-    if ((r = iridSendFile(utlStr))) {
-      flogf("\nERR\t| iridSendFile(%s)->%d", utlStr, r);
+    utlLogPathName(all.str, "s16", all.cycle-1);
+    if ((r = iridSendFile(all.str))) {
+      flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
       continue;
     } 
     // hup and done
@@ -605,26 +605,26 @@ bool boyDocked(float depth) {
 void boyEngLog(void) {
   int log;
   log = utlLogFile("eng");
-  utlBuf[0] = 0;
-  sprintf(utlStr, "eng log %s\n", utlDateTime());
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "cycle %d\n", all.cycle);
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "oceanCurr = %.2f\n", boyd.oceanCurr);
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise begin %s\n", boyd.riseBgn);
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "rise end %s\n", boyd.riseEnd);
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "dockD %.1f, surfD %.1f\n", boyd.dockD, boyd.surfD);
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "gps start %s\n", boyd.gpsBgn);
-  strcat(utlBuf, utlStr);
-  sprintf(utlStr, "gps drift %s\n", boyd.gpsEnd);
-  strcat(utlBuf, utlStr);
+  all.buf[0] = 0;
+  sprintf(all.str, "eng log %s\n", utlDateTime());
+  strcat(all.buf, all.str);
+  sprintf(all.str, "cycle %d\n", all.cycle);
+  strcat(all.buf, all.str);
+  sprintf(all.str, "oceanCurr = %.2f\n", boyd.oceanCurr);
+  strcat(all.buf, all.str);
+  sprintf(all.str, "rise begin %s\n", boyd.riseBgn);
+  strcat(all.buf, all.str);
+  sprintf(all.str, "rise end %s\n", boyd.riseEnd);
+  strcat(all.buf, all.str);
+  sprintf(all.str, "dockD %.1f, surfD %.1f\n", boyd.dockD, boyd.surfD);
+  strcat(all.buf, all.str);
+  sprintf(all.str, "gps start %s\n", boyd.gpsBgn);
+  strcat(all.buf, all.str);
+  sprintf(all.str, "gps drift %s\n", boyd.gpsEnd);
+  strcat(all.buf, all.str);
   //
-  flogf("%s", utlBuf);
-  write(log, utlBuf, strlen(utlBuf));
+  flogf("%s", all.buf);
+  write(log, all.buf, strlen(all.buf));
   close(log);
   // restart ctd to reopen log // ??
   ctdStop();

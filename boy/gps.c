@@ -40,9 +40,9 @@ int gpsStart(void) {
   TUTxPutByte(gps.port, 3, false);
   TUTxPutByte(gps.port, 'I', false);
   antDevice(a3la_dev);
-  if (!utlExpect(gps.port, utlBuf, "COMMAND MODE", 12)) return 1;
+  if (!utlExpect(gps.port, all.buf, "COMMAND MODE", 12)) return 1;
   utlWrite(gps.port, "ate0", EOL);
-  if (!utlExpect(gps.port, utlStr, "OK", 5)) return 2;
+  if (!utlExpect(gps.port, all.str, "OK", 5)) return 2;
   return 0;
 } // gpsStart
 
@@ -55,7 +55,7 @@ void gpsStop(void) {
   gps.log = 0;
   antDevice(a3la_dev);
   utlWrite(gps.port, "at*p", EOL);
-  utlExpect(gps.port, utlBuf, "OK", 2);
+  utlExpect(gps.port, all.buf, "OK", 2);
   antDevice(cf2_dev);
   TUTxPutByte(gps.port, 4, false);      // ^D powerdown
   TUTxPutByte(gps.port, 'I', false);      // S | I
@@ -70,16 +70,16 @@ int gpsDateTime(GpsStats *stats){
   if (gpsSats()) return 1;
   // date
   utlWrite(gps.port, "at+pd", EOL);
-  if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 2;
-  utlMatchAfter(utlStr, utlBuf, "Date=", "-0123456789");
-  flogf(" Date=%s", utlStr);
-  strcpy(stats->date, utlStr);
+  if (!utlExpect(gps.port, all.buf, "OK", 12)) return 2;
+  utlMatchAfter(all.str, all.buf, "Date=", "-0123456789");
+  flogf(" Date=%s", all.str);
+  strcpy(stats->date, all.str);
   // time
   utlWrite(gps.port, "at+pt", EOL);
-  if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 3;
-  utlMatchAfter(utlStr, utlBuf, "Time=", ".:0123456789");
-  flogf(" Time=%s", utlStr);
-  strcpy(stats->time, utlStr);
+  if (!utlExpect(gps.port, all.buf, "OK", 12)) return 3;
+  utlMatchAfter(all.str, all.buf, "Time=", ".:0123456789");
+  flogf(" Time=%s", all.str);
+  strcpy(stats->time, all.str);
   if (gps.setTime) 
     gpsSetTime(stats);
   return 0;
@@ -92,13 +92,13 @@ int gpsLatLng(GpsStats *stats){
   DBG0("gpsLatLng()")
   if (gpsSats()) return 1;
   utlWrite(gps.port, "at+pl", EOL);
-  if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 4;
-  utlMatchAfter(utlStr, utlBuf, "Latitude=", ".:0123456789 NEWS");
-  flogf(" Lat=%s", utlStr);
-  strcpy(stats->lat, utlStr);
-  utlMatchAfter(utlStr, utlBuf, "Longitude=", ".:0123456789 NEWS");
-  flogf(" Lng=%s", utlStr);
-  strcpy(stats->lng, utlStr);
+  if (!utlExpect(gps.port, all.buf, "OK", 12)) return 4;
+  utlMatchAfter(all.str, all.buf, "Latitude=", ".:0123456789 NEWS");
+  flogf(" Lat=%s", all.str);
+  strcpy(stats->lat, all.str);
+  utlMatchAfter(all.str, all.buf, "Longitude=", ".:0123456789 NEWS");
+  flogf(" Lng=%s", all.str);
+  strcpy(stats->lng, all.str);
   return 0;
 } // gpsLatLng
 
@@ -113,15 +113,15 @@ bool gpsSetTime(GpsStats *stats) {
     flogf("\ngpsSetTime()\t| called with null data");
     return false;
   }
-  strcpy(utlStr, stats->date);
-  if (!(s = strtok(utlStr, " -:."))) return false;
+  strcpy(all.str, stats->date);
+  if (!(s = strtok(all.str, " -:."))) return false;
   t.tm_mon = atoi(s) - 1;
   if (!(s = strtok(NULL, " -:."))) return false;
   t.tm_mday = atoi(s);
   if (!(s = strtok(NULL, " -:."))) return false;
   t.tm_year = atoi(s) - 1900;
-  strcpy(utlStr, stats->time);
-  if (!(s = strtok(utlStr, " -:."))) return false;
+  strcpy(all.str, stats->time);
+  if (!(s = strtok(all.str, " -:."))) return false;
   t.tm_hour = atoi(s);
   if (!(s = strtok(NULL, " -:."))) return false;
   t.tm_min = atoi(s);
@@ -145,17 +145,17 @@ int gpsSats(void){
   while (!tmrExp(gps_tmr)) {
     utlNap(2);
     utlWrite(gps.port, "at+pd", EOL);
-    if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 1;
-    if (!strstr(utlBuf, "Invalid Position") && strstr(utlBuf, "Used=")) {
+    if (!utlExpect(gps.port, all.buf, "OK", 12)) return 1;
+    if (!strstr(all.buf, "Invalid Position") && strstr(all.buf, "Used=")) {
       tmrStop(gps_tmr);
-      utlMatchAfter(utlStr, utlBuf, "Used=", "0123456789");
-      flogf("\nGPS Sats=%s", utlStr);
-      gps.sats = atoi(utlStr);
+      utlMatchAfter(all.str, all.buf, "Used=", "0123456789");
+      flogf("\nGPS Sats=%s", all.str);
+      gps.sats = atoi(all.str);
       return 0;
     }
   } // while timeout
   flogf("\ngpsSats\t| i got nothing");
-  flogf("\n'%s'", utlBuf);
+  flogf("\n'%s'", all.buf);
   return 2;
 } // gpsSats
 
@@ -167,9 +167,9 @@ int iridSig(void) {
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlWrite(gps.port, "at+csq", EOL);
-    if (!utlExpect(gps.port, utlBuf, "OK", 12)) return 1;
-    if (utlMatchAfter(utlStr, utlBuf, "CSQ:", "0123456789")) {
-      gps.signal = atoi(utlStr);
+    if (!utlExpect(gps.port, all.buf, "OK", 12)) return 1;
+    if (utlMatchAfter(all.str, all.buf, "CSQ:", "0123456789")) {
+      gps.signal = atoi(all.str);
       flogf(" csq=%d", gps.signal);
       if (gps.signal>gps.signalMin) return 0;
     } // if CSQ
@@ -207,7 +207,7 @@ int iridCRC(char *buf, int cnt) {
 
 ///
 // call home
-// uses: utlStr
+// uses: all.str
 // rets: 0=success
 int iridDial(void) {
   char str[32];
@@ -218,13 +218,13 @@ int iridDial(void) {
   //  10^6 * 10bits / rudBaud
   gps.rudUsec = (int) ((pow(10, 6)*10) / gps.rudBaud);
   utlWrite(gps.port, "at+cpas", EOL);
-  if (!utlExpect(gps.port, utlStr, "OK", 5)) return 2;
+  if (!utlExpect(gps.port, all.str, "OK", 5)) return 2;
   utlWrite(gps.port, "at+clcc", EOL);
-  if (!utlExpect(gps.port, utlStr, "OK", 5)) return 3;
-  utlMatchAfter(str, utlStr, "+CLCC:", "0123456789");
+  if (!utlExpect(gps.port, all.str, "OK", 5)) return 3;
+  utlMatchAfter(str, all.str, "+CLCC:", "0123456789");
   if (!strcmp(str, "006")==0) {
     utlWrite(gps.port, "at+chup", EOL);
-    if (!utlExpect(gps.port, utlStr, "OK", 5)) return 4;
+    if (!utlExpect(gps.port, all.str, "OK", 5)) return 4;
   }
   sprintf(str, "atd%s", gps.phoneNum);
   // dial
@@ -232,11 +232,11 @@ int iridDial(void) {
     // fails "NO CONNECT" without this pause
     utlNap(4);
     // flush
-    utlRead(gps.port, utlStr);
+    utlRead(gps.port, all.str);
     utlWrite(gps.port, str, EOL);
-    utlReadWait(gps.port, utlStr, CALL_DELAY);
-    DBG1("%s", utlStr);
-    if (strstr(utlStr, "CONNECT 9600")) {
+    utlReadWait(gps.port, all.str, CALL_DELAY);
+    DBG1("%s", all.str);
+    if (strstr(all.str, "CONNECT 9600")) {
       flogf(" CONNECT 9600");
       flogf("rudBaud@%d +%dus ", gps.rudBaud, gps.rudUsec);
       return 0;
@@ -257,7 +257,7 @@ int iridProjHdr(void) {
     if (try-- <= 0) return 1;
     flogf(" proj");
     utlWriteBlock(gps.port, gps.projHdr, hdr);
-    s = utlExpect(gps.port, utlStr, "ACK", gps.hdrPause);
+    s = utlExpect(gps.port, all.str, "ACK", gps.hdrPause);
   }
   flogf("\n");
   return 0;
@@ -326,16 +326,16 @@ int iridSendFile(char *fname) {
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
   if (len>=gps.fileMax)
-    block = read(fh, utlBuf, gps.fileMax);
+    block = read(fh, all.buf, gps.fileMax);
   else
-    block = read(fh, utlBuf, len);
-  iridSendBlock(utlBuf, block, 1, 1);
+    block = read(fh, all.buf, len);
+  iridSendBlock(all.buf, block, 1, 1);
   flogf(" [[%d]]", block);
-  if ((r = iridLandResp(utlStr))) return 10+r;
-  if (strstr(utlStr, "cmds"))
-    r = iridLandCmds(utlBuf, &l);
-  utlBuf[l] = 0;
-  iridProcessCmds(utlBuf);
+  if ((r = iridLandResp(all.str))) return 10+r;
+  if (strstr(all.str, "cmds"))
+    r = iridLandCmds(all.buf, &l);
+  all.buf[l] = 0;
+  iridProcessCmds(all.buf);
   utlWrite(gps.port, "data", "");
   return 0;
 } // iridSendFile
@@ -442,13 +442,13 @@ void iridHup(void) {
     utlDelay(gps.hupMs);
     utlWriteBlock(gps.port, "+++", 3);
     utlDelay(gps.hupMs);
-    if (utlExpect(gps.port, utlBuf, "OK", 2)) break;
+    if (utlExpect(gps.port, all.buf, "OK", 2)) break;
   }
   utlWrite(gps.port, "at+clcc", EOL);
-  if (utlExpect(gps.port, utlBuf, "OK", 5))
-    flogf("\nclcc->%s", utlNonPrint(utlBuf));
+  if (utlExpect(gps.port, all.buf, "OK", 5))
+    flogf("\nclcc->%s", utlNonPrint(all.buf));
   utlWrite(gps.port, "at+chup", EOL);
-  utlExpect(gps.port, utlBuf, "OK", 5);
+  utlExpect(gps.port, all.buf, "OK", 5);
 } // iridHup
 
 ///
@@ -456,7 +456,7 @@ void iridHup(void) {
 int iridPrompt() {
   TURxFlush(gps.port);
   utlWrite(gps.port, "at", EOL);
-  if (!utlExpect(gps.port, utlBuf, "OK", 4)) return 1;
+  if (!utlExpect(gps.port, all.buf, "OK", 4)) return 1;
   else return 0;
 } // iridPrompt
 

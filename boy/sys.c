@@ -35,7 +35,7 @@ int sysInit(void) {
   preRun(10);
   sys.starts = startCheck();
   dbgInit();              // common init: dbg0,1,2
-  utlInit();              // malloc global utlStr
+  utlInit();              // malloc global all.str
   logInit(sys.logFile);   // stores flogf filename, found in VEE.sys_log
   cfgInit();
   // make serial queues larger = 64K (rudics max block size)

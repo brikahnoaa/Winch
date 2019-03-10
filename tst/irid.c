@@ -46,11 +46,11 @@ void main(void){
     cprintf("(%d)\n", r);
     // utlDelay(500);
   }
-  iridLandResp(utlBuf);
-  if (strstr(utlBuf, "cmds"))
-    r = iridLandCmds(utlBuf, &l);
-  utlBuf[l] = 0;
-  strcpy(buff, utlBuf);
+  iridLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iridLandCmds(all.buf, &l);
+  all.buf[l] = 0;
+  strcpy(buff, all.buf);
   utlDelay(500);
   utlWrite(gps.port, "done", "");
   utlDelay(500);

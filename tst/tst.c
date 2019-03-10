@@ -40,8 +40,8 @@ void main(void){
           wspStart();
           break;
         case 's':
-          wspStorm(utlBuf);
-          utlNonPrint(utlBuf);
+          wspStorm(all.buf);
+          utlNonPrint(all.buf);
           break;
         case 'q':
           wspStop();

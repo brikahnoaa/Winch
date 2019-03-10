@@ -67,7 +67,7 @@ int wspStart(void) {
   // select, power on
   mpcPamDev(wsp.card);
   mpcPamPulse(WISPR_PWR_ON);
-  if (!utlExpect(wsp.port, utlBuf, WSP_HELLO, 12)) {
+  if (!utlExpect(wsp.port, all.buf, WSP_HELLO, 12)) {
     utlErr(wsp_err, "wsp start fail");
     return 1;
   }
@@ -85,7 +85,7 @@ int wspStop(void) {
       utlCloseErr( "wsp.log" );
     wsp.log = 0;
   }
-  if (!utlExpect(wsp.port, utlBuf, WSP_EXIT, 12)) {
+  if (!utlExpect(wsp.port, all.buf, WSP_EXIT, 12)) {
     utlErr(wsp_err, "wsp exit fail");
     return 1;
   } else {
@@ -133,8 +133,8 @@ int wspStorm(char *buf) {
 // if wsp.log else flog
 void wspLog(char *str) {
   if (wsp.log) {
-    sprintf(utlStr, "%s\n", str);
-    write(wsp.log, utlStr, strlen(utlStr));
+    sprintf(all.str, "%s\n", str);
+    write(wsp.log, all.str, strlen(all.str));
   } else {
     flogf("\nwspLog(%s)", str);
   }
@@ -151,11 +151,11 @@ int wspDetectM(int *detect, int minutes) {
   DBG0( "wspDetectM(%d)", minutes )
   //
   // open program
-  if (!utlExpect(wsp.port, utlStr, WSP_OPEN, 12)) return 1;
-  strcpy( utlStr, wsp.wisprCmd );
-  strcat( utlStr, wsp.wisprFlag );
-  utlWrite( wsp.port, utlStr, EOL );
-  if (!utlExpect(wsp.port, utlStr, WSP_OK, 2)) return 2;
+  if (!utlExpect(wsp.port, all.str, WSP_OPEN, 12)) return 1;
+  strcpy( all.str, wsp.wisprCmd );
+  strcat( all.str, wsp.wisprFlag );
+  utlWrite( wsp.port, all.str, EOL );
+  if (!utlExpect(wsp.port, all.str, WSP_OK, 2)) return 2;
   //
   // run for minutes; every .detInt, query and reset.
   // query also at end of minutes
@@ -174,11 +174,11 @@ int wspDetectM(int *detect, int minutes) {
   //
   // close program
   utlWrite(wsp.port, "$EXI*", EOL);
-  if (!utlExpect(wsp.port, utlBuf, "FIN", 5)) {
-    flogf("\nwspStop(): expected FIN, got '%s'", utlBuf);
+  if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
+    flogf("\nwspStop(): expected FIN, got '%s'", all.buf);
     return 3;
   }
-  if (!utlExpect(wsp.port, utlStr, WSP_CLOSE, 12)) return 4;
+  if (!utlExpect(wsp.port, all.str, WSP_CLOSE, 12)) return 4;
   // success
   return 0;
 } // wspDetectM
@@ -201,8 +201,8 @@ int wspDetectH(int *detect) {
     r = wspDetectM(&det, wsp.dutyM);
   *detect += det;
   if (r) { // error
-    sprintf( utlStr, "\nwspDetectM(): error %d", r );
-    wspLog( utlStr );
+    sprintf( all.str, "\nwspDetectM(): error %d", r );
+    wspLog( all.str );
     return 10;
   }
   if (tmrExp(hour_tmr)) return 1;
@@ -228,7 +228,7 @@ int wspDetectD(int *detect) {
     *detect += det;
     flogf("\n%s wspDetectD(%d)", utlDateTime(), *detect);
     if (wsp.spectRun>1) 
-      wspStorm(utlBuf);
+      wspStorm(all.buf);
   } // while < riseT
   return r;
 } // wspDetectD
@@ -260,10 +260,10 @@ int wspQuery(int *det) {
   *det = 0;
   sprintf(query, "$DX?,%d*", wsp.detMax);
   utlWrite(wsp.port, query, EOL);
-  utlReadWait(wsp.port, utlBuf, 16);
-  wspLog(utlBuf);
+  utlReadWait(wsp.port, all.buf, 16);
+  wspLog(all.buf);
   // total det
-  s = strtok(utlBuf, "$,");
+  s = strtok(all.buf, "$,");
   if (!strstr(s, "DXN")) return 1;
   s = strtok(NULL, ",");
   *det = atoi(s);
@@ -277,9 +277,9 @@ int wspSpace(float *free) {
   char *s;
   *free = 0.0;
   utlWrite(wsp.port, "$DFP*", EOL);
-  if (!utlReadWait(wsp.port, utlBuf, 2)) return 2;
-  DBG2("%s", utlBuf)
-  s = strstr(utlBuf, "DFP");
+  if (!utlReadWait(wsp.port, all.buf, 2)) return 2;
+  DBG2("%s", all.buf)
+  s = strstr(all.buf, "DFP");
   if (!s) return 1;
   strtok(s, ",");
   s = strtok(NULL, "*");

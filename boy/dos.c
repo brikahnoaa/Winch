@@ -47,7 +47,7 @@ int sysOSCmd(char *command, long filenum, char *ext, char *extt) {
     return r;
   }
 
-  flogf("\n%s|COMDos() %s", clockTime(utlStr), Com);
+  flogf("\n%s|COMDos() %s", clockTime(all.str), Com);
   putflush();
   CIOdrain();
   execstr(Com);

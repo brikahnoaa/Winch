@@ -39,8 +39,8 @@ void main(void){
   if (iridProjHdr()) return;
   for (i=1; i<=cnt; i++) {
     if (iridSendFile("log\\ctd.log")) return;
-    if (iridLandResp(utlBuf)) return;
-    if (strstr(utlBuf, "cmds"))
+    if (iridLandResp(all.buf)) return;
+    if (strstr(all.buf, "cmds"))
       r = iridLandCmds(buff, &l);
     else
       break;

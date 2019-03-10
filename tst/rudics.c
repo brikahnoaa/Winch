@@ -42,8 +42,8 @@ void main(void){
     r = iridSendBlock(buff, len, i, cnt);
     cprintf("(%d)\n", r);
   }
-  iridLandResp(utlBuf);
-  if (strstr(utlBuf, "cmds"))
+  iridLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
     len = iridLandCmds(buff);
   iridHup();
   iridSig();
