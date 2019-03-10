@@ -28,6 +28,7 @@ typedef struct WspInfo {
 } WspInfo;
 
 static void wspRemains(int *remains);
+static void wspRiseT(time_t *riseT);
 
 int wspCardSwap(void);
 int wspDetectD(int *detect);
@@ -39,7 +40,6 @@ int wspSpace(float *disk);
 int wspStart(void);
 int wspStop(void);
 int wspStorm(char *buf);
-void wspRiseT(time_t *riseT);
 void wspInit(void);
 void wspLog(char *str);
 

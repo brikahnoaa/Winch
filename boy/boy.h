@@ -52,7 +52,6 @@ typedef struct BoyInfo {
   int iridFreq;           // number of times per day to call (1)
   int iridHour;           // 0-23 (midnight-11pm) hour to first call home (1)
   int iridOp;             // phase minutes
-  int minute;             // set smaller to speed up test cycle (60)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int riseOp;             // operation timeout minutes (30)
   int riseRetry;          // rise fails, retry times
@@ -67,6 +66,7 @@ static PhaseType fallPhase(void);
 static PhaseType iridPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
+static bool boyDocked(float depth);
 static int fall(float targetD, int try);
 static int iridPhaseDo(void);
 static int oceanCurr(float *curr);
@@ -75,8 +75,6 @@ static int rise(float targetD, int try);
 static int riseUp(float targetD, int try);
 static void boyStat(char *buffer);
 
-bool boyDocked(float depth);
-int boyCycle(void);
 void boyEngLog(void);
 void boyFlush(void);
 void boyInit(void);

@@ -77,12 +77,12 @@ typedef struct UtlInfo {
 
 typedef struct AllInfo {
   int cycle;
+  char *buf;
+  char *str;
+  char *ret;      // returned by some char *utlFuncs()
 } AllInfo;
 
 // the globals below are used by all modules // malloc'd in utlInit()
-extern char *utlBuf;
-extern char *utlStr;
-extern char *utlRet;      // returned by some char *utlFuncs()
 extern AllInfo all;
 
 char *utlDate(void);

@@ -71,7 +71,6 @@ static CfgParam cfgP[] = {
   {'i',  "boy.iridFreq",  &boy.iridFreq,    "biF",  "1"},
   {'i',  "boy.iridHour",  &boy.iridHour,    "biH",  "1"},
   {'i',  "boy.iridOp",    &boy.iridOp,      "biO",  "5"},
-  {'i',  "boy.minute",    &boy.minute,      "bme",  "60"},
   {'i',  "boy.ngkDelay",  &boy.ngkDelay,    "bnD",  "8"},
   {'i',  "boy.riseOp",    &boy.riseOp,      "brO",  "30"},
   {'i',  "boy.riseRetry", &boy.riseRetry,   "brR",  "3"},

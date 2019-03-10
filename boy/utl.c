@@ -8,25 +8,27 @@
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
-// the globals below are used by all modules; buffers malloc'd in utlInit()
-char *utlBuf, *utlStr;     
+// faux exception handling using   ex=11; goto ex;
+int ex;
+
 // all is a global structure for shared data: all.cycle
 AllInfo all;
 
 UtlInfo utl;
-// utl.ret is semi-global, it is returned by some char *utlFuncs()
 
 ///
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
   DBG2("utlInit()")
-  // utl.ret is semi-global, it is returned by some char *utlFuncs()
-  utl.ret = malloc(BUFSZ);
+  // all.ret is semi-global, it is returned by some char *utlFuncs()
+  all.buf = malloc(BUFSZ);
+  all.ret = malloc(BUFSZ);
+  all.str = malloc(BUFSZ);
   utl.buf = malloc(BUFSZ);
+  utl.ret = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
-  utlBuf = malloc(BUFSZ);
-  utlStr = malloc(BUFSZ);
-  // sync with enum ErrType
+  
+  // sync this with enum ErrType
   utl.errName[ant_err] = "ant";
   utl.errName[boy_err] = "boy";
   utl.errName[cfg_err] = "cfg";
@@ -181,65 +183,65 @@ void utlLogTime(void) {
 
 ///
 // HH:MM:SS now
-// returns: global static char *utl.ret
+// returns: global static char *all.ret
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(utl.ret, "%02d:%02d:%02d",
+  sprintf(all.ret, "%02d:%02d:%02d",
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return utl.ret;
+  return all.ret;
 } // utlTime
 
 ///
 // Date String // MM-DD-YY 
-// returns: global static char *utl.ret
+// returns: global static char *all.ret
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
   
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(utl.ret, "%02d-%02d-%02d", tim->tm_mon+1,
+  sprintf(all.ret, "%02d-%02d-%02d", tim->tm_mon+1,
           tim->tm_mday, tim->tm_year - 100);
-  return utl.ret;
+  return all.ret;
 } // utlDate
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global static char *utl.ret
+// returns: global static char *all.ret
 char *utlDateTime(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(utl.ret, "%04d-%02d-%02d %02d:%02d:%02d",  
+  sprintf(all.ret, "%04d-%02d-%02d %02d:%02d:%02d",  
           tim->tm_year + 1900, tim->tm_mon+1, tim->tm_mday, 
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return utl.ret;
+  return all.ret;
 } // utlDateTime
 
 ///
 // MMDDYYYYHHMMSS 
-// returns: global static char *utl.ret
+// returns: global static char *all.ret
 char *utlDateTimeCtd(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(utl.ret, "%02d%02d%04d%02d%02d%02d", 
+  sprintf(all.ret, "%02d%02d%04d%02d%02d%02d", 
           tim->tm_mon+1, tim->tm_mday, tim->tm_year + 1900, 
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return utl.ret;
+  return all.ret;
 } // utlDateTimeCtd
 
 ///
 // format non-printable string; null terminate
-// returns: global static char *utl.ret
+// returns: global static char *all.ret
 char *utlNonPrint (char *in) {
   unsigned char ch;
-  char *out = utl.ret;
+  char *out = all.ret;
   int i, o;
   // walk thru input until 0 or BUFSZ
   i = o = 0;
@@ -258,10 +260,10 @@ char *utlNonPrint (char *in) {
 
 ///
 // format non-printable string; null terminate
-// returns: global static char *utl.ret
+// returns: global static char *all.ret
 char *utlNonPrintBlock (char *in, int len) {
   unsigned char ch;
-  char *out = utl.ret;
+  char *out = all.ret;
   int i, o;
   // copy len bytes
   i = o = 0;
