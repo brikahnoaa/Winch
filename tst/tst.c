@@ -15,7 +15,8 @@ void main(void){
   mpcInit();
   // mpcPamDev(wsp2_pam);
   port = mpcPamPort();
-  flogf("\nPress [tab] q=quit i=wInit w=wStart x=wStop s=wStorm ?=wQuery\n");
+  flogf("%s\n", utlDateTime());
+  flogf("\nPress [tab] x=exit q=wStop i=wInit w=wStart s=wStorm d=wQuery\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -25,26 +26,27 @@ void main(void){
       }
       if (b==false) {
         TUTxPutByte(port,c,false);
+        cputc(c);
       } else {
         b=false;
         switch (c) {
-        case 'q':
+        case 'x':
           mpcPamPulse(WISPR_PWR_OFF);
           return;
         case 'i':
           wspInit();
           break;
         case 'w':
-          wspStart(wsp.cardUse);
+          wspStart();
           break;
         case 's':
           wspStorm(utlBuf);
           utlNonPrint(utlBuf);
           break;
-        case 'x':
+        case 'q':
           wspStop();
           break;
-        case '?':
+        case 'd':
           wspQuery(&i);
           flogf("%d detections\n", i);
           break;

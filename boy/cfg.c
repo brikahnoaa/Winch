@@ -121,20 +121,20 @@ static CfgParam cfgP[] = {
 
   {'b',  "utl.ignoreCon", &utl.ignoreCon,   "uiC",  "false"},
 
-  {'b',  "wsp.logging",   &wsp.logging,     "wlo",  "true"},
   {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
-  {'b',  "wsp.storm",     &wsp.storm,       "wst",  "true"},
   {'c',  "wsp.logFile",   &wsp.logFile,     "wlF",  "wsp"},
-  {'i',  "wsp.cardUse",   &wsp.cardUse,     "wca",  "2"},
-  {'i',  "wsp.cardsNum",  &wsp.cardsNum,    "wcs",  "2"},
-  {'i',  "wsp.cfSize",    &wsp.cfSize,      "wcS",  "512"},
+  {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},
+  {'c',  "wsp.spectFlag", &wsp.spectFlag,   "wsF",  "-v2 -T8 -b15 -M2 -F2"},
+  {'c',  "wsp.wisprCmd",  &wsp.wisprCmd,    "wwC",  "/bin/wispr_bw"},
+  {'c',  "wsp.wisprFlag", &wsp.wisprFlag,   "wwF",  "-T10 -C12 -v1 -n512 -o256 -g0 -t20 -l noise.log"},
+  {'i',  "wsp.card",      &wsp.card,        "wcd",  "2"},
   {'i',  "wsp.detInt",    &wsp.detInt,      "wdI",  "10"},
   {'i',  "wsp.detMax",    &wsp.detMax,      "wdX",  "10"},
-  {'i',  "wsp.duty",      &wsp.duty,        "wdu",  "30"},
-  {'i',  "wsp.freeMin",   &wsp.freeMin,     "wfM",  "5"},
-  {'i',  "wsp.gain",      &wsp.gain,        "wga",  "1"},
-  {'i',  "wsp.hour",      &wsp.hour,        "who",  "7"},
-  {'i',  "wsp.minimum",   &wsp.minimum,     "wmm",  "4"},
+  {'i',  "wsp.dutyM",     &wsp.dutyM,       "wdM",  "30"},
+  {'i',  "wsp.diskFree",  &wsp.diskFree,    "wdF",  "5"},
+  {'i',  "wsp.gain",      &wsp.gain,        "wgn",  "1"},
+  {'i',  "wsp.riseH",     &wsp.riseH,       "wrH",  "7"},
+  {'i',  "wsp.spectRun",  &wsp.spectRun,    "wsR",  "2"},
 
 };
 

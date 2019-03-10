@@ -54,7 +54,7 @@ void antStart(void) {
       antAuton(false);
     tmrStop(s39_tmr);
     antPrompt();
-    sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
+    sprintf(utlStr, "datetime=%s", utlDateTimeCtd());
     utlWrite(ant.port, utlStr, EOL);
     utlExpect(ant.port, utlBuf, EXEC, 2);
     utlWrite(ant.port, "TxSampleNum=N", EOL);

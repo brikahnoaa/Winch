@@ -207,32 +207,32 @@ char *utlDate(void) {
 } // utlDate
 
 ///
-// MM-DD-YY HH:MM:SS 
+// YYYY-MM-DD HH:MM:SS 
 // returns: global static char *utl.ret
 char *utlDateTime(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(utl.ret, "%02d-%02d-%02d %02d:%02d:%02d", tim->tm_mon+1,
-          tim->tm_mday, tim->tm_year - 100, tim->tm_hour,
-          tim->tm_min, tim->tm_sec);
+  sprintf(utl.ret, "%04d-%02d-%02d %02d:%02d:%02d",  
+          tim->tm_year + 1900, tim->tm_mon+1, tim->tm_mday, 
+          tim->tm_hour, tim->tm_min, tim->tm_sec);
   return utl.ret;
 } // utlDateTime
 
 ///
 // MMDDYYYYHHMMSS 
 // returns: global static char *utl.ret
-char *utlDateTimeBrief(void) {
+char *utlDateTimeCtd(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(utl.ret, "%02d%02d%04d%02d%02d%02d", tim->tm_mon+1,
-          tim->tm_mday, tim->tm_year + 1900, tim->tm_hour,
-          tim->tm_min, tim->tm_sec);
+  sprintf(utl.ret, "%02d%02d%04d%02d%02d%02d", 
+          tim->tm_mon+1, tim->tm_mday, tim->tm_year + 1900, 
+          tim->tm_hour, tim->tm_min, tim->tm_sec);
   return utl.ret;
-} // utlDateTimeBrief
+} // utlDateTimeCtd
 
 ///
 // format non-printable string; null terminate

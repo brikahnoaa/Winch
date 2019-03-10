@@ -14,24 +14,33 @@ chmod 777 /bin/spectrogram
 
 echo " "
 echo "--- Embedded Ocean Systems WISPR V1.0 ---"
+echo -n "<hello/>" > /dev/ttyBF1
 
 while
-  echo -n ">" > /dev/ttyBF1
+  echo -n "<wispr>" > /dev/ttyBF1
   line=""
-  read -t 9 line < /dev/ttyBF1
+  # -s noecho -t timeout
+  read -s -t 9 line < /dev/ttyBF1
 do
   if [ -n "$line" ]; then
+    echo -n "<ok />" > /dev/ttyBF1
     echo "$line"
     eval "$line"
     sync
     # clear cache to free memory ??
     echo 3 > /proc/sys/vm/drop_caches
+    if mount | grep -qv /mnt; then
+      # not mounted?
+      echo mount /dev/sda1 /mnt
+      mount /dev/sda1 /mnt
+    fi
+    echo -n "</wispr>" > /dev/ttyBF1
   fi
 done
 
-echo "done" > /dev/ttyBF0
-echo -n "!" > /dev/ttyBF1
-if mount | grep /mnt; then
-  echo umounting /mnt ...
-  exec /sbin/umount /mnt
+echo
+echo done
+if mount | grep -q /mnt; then
+  echo umount /mnt
+  umount /mnt
 fi

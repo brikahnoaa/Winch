@@ -1,12 +1,11 @@
 // tmr.h interval timer
-#ifndef H_TMR
-#define H_TMR
+#define TMR_H
 
 // timers 0-9 are for local use, ad hoc
 enum {
   null_tmr=10,
-  s16_tmr, s39_tmr, day_tmr, hour_tmr, minute_tmr, sec_tmr, phase_tmr,
-  data_tmr, gps_tmr, ngk_tmr, rudics_tmr, utl_tmr, wsp_tmr, 
+  day_tmr, hour_tmr, minute_tmr, second_tmr, phase_tmr, data_tmr, 
+  gps_tmr, ngk_tmr, rudics_tmr, utl_tmr, wsp_tmr, s16_tmr, s39_tmr, 
   sizeof_tmr
   };
 typedef int TmrType;
@@ -20,4 +19,3 @@ void tmrStop(TmrType tim);
 void tmrStopAll(void);
 TmrType tmrAnyExp(void);
 
-#endif

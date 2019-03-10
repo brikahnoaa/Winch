@@ -250,7 +250,7 @@ PhaseType dataPhase(void) {
   //ctdStop();
   antStop();
   // ngkStop();
-  success = wspDetectDay(&detect);
+  success = wspDetectD(&detect);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;

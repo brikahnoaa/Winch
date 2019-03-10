@@ -30,7 +30,7 @@ void ctdInit(void) {
     utlErr(ctd_err, "ctd: no prompt");
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
-  sprintf(utlStr, "datetime=%s", utlDateTimeBrief());
+  sprintf(utlStr, "datetime=%s", utlDateTimeCtd());
   utlWrite(ctd.port, utlStr, EOL);
   utlWrite(ctd.port, "stop", EOL);
   utlReadWait(ctd.port, utlBuf, 1);   // echo
