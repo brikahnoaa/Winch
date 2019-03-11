@@ -20,9 +20,9 @@ UtlInfo utl;
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
   DBG2("utlInit()")
-  // all.ret is semi-global, it is returned by some char *utlFuncs()
+  // all.ret is semi-global, it is only returned by some char *utlFuncs()
   all.buf = malloc(BUFSZ);
-  all.ret = malloc(BUFSZ);
+  all.ret = malloc(BUFSZ);    // not used as all.ret
   all.str = malloc(BUFSZ);
   utl.buf = malloc(BUFSZ);
   utl.ret = malloc(BUFSZ);
@@ -37,10 +37,6 @@ void utlInit(void) {
   utl.errName[ngk_err] = "ngk";
   utl.errName[wsp_err] = "wsp";
   utl.errName[log_err] = "log";
-}
-
-void utlDelay(int x) { 
-  RTCDelayMicroSeconds((long)x*1000); 
 }
 
 ///

@@ -16,8 +16,10 @@ typedef struct TstInfo {
   bool noDeploy;          // for test (false)
   bool noIrid;            // for test (false)
   bool noRise;            // for test (false)
-  int testCnt;            // testing irid
-  int testSize;           // testing irid
+  bool testing;           // are we in test mode
+  int t1;                 // test param used by tst/*.c
+  int t2;                 // test param used by tst/*.c
+  int t3;                 // test param used by tst/*.c
 } TstInfo;
 
 extern DbgInfo dbg;

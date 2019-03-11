@@ -32,13 +32,13 @@ void boyMain() {
   gpsInit();
   ngkInit();
   wspInit();
-  flogf("\ system starts %d", starts);
+  flogf("\n  System Starts %d", starts);
   antStart();
   ctdStart();
   ngkStart();
   phase = boy.startPh;
-  if (boy.test) 
-    flogf("\nboy.test testing mode");
+  if (tst.testing) 
+    flogf("\ntst.testing testing mode");
   else if (starts>1) 
     phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", phase);
@@ -118,7 +118,7 @@ PhaseType rebootPhase(void) {
 PhaseType risePhase(void) {
   int result;
   flogf("risePhase()");
-  if (boy.test && tst.noRise) return irid_pha;
+  if (tst.testing && tst.noRise) return irid_pha;
   // *Start() returns immed if already on (*.on = true)
   antStart();
   //ctdStart();
@@ -143,7 +143,7 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  if (boy.test && tst.noIrid) return fall_pha;
+  if (tst.testing && tst.noIrid) return fall_pha;
   flogf("iridPhase()");
   antStart();
   // log file mgmt
@@ -229,7 +229,7 @@ int iridPhaseDo(void) {
 ///
 PhaseType fallPhase() {
   flogf("fallPhase()");
-  if (boy.test && tst.noRise) return data_pha;
+  if (tst.testing && tst.noRise) return data_pha;
   fall(boy.currChkD, 0);
   oceanCurrChk();
   fall(0, 0);
@@ -246,7 +246,7 @@ PhaseType fallPhase() {
 PhaseType dataPhase(void) {
   int success, detect;
   flogf("dataPhase()");
-  if (boy.test && tst.noData) return rise_pha;
+  if (tst.testing && tst.noData) return rise_pha;
   //ctdStop();
   antStop();
   // ngkStop();
@@ -466,7 +466,7 @@ PhaseType deployPhase(void) {
   float depth, lastD;
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
-  if (boy.test && tst.noDeploy) return rise_pha;
+  if (tst.testing && tst.noDeploy) return rise_pha;
   ctdSample();
   ctdDataWait();
   if (!ctdRead())

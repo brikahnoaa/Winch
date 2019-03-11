@@ -40,6 +40,7 @@ typedef struct CfgParam {
 // type := bcifls bool char* int float long short
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
+
   {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
   {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
   {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
@@ -54,7 +55,6 @@ static CfgParam cfgP[] = {
   {'b',  "boy.iridAuton", &boy.iridAuton,   "biA",  "false"},
   {'b',  "boy.reset",     &boy.reset,       "bre",  "false"},
   {'b',  "boy.stop",      &boy.stop,        "bst",  "false"},
-  {'b',  "boy.test",      &boy.test,        "btt",  "false"},
   {'c',  "boy.logFile",   &boy.logFile,     "blF",  "boy"},
   {'f',  "boy.ant2tip",   &boy.ant2tip,     "bat",  "2.35"},
   {'f',  "boy.boy2ant",   &boy.boy2ant,     "bba",  "14.29"},
@@ -115,8 +115,10 @@ static CfgParam cfgP[] = {
   {'b',  "tst.noDeploy",  &tst.noDeploy,    "tne",  "false"},
   {'b',  "tst.noIrid",    &tst.noIrid,      "tnI",  "false"},
   {'b',  "tst.noRise",    &tst.noRise,      "tnR",  "false"},
-  {'i',  "tst.testCnt",   &tst.testCnt,     "ttC",  "3"},
-  {'i',  "tst.testSize",  &tst.testSize,    "ttS",  "64"},
+  {'b',  "tst.testing",   &tst.testing,     "ttg",  "false"},
+  {'i',  "tst.t1",        &tst.t1,          "tt1",  "0"},
+  {'i',  "tst.t2",        &tst.t2,          "tt2",  "0"},
+  {'i',  "tst.t3",        &tst.t3,          "tt3",  "0"},
 
   {'b',  "utl.ignoreCon", &utl.ignoreCon,   "uiC",  "false"},
 

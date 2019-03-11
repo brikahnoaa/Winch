@@ -35,7 +35,6 @@ typedef struct BoyInfo {
   bool iridAuton;         // record depth during irid transfer
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
-  bool test;              // test mode - activate tst.*
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water

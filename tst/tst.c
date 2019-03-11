@@ -7,7 +7,7 @@
 extern WspInfo wsp;
 
 void main(void){
-  int i;
+  int i, r;
   char c;
   bool b=false;
   Serial port;
@@ -16,7 +16,7 @@ void main(void){
   // mpcPamDev(wsp2_pam);
   port = mpcPamPort();
   flogf("%s\n", utlDateTime());
-  flogf("\nPress [tab] x=exit q=wStop i=wInit w=wStart s=wStorm d=wQuery\n");
+  flogf("\nPress [tab] q=quit x=off i=init o=on s=wStorm m=detectM(t1) \n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -30,25 +30,28 @@ void main(void){
       } else {
         b=false;
         switch (c) {
-        case 'x':
+        case 'q':
           mpcPamPulse(WISPR_PWR_OFF);
           return;
         case 'i':
           wspInit();
           break;
-        case 'w':
+        case 'o':
           wspStart();
           break;
         case 's':
           wspStorm(all.buf);
           utlNonPrint(all.buf);
           break;
-        case 'q':
+        case 'x':
           wspStop();
           break;
-        case 'd':
-          wspQuery(&i);
-          flogf("%d detections\n", i);
+        case 'm':
+          if (tst.t1) r=wspDetectM(&i, tst.t1);
+          else r=wspDetectM(&i, tst.t1);
+          flogf("%d detections", i);
+          if (r) flogf(", %d err", r);
+          flogf("\n");
           break;
         } // case
       } // if true

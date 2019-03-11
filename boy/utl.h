@@ -2,6 +2,8 @@
 #ifndef H_UTL
 #define H_UTL
 
+#define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+
 #define STRSZ 128
 #define BUFSZ 4096
 #define C_DRV ('C'-'A')
@@ -99,7 +101,6 @@ int utlTrim(char *str);
 int utlRead(Serial port, char *in);
 int utlReadWait(Serial port, char *in, int wait);
 void utlCloseErr(char *str);
-void utlDelay(int milli);
 void utlErr( ErrType err, char *str);
 void utlInit(void);
 void utlLogTime(void);
@@ -111,4 +112,5 @@ void utlX(void);
 void utlWrite(Serial port, char *out, char *eol);
 void utlWriteBlock(Serial port, char *out, int len);
 
+// void utlDelay(int milli);
 #endif
