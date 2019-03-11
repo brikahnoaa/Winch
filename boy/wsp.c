@@ -155,6 +155,13 @@ void wspLog(char *str) {
 } // wspLog
 
 ///
+// set date time on wispr
+void wspDateTime(void) {
+  sprintf(all.str, "date -s %s; date; hwclock -w", utlDateTime());
+  utlWrite(wsp.port, all.str, EOL);
+}
+
+///
 // run detection program, called from wspDetectH
 // if this fails, assume card is bad
 // uses: .wisprCmd .wisprFlag .detInt

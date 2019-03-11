@@ -28,6 +28,7 @@ typedef struct WspInfo {
   Serial port;                // mpcPamPort()
 } WspInfo;
 
+static void wspDateTime(void);
 static void wspRemains(int *remains);
 static void wspRiseT(time_t *riseT);
 
