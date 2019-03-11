@@ -4,16 +4,17 @@
 
 #define WSP_HELLO "<hello />"
 #define WSP_OPEN "<wispr>"
-#define WSP_OK "<ok />"
 #define WSP_CLOSE "</wispr>"
-#define WSP_EXIT "<exit />"
+#define WSP_BYE "<bye />"
 typedef struct WspInfo {
   bool on;                    // run wispr
   char logFile[32];           // wispr.log
   char spectCmd[32];          // spectragram command
-  char spectFlag[64];         // -v2 -T8 -b15 -M2 -F2
+  char spectFlag[64];         // -T10 -C12 -v1 -n512 -o256 -g0 -t20
+  char spectLog[32];          // -l noise
   char wisprCmd[32];          // wispr command
   char wisprFlag[64];         // -v2 -T8 -b15 -M2 -F2
+  char wisprLog[32];          // -l detect
   int card;                   // wispr card in use; starts high, goes down
   int detInt;                 // how often to log detections (10 min)
   int detMax;                 // max detections to be logged (10)

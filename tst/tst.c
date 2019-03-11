@@ -31,24 +31,34 @@ void main(void){
         b=false;
         switch (c) {
         case 'q':
+          flogf("\nquit\n");
           mpcPamPulse(WISPR_PWR_OFF);
           return;
         case 'i':
+          flogf("\ninit\n");
           wspInit();
           break;
         case 'o':
+          flogf("\noff\n");
           wspStart();
           break;
         case 's':
+          flogf("\nstorm\n");
           wspStorm(all.buf);
           utlNonPrint(all.buf);
           break;
         case 'x':
+          flogf("\noff\n");
           wspStop();
           break;
         case 'm':
-          if (tst.t1) r=wspDetectM(&i, tst.t1);
-          else r=wspDetectM(&i, tst.t1);
+          if (tst.t1) {
+            flogf("\ndetectM(%d)\n", tst.t1);
+            r=wspDetectM(&i, tst.t1);
+          } else {
+            flogf("\ndetectM(%d)\n", 15);
+            r=wspDetectM(&i, 15);
+          }
           flogf("%d detections", i);
           if (r) flogf(", %d err", r);
           flogf("\n");
@@ -56,9 +66,9 @@ void main(void){
         } // case
       } // if true
     }
-    if (TURxQueuedCount(port)) {
-      c=TURxGetByte(port,false);
-      cputc(c);
-    }
+    // if (TURxQueuedCount(port)) {
+    //   c=TURxGetByte(port,false);
+    //   cputc(c);
+    // }
   }
 }
