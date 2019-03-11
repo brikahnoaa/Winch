@@ -6,41 +6,32 @@
 # Uncomment these to cut cpu freq in half
 echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo 250000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+# clear cache to free memory ??
+# echo 3 > /proc/sys/vm/drop_caches
 
 cp /mnt/wispr_bw /bin
 cp /mnt/spectrogram8kHz /bin/spectrogram
 chmod 777 /bin/wispr_bw
 chmod 777 /bin/spectrogram
 
+# nothing runs right after spectra, so only do one cmd and shut down
+
 echo " "
-echo "--- Embedded Ocean Systems WISPR V1.0 ---"
-echo -n "<hello />" > /dev/ttyBF1
+echo "--- Embedded Ocean Systems WISPR V1.0 --- (10 sec to shell)"
 
-while
-  line=""
-  # -s noecho -t timeout
-  read -s line < /dev/ttyBF1
-do
-  if [ -z "$line" ]; then continue; fi
-  if [ "$line" = "bye" ]; then break; fi
+echo -n "<wispr>" > /dev/ttyBF1
+line=""
+# -s noecho -t timeout
+read -s -t 10 line < /dev/ttyBF1
+if [ -n "$line" ]; then 
   echo "$line"
-  echo -n "<wispr>" > /dev/ttyBF1
   eval "$line"
-  sync
-  # clear cache to free memory ??
-  echo 3 > /proc/sys/vm/drop_caches
-  if mount | grep -v /mnt; then
-    # not mounted?
-    echo mount /dev/sda1 /mnt
-    mount /dev/sda1 /mnt
-  fi
-  echo -n "</wispr>" > /dev/ttyBF1
-done
+fi
+echo -n "</wispr>" > /dev/ttyBF1
 
-echo
-echo done
-echo -n "<bye />" > /dev/ttyBF1
 if mount | grep /mnt; then
-  echo umount /mnt
+  echo umounting /mnt ...
+  sync
   umount /mnt
 fi
+echo "try     mount /dev/sda1 /mnt"
