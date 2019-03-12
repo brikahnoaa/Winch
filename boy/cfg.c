@@ -129,7 +129,7 @@ static CfgParam cfgP[] = {
   {'c',  "wsp.spectLog",  &wsp.spectLog,    "wsL",  "-l noise"},
   {'c',  "wsp.wisprCmd",  &wsp.wisprCmd,    "wwC",  "/bin/wispr_bw"},
   {'c',  "wsp.wisprFlag", &wsp.wisprFlag,   "wwF",  "-v2 -T8 -b15 -M2 -F2"},
-  {'c',  "wsp.wisprLog",  &wsp.wisprLog,    "wsL",  "-l detec"},
+  {'c',  "wsp.wisprLog",  &wsp.wisprLog,    "wsL",  "-l wispr"},
   {'i',  "wsp.card",      &wsp.card,        "wcd",  "2"},
   {'i',  "wsp.detInt",    &wsp.detInt,      "wdI",  "10"},
   {'i',  "wsp.detMax",    &wsp.detMax,      "wdX",  "10"},

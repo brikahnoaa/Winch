@@ -2,10 +2,8 @@
 #ifndef H_WSP
 #define H_WSP
 
-#define WSP_HELLO "<hello />"
 #define WSP_OPEN "<wispr>"
 #define WSP_CLOSE "</wispr>"
-#define WSP_BYE "<bye />"
 typedef struct WspInfo {
   bool on;                    // run wispr
   char logFile[32];           // wispr.log
@@ -28,7 +26,6 @@ typedef struct WspInfo {
   Serial port;                // mpcPamPort()
 } WspInfo;
 
-static void wspDateTime(void);
 static void wspRemains(int *remains);
 static void wspRiseT(time_t *riseT);
 
@@ -42,6 +39,7 @@ int wspSpace(float *disk);
 int wspStart(void);
 int wspStop(void);
 int wspStorm(char *buf);
+void wspDateTime(void);
 void wspInit(void);
 void wspLog(char *str);
 

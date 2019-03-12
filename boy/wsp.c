@@ -60,16 +60,15 @@ int wspCardSwap(void) {
 // rets: 0=success >=nextCard
 int wspStart(void) {
   DBG0("wspStart()")
-  if (wsp.on) wspInit();
+  if (wsp.on) wspStop();
+  mpcPamDev(wsp.card);
   wsp.on = true;
-  if (strlen(wsp.logFile))
+  if (!wsp.log && strlen(wsp.logFile))
     wsp.log = utlLogFile(wsp.logFile);
   // select, power on
-  mpcPamDev(wsp.card);
+  flogf("\nwspStart(): activating wispr#%d", wsp.card);
   mpcPamPulse(WISPR_PWR_ON);
-  if (utlExpect(wsp.port, all.buf, WSP_HELLO, 12)) {
-    flogf("\nwspStart(): card %d starts", wsp.card);
-  } else {
+  if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
     utlErr(wsp_err, "wsp start fail");
     return 1;
   }
@@ -81,18 +80,19 @@ int wspStart(void) {
 int wspStop(void) {
   int r=0;
   DBG0("wspStop()")
+  if (!wsp.on) return 0;
+  wsp.on = false;
   if (wsp.log) {
     // close log
     if (close(wsp.log)) 
       utlCloseErr( "wsp.log" );
     wsp.log = 0;
   }
-  utlWrite(wsp.port, "bye", EOL);
-  if (!utlExpect(wsp.port, all.buf, WSP_BYE, 12)) {
+  if (!utlExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
     utlErr(wsp_err, "wsp exit fail");
     return 1;
   } else {
-    wspInit();
+    mpcPamPulse(WISPR_PWR_OFF);
   }
   return r;
 } // wspStop
@@ -126,19 +126,16 @@ void wspRiseT(time_t *riseT) {
 int wspStorm(char *buf) {
   DBG0("wspStorm()")
   //
-  // open program
+  // start program
   sprintf( all.str, "%s %s %s%03d.log",
     wsp.spectCmd, wsp.spectFlag, wsp.spectLog, all.cycle );
   utlWrite( wsp.port, all.str, EOL );
-  if (!utlExpect(wsp.port, all.str, WSP_OPEN, 2)) return 2;
   //
   if (!utlExpect(wsp.port, buf, "RDY", 200)) return 1;
+  // utlNap(200);
   utlWrite(wsp.port, "$WS?*", EOL);
-  utlReadWait(wsp.port, buf, 10);
+  utlReadWait(wsp.port, buf, 60);
   flogf("\nwspStorm prediction: %s", buf);
-  //
-  // close program
-  if (!utlExpect(wsp.port, all.str, WSP_CLOSE, 12)) return 4;
   //
   return 0;
 } // wspStorm
@@ -157,25 +154,25 @@ void wspLog(char *str) {
 ///
 // set date time on wispr
 void wspDateTime(void) {
-  sprintf(all.str, "date -s %s; date; hwclock -w", utlDateTime());
+  sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
   utlWrite(wsp.port, all.str, EOL);
 }
 
 ///
 // run detection program, called from wspDetectH
 // if this fails, assume card is bad
-// uses: .wisprCmd .wisprFlag .detInt
+// uses: .wisprCmd .wisprFlag .detInt all.str
 // sets: *detect
 // rets: 1=!<wispr> 2=!<ok/> 3=!</wispr> 10=!wspQuery 20=!wspStop
 int wspDetectM(int *detect, int minutes) {
   int r=0, det=0;
+  float free;
   DBG0( "wspDetectM(%d)", minutes )
   //
   // open program
   sprintf( all.str, "%s %s %s%03d.log", 
     wsp.wisprCmd, wsp.wisprFlag, wsp.wisprLog, all.cycle );
   utlWrite( wsp.port, all.str, EOL );
-  if (!utlExpect(wsp.port, all.str, WSP_OPEN, 2)) return 1;
   //
   // run for minutes; every .detInt, query and reset.
   // query also at end of minutes
@@ -185,6 +182,7 @@ int wspDetectM(int *detect, int minutes) {
     if (tmrExp(data_tmr)) {
       // query and reset
       if (wspQuery(&det)) return 10;
+      if (wspSpace(&free)) return 20;
       *detect += det;
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
@@ -198,7 +196,6 @@ int wspDetectM(int *detect, int minutes) {
     flogf("\nwspStop(): expected FIN, got '%s'", all.buf);
     return 3;
   }
-  if (!utlExpect(wsp.port, all.str, WSP_CLOSE, 12)) return 4;
   // success
   return 0;
 } // wspDetectM

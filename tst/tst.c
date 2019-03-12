@@ -13,10 +13,11 @@ void main(void){
   Serial port;
   sysInit();
   mpcInit();
+  wspInit();
   // mpcPamDev(wsp2_pam);
   port = mpcPamPort();
   flogf("%s\n", utlDateTime());
-  flogf("\nPress [tab] q=quit x=off i=init o=on s=wStorm m=detectM(t1) \n");
+  flogf("\nPress [tab] q=quit x=off o=on s=wStorm m=detectM(t1) t=time\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -31,27 +32,38 @@ void main(void){
         b=false;
         switch (c) {
         case 'q':
-          flogf("\nquit\n");
+          flogf("%s\n", utlTime());
           mpcPamPulse(WISPR_PWR_OFF);
+          flogf("\nquit ");
+          flogf(" %s\n", utlTime());
           return;
-        case 'i':
-          flogf("\ninit\n");
-          wspInit();
+        case 't':
+          flogf("%s\n", utlTime());
+          wspDateTime();
+          flogf("\ntime ");
+          flogf(" %s\n", utlTime());
           break;
         case 'o':
-          flogf("\noff\n");
+          flogf("%s\n", utlTime());
           wspStart();
+          flogf("\non ");
+          flogf(" %s\n", utlTime());
           break;
         case 's':
-          flogf("\nstorm\n");
+          flogf("%s\n", utlTime());
           wspStorm(all.buf);
           utlNonPrint(all.buf);
+          flogf("\nstorm ");
+          flogf(" %s\n", utlTime());
           break;
         case 'x':
-          flogf("\noff\n");
+          flogf("%s\n", utlTime());
           wspStop();
+          flogf("\noff ");
+          flogf(" %s\n", utlTime());
           break;
         case 'm':
+          flogf("%s\n", utlTime());
           if (tst.t1) {
             flogf("\ndetectM(%d)\n", tst.t1);
             r=wspDetectM(&i, tst.t1);
@@ -61,7 +73,7 @@ void main(void){
           }
           flogf("%d detections", i);
           if (r) flogf(", %d err", r);
-          flogf("\n");
+          flogf(" %s\n", utlTime());
           break;
         } // case
       } // if true
