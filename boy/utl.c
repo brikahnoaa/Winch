@@ -9,7 +9,7 @@
 #define CHAR_DELAY 50
 
 // faux exception handling using   ex=11; goto ex;
-int ex;
+int exc;
 
 // all is a global structure for shared data: all.cycle
 AllInfo all;

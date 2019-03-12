@@ -10,11 +10,12 @@ void main(void){
   int i, r;
   char c;
   bool tab=false;
+  char *name="wspDetectM", *rets="1=start 9=stop 10=!wspQuery 20=!wspStop";
   Serial port;
+
   sysInit();
   mpcInit();
   wspInit();
-  // mpcPamDev(wsp2_pam);
   port = mpcPamPort();
   flogf("\n%s\n", utlDateTime());
   flogf("[tab] q=quit s=wStorm m=detectM(.duty) h=detH d=detD t=time\n");

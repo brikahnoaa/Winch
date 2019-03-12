@@ -177,10 +177,12 @@ int wspDateTime(void) {
 // sets: *detect
 // rets: 1=start 9=stop 10=!wspQuery 20=!wspStop
 int wspDetectM(int *detect, int minutes) {
+  char *name="wspDetectM", 
+    *rets="1=start 9=stop 10=!wspQuery 20=!wspStop";
   char *b;
   int r=0, det=0;
   float free;
-  DBG0( "wspDetectM(%d)", minutes )
+  DBGN( "(%d)", minutes )
   // cmd
   b=all.str;
   sprintf( b, "%s %s", wsp.wisprCmd, wsp.wisprFlag );
@@ -198,7 +200,7 @@ int wspDetectM(int *detect, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&det)) return 10;
+      if (wspQuery(&det)) X(10);
       if (wspSpace(&free)) return 20;
       *detect += det;
       tmrStart(data_tmr, wsp.detInt*60);
@@ -210,13 +212,16 @@ int wspDetectM(int *detect, int minutes) {
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
-    flogf("\nwspStop(): expected FIN, got '%s'", all.buf);
+    flogf("\n%s(): expected FIN, got '%s'", name, all.buf);
     return 3;
   }
   // ?? add to daily log
   // stop
   if (wspStop()) return 9;
   return 0;
+
+  Except
+    return(exc);
 } // wspDetectM
 
 ///

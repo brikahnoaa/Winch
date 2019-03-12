@@ -3,12 +3,13 @@
 #define H_DBG
 
 typedef struct DbgInfo {
-  bool dbgx;
+  bool dbg;
   bool dbg0;
   bool dbg1;
   bool dbg2;
   bool dbg3;
   bool dbg4;
+  bool dbgx;
 } DbgInfo;
 
 typedef struct TstInfo {
@@ -32,34 +33,41 @@ extern TstInfo tst;
 // #define DBG0 if (dbg0) flogf(args);
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
 //
-// DBG() blocks of code, as is
+// DBG() autoprint func names
 // DBG0() print func names
 // DBG1() print more interesting things
 // DBG2() print details
 // DBG3() serial i/o
 // DBG4() special, little use
+// DBGX() block of code, as is
 
-#define DEBUGX
 #define DEBUG0
 #define DEBUG1
 #define DEBUG2
 #define DEBUG3
 #define DEBUG4
+#define DEBUGX
 
-#ifdef DEBUGX
-#define DBGX(...) if (dbg.dbgx) {__VA_ARGS__}
+#ifdef DEBUG0
+#define DBG() if (dbg.dbg0) flogf("\n+%s()", name);
 #else
-#define DBGX(...)
+#define DBG(...)
 #endif
 
 #ifdef DEBUG0
-#define DBG0(...) if (dbg.dbg0) flogf("\n+" __VA_ARGS__);
+#define DBGN(D_FMT, ...) if (dbg.dbg0) flogf("\n %s" D_FMT, name, __VA_ARGS__);
+#else
+#define DBGN(...)
+#endif
+
+#ifdef DEBUG0
+#define DBG0(...) if (dbg.dbg0) flogf(" " __VA_ARGS__);
 #else
 #define DBG0(...)
 #endif
 
 #ifdef DEBUG1
-#define DBG1(...) if (dbg.dbg1) flogf(" " __VA_ARGS__);
+#define DBG1(...) if (dbg.dbg1) flogf("+" __VA_ARGS__);
 #else
 #define DBG1(...)
 #endif
@@ -80,6 +88,12 @@ extern TstInfo tst;
 #define DBG4(...) if (dbg.dbg4) flogf(" " __VA_ARGS__);
 #else
 #define DBG4(...)
+#endif
+
+#ifdef DEBUGX
+#define DBGX(...) if (dbg.dbgx) {__VA_ARGS__}
+#else
+#define DBGX(...)
 #endif
 
 void dbgInit(void);

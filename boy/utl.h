@@ -3,6 +3,8 @@
 #define H_UTL
 
 #define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+#define X(X_VALUE) { exc=X_VALUE; goto X_LABEL; }
+#define Except X_LABEL: flogf("\n%s() exception=%d, %s", name, exc, rets);
 
 #define STRSZ 128
 #define BUFSZ 4096
@@ -86,6 +88,7 @@ typedef struct AllInfo {
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern AllInfo all;
+extern int exc;
 
 char *utlDate(void);
 char *utlDateTime(void);
