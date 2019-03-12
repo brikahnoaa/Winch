@@ -26,21 +26,20 @@ typedef struct WspInfo {
   int wisprGain;              // mic sensitivity
 } WspInfo;
 
-static void wspRemains(int *remains);
+static void wspRemainS(int *remains);
 static void wspRiseT(time_t *riseT);
 
 int wspCardSwap(void);
+int wspDateTime(void);
 int wspDetectD(int *detect);
 int wspDetectH(int *detect);
 int wspDetectM(int *detect, int minutes);
+int wspLog(char *str);
 int wspQuery(int *detect);
-int wspSetup(char *gps, int gain);
 int wspSpace(float *disk);
 int wspStart(void);
 int wspStop(void);
 int wspStorm(char *buf);
-void wspDateTime(void);
 void wspInit(void);
-void wspLog(char *str);
 
 #endif
