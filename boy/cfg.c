@@ -111,11 +111,12 @@ static CfgParam cfgP[] = {
   {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
   {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},
 
+  {'b',  "tst.fastData",  &tst.fastData,    "tfD",  "false"},
   {'b',  "tst.noData",    &tst.noData,      "tnD",  "false"},
   {'b',  "tst.noDeploy",  &tst.noDeploy,    "tne",  "false"},
   {'b',  "tst.noIrid",    &tst.noIrid,      "tnI",  "false"},
   {'b',  "tst.noRise",    &tst.noRise,      "tnR",  "false"},
-  {'b',  "tst.testing",   &tst.testing,     "ttg",  "false"},
+  {'b',  "tst.test",      &tst.test,        "ttt",  "false"},
   {'i',  "tst.t1",        &tst.t1,          "tt1",  "0"},
   {'i',  "tst.t2",        &tst.t2,          "tt2",  "0"},
   {'i',  "tst.t3",        &tst.t3,          "tt3",  "0"},
@@ -125,7 +126,7 @@ static CfgParam cfgP[] = {
   {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
   {'c',  "wsp.logFile",   &wsp.logFile,     "wlF",  "wsp"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},
-  {'c',  "wsp.spectFlag", &wsp.spectFlag,   "wsF",  "-T10 -C12 -v1 -n512 -o256 -g0 -t20"},
+  {'c',  "wsp.spectFlag", &wsp.spectFlag,   "wsF",  "-v1 -C12 -n512 -o256"},
   {'c',  "wsp.spectLog",  &wsp.spectLog,    "wsL",  "-l noise"},
   {'c',  "wsp.wisprCmd",  &wsp.wisprCmd,    "wwC",  "/bin/wispr_bw"},
   {'c',  "wsp.wisprFlag", &wsp.wisprFlag,   "wwF",  "-v2 -T8 -b15 -M2 -F2"},
@@ -133,11 +134,12 @@ static CfgParam cfgP[] = {
   {'i',  "wsp.card",      &wsp.card,        "wcd",  "2"},
   {'i',  "wsp.detInt",    &wsp.detInt,      "wdI",  "10"},
   {'i',  "wsp.detMax",    &wsp.detMax,      "wdX",  "10"},
-  {'i',  "wsp.dutyM",     &wsp.dutyM,       "wdM",  "30"},
   {'i',  "wsp.diskFree",  &wsp.diskFree,    "wdF",  "5"},
-  {'i',  "wsp.gain",      &wsp.gain,        "wgn",  "1"},
+  {'i',  "wsp.dutyM",     &wsp.dutyM,       "wdM",  "30"},
   {'i',  "wsp.riseH",     &wsp.riseH,       "wrH",  "7"},
+  {'i',  "wsp.spectGain", &wsp.spectGain,   "wsG",  "1"},
   {'i',  "wsp.spectRun",  &wsp.spectRun,    "wsR",  "2"},
+  {'i',  "wsp.wisprGain", &wsp.wisprGain,   "wwG",  "1"},
 
 };
 

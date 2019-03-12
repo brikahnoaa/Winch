@@ -12,11 +12,12 @@ typedef struct DbgInfo {
 } DbgInfo;
 
 typedef struct TstInfo {
+  bool fastData;          // 
   bool noData;            // for test (false)
   bool noDeploy;          // for test (false)
   bool noIrid;            // for test (false)
   bool noRise;            // for test (false)
-  bool testing;           // are we in test mode
+  bool test;              // are we in test mode
   int t1;                 // test param used by tst/*.c
   int t2;                 // test param used by tst/*.c
   int t3;                 // test param used by tst/*.c

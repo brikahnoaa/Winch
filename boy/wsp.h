@@ -5,6 +5,7 @@
 #define WSP_OPEN "<wispr>"
 #define WSP_CLOSE "</wispr>"
 typedef struct WspInfo {
+  Serial port;                // mpcPamPort()
   bool on;                    // run wispr
   char logFile[32];           // wispr.log
   char spectCmd[32];          // spectragram command
@@ -18,12 +19,11 @@ typedef struct WspInfo {
   int detMax;                 // max detections to be logged (10)
   int diskFree;               // free disk min GB, else go on to new wispr
   int dutyM;                  // percent of cycle to run wispr (50%)
-  int gain;                   // mic sensitivity
   int log;                    // log fileid
   int riseH;                  // hour of day to rise
+  int spectGain;              // mic sensitivity
   int spectRun;               // 0=no 1=before rise 2=hourly
-
-  Serial port;                // mpcPamPort()
+  int wisprGain;              // mic sensitivity
 } WspInfo;
 
 static void wspRemains(int *remains);
