@@ -22,6 +22,7 @@ typedef struct WspInfo {
   int log;                    // log fileid
   int phaseH;                 // hours per data phase (24)
   int riseH;                  // hour of day to rise (2)
+  int riseInt;                // rise interval; if set, ignore riseH (0)
   int spectGain;              // mic sensitivity
   int spectRun;               // 0=no 1=before rise 2=hourly
   int wisprGain;              // mic sensitivity

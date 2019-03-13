@@ -139,6 +139,7 @@ static CfgParam cfgP[] = {
   {'i',  "wsp.dutyM",     &wsp.dutyM,       "wdM",  "30"},
   {'i',  "wsp.phaseH",    &wsp.phaseH,      "wpH",  "24"},
   {'i',  "wsp.riseH",     &wsp.riseH,       "wrH",  "6"},
+  {'i',  "wsp.riseInt",   &wsp.riseInt,     "wrI",  "0"},
   {'i',  "wsp.spectGain", &wsp.spectGain,   "wsG",  "1"},
   {'i',  "wsp.spectRun",  &wsp.spectRun,    "wsR",  "2"},
   {'i',  "wsp.wisprGain", &wsp.wisprGain,   "wwG",  "1"},

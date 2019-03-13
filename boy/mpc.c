@@ -54,35 +54,45 @@ void mpcInit(void) {
 } // mpcInit
 
 ///
+// turn pam on/off
+void mpcPamPwr(MpcPamType pam, bool on) {
+  static char *self="mpcPamPwr";
+  DBGN("p:%d on:%d", pam, on)
+  mpcPamDev(pam);
+  if (on) mpcPamPulse(WISPR_PWR_ON);
+  else mpcPamPulse(WISPR_PWR_OFF);
+} // mpcPamPwr
+
+///
 // pam port shares rx/tx between com3, com4
 // switch between devices on pam port, clear 
 void mpcPamDev(MpcPamType pam) {
-  if (pam==mpc.pamDev) return;
   DBG0("mpcPamDev(%d)", pam)
+  if (pam==mpc.pamDev) return;
   switch (pam) {
   case wsp1_pam:
-    PIOClear(PAM_34);
-    PIOSet(PAM_12);
-    PIOClear(PAM_2);
+    PIOClear(PAM_34);   //24
+    PIOSet(PAM_12);     //29
+    PIOClear(PAM_2);    //30
     break;
   case wsp2_pam:
-    PIOClear(PAM_34);
-    PIOSet(PAM_12);
-    PIOSet(PAM_2);
+    PIOClear(PAM_34);   //24
+    PIOSet(PAM_12);     //29
+    PIOSet(PAM_2);      //30
     break;
   case wsp3_pam:
-    PIOClear(PAM_12);
-    PIOSet(PAM_34);
-    PIOClear(PAM_4);
+    PIOClear(PAM_12);   //29
+    PIOSet(PAM_34);     //24
+    PIOClear(PAM_4);    //25
     break;
   case sbe16_pam:
-    PIOClear(PAM_12);
-    PIOSet(PAM_34);
-    PIOSet(PAM_4);
+    PIOClear(PAM_12);   //29
+    PIOSet(PAM_34);     //24
+    PIOSet(PAM_4);      //25
     break;
   case null_pam:
-    PIOClear(PAM_12);
-    PIOClear(PAM_34);
+    PIOClear(PAM_12);   //29
+    PIOClear(PAM_34);   //24
     break;
   } // switch
   TUTxFlush(mpc.pamPort);

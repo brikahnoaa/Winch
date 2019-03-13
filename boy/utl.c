@@ -191,16 +191,15 @@ char *utlTime(void) {
 } // utlTime
 
 ///
-// Date String // MM-DD-YY 
+// Date String // YY-MM-DD 
 // returns: global static char *all.ret
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
-  
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(all.ret, "%02d-%02d-%02d", tim->tm_mon+1,
-          tim->tm_mday, tim->tm_year - 100);
+  sprintf(all.ret, "%02d-%02d-%02d", 
+          tim->tm_year-100, tim->tm_mon+1, tim->tm_mday);
   return all.ret;
 } // utlDate
 

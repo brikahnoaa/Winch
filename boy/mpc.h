@@ -20,6 +20,7 @@ static void IRQ4_ISR(void);
 static void IRQ5_ISR(void);
 
 void mpcPamDev(MpcPamType pam);
+void mpcPamPwr(MpcPamType pam, bool on);
 void mpcPamPulse(int pin);
 void mpcInit(void);
 void mpcSleep(void);

@@ -26,15 +26,9 @@ void wspInit(void) {
   static char *self="wspInit";
   DBG()
   wsp.port = mpcPamPort();
-  PIOClear(PAM_12);
-  PIOClear(PAM_34);
-  tmrStop(wsp_tmr);
-  mpcPamDev(wsp1_pam);
-  mpcPamPulse(WISPR_PWR_OFF);
-  mpcPamDev(wsp2_pam);
-  mpcPamPulse(WISPR_PWR_OFF);
-  mpcPamDev(wsp3_pam);
-  mpcPamPulse(WISPR_PWR_OFF);
+  mpcPamPwr(wsp1_pam, false);
+  mpcPamPwr(wsp2_pam, false);
+  mpcPamPwr(wsp3_pam, false);
   mpcPamDev(wsp.card);
   wsp.on = false;
 } // wspInit
@@ -63,13 +57,12 @@ int wspStart(void) {
   static char *self="wspStart";
   DBG()
   if (wsp.on) wspStop();
-  mpcPamDev(wsp.card);
+  flogf("\nwspStart(): activating wispr#%d", wsp.card);
+  mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log && strlen(wsp.logFile))
     wsp.log = utlLogFile(wsp.logFile);
   // select, power on
-  flogf("\nwspStart(): activating wispr#%d", wsp.card);
-  mpcPamPulse(WISPR_PWR_ON);
   if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
     utlErr(wsp_err, "wsp start fail");
     return 1;
@@ -83,7 +76,6 @@ int wspStop(void) {
   int r=0;
   static char *self="wspStop";
   DBG()
-  if (!wsp.on) return 0;
   wsp.on = false;
   if (wsp.log) {
     // close log
@@ -92,19 +84,18 @@ int wspStop(void) {
     wsp.log = 0;
   }
   if (!utlExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
-    utlErr(wsp_err, "wsp exit fail");
-    return 1;
-  } else {
-    mpcPamPulse(WISPR_PWR_OFF);
+    flogf("\n%s: did not get %s ", self, WSP_CLOSE);
   }
+  mpcPamPwr(wsp.card, false);
   return r;
 } // wspStop
 
 ///
 // calculate rise time
-// uses: .riseH
-// sets: *riseT = today at .riseH, or if past add 24hrs, or test
+// uses: .riseH .riseInt
+// sets: *riseT = next riseH hour, or riseInt interval
 void wspRiseT(time_t *riseT) {
+  int hour;
   time_t r, now;
   struct tm *tmPtr, tmLocal;
   static char *self="wspRiseT";
@@ -113,26 +104,29 @@ void wspRiseT(time_t *riseT) {
   time(&now);
   tmPtr = gmtime(&now);
   memcpy(&tmLocal, tmPtr, sizeof(struct tm));
-  // check the hour, is it past?
-  flogf("\n%02d:%02d:%02d", tmLocal.tm_hour, tmLocal.tm_min, tmLocal.tm_sec);
-  tmLocal.tm_hour = wsp.riseH;
+  // figure target hour
+  if (wsp.riseInt) {
+    // instead of a fixed rise hour, figure next interval
+    hour = ((int)(tmLocal.tm_hour/wsp.riseInt)+1) * wsp.riseInt;
+  } else {
+    hour=wsp.riseH;
+  }
+  // check the hour, is it past? add one interval
+  tmLocal.tm_hour = hour;
   tmLocal.tm_min = 0;
   tmLocal.tm_sec = 0;
-  flogf("\n%02d:%02d:%02d", tmLocal.tm_hour, tmLocal.tm_min, tmLocal.tm_sec);
   r = mktime(&tmLocal);
   if (r<now) {
-    // next day same hour
-    DBG2("r<now");
-    r += 24*60*60;
+    // next day/interval 
+    DBG1("r<now");
+    // be careful with long math and big ints, do not (time_t) (24*60*60)
+    if (wsp.riseInt) {
+      r = r + (time_t) wsp.riseInt*60*60;
+    } else {
+      r = r + (time_t) 24*60*60;
+    }
   }
-  flogf("\nwspRiseT(): time now %s", ctime(&now));
   flogf("\nwspRiseT(): rise at %s", ctime(&r));
-  // if wsp.phaseH is not 24, multiple rises per day
-//  if (tst.fastRise) {
-//    r = (time_t) (all.startCycle + (tst.fastRise*60));
- //   flogf("\nwspRiseT(): tst.fastRise=%d so using %s", 
-  //        tst.fastRise, ctime(&r));
-  //}
   *riseT = r;
   return;
 } // wspRiseT
@@ -205,7 +199,7 @@ int wspDetectM(int *detect, int minutes) {
   b=all.str;
   sprintf( b, "%s %s", wsp.wisprCmd, wsp.wisprFlag );
   if (wsp.wisprGain)
-    sprintf( b+strlen(b), " -g %d", wsp.wisprGain );
+    sprintf( b+strlen(b), " -g%d", wsp.wisprGain );
   if (wsp.wisprLog)
     sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.wisprLog, all.cycle );
   // start

@@ -150,4 +150,3 @@ C:\>help
 -ERR(wsp)	|4| 05:13:38 wsp exit fail utlLogFile(wsp)
 log file	| log\000wsp.log
 wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
-
