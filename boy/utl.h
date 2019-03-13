@@ -80,10 +80,12 @@ typedef struct UtlInfo {
 } UtlInfo;
 
 typedef struct AllInfo {
-  int cycle;
   char *buf;
   char *str;
-  char *ret;      // returned by some char *utlFuncs()
+  char *ret;                // returned by some char *utlFuncs()
+  int cycle;
+  time_t startCycle;        // cycle start
+  time_t startProg;         // program start
 } AllInfo;
 
 // the globals below are used by all modules // malloc'd in utlInit()

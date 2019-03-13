@@ -7,6 +7,7 @@
 extern WspInfo wsp;
 
 void main(void){
+  time_t t;
   int i, r;
   char c;
   bool tab=false;
@@ -60,6 +61,10 @@ void main(void){
           r=wspDetectM(&i, wsp.dutyM);
           flogf("%d detections", i);
           if (r) flogf(", %d err", r);
+          break;
+        case 'r':
+          wspRiseT(&t);
+          flogf("wspRiseT(): rise at %s\n", ctime(&t));
           break;
         } // case
         flogf("\n... %s\n", utlTime());

@@ -20,14 +20,14 @@ typedef struct WspInfo {
   int diskFree;               // free disk min GB, else go on to new wispr
   int dutyM;                  // percent of cycle to run wispr (50%)
   int log;                    // log fileid
-  int riseH;                  // hour of day to rise
+  int phaseH;                 // hours per data phase (24)
+  int riseH;                  // hour of day to rise (2)
   int spectGain;              // mic sensitivity
   int spectRun;               // 0=no 1=before rise 2=hourly
   int wisprGain;              // mic sensitivity
 } WspInfo;
 
 static void wspRemainS(int *remains);
-static void wspRiseT(time_t *riseT);
 
 int wspCardSwap(void);
 int wspDateTime(void);
@@ -41,5 +41,6 @@ int wspStart(void);
 int wspStop(void);
 int wspStorm(char *buf);
 void wspInit(void);
+void wspRiseT(time_t *riseT);
 
 #endif

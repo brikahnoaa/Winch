@@ -123,11 +123,12 @@ void wspRiseT(time_t *riseT) {
   }
   flogf("\nwspRiseT(): time now %s", ctime(&now));
   flogf("\nwspRiseT(): rise at %s", ctime(&r));
-  if (tst.fastRise) {
-    r = (time_t) (now + (tst.fastRise*60));
-    flogf("\nwspRiseT(): tst.fastRise=%d so using %s", 
-          tst.fastRise, ctime(&r));
-  }
+  // if wsp.phaseH is not 24, multiple rises per day
+//  if (tst.fastRise) {
+//    r = (time_t) (all.startCycle + (tst.fastRise*60));
+ //   flogf("\nwspRiseT(): tst.fastRise=%d so using %s", 
+  //        tst.fastRise, ctime(&r));
+  //}
   *riseT = r;
   return;
 } // wspRiseT
@@ -142,7 +143,7 @@ int wspStorm(char *buf) {
   b=all.str;
   sprintf( b, "%s %s", wsp.spectCmd, wsp.spectFlag );
   if (wsp.spectGain)
-    sprintf( b+strlen(b), " -g %d", wsp.spectGain );
+    sprintf( b+strlen(b), " -g%d", wsp.spectGain );
   if (wsp.spectLog)
     sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.spectLog, all.cycle );
   // start 
@@ -261,7 +262,6 @@ int wspDetectH(int *detects) {
   if (wsp.spectRun==2) 
     wspStorm(all.buf);
   if (tmrExp(hour_tmr)) return 1;   // watchdog
-  if (tst.fastData) return 0;
   wspRemainS(&remains);
   flogf("\nwspDetectH() idle for %d minutes", remains/60);
   utlNap(remains);
