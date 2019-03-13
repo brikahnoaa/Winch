@@ -3,7 +3,7 @@
 #define H_UTL
 
 #define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
-#define X(X_VALUE) { exc=X_VALUE; goto X_LABEL; }
+#define Exc(X_VALUE) { exc=X_VALUE; goto X_LABEL; }
 #define Except X_LABEL: flogf("\n%s() exception=%d, %s", name, exc, rets);
 
 #define STRSZ 128

@@ -12,8 +12,6 @@ TstInfo tst;
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
 // sets: dbg.dbg0, .dbg1, .dbg2 .dbg3 (global vars)
 void dbgInit(void) {
-  if (atoi(VEEFetchStr("DBG", "999"))!=999) dbg.dbg = true;
-  else dbg.dbg = false;
   if (atoi(VEEFetchStr("DBG0", "999"))!=999) dbg.dbg0 = true;
   else dbg.dbg0 = false;
   if (atoi(VEEFetchStr("DBG1", "999"))!=999) dbg.dbg1 = true;

@@ -3,7 +3,6 @@
 #define H_DBG
 
 typedef struct DbgInfo {
-  bool dbg;
   bool dbg0;
   bool dbg1;
   bool dbg2;
@@ -18,10 +17,11 @@ typedef struct TstInfo {
   bool noDeploy;          // for test (false)
   bool noIrid;            // for test (false)
   bool noRise;            // for test (false)
-  bool test;              // are we in test mode
-  int t1;                 // test param used by tst/*.c
-  int t2;                 // test param used by tst/*.c
-  int t3;                 // test param used by tst/*.c
+  bool test;              // are we in test mode (false)
+  int fastRise;           // Rise after fD minutes, ignore riseH (120)
+  int t1;                 // test param (0)
+  int t2;                 // test param (0)
+  int t3;                 // test param (0)
 } TstInfo;
 
 extern DbgInfo dbg;
@@ -34,7 +34,7 @@ extern TstInfo tst;
 // DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
 //
 // DBG() autoprint func names
-// DBG0() print func names
+// DBG0() print with func names
 // DBG1() print more interesting things
 // DBG2() print details
 // DBG3() serial i/o

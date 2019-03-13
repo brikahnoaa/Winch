@@ -110,11 +110,23 @@ void wspRiseT(time_t *riseT) {
   tmPtr = gmtime(&now);
   memcpy(&tmLocal, tmPtr, sizeof(struct tm));
   // check the hour, is it past?
+  flogf("\n%02d:%02d:%02d", tmLocal.tm_hour, tmLocal.tm_min, tmLocal.tm_sec);
   tmLocal.tm_hour = wsp.riseH;
+  tmLocal.tm_min = 0;
+  tmLocal.tm_sec = 0;
+  flogf("\n%02d:%02d:%02d", tmLocal.tm_hour, tmLocal.tm_min, tmLocal.tm_sec);
   r = mktime(&tmLocal);
   if (r<now) {
     // next day same hour
+    DBG2("r<now");
     r += 24*60*60;
+  }
+  flogf("\nwspRiseT(): time now %s", ctime(&now));
+  flogf("\nwspRiseT(): rise at %s", ctime(&r));
+  if (tst.fastRise) {
+    r = (time_t) (now + (tst.fastRise*60));
+    flogf("\nwspRiseT(): tst.fastRise=%d so using %s", 
+          tst.fastRise, ctime(&r));
   }
   *riseT = r;
   return;
@@ -178,7 +190,7 @@ int wspDateTime(void) {
 // rets: 1=start 9=stop 10=!wspQuery 20=!wspStop
 int wspDetectM(int *detect, int minutes) {
   char *name="wspDetectM", 
-    *rets="1=start 9=stop 10=!wspQuery 20=!wspStop";
+    *rets="1=start 3=FIN 9=stop 10=query 20=space";
   char *b;
   int r=0, det=0;
   float free;
@@ -191,7 +203,7 @@ int wspDetectM(int *detect, int minutes) {
   if (wsp.wisprLog)
     sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.wisprLog, all.cycle );
   // start
-  if (wspStart()) return 1;
+  if (wspStart()) Exc(1);
   utlWrite( wsp.port, all.str, EOL );
   // run for minutes; every .detInt, query and reset.
   // query also at end of minutes
@@ -200,24 +212,24 @@ int wspDetectM(int *detect, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&det)) X(10);
-      if (wspSpace(&free)) return 20;
+      if (wspQuery(&det)) Exc(10);
+      if (wspSpace(&free)) Exc(20);
       *detect += det;
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
-  if (wspQuery(&det)) return 10;
+  if (wspQuery(&det)) Exc(10);
   *detect += det;
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
     flogf("\n%s(): expected FIN, got '%s'", name, all.buf);
-    return 3;
+    Exc(3);
   }
   // ?? add to daily log
   // stop
-  if (wspStop()) return 9;
+  if (wspStop()) Exc(9);
   return 0;
 
   Except
@@ -249,6 +261,7 @@ int wspDetectH(int *detects) {
   if (wsp.spectRun==2) 
     wspStorm(all.buf);
   if (tmrExp(hour_tmr)) return 1;   // watchdog
+  if (tst.fastData) return 0;
   wspRemainS(&remains);
   flogf("\nwspDetectH() idle for %d minutes", remains/60);
   utlNap(remains);
