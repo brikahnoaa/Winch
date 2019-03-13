@@ -27,7 +27,8 @@ NgkInfo ngk = {
 void ngkInit(void) {
   short mdmRX, mdmTX;
   Serial p;
-  DBG0("ngkInit()");
+  static char *self="ngkInit";
+  DBG();
   mdmRX = TPUChanFromPin(MDM_RX);
   mdmTX = TPUChanFromPin(MDM_TX);
   PIORead(MDM_RX_TTL);              // tpu->rs232 is pin 33->48->47

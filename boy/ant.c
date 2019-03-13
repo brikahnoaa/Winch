@@ -14,7 +14,8 @@ AntInfo ant;
 // sets: ant.mode .port
 void antInit(void) {
   short rx, tx, i;
-  DBG0("antInit()")
+  static char *self="antInit";
+  DBG()
   // port
   rx = TPUChanFromPin(ANT_RX);
   tx = TPUChanFromPin(ANT_TX);
@@ -109,7 +110,8 @@ bool antPrompt() {
 ///
 // reset or exit sync mode
 void antBreak(void) {
-  DBG0("antBreak()")
+  static char *self="antBreak";
+  DBG()
   TUTxPutByte(ant.port, (ushort) 2,1);      // ^B  (blocking)
 } // antBreak
 
@@ -165,9 +167,10 @@ void antSample(void) {
 // note: ant.sampT set in antSample()
 bool antRead(void) {
   char *p0, *p1, *p2;
+  static char *self="antRead";
+  DBG()
   if (!antData()) return false;
   // data waiting
-  DBG0("antRead()")
   // with auton there is no Executed, so look for #
   if (ant.auton)
     p0 = utlExpect(ant.port, all.buf, "# ", 2);
@@ -339,7 +342,8 @@ void ringPrint(void) {
 // sets: ant.ring->sampT;
 void antReset(void) {
   RingNode *n;
-  DBG0("antReset()")
+  static char *self="antReset";
+  DBG()
   n = ant.ring; 
   while (true) {
     n->depth = 0.0;

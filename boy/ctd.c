@@ -22,7 +22,8 @@ CtdInfo ctd;
 ///
 // sets: ctd.port .ctdPending
 void ctdInit(void) {
-  DBG0("ctdInit()")
+  static char *self="ctdInit";
+  DBG()
   ctd.port = mpcPamPort();
   mpcPamDev(sbe16_pam);
   ctd.on = true;
@@ -133,8 +134,9 @@ void ctdSample(void) {
 // sets: .temp .cond .depth 
 bool ctdRead(void) {
   char *p0, *p1, *p2, *p3;
+  static char *self="ctdRead";
+  DBG()
   if (!ctdData()) return false;
-  DBG0("ctdRead()")
   // utlRead(ctd.port, all.buf);
   p0 = utlExpect(ctd.port, all.buf, EXEC, 2);
   if (!p0) {

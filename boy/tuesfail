@@ -1,0 +1,153 @@
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 3, max 50 logInit(SYS.LOG)
+---   ---
+Program: sys.c,  Build: Mar 12 2019 21:06:32
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 3
+Started: 2019-03-13 04:11:25
+---   --- cfgDefault() cfgRead(SYS.CFG) cfgVee()
+VEE: WSP.CARD=1
+VEE: WSP.DETINT=4
+VEE: WSP.DUTYM=20
+VEE: WSP.WISPRFLAG=-v2 -T8 -b15 -M2 -F2 -W
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 wspInit() mpcPamDev(1) mpcPamDev(2) mpcPamDev(3) mpcPamDev(0)
+2019-03-13 04:11:28
+[tab] q=quit s=wStorm m=detectM(.duty) h=detH d=detD t=time
+
+04:11:36
+ wspRiseT()
+04:11:36
+06:00:00
+wspRiseT(): time now Wed Mar 13 04:11:36 2019
+
+wspRiseT(): rise at Wed Mar 13 06:00:00 2019
+wspRiseT(): rise at Wed Mar 13 06:00:00 2019
+
+
+... 04:11:37
+
+04:11:41
+detectD()
+ wspDetectD() wspRiseT()
+04:11:41
+06:00:00
+wspRiseT(): time now Wed Mar 13 04:11:41 2019
+
+wspRiseT(): rise at Wed Mar 13 06:00:00 2019
+
+wspDetectD() starting wispr detection; end in 1 hours wspDetectH()
+ wspDetectM(20) wspStart() mpcPamDev(1) utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 wspStop() wspStorm() wspStart() utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1
+wspStorm prediction: $NLW*,03/13/19,04:34:16,0029,0002*
+ wspStop()
+wspDetectH() idle for 25 minutes
+2019-03-13 05:00:01 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1
+wspDetectM() exception=20, 1=start 3=FIN 9=stop 10=query 20=space
+wspDetectM(): error 20
+
+2019-03-13 05:12:14 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|0| 05:12:28 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+-ERR(wsp)	|1| 05:12:49 wsp start fail
+wspDetectM() exception=1, 1=start 3=FIN 9=stop 10=query 20=space
+wspDetectM(): error 1
+
+2019-03-13 05:12:49 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|2| 05:13:03 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+-ERR(wsp)	|3| 05:13:24 wsp start fail
+wspDetectM() exception=1, 1=start 3=FIN 9=stop 10=query 20=space
+wspDetectM(): error 1
+
+...
+
+2019-03-13 05:38:37 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|90| 05:38:50 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+-ERR(wsp)	|91| 05:39:12 wsp start fail
+wspDetectM() exception=1, 1=start 3=FIN 9=stop 10=query 20=space
+wspDetectM(): error 1
+2019-03-13 05:39:12 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|92| 05:39:25 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+-ERR(wsp)	|93| 05:39:47 wsp start fail
+wspDetectM() exception=1, 1=start 3=FIN 9=stop 10=query 20=space
+wspDetectM(): error 1
+2019-03-13 05:39:47 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|94| 05:40:01 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+-ERR(wsp)	|95| 05:40:22 wsp start fail
+wspDetectM() exception=1, 1=start 3=FIN 9=stop 10=query 20=space
+wspDetectM(): error 1
+2019-03-13 05:40:22 wspDetectD():0 wspDetectH()
+wspDetectM(): error 490
+2019-03-13 05:40:23 wspDetectD():0 wspDetectH()
+wspDetectM(): error 500
+2019-03-13 05:40:23 wspDetectD():0 wspDetectH()
+wspDetectM(): error 510
+2019-03-13 05:40:23 wspDetectD():0 wspDetectH()
+wspDetectM(): error 520
+2019-03-13 05:40:23 wspDetectD():0 wspDetectH()
+wspDetectM(): error 530
+2019-03-13 05:40:24 wspDetectD():0 wspDetectH()
+wspDetectM(): error 540
+2019-03-13 05:40:24 wspDetectD():0 wspDetectH()
+wspDetectM(): error 550
+2019-03-13 05:40:24 wspDetectD():0 wspDetectH()
+wspDetectM(): error 560
+2019-03-13 05:40:24 wspDetectD():0 wspDetectH()
+wspDetectM(): error 570
+2019-03-13 05:40:24 wspDetectD():0 wspDetectH()
+wspDetectM(): error 580
+2019-03-13 05:40:25 wspDetectD():0 wspDetectH()
+wspDetectM(): error 590
+
+...
+
+2019-03-13 05:59:59 wspDetectD():0 wspDetectH()
+wspDetectM(): error -13316
+2019-03-13 05:59:59 wspDetectD():0 wspDetectH()
+wspDetectM(): error -13306
+2019-03-13 06:00:00 wspDetectD():00 detections, -13296 err
+... 06:00:00
+mq
+15:29:59
+time
+ wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|96| 15:30:12 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+-ERR(wsp)	|97| 15:30:34 wsp start fail
+... 15:30:34
+
+15:31:48
+ wspInit() mpcPamDev(2) mpcPamDev(3) mpcPamDev(0)
+C:\>help
+
+
+2019-03-13 05:13:25 wspDetectD():0 wspDetectH()
+ wspDetectM(20) wspStart() wspStop() utlExpect(</wispr>, 12) timeout
+-ERR(wsp)	|4| 05:13:38 wsp exit fail utlLogFile(wsp)
+log file	| log\000wsp.log
+wspStart(): activating wispr#1 utlExpect(<wispr>, 20) timeout
+

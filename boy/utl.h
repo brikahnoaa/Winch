@@ -3,8 +3,9 @@
 #define H_UTL
 
 #define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+// faux exception processing: Exc(10);  -->  print # and char *rets, return
 #define Exc(X_VALUE) { exc=X_VALUE; goto X_LABEL; }
-#define Except X_LABEL: flogf("\n%s() exception=%d, %s", name, exc, rets);
+#define Except X_LABEL: flogf("\n%s() exception=%d, %s", self, exc, rets);
 
 #define STRSZ 128
 #define BUFSZ 4096

@@ -23,7 +23,8 @@ WspInfo wsp;
 // reset, all pams off
 // sets: wsp.port .wspPending
 void wspInit(void) {
-  DBG0("wspInit()")
+  static char *self="wspInit";
+  DBG()
   wsp.port = mpcPamPort();
   PIOClear(PAM_12);
   PIOClear(PAM_34);
@@ -34,7 +35,7 @@ void wspInit(void) {
   mpcPamPulse(WISPR_PWR_OFF);
   mpcPamDev(wsp3_pam);
   mpcPamPulse(WISPR_PWR_OFF);
-  mpcPamDev(null_pam);
+  mpcPamDev(wsp.card);
   wsp.on = false;
 } // wspInit
 
@@ -59,7 +60,8 @@ int wspCardSwap(void) {
 // sets: wsp.on 
 // rets: 0=success >=nextCard
 int wspStart(void) {
-  DBG0("wspStart()")
+  static char *self="wspStart";
+  DBG()
   if (wsp.on) wspStop();
   mpcPamDev(wsp.card);
   wsp.on = true;
@@ -79,7 +81,8 @@ int wspStart(void) {
 // stop wsp.card
 int wspStop(void) {
   int r=0;
-  DBG0("wspStop()")
+  static char *self="wspStop";
+  DBG()
   if (!wsp.on) return 0;
   wsp.on = false;
   if (wsp.log) {
@@ -104,7 +107,8 @@ int wspStop(void) {
 void wspRiseT(time_t *riseT) {
   time_t r, now;
   struct tm *tmPtr, tmLocal;
-  DBG0("wspRiseT()")
+  static char *self="wspRiseT";
+  DBG()
   // get time, break it down
   time(&now);
   tmPtr = gmtime(&now);
@@ -138,7 +142,8 @@ void wspRiseT(time_t *riseT) {
 // rets: 1=start 2=RDY 3=spectr 9=stop
 int wspStorm(char *buf) {
   char *b;
-  DBG0("wspStorm()")
+  static char *self="wspStorm";
+  DBG()
   // cmd
   b=all.str;
   sprintf( b, "%s %s", wsp.spectCmd, wsp.spectFlag );
@@ -190,11 +195,11 @@ int wspDateTime(void) {
 // sets: *detect
 // rets: 1=start 9=stop 10=!wspQuery 20=!wspStop
 int wspDetectM(int *detect, int minutes) {
-  char *name="wspDetectM", 
-    *rets="1=start 3=FIN 9=stop 10=query 20=space";
+  static char *rets="1=start 3=FIN 9=stop 10=query 20=space";
   char *b;
   int r=0, det=0;
   float free;
+  static char *self="wspDetectM";
   DBGN( "(%d)", minutes )
   // cmd
   b=all.str;
@@ -225,7 +230,7 @@ int wspDetectM(int *detect, int minutes) {
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
-    flogf("\n%s(): expected FIN, got '%s'", name, all.buf);
+    flogf("\n%s(): expected FIN, got '%s'", self, all.buf);
     Exc(3);
   }
   // ?? add to daily log
@@ -247,7 +252,8 @@ int wspDetectM(int *detect, int minutes) {
 // rets: 1=watchdog 10=!wspDetectM 
 int wspDetectH(int *detects) {
   int r, remains;
-  DBG0("wspDetectH()")
+  static char *self="wspDetectH";
+  DBG()
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
   // enough time?
   wspRemainS(&remains);
@@ -276,7 +282,8 @@ int wspDetectH(int *detects) {
 int wspDetectD(int *detect) {
   time_t now, riseT;
   int laterH, det=0, r=0;
-  DBG0("wspDetectD()")
+  static char *self="wspDetectD";
+  DBG()
   *detect = 0;
   time(&now);
   wspRiseT(&riseT);

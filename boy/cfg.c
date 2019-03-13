@@ -168,7 +168,8 @@ void cfgInit(void) {
 void cfgDefault(void) {
   CfgParam *param;
   int i;
-  DBG0("cfgDefault()")
+  static char *self="cfgDefault";
+  DBG()
   param=cfgP;
   i=cfg.cnt;
   while (i--) {
@@ -296,7 +297,8 @@ int cfgRead(char *file) {
 void cfgVee(void) {
   VEEVar *vv;
   char *name, *val, cfgstr[128];
-  DBG0("cfgVee()")
+  static char *self="cfgVee";
+  DBG()
   vv = VEEFetchNext(NULL);
   while (vv) {
     name = VEEGetName(vv);

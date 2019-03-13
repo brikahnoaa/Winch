@@ -91,7 +91,8 @@ void boyMain() {
 ///
 // open log
 void boyInit(void) {
-  DBG0("boyInit()")
+  static char *self="boyInit";
+  DBG()
   // boyd.log = utlLogFile(boy.logFile);
 } // boyInit
 
@@ -388,7 +389,8 @@ int fall(float targetD, int try) {
   int op;        // estimated operation time
   MsgType msg;
   enum {opTmr, ngkTmr, fiveTmr};  // local timer names
-  DBG0("fall()")
+  static char *self="fall";
+  DBG()
   utlNap(15);
   antSample();
   antDataWait();

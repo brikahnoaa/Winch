@@ -18,7 +18,8 @@ GpsInfo gps;
 // sets: gps.port .projHdr[]
 void gpsInit(void) {
   int cs;
-  DBG0("gpsInit()")
+  static char *self="gpsInit";
+  DBG()
   gps.port = antPort();
   if (!gps.port)
     utlErr(gps_err, "no gps.port, was gpsInit called before antInit?");
@@ -49,7 +50,8 @@ int gpsStart(void) {
 ///
 // turn off power to gpsmod
 void gpsStop(void) {
-  DBG0("gpsStop()")
+  static char *self="gpsStop";
+  DBG()
   if (gps.log)
     close(gps.log);
   gps.log = 0;
@@ -66,7 +68,8 @@ void gpsStop(void) {
 // sets: .date .time 
 // return: 0=success
 int gpsDateTime(GpsStats *stats){
-  DBG0("gpsDateTime()")
+  static char *self="gpsDateTime";
+  DBG()
   if (gpsSats()) return 1;
   // date
   utlWrite(gps.port, "at+pd", EOL);
@@ -89,7 +92,8 @@ int gpsDateTime(GpsStats *stats){
 // sets: .lng .lat 
 // return: 0=success
 int gpsLatLng(GpsStats *stats){
-  DBG0("gpsLatLng()")
+  static char *self="gpsLatLng";
+  DBG()
   if (gpsSats()) return 1;
   utlWrite(gps.port, "at+pl", EOL);
   if (!utlExpect(gps.port, all.buf, "OK", 12)) return 4;
@@ -183,7 +187,8 @@ int iridSig(void) {
 int iridCRC(char *buf, int cnt) {
   long accum=0x00000000;
   int i, j;
-  DBG0("iridCRC()")
+  static char *self="iridCRC";
+  DBG()
   if (cnt <= 0) return 0;
   while (cnt--) {
     accum |= *buf++ & 0xFF;
@@ -212,7 +217,8 @@ int iridCRC(char *buf, int cnt) {
 int iridDial(void) {
   char str[32];
   int i;
-  DBG0("iridDial()")
+  static char *self="iridDial";
+  DBG()
   flogf(" %s", utlTime());
   // set up timing for data
   //  10^6 * 10bits / rudBaud
@@ -387,7 +393,8 @@ int iridLandCmds(char *buff, int *len) {
   int i, hdr=7;
   unsigned char c;
   short msgSz;
-  DBG0("iridLandCmds()")
+  static char *self="iridLandCmds";
+  DBG()
   tmrStart(gps_tmr, gps.rudResp);
   *len = 0;
   // skip @@@ @@ or @ - protocol is sloppy, first CS byte could = @

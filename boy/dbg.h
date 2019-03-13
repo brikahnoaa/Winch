@@ -49,13 +49,13 @@ extern TstInfo tst;
 #define DEBUGX
 
 #ifdef DEBUG0
-#define DBG() if (dbg.dbg0) flogf("\n+%s()", name);
+#define DBG() if (dbg.dbg0) flogf("\n+%s()", self);
 #else
 #define DBG(...)
 #endif
 
 #ifdef DEBUG0
-#define DBGN(D_FMT, ...) if (dbg.dbg0) flogf("\n %s" D_FMT, name, __VA_ARGS__);
+#define DBGN(D_FMT, ...) if (dbg.dbg0) flogf("\n %s" D_FMT, self, __VA_ARGS__);
 #else
 #define DBGN(...)
 #endif
