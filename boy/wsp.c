@@ -62,7 +62,7 @@ int wspStart(void) {
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log && strlen(wsp.logFile))
-    wsp.log = utlLogFile(wsp.logFile);
+    utlLogFile(&wsp.log, wsp.logFile);
   return r;
 } // wspStart
 
@@ -274,6 +274,7 @@ int wspDetectH(int *detects) {
   static char *self="wspDetectH";
   DBG()
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
+  wspDateTime();
   // enough time?
   wspRemainS(&remains);
   if (remains > wsp.dutyM*60) 

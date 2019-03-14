@@ -453,16 +453,20 @@ int antAuton(bool auton) {
 ///
 // write stored sample to a file
 void antGetSamples(void) {
+  char *self="antGetSamples";
   int len1=sizeof(all.buf);
   int len2=len1, len3=len1;
   int total=0;
   int log;
-  flogf("\nantGetSamples()");
+  DBG()
   antAuton(false);
   if (ant.log)
     log = ant.log;
   else
-    log = utlLogFile(ant.logFile);
+    if (utlLogFile(&log, ant.logFile)) {
+      flogf("%s() failed", self);
+      return;
+    }
   antPrompt();          // wakeup
   utlWrite(ant.port, "GetSamples:", EOL);
   while (len1==len3) {

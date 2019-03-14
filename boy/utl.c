@@ -295,23 +295,32 @@ void utlLogPathName(char *path, char *base, int day) {
 // takes a base name and makes a full path, opens file, writes dateTime
 // ?? moves existing file to backup dir
 // rets: fileID or 0=err
-int utlLogFile(char *base) {
-  int log, flags;
+int utlLogFile(int *log, char *base) {
+  int r=0, fd, flags;
   char path[64];
-  DBG0("utlLogFile(%s)", base)
+  static char *self="utlLogFile";
+  DBG()
   utlLogPathName(path, base, all.cycle);
   flags = O_APPEND | O_CREAT | O_WRONLY;
-  log = open(path, flags );
-  if (log<=0) {
-    sprintf(utl.str, "open ERR %d (errno %d), path %s", log, errno, path);
+  *log=0;
+  fd = open(path, flags );
+  if (fd<=0) {
+    sprintf(utl.str, "open ERR %d (errno %d), path %s", fd, errno, path);
     utlErr(log_err, utl.str);
-    return 0;
+    return 1;
   } else {
-    flogf("\nlog file\t| %s", path);
+    flogf("\n%s path\t| %s", self, path);
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
-    write(log, utl.str, strlen(utl.str));
-    return log;
+    r = write(fd, utl.str, strlen(utl.str)); 
+    if (r<1) {
+      sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
+      utlErr(log_err, utl.str);
+      close(fd);
+      return 2;
+    }
   }
+  *log=fd;
+  return 0;
 } // utlLogFile
 
 /// file handling error - FATAL

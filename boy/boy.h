@@ -68,7 +68,7 @@ static PhaseType risePhase(void);
 static bool boyDocked(float depth);
 static int fall(float targetD, int try);
 static int iridPhaseDo(void);
-static int nextCycle(int *cycle);
+static int nextCycle(void);
 static int oceanCurr(float *curr);
 static int oceanCurrChk(void);
 static int rise(float targetD, int try);

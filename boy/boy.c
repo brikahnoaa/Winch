@@ -21,7 +21,6 @@ BoyData boyd;
 // sets: phase phasePrev
 void boyMain() {
   PhaseType phase, phaseNext, phasePrev;
-  int r;
   time_t phaseStart;
   flogf("\n  System Starts %d", all.starts);
   antStart();
@@ -44,6 +43,8 @@ void boyMain() {
       phaseNext = deployPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
+      // new day
+      nextCycle();
       phaseNext = risePhase();
       break;
     case irid_pha: // Call home via Satellite
@@ -56,8 +57,6 @@ void boyMain() {
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
-      // new day
-      r = nextCycle(&all.cycle);
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
@@ -152,7 +151,7 @@ PhaseType iridPhase(void) {
 
 int iridPhaseDo(void) {
   int r=0;
-  int helloB=0, engB=0;
+  int helloB=0, engB=0, s16B=0;
   gpsStart();
   tmrStart(phase_tmr, boy.iridOp*MINUTE);
   flogf("\n%s ===\n", utlTime());
@@ -189,21 +188,23 @@ int iridPhaseDo(void) {
     }
     utlNap(boy.filePause);
     if (!engB) {
-      utlLogPathName(all.str, "eng", all.cycle-1);
+      utlLogPathName(all.str, "eng", all.cycle);
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
       } else engB=1;
     }
     utlNap(boy.filePause);
-    utlLogPathName(all.str, "s16", all.cycle-1);
-    if ((r = iridSendFile(all.str))) {
-      flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
-      continue;
-    } 
+    if (!s16B) {
+      utlLogPathName(all.str, "s16", all.cycle-1);
+      if ((r = iridSendFile(all.str))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+        continue;
+      } else s16B=1;
+    }
     // hup and done
     iridHup();
-    break;
+    if (helloB && engB && s16B) break;
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
@@ -593,6 +594,7 @@ bool boyDocked(float depth) {
 }
 
 ///
+// uses: .cycle boyd.*Bgn .*End .oceanCurr .surfD
 // write some engineering data
 int boyEngLog(void) {
   char *self="boyEngLog";
@@ -602,14 +604,13 @@ int boyEngLog(void) {
   DBG()
   b=all.buf;
   b[0] = 0;
-  sprintf(b+strlen(b), "eng log %s\n", utlDateTime());
-  sprintf(b+strlen(b), "cycle %d\n", all.cycle);
-  sprintf(b+strlen(b), "oceanCurr = %.2f\n", boyd.oceanCurr);
-  sprintf(b+strlen(b), "fall begin %s\n", ctime(&boyd.fallBgn));
-  sprintf(b+strlen(b), "fall end %s\n", ctime(&boyd.fallEnd));
-  sprintf(b+strlen(b), "rise begin %s\n", ctime(&boyd.riseBgn));
+  sprintf(b+strlen(b), "eng log cycle %d %s\n", all.cycle, utlDateTime());
+  sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f @%.1fm\n", 
+      boyd.oceanCurr, boyd.dockD);
+  sprintf(b+strlen(b), "rise begin %s, ", ctime(&boyd.riseBgn));
   sprintf(b+strlen(b), "rise end %s\n", ctime(&boyd.riseEnd));
-  sprintf(b+strlen(b), "dockD %.1f, surfD %.1f\n", boyd.dockD, boyd.surfD);
+  sprintf(b+strlen(b), "fall begin %s, ", ctime(&boyd.fallBgn));
+  sprintf(b+strlen(b), "fall end %s\n", ctime(&boyd.fallEnd));
   sprintf(b+strlen(b), "=== during last irid transmission ===\n");
   gps=&boyd.gpsBgn;
   sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 
@@ -617,23 +618,22 @@ int boyEngLog(void) {
   gps=&boyd.gpsEnd;
   sprintf(b+strlen(b), "gps drift: lat=%s, long=%s, time=%s\n", 
       gps->lat, gps->lng, gps->time);
+  sprintf(b+strlen(b), "ending surface depth=%.1f\n", boyd.surfD);
   //
   flogf("%s", b);
-  log = utlLogFile("eng");
-  if (log) {
-    write(log, b, strlen(b));
-    close(log);
-  }
+  if (utlLogFile(&log, "eng")) return 1;
+  write(log, b, strlen(b));
+  close(log);
   return 0;
 } // boyEngLog
 
 ///
 // next cycle. manage log files, etc
-int nextCycle(int *cycle) {
+int nextCycle(void) {
   int r=0;
   static char *self="nextCycle";
   DBG()
-  *cycle++;
+  all.cycle++;
   // close and restart syslog ??
   sprintf(all.buf, "copy sys.log log\\%03dsys.log", all.cycle);
   execstr(all.buf);

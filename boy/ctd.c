@@ -44,7 +44,7 @@ void ctdStart(void) {
   mpcPamDev(sbe16_pam);
   tmrStop(s16_tmr);
   if (!ctd.log && strlen(ctd.logFile))
-    ctd.log = utlLogFile(ctd.logFile);
+    utlLogFile(&ctd.log, ctd.logFile);
   ctd.on = true;
 } // ctdStart
 
@@ -239,9 +239,7 @@ void ctdGetSamples(void) {
   int len2=len1, len3=len1;
   int total=0;
   if (!ctd.log && strlen(ctd.logFile))
-    ctd.log = utlLogFile(ctd.logFile);
-  if (!ctd.log)
-    return;
+    if (utlLogFile(&ctd.log, ctd.logFile)) return;
   flogf("\n+ctdGetSamples()");
   ctdPrompt();          // wakeup
   utlWrite(ctd.port, "GetSamples:", EOL);
