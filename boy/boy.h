@@ -19,7 +19,7 @@ typedef struct BoyData {
   float fallVNow;         // meters/s of the most recent fall 
   float riseV1st;         // meters/min of the first rise 
   float riseVNow;         // meters/min of the most recent rise 
-  int detect;
+  int detections;
   int log;                // log filehandle
   time_t fallBgn;
   time_t fallEnd;
@@ -68,13 +68,14 @@ static PhaseType risePhase(void);
 static bool boyDocked(float depth);
 static int fall(float targetD, int try);
 static int iridPhaseDo(void);
+static int nextCycle(int *cycle);
 static int oceanCurr(float *curr);
 static int oceanCurrChk(void);
 static int rise(float targetD, int try);
 static int riseUp(float targetD, int try);
 static void boyStat(char *buffer);
 
-void boyEngLog(void);
+int boyEngLog(void);
 void boyFlush(void);
 void boyInit(void);
 void boyMain(void);

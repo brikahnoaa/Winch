@@ -303,7 +303,7 @@ int utlLogFile(char *base) {
   flags = O_APPEND | O_CREAT | O_WRONLY;
   log = open(path, flags );
   if (log<=0) {
-    sprintf(utl.str, "utlLogFile(%s): open ERR %d for %s", base, log, path);
+    sprintf(utl.str, "open ERR %d (errno %d), path %s", log, errno, path);
     utlErr(log_err, utl.str);
     return 0;
   } else {

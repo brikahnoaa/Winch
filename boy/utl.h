@@ -84,7 +84,8 @@ typedef struct AllInfo {
   char *buf;
   char *str;
   char *ret;                // returned by some char *utlFuncs()
-  int cycle;
+  int cycle;                // RiseCallFallData cycles
+  int starts;               // number of starts (VEEPROM)
   time_t startCycle;        // cycle start
   time_t startProg;         // program start
 } AllInfo;

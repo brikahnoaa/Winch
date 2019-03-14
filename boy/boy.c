@@ -21,25 +21,16 @@ BoyData boyd;
 // sets: phase phasePrev
 void boyMain() {
   PhaseType phase, phaseNext, phasePrev;
-  int starts;
+  int r;
   time_t phaseStart;
-  starts = sysInit();
-  mpcInit();
-  pwrInit();
-  antInit();
-  boyInit();
-  ctdInit();
-  gpsInit();
-  ngkInit();
-  wspInit();
-  flogf("\n  System Starts %d", starts);
+  flogf("\n  System Starts %d", all.starts);
   antStart();
   ctdStart();
   ngkStart();
   phase = boy.startPh;
   if (tst.test) 
-    flogf("\ntst.test testing mode");
-  else if (starts>1) 
+    flogf("\ntst.test mode");
+  else if (all.starts>1) 
     phase = reboot_pha;
   flogf("\nboyMain(): starting with phase %d", phase);
     
@@ -66,9 +57,7 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       // new day
-      all.cycle++;
-      // + moved log file manip to iridPhase
-      // + moved stayDown check to dataPhase
+      r = nextCycle(&all.cycle);
       break;
     case reboot_pha:
       phaseNext = rebootPhase();
@@ -77,6 +66,7 @@ void boyMain() {
       phaseNext = errorPhase();
       break;
     } // switch
+    //
     phasePrev = phase;
     phase = phaseNext;
     // check these every phase
@@ -144,13 +134,12 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
+  static char *self="iridPhase";
+  flogf("%s()", self);
   if (tst.test && tst.noIrid) return fall_pha;
-  flogf("iridPhase()");
   antStart();
   // log file mgmt
   boyEngLog();
-  sprintf(all.buf, "copy sys.log log\\sys%03d.log", all.cycle);
-  execstr(all.buf);
   if (boy.iridAuton) 
     antAuton(true);
   if (iridPhaseDo()) { // 0==success
@@ -258,7 +247,7 @@ PhaseType dataPhase(void) {
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  boyd.detect = detect;
+  boyd.detections = detect;
   antStart();
   //ctdStart();
   // masters told us to stay down a few days
@@ -385,7 +374,6 @@ int rise(float targetD, int try) {
 int fall(float targetD, int try) {
   bool twentyB=false, targetB=false, errB=false;
   float nowD, startD, velo;
-  // int i;
   int op;        // estimated operation time
   MsgType msg;
   enum {opTmr, ngkTmr, fiveTmr};  // local timer names
@@ -604,31 +592,53 @@ bool boyDocked(float depth) {
   else return (abs(depth-boyd.dockD)<1.0);
 }
 
-void boyEngLog(void) {
+///
+// write some engineering data
+int boyEngLog(void) {
+  char *self="boyEngLog";
   int log;
-  log = utlLogFile("eng");
-  all.buf[0] = 0;
-  sprintf(all.str, "eng log %s\n", utlDateTime());
-  strcat(all.buf, all.str);
-  sprintf(all.str, "cycle %d\n", all.cycle);
-  strcat(all.buf, all.str);
-  sprintf(all.str, "oceanCurr = %.2f\n", boyd.oceanCurr);
-  strcat(all.buf, all.str);
-  sprintf(all.str, "rise begin %s\n", boyd.riseBgn);
-  strcat(all.buf, all.str);
-  sprintf(all.str, "rise end %s\n", boyd.riseEnd);
-  strcat(all.buf, all.str);
-  sprintf(all.str, "dockD %.1f, surfD %.1f\n", boyd.dockD, boyd.surfD);
-  strcat(all.buf, all.str);
-  sprintf(all.str, "gps start %s\n", boyd.gpsBgn);
-  strcat(all.buf, all.str);
-  sprintf(all.str, "gps drift %s\n", boyd.gpsEnd);
-  strcat(all.buf, all.str);
+  GpsStats *gps;
+  char *b;
+  DBG()
+  b=all.buf;
+  b[0] = 0;
+  sprintf(b+strlen(b), "eng log %s\n", utlDateTime());
+  sprintf(b+strlen(b), "cycle %d\n", all.cycle);
+  sprintf(b+strlen(b), "oceanCurr = %.2f\n", boyd.oceanCurr);
+  sprintf(b+strlen(b), "fall begin %s\n", ctime(&boyd.fallBgn));
+  sprintf(b+strlen(b), "fall end %s\n", ctime(&boyd.fallEnd));
+  sprintf(b+strlen(b), "rise begin %s\n", ctime(&boyd.riseBgn));
+  sprintf(b+strlen(b), "rise end %s\n", ctime(&boyd.riseEnd));
+  sprintf(b+strlen(b), "dockD %.1f, surfD %.1f\n", boyd.dockD, boyd.surfD);
+  sprintf(b+strlen(b), "=== during last irid transmission ===\n");
+  gps=&boyd.gpsBgn;
+  sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 
+      gps->lat, gps->lng, gps->time);
+  gps=&boyd.gpsEnd;
+  sprintf(b+strlen(b), "gps drift: lat=%s, long=%s, time=%s\n", 
+      gps->lat, gps->lng, gps->time);
   //
-  flogf("%s", all.buf);
-  write(log, all.buf, strlen(all.buf));
-  close(log);
-  // restart ctd to reopen log // ??
-  ctdStop();
-  ctdStart();
+  flogf("%s", b);
+  log = utlLogFile("eng");
+  if (log) {
+    write(log, b, strlen(b));
+    close(log);
+  }
+  return 0;
 } // boyEngLog
+
+///
+// next cycle. manage log files, etc
+int nextCycle(int *cycle) {
+  int r=0;
+  static char *self="nextCycle";
+  DBG()
+  *cycle++;
+  // close and restart syslog ??
+  sprintf(all.buf, "copy sys.log log\\%03dsys.log", all.cycle);
+  execstr(all.buf);
+  // restart ctd to reopen log // ??
+  //ctdStop();
+  //ctdStart();
+  return r;
+} // nextCycle

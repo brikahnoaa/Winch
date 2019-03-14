@@ -1,0 +1,16 @@
+antRead() aSam
++antRead() aSam
++antRead() aSam
++antRead() aSam
++antRead() aSam
++antRead() aSam
++antRead() aSam
+	| 04:52:27 depth=1.1 antVelo
++antRead() aSam
+		+ngkRecv(%S,02,00) stopRsp 04:52:27
+rise()	| stopRsp from winch
++antRead() aSam
+cycle 0 @2019-03-14 04:52:28 iridPhase() antStart() 2019-03-14 04:52:28 utlLogFile(eng)
+log file	| log\000eng.log
+
+

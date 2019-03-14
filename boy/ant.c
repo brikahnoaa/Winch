@@ -168,7 +168,7 @@ void antSample(void) {
 bool antRead(void) {
   char *p0, *p1, *p2;
   static char *self="antRead";
-  DBG()
+  DBG0("aRd")
   if (!antData()) return false;
   // data waiting
   // with auton there is no Executed, so look for #

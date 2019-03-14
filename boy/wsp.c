@@ -54,6 +54,7 @@ int wspCardSwap(void) {
 // sets: wsp.on 
 // rets: 0=success >=nextCard
 int wspStart(void) {
+  int r=0;
   static char *self="wspStart";
   DBG()
   if (wsp.on) wspStop();
@@ -62,13 +63,22 @@ int wspStart(void) {
   wsp.on = true;
   if (!wsp.log && strlen(wsp.logFile))
     wsp.log = utlLogFile(wsp.logFile);
-  // select, power on
+  return r;
+} // wspStart
+
+///
+// turn on and open wispr /mnt/start
+int wspOpen(void) {
+  int r=0;
+  static char *self="wspOpen";
+  DBG()
+  if (!wsp.on) wspStart();
   if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
     utlErr(wsp_err, "wsp start fail");
-    return 1;
+    r=1;
   }
-  return 0;
-} // wspStart
+  return r;
+} // wspOpen
 
 ///
 // stop wsp.card
@@ -83,12 +93,23 @@ int wspStop(void) {
       utlCloseErr( "wsp.log" );
     wsp.log = 0;
   }
+  mpcPamPwr(wsp.card, false);
+  return 0;
+} // wspStop
+
+///
+// close wispr /mnt/start
+int wspClose(void) {
+  int r=0;
+  static char *self="wspClose";
+  DBG()
   if (!utlExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
     flogf("\n%s: did not get %s ", self, WSP_CLOSE);
+    r=1;
   }
-  mpcPamPwr(wsp.card, false);
+  wspStop();
   return r;
-} // wspStop
+} // wspClose
 
 ///
 // calculate rise time
@@ -135,6 +156,7 @@ void wspRiseT(time_t *riseT) {
 // wsp storm check started. interact.
 // rets: 1=start 2=RDY 3=spectr 9=stop
 int wspStorm(char *buf) {
+  static char *rets="1=open 2=RDY 3=predict 8=close";
   char *b;
   static char *self="wspStorm";
   DBG()
@@ -146,17 +168,20 @@ int wspStorm(char *buf) {
   if (wsp.spectLog)
     sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.spectLog, all.cycle );
   // start 
-  if (wspStart()) return 1;
+  if (wspOpen()) Exc(1);
   utlWrite( wsp.port, all.str, EOL );
   // gather
-  if (!utlExpect(wsp.port, buf, "RDY", 200)) return 2;
+  if (!utlExpect(wsp.port, buf, "RDY", 200)) Exc(2);
   utlWrite(wsp.port, "$WS?*", EOL);
-  if (!utlReadWait(wsp.port, buf, 60)) return 3;
+  if (!utlReadWait(wsp.port, buf, 60)) Exc(3);
   flogf("\nwspStorm prediction: %s", buf);
   // ?? add to daily
   // stop
-  if (wspStop()) return 9;
+  if (wspClose()) return 9;
   return 0;
+
+  Except
+    return(exc);
 } // wspStorm
 
 ///
@@ -175,10 +200,10 @@ int wspLog(char *str) {
 ///
 // set date time on wispr
 int wspDateTime(void) {
-  if (wspStart()) return 1;
+  if (wspOpen()) return 1;
   sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
   utlWrite(wsp.port, all.str, EOL);
-  if (wspStop()) return 9;
+  if (wspClose()) return 9;
   return 0;
 }
 
@@ -187,9 +212,9 @@ int wspDateTime(void) {
 // if this fails, assume card is bad
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
 // sets: *detect
-// rets: 1=start 9=stop 10=!wspQuery 20=!wspStop
+// rets: 1=start 9=stop 10=!wspQuery 20=!wspClose
 int wspDetectM(int *detect, int minutes) {
-  static char *rets="1=start 3=FIN 9=stop 10=query 20=space";
+  static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
   char *b;
   int r=0, det=0;
   float free;
@@ -203,7 +228,7 @@ int wspDetectM(int *detect, int minutes) {
   if (wsp.wisprLog)
     sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.wisprLog, all.cycle );
   // start
-  if (wspStart()) Exc(1);
+  if (wspOpen()) Exc(1);
   utlWrite( wsp.port, all.str, EOL );
   // run for minutes; every .detInt, query and reset.
   // query also at end of minutes
@@ -229,7 +254,7 @@ int wspDetectM(int *detect, int minutes) {
   }
   // ?? add to daily log
   // stop
-  if (wspStop()) Exc(9);
+  if (wspClose()) Exc(8);
   return 0;
 
   Except
