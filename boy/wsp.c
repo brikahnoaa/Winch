@@ -181,7 +181,7 @@ int wspStorm(char *buf) {
   return 0;
 
   Except
-    return(exc);
+    return(all.exc);
 } // wspStorm
 
 ///
@@ -200,6 +200,8 @@ int wspLog(char *str) {
 ///
 // set date time on wispr
 int wspDateTime(void) {
+  static char *self="wspDateTime";
+  DBG()
   if (wspOpen()) return 1;
   sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
   utlWrite(wsp.port, all.str, EOL);
@@ -211,12 +213,12 @@ int wspDateTime(void) {
 // run detection program, called from wspDetectH
 // if this fails, assume card is bad
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
-// sets: *detect
+// sets: *detectM+=
 // rets: 1=start 9=stop 10=!wspQuery 20=!wspClose
-int wspDetectM(int *detect, int minutes) {
+int wspDetectM(int *detectM, int minutes) {
   static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
   char *b;
-  int r=0, det=0;
+  int r=0, detectQ=0;
   float free;
   static char *self="wspDetectM";
   DBGN( "(%d)", minutes )
@@ -237,14 +239,14 @@ int wspDetectM(int *detect, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&det)) Exc(10);
+      if (wspQuery(&detectQ)) Exc(10);
       if (wspSpace(&free)) Exc(20);
-      *detect += det;
+      *detectM += detectQ;
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
-  if (wspQuery(&det)) Exc(10);
-  *detect += det;
+  if (wspQuery(&detectQ)) Exc(10);
+  *detectM += detectQ;
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
@@ -258,7 +260,8 @@ int wspDetectM(int *detect, int minutes) {
   return 0;
 
   Except
-    return(exc);
+    wspStop();
+    return(all.exc);
 } // wspDetectM
 
 ///
@@ -267,10 +270,10 @@ int wspDetectM(int *detect, int minutes) {
 // idle if remains<.dutyM*60
 // watchdog - hour timer
 // uses: .dutyM
-// sets: *detect
+// sets: *detectH=
 // rets: 1=watchdog 10=!wspDetectM 
-int wspDetectH(int *detects) {
-  int r, remains;
+int wspDetectH(int *detectH) {
+  int r, remains, detectM;
   static char *self="wspDetectH";
   DBG()
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
@@ -278,7 +281,8 @@ int wspDetectH(int *detects) {
   // enough time?
   wspRemainS(&remains);
   if (remains > wsp.dutyM*60) 
-    r = wspDetectM(&detects, wsp.dutyM);
+    r = wspDetectM(&detectM, wsp.dutyM);
+  *detectH=detectM;
   if (r) { // error
     sprintf( all.str, "\nwspDetectM(): error %d", r );
     flogf( all.str );
@@ -287,6 +291,7 @@ int wspDetectH(int *detects) {
   }
   if (wsp.spectRun==2) 
     wspStorm(all.buf);
+  // ?? log
   if (tmrExp(hour_tmr)) return 1;   // watchdog
   wspRemainS(&remains);
   flogf("\nwspDetectH() idle for %d minutes", remains/60);
@@ -301,7 +306,7 @@ int wspDetectH(int *detects) {
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
 int wspDetectD(int *detect) {
   time_t now, riseT;
-  int laterH, det=0, r=0;
+  int laterH, detH=0, r=0;
   static char *self="wspDetectD";
   DBG()
   *detect = 0;
@@ -310,12 +315,13 @@ int wspDetectD(int *detect) {
   laterH = (int)(riseT-now)/60/60;
   flogf("\nwspDetectD() starting wispr detection; end in %d hours", laterH);
   while (time(&now) < riseT) {
-    if (wspDetectH(&det)) r+=10;
-    *detect += det;
+    if (wspDetectH(&detH)) r+=10;
+    *detect += detH;
     flogf("\n%s wspDetectD():%d", utlDateTime(), *detect);
   } // while < riseT
   if (wsp.spectRun==1) 
     wspStorm(all.buf);
+  // ?? log
   return r;
 } // wspDetectD
 

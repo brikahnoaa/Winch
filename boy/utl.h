@@ -4,8 +4,8 @@
 
 #define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
 // faux exception processing: Exc(10);  -->  print # and char *rets, return
-#define Exc(X_VALUE) { exc=X_VALUE; goto X_LABEL; }
-#define Except X_LABEL: flogf("\n%s() exception=%d, %s", self, exc, rets);
+#define Exc(X_VALUE) { all.exc=X_VALUE; goto X_LABEL; }
+#define Except X_LABEL: flogf("\n%s() exception=%d, %s", self, all.exc, rets);
 
 #define STRSZ 128
 #define BUFSZ 4096
@@ -85,6 +85,7 @@ typedef struct AllInfo {
   char *str;
   char *ret;                // returned by some char *utlFuncs()
   int cycle;                // RiseCallFallData cycles
+  int exc;                  // exception value
   int starts;               // number of starts (VEEPROM)
   time_t startCycle;        // cycle start
   time_t startProg;         // program start
@@ -92,7 +93,6 @@ typedef struct AllInfo {
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern AllInfo all;
-extern int exc;
 
 char *utlDate(void);
 char *utlDateTime(void);

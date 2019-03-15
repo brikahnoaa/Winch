@@ -8,9 +8,6 @@
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
-// faux exception handling using   ex=11; goto ex;
-int exc;
-
 // all is a global structure for shared data: all.cycle
 AllInfo all;
 
