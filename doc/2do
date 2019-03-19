@@ -1,13 +1,19 @@
 Fri, Mar  1, 2019  4:23:42 PM
-. errors to fix
-.. data cycle, to only go up once a day
-.. write file, send file - lost ability
+v errors to fix
+v. data cycle, to only go up once a day
+v. write file, send file - lost ability
 . improvements this april
-.. stay down command (X days)
-.. disk space wspr, # of reboots, cf2 disk space
-.. voltage info, water column data, detections, storm
-.. set gain, gps time every wspr start (hourly)
-.. commands sent to buoy, stored and sent back to land after processing
+.. stay down command (X cycles)
+.. process land commands
+... commands sent to buoy, stored and sent back to land after processing
+.. more info in eng report
+v.. temp, ocean curr at dock; cycles
+v.. gps drift, surf depth
+... disk space wspr, # of reboots, cf2 disk space 
+... voltage info
+... water column data, detections, storm 
+v.. up bgn/end, down bgn/end
+v. set gain, gps time every data cycle (daily)
 . test cycle
 .. change gain remote
 . planned, if we have time 

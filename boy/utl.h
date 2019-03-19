@@ -97,6 +97,7 @@ extern AllInfo all;
 char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeCtd(void);
+char *utlDateTimeFmt(time_t secs);
 char *utlExpect(Serial port, char *buf, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);

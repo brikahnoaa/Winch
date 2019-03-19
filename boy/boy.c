@@ -113,7 +113,7 @@ PhaseType risePhase(void) {
   antStart();
   //ctdStart();
   // if current is too strong at bottom
-  if (oceanCurrChk()) {
+  if (safetyChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
@@ -151,17 +151,13 @@ PhaseType iridPhase(void) {
 
 int iridPhaseDo(void) {
   int r=0;
-  int helloB=0, engB=0, s16B=0;
-  gpsStart();
+  bool helloB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOp*MINUTE);
+  gpsStart();
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
-  if (gpsDateTime(&boyd.gpsBgn) | gpsLatLng(&boyd.gpsBgn)) {
-    // 0==success
-    // ??
-  } else {
-    // eng ??
-  }
+  gpsDateTime(&boyd.gpsBgn);
+  gpsLatLng(&boyd.gpsBgn);
   antSwitch(irid_ant);
   while (!tmrExp(phase_tmr)) {
     // 0=success
@@ -184,7 +180,7 @@ int iridPhaseDo(void) {
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
-      } else helloB=1;
+      } else helloB=true;
     }
     utlNap(boy.filePause);
     if (!engB) {
@@ -192,7 +188,7 @@ int iridPhaseDo(void) {
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
-      } else engB=1;
+      } else engB=true;
     }
     utlNap(boy.filePause);
     if (!s16B) {
@@ -200,20 +196,16 @@ int iridPhaseDo(void) {
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
-      } else s16B=1;
+      } else s16B=true;
     }
-    // hup and done
     iridHup();
+    // done?
     if (helloB && engB && s16B) break;
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
-  if (gpsDateTime(&boyd.gpsEnd) | gpsLatLng(&boyd.gpsEnd)) {
-    // 0==success
-    // ??
-  } else {
-    // eng ??
-  }
+  gpsDateTime(&boyd.gpsEnd);
+  gpsLatLng(&boyd.gpsEnd);
   return r;
 } // iridPhaseDo
 
@@ -221,9 +213,11 @@ int iridPhaseDo(void) {
 PhaseType fallPhase() {
   flogf("fallPhase()");
   if (tst.test && tst.noRise) return data_pha;
+  time(&boyd.fallBgn);
   fall(boy.currChkD, 0);
-  oceanCurrChk();
+  safetyChk(&boyd.oceanCurr, &boyd.iceTemp);
   fall(0, 0);
+  time(&boyd.fallEnd);
   return data_pha;
 } // fallPhase
 
@@ -241,7 +235,7 @@ PhaseType dataPhase(void) {
   //ctdStop();
   antStop();
   // ngkStop();
-  success = wspDetectD(&detect);
+  success = wspDetectD(&detect, boy.iridHour, boy.iridFreq);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;
@@ -558,26 +552,29 @@ int oceanCurr(float *curr) {
 } // oceanCurr
 
 ///
-// rets: 0 safe, 1 too much, -1 err
+// rets: 0 safe, +1 current!, +10 ice!, -1 err
 // uses: boy.currMax
-int oceanCurrChk() {
+int safetyChk(float *curr, float *temp) {
   float sideways;
+  int r=0;
   flogf("\noceanCurrChk()");
   // delay 20sec before measure to stabilize
   utlNap(20);
   if (oceanCurr(&sideways)) {
-    utlErr(boy_err, " oceanCurr failed");
+    utlErr(boy_err, ": oceanCurr failed");
     return -1;
   }
-  flogf("\n\t\t\t| lateral @ %.1f = %.1f", antDepth(), sideways);
-  boyd.oceanCurr = sideways;
+  flogf(": lateral @ %.1f = %.1f", antDepth(), sideways);
+  *curr = sideways;
   if (sideways>boy.currMax) {
-    flogf(" too strong, cancel ascent");
-    // ignore current when dbg ?? should be setting
-    return 1;
+    flogf(" !! too strong, cancel ascent");
+    // not today ??
+    r += 1;
   }
-  return 0;
-} // oceanCurrChk
+  // ice check
+  antTemp(temp);
+  return r;
+} // safetyChk
 
 ///
 // shutdown buoy, reflects boyInit
@@ -606,11 +603,11 @@ int boyEngLog(void) {
   b[0] = 0;
   sprintf(b+strlen(b), "eng log cycle %d %s\n", all.cycle, utlDateTime());
   sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f @%.1fm\n", 
-      boyd.oceanCurr, boyd.dockD);
-  sprintf(b+strlen(b), "rise begin %s, ", ctime(&boyd.riseBgn));
-  sprintf(b+strlen(b), "rise end %s\n", ctime(&boyd.riseEnd));
-  sprintf(b+strlen(b), "fall begin %s, ", ctime(&boyd.fallBgn));
-  sprintf(b+strlen(b), "fall end %s\n", ctime(&boyd.fallEnd));
+      boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
+  sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgn));
+  sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
+  sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));
+  sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEnd));
   sprintf(b+strlen(b), "=== during last irid transmission ===\n");
   gps=&boyd.gpsBgn;
   sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 

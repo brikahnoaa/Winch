@@ -32,10 +32,11 @@ static int wspClose(void);
 static int wspOpen(void);
 static int wspStart(void);
 static void wspRemainS(int *remains);
+static void wspRiseT(time_t *riseT, int iridHour, int iridFreq);
 
 int wspCardSwap(void);
 int wspDateTime(void);
-int wspDetectD(int *detect);
+int wspDetectD(int *detect, int iridHour, int iridFreq);
 int wspDetectH(int *detect);
 int wspDetectM(int *detect, int minutes);
 int wspLog(char *str);
@@ -44,6 +45,5 @@ int wspSpace(float *disk);
 int wspStorm(char *buf);
 int wspStop(void);
 void wspInit(void);
-void wspRiseT(time_t *riseT);
 
 #endif

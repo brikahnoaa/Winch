@@ -113,9 +113,8 @@ int wspClose(void) {
 
 ///
 // calculate rise time
-// uses: .riseH .riseInt
-// sets: *riseT = next riseH hour, or riseInt interval
-void wspRiseT(time_t *riseT) {
+// sets: *riseT = next iridHour, or iridFreq hours interval from midnight
+void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
   int hour;
   time_t r, now;
   struct tm *tmPtr, tmLocal;
@@ -126,11 +125,11 @@ void wspRiseT(time_t *riseT) {
   tmPtr = gmtime(&now);
   memcpy(&tmLocal, tmPtr, sizeof(struct tm));
   // figure target hour
-  if (wsp.riseInt) {
+  if (iridFreq) {
     // instead of a fixed rise hour, figure next interval
-    hour = ((int)(tmLocal.tm_hour/wsp.riseInt)+1) * wsp.riseInt;
+    hour = ((int)(tmLocal.tm_hour/iridFreq)+1) * iridFreq;
   } else {
-    hour=wsp.riseH;
+    hour=iridHour;
   }
   // check the hour, is it past? add one interval
   tmLocal.tm_hour = hour;
@@ -141,8 +140,8 @@ void wspRiseT(time_t *riseT) {
     // next day/interval 
     DBG1("r<now");
     // be careful with long math and big ints, do not (time_t) (24*60*60)
-    if (wsp.riseInt) {
-      r = r + (time_t) wsp.riseInt*60*60;
+    if (iridFreq) {
+      r = r + (time_t) iridFreq*60*60;
     } else {
       r = r + (time_t) 24*60*60;
     }
@@ -304,14 +303,14 @@ int wspDetectH(int *detectH) {
 // uses: .spectRun 
 // sets: *detect+=
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
-int wspDetectD(int *detect) {
+int wspDetectD(int *detect, int iridHour, int iridFreq) {
   time_t now, riseT;
   int laterH, detH=0, r=0;
   static char *self="wspDetectD";
   DBG()
   *detect = 0;
   time(&now);
-  wspRiseT(&riseT);
+  wspRiseT(&riseT, iridHour, iridFreq);
   laterH = (int)(riseT-now)/60/60;
   flogf("\nwspDetectD() starting wispr detection; end in %d hours", laterH);
   while (time(&now) < riseT) {

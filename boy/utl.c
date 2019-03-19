@@ -203,6 +203,18 @@ char *utlDate(void) {
 ///
 // YYYY-MM-DD HH:MM:SS 
 // returns: global static char *all.ret
+char *utlDateTimeFmt(time_t secs) {
+  struct tm *tim;
+  tim = gmtime(&secs);
+  sprintf(all.ret, "%04d-%02d-%02d %02d:%02d:%02d",  
+          tim->tm_year + 1900, tim->tm_mon+1, tim->tm_mday, 
+          tim->tm_hour, tim->tm_min, tim->tm_sec);
+  return all.ret;
+} // utlDateTime
+
+///
+// YYYY-MM-DD HH:MM:SS 
+// returns: global static char *all.ret
 char *utlDateTime(void) {
   struct tm *tim;
   time_t secs;

@@ -50,7 +50,7 @@ bool antRead(void);
 bool antSurf(void);
 float antDepth(void);
 float antSurfD(void);
-float antTemp(void);
+int antTemp(float *temp);
 int antAuton(bool auton);
 int antAvg(float *avg);
 int antVelo(float *velo);
