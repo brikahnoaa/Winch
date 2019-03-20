@@ -313,7 +313,7 @@ int utlLogFile(int *log, char *base) {
     utlErr(log_err, utl.str);
     return 1;
   } else {
-    flogf("\n%s path\t| %s", self, path);
+    DBG1("\n%s path\t| %s", self, path);
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
     r = write(fd, utl.str, strlen(utl.str)); 
     if (r<1) {
