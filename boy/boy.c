@@ -83,23 +83,6 @@ void boyInit(void) {
   // boyd.log = utlLogFile(boy.logFile);
 } // boyInit
 
-/// 
-// ??
-// figure out whats happening, continue as possible
-// load info from saved previous phase
-// ask antmod for our velocity
-PhaseType rebootPhase(void) {
-  MsgType msg;
-  flogf("rebootPhase()\t| stop stop fall continue");
-  ngkSend(stopCmd_msg);
-  ngkRecvWait(&msg, 30);
-  ngkSend(stopCmd_msg);
-  ngkRecvWait(&msg, 30);
-  ngkSend(fallCmd_msg);
-  ngkRecvWait(&msg, 30);
-  return deploy_pha;
-} // reboot()
-
 ///
 // ascend. check angle due to current, up midway, re-check angle, surface.
 // sets: boy.alarm[]
@@ -509,6 +492,23 @@ PhaseType deployPhase(void) {
   flogf("\n\t| go to surface, call home");
   return rise_pha;
 } // deployPhase
+
+/// 
+// ??
+// figure out whats happening, continue as possible
+// load info from saved previous phase
+// ask antmod for our velocity
+PhaseType rebootPhase(void) {
+  MsgType msg;
+  flogf("\n === rebootPhase()\t| stop stop fall continue %s", utlDateTime());
+  ngkSend(stopCmd_msg);
+  ngkRecvWait(&msg, 30);
+  ngkSend(stopCmd_msg);
+  ngkRecvWait(&msg, 30);
+  ngkSend(fallCmd_msg);
+  ngkRecvWait(&msg, 30);
+  return deploy_pha;
+} // reboot()
 
 ///
 // ??
