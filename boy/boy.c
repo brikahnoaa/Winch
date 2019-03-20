@@ -3,6 +3,7 @@
 #include <ant.h> 
 #include <ctd.h>
 #include <gps.h>
+#include <hps.h>
 #include <mpc.h>
 #include <ngk.h>
 #include <pwr.h>
@@ -603,22 +604,30 @@ bool boyDocked(float depth) {
 
 ///
 // uses: .cycle boyd.*Bgn .*End .oceanCurr .surfD
+// sets: boyd.physical
 // write some engineering data
 int boyEngLog(void) {
   static char *self="boyEngLog";
   int log;
   GpsStats *gps;
+  HpsStats *hps;
   char *b;
   DBG()
   b=all.buf;
   b[0] = 0;
-  sprintf(b+strlen(b), "eng log cycle %d %s\n", all.cycle, utlDateTime());
+  sprintf(b+strlen(b), "== eng log cycle %d %s ==\n", all.cycle, utlDateTime());
   sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f @%.1fm\n", 
       boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
   sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgn));
   sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
   sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));
   sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEnd));
+  sprintf(b+strlen(b), "=== physical stats ===\n");
+  hps=&boyd.physical;
+  hpsRead(hps);
+  sprintf(b+strlen(b), 
+      "current=%.2f, voltage=%.2f, pressure=%.2f, humidity=%.2f\n",
+      hps->curr, hps->volt, hps->pres, hps->humi);
   sprintf(b+strlen(b), "=== during last irid transmission ===\n");
   gps=&boyd.gpsBgn;
   sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 

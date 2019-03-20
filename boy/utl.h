@@ -36,6 +36,7 @@
 #define MDM_TX_TTL 50
 
 #include <cfxpico.h> // Persistor PicoDOS Definitions
+#include <cfxbios.h>
 #include <cfxad.h>
 #include <dirent.h>   // PicoDOS POSIX-like Directory Access Defines
 #include <dosdrive.h> // PicoDOS DOS Drive and Directory Definitions
@@ -59,6 +60,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+// ADEx defines DBG(), naughty!
+#include <ADExamples.h>
+#undef DBG
 // dbg is shared by all
 #include <dbg.h>
 

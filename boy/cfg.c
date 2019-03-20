@@ -64,7 +64,7 @@ static CfgParam cfgP[] = {
   {'f',  "boy.predFallV", &boy.predFallV,   "bpF",  "0.2"},
   {'f',  "boy.predRiseV", &boy.predRiseV,   "bpR",  "0.33"},
   {'i',  "boy.cycleMax",  &boy.cycleMax,    "bcM",  "0"},
-  {'i',  "boy.depSettle", &boy.depSettle,   "bsT",  "120"},
+  {'i',  "boy.depSettle", &boy.depSettle,   "bsT",  "60"},
   {'i',  "boy.depWait",   &boy.depWait,     "bdW",  "240"},
   {'i',  "boy.fallOp",    &boy.fallOp,      "bfO",  "30"},
   {'i',  "boy.fallRetry", &boy.fallRetry,   "bfR",  "3"},

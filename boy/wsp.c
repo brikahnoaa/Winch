@@ -279,8 +279,10 @@ int wspDetectH(int *detectH) {
   wspDateTime();
   // enough time?
   wspRemainS(&remains);
-  if (remains > wsp.dutyM*60) 
+  if (remains > wsp.dutyM*60) {
+    flogf("\n%s running WISPR for %d minutes", wsp.dutyM);
     r = wspDetectM(&detectM, wsp.dutyM);
+  }
   *detectH=detectM;
   if (r) { // error
     sprintf( all.str, "\nwspDetectM(): error %d", r );

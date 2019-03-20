@@ -2,6 +2,7 @@
 #ifndef H_BOY
 #define H_BOY
 #include <gps.h>
+#include <hps.h>
 
 typedef enum {
   deploy_pha=0, 
@@ -14,6 +15,7 @@ typedef enum { free_ris, run_ris } RiseType;
 typedef struct BoyData {
   GpsStats gpsBgn;        // initial stats, just surfaced
   GpsStats gpsEnd;        // final stats, irid done
+  HpsStats physical;    // float curr, volt, pres, humi;
   Serial port;            // sbe16 or ant mod
   float dockD;            // Depth when docked in winch
   float fallV1st;         // meters/s of the first fall
@@ -45,7 +47,7 @@ typedef struct BoyInfo {
   float predFallV;        // predicted fall velo (.2)
   float predRiseV;        // predicted rise velo (.33)
   int cycleMax;           // max # of cycles or days
-  int depSettle;          // time to let deploy settle (120)
+  int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)
   int fallOp;             // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times

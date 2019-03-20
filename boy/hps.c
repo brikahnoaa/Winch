@@ -1,3 +1,6 @@
+// hps.c
+#include <utl.h>
+#include <hps.h>
 /******************************************************************************\
 **	ADS8345.c	(also for ADS8344)	QPB Driver for ADS8345 SPI A-D		
 **	For testing we are using NMPCS0 instead of NMPCS3
@@ -21,24 +24,23 @@
 **	
 \******************************************************************************/
 
-#include <cfxbios.h>		// Persistor BIOS and I/O Definitions
-#include <cfxpico.h>		// Persistor PicoDOS Definitions
-#include <cfxad.h>		// Generic SPI A-D QPB Driver for CFx
-#include "ADExamples.h"		// Common definitions for the A-D Examples
-#include <ADS8344.h>
-#include <stdio.h>
-#include        <stdlib.h>
-#include        <ctype.h>
-#include <dosdrive.h>
+// see utl.h
+//#include <cfxbios.h>		// Persistor BIOS and I/O Definitions
+//#include <cfxpico.h>		// Persistor PicoDOS Definitions
+//#include <cfxad.h>		// Generic SPI A-D QPB Driver for CFx
+//#include <stdio.h>
+//#include        <stdlib.h>
+//#include        <ctype.h>
+//#include <dosdrive.h>
+//#include	<cfxbios.h>	// Persistor CF1 BIOS and I/O Definitions
+//#include	<cfxpico.h>	// Persistor CF1 PicoDOS Definitions
+//#include	<hps.h>		// ADS8345/147 SPI A-D QPB Driver for CF1
 
 #define PICODEV 4
 //#define ADTYPE ADisADS8344
 #define ADREF_SHDN_PIN 19	//For MPC board 3/12/2018 HM
 #define HPSENS_PWR_ON  26	//For HP sensor power ON/OFF 1=ON, 0=OFF 3/12/2018 HM
 
-#include	<cfxbios.h>	// Persistor CF1 BIOS and I/O Definitions
-#include	<cfxpico.h>	// Persistor CF1 PicoDOS Definitions
-#include	<hps.h>		// ADS8345/147 SPI A-D QPB Driver for CF1
 QPBDev ADS8345DevTemplate = {
   NMPCS3,			// qslot                        TEST NMPSC3 for ADS8345 our qspi slot HM 
   "ADS8345",			// devName                      C string with device name (15 max) HM
@@ -63,54 +65,96 @@ const uchar Ads8345DifChSel[8] =	// convert chan to differential selector
 
 ///
 // HP Sensor stats
-int
-hpsStats ()
-{
-  int i;
-  bool uni = true;		// true for unipolar, false for bipolar
-  bool sgl = true;		// true for single-ended, false for differential
-  short sample, *samples;
+int hpsRead (HpsStats *hps) {
   CFxAD adbuf, *ad;
-  float vref = VREF;		//defined in ADExamples.h
-  ushort entryclock = TMGGetSpeed ();
+  bool sgl = true;		// true for single-ended, false for differential
+  bool uni = true;		// true for unipolar, false for bipolar
+  // float curr, volt, pres, humi;
   float output;
-  float curr, volt, pres, humi;
+  float vref = VREF;		//defined in ADExamples.h
+  int i;
+  short sample, *samples;
+  ushort entryclock = TMGGetSpeed ();
+
   samples = (ushort *) malloc (8 * sizeof (ushort));
   //Power on
   PIOSet (ADREF_SHDN_PIN);	//ADC and Ref IC power ON
   PIOSet (HPSENS_PWR_ON);	//HP-Sensor board power from DiFar Power port  (J14)
   // Initialize QPB to accept our A-D with its QSPI connection.
   ad = CFxADInit (&adbuf, ADSLOT, ADInitFunction);
+  for (i = 0; i < 4; i++) {				// curr, volt, pres, humi
+    sample = CFxADSample(ad, i, uni, sgl, false);
+    output = CFxADRawToVolts(ad, sample, vref, uni);
+    switch (i) {
+	case 0:
+	  hps->curr = output * 1000.;	//Current in mA
+	  break;
+	case 1:
+	  hps->volt = output * 100.;	//Voltage in V
+	  break;
+	case 2:
+	  hps->pres = (output * 0.4 + 0.040) * 2494.0;	//pressure
+	  break;
+	case 3:
+	  hps->humi = (output * 2 - 0.831) / 0.029;	//humidity
+	  break;
+	}
+  }
+  PIOClear (ADREF_SHDN_PIN);
+  PIOClear (HPSENS_PWR_ON);
+  return 0;
+} // hpsStats
+
+
+/*
+int
+hpsStats ()
+{
+  int i;
+  bool uni = true;      // true for unipolar, false for bipolar
+  bool sgl = true;      // true for single-ended, false for differential
+  short sample, *samples;
+  CFxAD adbuf, *ad;
+  float vref = VREF;        //defined in ADExamples.h
+  ushort entryclock = TMGGetSpeed ();
+  float output;
+  float curr, volt, pres, humi;
+  samples = (ushort *) malloc (8 * sizeof (ushort));
+  //Power on
+  PIOSet (ADREF_SHDN_PIN);  //ADC and Ref IC power ON
+  PIOSet (HPSENS_PWR_ON);   //HP-Sensor board power from DiFar Power port  (J14)
+  // Initialize QPB to accept our A-D with its QSPI connection.
+  ad = CFxADInit (&adbuf, ADSLOT, ADInitFunction);
   for (i = 0; i < 4; i++)
-    {				// curr, volt, pres, humi
+    {               // curr, volt, pres, humi
       sample = CFxADSample (ad, i, uni, sgl, false);
       output = CFxADRawToVolts (ad, sample, vref, uni);
       switch (i)
-	{
-	case 0:
-	  curr = output * 1000.;	//Current in mA
-	  flogf ("\nCurrent  = %7.1f mA", curr);
-	  break;
-	case 1:
-	  volt = output * 100.;	//Voltage in V
-	  flogf ("\nBat Volt = %7.1f V", volt);
-	  break;
-	case 2:
-	  //output=(output*0.4+0.040)*2439.0;//pressure
-	  pres = (output * 0.4 + 0.040) * 2494.0;	//pressure
-	  flogf ("\nPressure = %7.1f mBar", pres);
-	  break;
-	case 3:
-	  humi = (output * 2 - 0.831) / 0.029;	//humidity
-	  flogf ("\nHumidity = %7.1f %", humi);
-	  break;
-	}
+    {
+    case 0:
+      curr = output * 1000.;    //Current in mA
+      flogf ("\nCurrent  = %7.1f mA", curr);
+      break;
+    case 1:
+      volt = output * 100.; //Voltage in V
+      flogf ("\nBat Volt = %7.1f V", volt);
+      break;
+    case 2:
+      //output=(output*0.4+0.040)*2439.0;//pressure
+      pres = (output * 0.4 + 0.040) * 2494.0;   //pressure
+      flogf ("\nPressure = %7.1f mBar", pres);
+      break;
+    case 3:
+      humi = (output * 2 - 0.831) / 0.029;  //humidity
+      flogf ("\nHumidity = %7.1f %", humi);
+      break;
+    }
     }
     PIOClear (ADREF_SHDN_PIN);
     PIOClear (HPSENS_PWR_ON);
   return 0;
-}				// hpsStats
-
+}               // hpsStats
+ */ 
 
 
 

@@ -3,7 +3,7 @@ v errors to fix
 v. data cycle, to only go up once a day
 v. write file, send file - lost ability
 . verify
-.. output s16.log s39.log
+v. output s16.log s39.log
 . improvements this april
 .. humid, press, battery - and turn off after using
 .. stay down command (X cycles)

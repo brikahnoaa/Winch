@@ -1,5 +1,7 @@
+// hps.h
 #ifndef H_HPS
 #define H_HPS
+
 /*******************************************************************************
 ** ADS8345.h based on Max146.h (compatible with ADS8344)
 **
@@ -48,7 +50,7 @@
 #ifndef		__Ads8345_H
 #define		__Ads8345_H
 
-#include	<cfxbios.h>	// Persistor CF1 BIOS and I/O Definitions
+// #include	<cfxbios.h>	// Persistor CF1 BIOS and I/O Definitions
 
 #ifndef	NOT_R216_RECIPECARD
 #ifndef	NO_AD_REF_SHDN_PIN
@@ -81,6 +83,15 @@ ushort Ads8345SampleOrigin (ushort qslot, ushort chan, bool uni, bool sgl,
 float Ads8345RawToVolts (ushort raw, float vref, bool);
 
 #endif //      __Ads8345_H
-int hpsStats(void);
+
+//int hpsStats(void);
+
+typedef struct HpsStats {
+  float curr;
+  float volt;
+  float pres;
+  float humi;
+} HpsStats;
+int hpsRead(HpsStats *hps);
 
 #endif
