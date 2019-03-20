@@ -332,6 +332,22 @@ int utlLogFile(int *log, char *base) {
   return 0;
 } // utlLogFile
 
+/// 
+// close file
+int utlCloseFile(int *fd) {
+  static char *self="utlCloseFile";
+  int f;
+  DBG()
+  if (*fd<1) return 0;   // no fd
+  f=*fd;
+  *fd=0;
+  if (close(f)<0) {
+    flogf("\n%s(): ERR closing file (fd=%d)", self, f);
+    return 1;
+  }
+  return 0;
+} // utlCloseFile
+
 /// file handling error - FATAL
 // log error and shutdown
 void utlCloseErr(char *str) {

@@ -31,32 +31,8 @@ void antInit(void) {
     ant.ring[i].next = &ant.ring[i+1];
   }
   ant.ring[i].next = ant.ring;
-} // antInit
-
-///
-// turn on, clean, set params, talk to sbe39
-void antStart(void) {
-  DBG0("antStart() %s", utlDateTime())
-  if (ant.on) return;
-  ant.on = true;
-  antDevice(cf2_dev);
-  PIOClear(ANT_PWR);
-  utlDelay(200);
-  TURxFlush(ant.port);
-  TUTxFlush(ant.port);
-  PIOSet(ANT_PWR);
-  // get cf2 startup message
-  utlExpect(ant.port, all.buf, "ok", 6);
-  DBG1("%s", all.buf)
-  antReset();
-  // state
+  antStart();
   if (ant.sbe39) {
-    if (ant.auton)
-      antAuton(false);
-    tmrStop(s39_tmr);
-    antPrompt();
-    sprintf(all.str, "datetime=%s", utlDateTimeCtd());
-    utlWrite(ant.port, all.str, EOL);
     utlExpect(ant.port, all.buf, EXEC, 2);
     utlWrite(ant.port, "TxSampleNum=N", EOL);
     utlExpect(ant.port, all.buf, EXEC, 2);
@@ -66,27 +42,61 @@ void antStart(void) {
     utlWrite(ant.port, "stop", EOL);
     utlExpect(ant.port, all.buf, EXEC, 2);
   }
+  antStop();
+} // antInit
+
+///
+// turn on, clean, set params, talk to sbe39
+void antStart(void) {
+  static char *self="antStart";
+  if (ant.on) return;
+  ant.on = true;
+  flogf("\n === antenna module start %s", utlDateTime());
+  if (!ant.log && strlen(ant.logFile))
+    utlLogFile(&ant.log, ant.logFile);
+  antDevice(cf2_dev);
+  PIOClear(ANT_PWR);
+  utlDelay(200);
+  TURxFlush(ant.port);
+  TUTxFlush(ant.port);
+  PIOSet(ANT_PWR);
+  // get cf2 startup message
+  if (!utlExpect(ant.port, all.buf, "ok", 6))
+    flogf("\n%s(): expected ok, saw '%s'", self, all.buf);
+  DBG1("%s", all.buf)
+  antReset();
+  // state
+  if (ant.sbe39) {
+    tmrStop(s39_tmr);
+    if (ant.auton)
+      antAuton(false);
+    if (!antPrompt()) 
+      flogf("\n%s(): ERR sbe39, expected prompt");
+    sprintf(all.str, "datetime=%s", utlDateTimeCtd());
+    utlWrite(ant.port, all.str, EOL);
+    if (!utlExpect(ant.port, all.buf, EXEC, 2))
+      flogf("\n%s(): ERR sbe39, datetime not executed");
+  }
 } // antStart
 
 ///
 // turn off power to antmod 
 void antStop() {
   if (!ant.on) return;
-  if (ant.log)
-    close(ant.log);
-  ant.log = 0;
+  ant.on = false;
+  flogf("\n === antenna module stop %s", utlDateTime());
+  utlCloseFile(&ant.log);
   antDevice(cf2_dev);
   // just in case auton is on
   if (ant.auton)
     antAuton(false);
   PIOClear(ANT_PWR);
-  ant.on = false;
 } // antStop
 
 ///
 // rets: true==success (returns early)
 bool antPrompt() {
-  DBG1("antPrompt()")
+  DBG1("aP")
   antDevice(cf2_dev);
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response
@@ -481,7 +491,7 @@ void antGetSamples(void) {
   flogf(": %d bytes to %s", total, ant.logFile);
   // close log file if local only
   if (!ant.log)
-    close(log);
+    utlCloseFile(&log);
   if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
     utlExpect(ant.port, all.buf, "-->", 2);

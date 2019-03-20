@@ -103,6 +103,7 @@ char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
 int utlLogFile(int *log, char *base);
+int utlCloseFile(int *fd);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);

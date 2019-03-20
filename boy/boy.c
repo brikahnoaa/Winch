@@ -23,8 +23,6 @@ void boyMain() {
   PhaseType phase, phaseNext, phasePrev;
   time_t phaseStart;
   flogf("\n  System Starts %d", all.starts);
-  antStart();
-  ctdStart();
   ngkStart();
   phase = boy.startPh;
   if (tst.test) 
@@ -111,7 +109,7 @@ PhaseType risePhase(void) {
   if (tst.test && tst.noRise) return irid_pha;
   // *Start() returns immed if already on (*.on = true)
   antStart();
-  //ctdStart();
+  ctdStart();
   // if current is too strong at bottom
   if (safetyChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
@@ -149,68 +147,10 @@ PhaseType iridPhase(void) {
   return fall_pha;
 } // iridPhase
 
-int iridPhaseDo(void) {
-  int r=0;
-  bool helloB=false, engB=false, s16B=false;
-  tmrStart(phase_tmr, boy.iridOp*MINUTE);
-  gpsStart();
-  flogf("\n%s ===\n", utlTime());
-  antSwitch(gps_ant);
-  gpsDateTime(&boyd.gpsBgn);
-  gpsLatLng(&boyd.gpsBgn);
-  antSwitch(irid_ant);
-  while (!tmrExp(phase_tmr)) {
-    // 0=success
-    flogf("\n%s ====\n", utlTime());
-    iridHup();
-    if ((r = iridSig())) {
-      flogf("\nERR\t| iridSig()->%d", r);
-      continue;
-    } 
-    if ((r = iridDial())) {
-      flogf("\nERR\t| iridDial()->%d", r);
-      continue;
-    } 
-    if ((r = iridProjHdr())) {
-      flogf("\nERR\t| iridProjHdr()->%d", r);
-      continue;
-    } 
-    if (!helloB) {
-      sprintf(all.str, "hello.txt");
-      if ((r = iridSendFile(all.str))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
-        continue;
-      } else helloB=true;
-    }
-    utlNap(boy.filePause);
-    if (!engB) {
-      utlLogPathName(all.str, "eng", all.cycle);
-      if ((r = iridSendFile(all.str))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
-        continue;
-      } else engB=true;
-    }
-    utlNap(boy.filePause);
-    if (!s16B) {
-      utlLogPathName(all.str, "s16", all.cycle-1);
-      if ((r = iridSendFile(all.str))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
-        continue;
-      } else s16B=true;
-    }
-    iridHup();
-    // done?
-    if (helloB && engB && s16B) break;
-  } // while
-  flogf("\n%s =====\n", utlTime());
-  antSwitch(gps_ant);
-  gpsDateTime(&boyd.gpsEnd);
-  gpsLatLng(&boyd.gpsEnd);
-  return r;
-} // iridPhaseDo
-
 ///
 PhaseType fallPhase() {
+  antStart();
+  ctdStart();
   flogf("fallPhase()");
   if (tst.test && tst.noRise) return data_pha;
   time(&boyd.fallBgn);
@@ -232,25 +172,23 @@ PhaseType dataPhase(void) {
   int success, detect;
   flogf("dataPhase()");
   if (tst.test && tst.noData) return rise_pha;
-  //ctdStop();
   antStop();
+  ctdStop();
   // ngkStop();
   success = wspDetectD(&detect, boy.iridHour, boy.iridFreq);
+  boyd.detections = detect;
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  boyd.detections = detect;
-  antStart();
-  //ctdStart();
   // masters told us to stay down a few days
   if (boy.stayDown>0) {
     boy.stayDown--;
     return data_pha;
   } else 
-return rise_pha;
+    return rise_pha;
   // ngkStart();
 } // dataPhase
 
@@ -265,6 +203,8 @@ int rise(float targetD, int try) {
   MsgType msg;
   enum {opT, ngkT, twentyT, fiveT};  // local timer names
   flogf("\nrise(%3.1f, %d)", targetD, try);
+  antStart();
+  ctdStart();
   // utlNap(15);
   antSample();
   antDataWait();
@@ -362,6 +302,69 @@ int rise(float targetD, int try) {
 
 
 ///
+// main action of iridPhase, allows better error handling
+int iridPhaseDo(void) {
+  int r=0;
+  bool helloB=false, engB=false, s16B=false;
+  tmrStart(phase_tmr, boy.iridOp*MINUTE);
+  gpsStart();
+  flogf("\n%s ===\n", utlTime());
+  antSwitch(gps_ant);
+  gpsDateTime(&boyd.gpsBgn);
+  gpsLatLng(&boyd.gpsBgn);
+  antSwitch(irid_ant);
+  while (!tmrExp(phase_tmr)) {
+    // 0=success
+    flogf("\n%s ====\n", utlTime());
+    iridHup();
+    if ((r = iridSig())) {
+      flogf("\nERR\t| iridSig()->%d", r);
+      continue;
+    } 
+    if ((r = iridDial())) {
+      flogf("\nERR\t| iridDial()->%d", r);
+      continue;
+    } 
+    if ((r = iridProjHdr())) {
+      flogf("\nERR\t| iridProjHdr()->%d", r);
+      continue;
+    } 
+    if (!helloB) {
+      sprintf(all.str, "hello.txt");
+      if ((r = iridSendFile(all.str))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+        continue;
+      } else helloB=true;
+    }
+    utlNap(boy.filePause);
+    if (!engB) {
+      utlLogPathName(all.str, "eng", all.cycle);
+      if ((r = iridSendFile(all.str))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+        continue;
+      } else engB=true;
+    }
+    utlNap(boy.filePause);
+    if (!s16B) {
+      utlLogPathName(all.str, "s16", all.cycle-1);
+      if ((r = iridSendFile(all.str))) {
+        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+        continue;
+      } else s16B=true;
+    }
+    iridHup();
+    // done?
+    if (helloB && engB && s16B) break;
+  } // while
+  flogf("\n%s =====\n", utlTime());
+  antSwitch(gps_ant);
+  gpsDateTime(&boyd.gpsEnd);
+  gpsLatLng(&boyd.gpsEnd);
+  return r;
+} // iridPhaseDo
+
+
+///
 // based on rise(), diffs commented out; wait for winch stop
 // fall to dock // expect stopCmd 
 // uses: .riseRate .riseOrig .rateAccu .riseRetry
@@ -444,6 +447,7 @@ int fall(float targetD, int try) {
   }
 } // fall
 
+
 ///
 // from ship deck to ocean floor
 // wait until under 10m, watch until not falling, wait 30s, riseUp()
@@ -452,15 +456,21 @@ PhaseType deployPhase(void) {
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
   if (tst.test && tst.noDeploy) return rise_pha;
+  antStart();
+  ctdStart();
+  // test sbe16
   ctdSample();
   ctdDataWait();
   if (!ctdRead())
     utlErr(ctd_err, "sbe16 failure");
   flogf(" sbe16@%3.1f", ctdDepth());
+  ctdStop();
+  // test sbe39
   antSample();
   antDataWait();
   if (!antRead())
     utlErr(ant_err, "sbe39 failure");
+  //
   flogf(" sbe39@%3.1f", antDepth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
     antDepth(), ctdDepth(), utlDateTime());
@@ -508,6 +518,7 @@ PhaseType errorPhase(void) {
   flogf("errorPhase()");
   return fall_pha;
 } // errorPhase
+
 
 ///
 // wait currChkSettle, buoy ctd, ant td, compute
@@ -594,7 +605,7 @@ bool boyDocked(float depth) {
 // uses: .cycle boyd.*Bgn .*End .oceanCurr .surfD
 // write some engineering data
 int boyEngLog(void) {
-  char *self="boyEngLog";
+  static char *self="boyEngLog";
   int log;
   GpsStats *gps;
   char *b;
@@ -627,15 +638,13 @@ int boyEngLog(void) {
 ///
 // next cycle. manage log files, etc
 int nextCycle(void) {
-  int r=0;
   static char *self="nextCycle";
+  int r=0;
   DBG()
   all.cycle++;
   // close and restart syslog ??
   sprintf(all.buf, "copy sys.log log\\%03dsys.log", all.cycle);
   execstr(all.buf);
-  // restart ctd to reopen log // ??
-  //ctdStop();
-  //ctdStart();
+  // ?? close and reopen syslog
   return r;
 } // nextCycle

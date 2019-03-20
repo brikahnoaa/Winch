@@ -25,14 +25,9 @@ void ctdInit(void) {
   static char *self="ctdInit";
   DBG()
   ctd.port = mpcPamPort();
-  mpcPamDev(sbe16_pam);
-  ctd.on = true;
-  if (!ctdPrompt())
-    utlErr(ctd_err, "ctd: no prompt");
+  ctdStart();
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(ctd.port, all.buf, 1);   // echo
-  sprintf(all.str, "datetime=%s", utlDateTimeCtd());
-  utlWrite(ctd.port, all.str, EOL);
   utlWrite(ctd.port, "stop", EOL);
   utlReadWait(ctd.port, all.buf, 1);   // echo
   ctdStop();
@@ -40,22 +35,28 @@ void ctdInit(void) {
 
 ///
 void ctdStart(void) {
+  static char *self="ctdStart";
+  DBG()
   if (ctd.on) return;
   mpcPamDev(sbe16_pam);
   tmrStop(s16_tmr);
   if (!ctd.log && strlen(ctd.logFile))
     utlLogFile(&ctd.log, ctd.logFile);
+  if (!ctdPrompt())
+    utlErr(ctd_err, "ctd: no prompt");
+  sprintf(all.str, "datetime=%s", utlDateTimeCtd());
+  utlWrite(ctd.port, all.str, EOL);
   ctd.on = true;
 } // ctdStart
 
 ///
 void ctdStop(void){
+  static char *self="ctdStop";
+  DBG()
   if (!ctd.on) return;
   mpcPamDev(null_pam);
-  if (ctd.log) {
-    close(ctd.log);
-    ctd.log = 0;
-  }
+  tmrStop(s16_tmr);
+  utlCloseFile(&ctd.log);
   if (ctd.auton)
     ctdAuton(false);
   ctd.on = false;
@@ -65,7 +66,7 @@ void ctdStop(void){
 // sbe16
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
-  DBG1("ctdPrompt()")
+  DBG1("cPt")
   ctdFlush();
   utlWrite(ctd.port, "", EOL);
   // looking for S> at end
@@ -82,7 +83,8 @@ bool ctdPrompt(void) {
 ///
 // reset, exit sync mode
 void ctdBreak(void) {
-  DBG1("ctdBreak()")
+  static char *self="ctdBreak";
+  DBG()
   TUTxBreak(ctd.port, 5000);
 } // ctdBreak
 
@@ -90,7 +92,7 @@ void ctdBreak(void) {
 // data waiting
 bool ctdData() {
   int r;
-  DBG2("cD")
+  DBG2("cDa")
   r=TURxQueuedCount(ctd.port);
   if (r)
     tmrStop(s16_tmr);
@@ -100,7 +102,7 @@ bool ctdData() {
 ///
 // wait for data or not pending (timeout)
 bool ctdDataWait(void) {
-  DBG0("aDW")
+  DBG1("cDW")
   while (ctdPending())
     if (ctdData()) 
       return true;
@@ -112,7 +114,7 @@ bool ctdDataWait(void) {
 // sets: s16_tmr
 void ctdSample(void) {
   if (ctdPending()) return;
-  DBG0("cSam")
+  DBG1("cSam")
   // flush old data, check for sleep message and prompt if needed
   if (ctdData()) {
     utlRead(ctd.port, all.buf);
@@ -252,10 +254,7 @@ void ctdGetSamples(void) {
     flogf("+[%d]", len3);
     total += len3;
   } // while ==
-  if (ctd.log) {
-    close(ctd.log);
-    ctd.log = 0;
-  }
+  utlCloseFile(&ctd.log);
   if (ctd.clearSamp) {
     utlWrite(ctd.port, "initLogging", EOL);
     utlExpect(ctd.port, all.buf, "verify", 2);

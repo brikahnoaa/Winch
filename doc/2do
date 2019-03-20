@@ -2,7 +2,10 @@ Fri, Mar  1, 2019  4:23:42 PM
 v errors to fix
 v. data cycle, to only go up once a day
 v. write file, send file - lost ability
+. verify
+.. output s16.log s39.log
 . improvements this april
+.. humid, press, battery - and turn off after using
 .. stay down command (X cycles)
 .. process land commands
 ... commands sent to buoy, stored and sent back to land after processing
@@ -12,6 +15,7 @@ v.. gps drift, surf depth
 ... disk space wspr, # of reboots, cf2 disk space 
 ... voltage info
 ... water column data, detections, storm 
+.. robust winch commands (resend, detect)
 v.. up bgn/end, down bgn/end
 v. set gain, gps time every data cycle (daily)
 . test cycle

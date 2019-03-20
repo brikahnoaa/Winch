@@ -146,7 +146,7 @@ void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
       r = r + (time_t) 24*60*60;
     }
   }
-  flogf("\nwspRiseT(): rise at %s", ctime(&r));
+  flogf("\nwspRiseT(): rise at %s", utlDateTimeFmt(r));
   *riseT = r;
   return;
 } // wspRiseT
