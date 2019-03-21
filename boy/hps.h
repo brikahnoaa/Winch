@@ -93,5 +93,6 @@ typedef struct HpsStats {
   float humi;
 } HpsStats;
 int hpsRead(HpsStats *hps);
+int readStat (float *ret, int c);
 
 #endif
