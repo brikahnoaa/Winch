@@ -91,9 +91,15 @@
 int hpsRead (HpsStats *hps) {
   float ret;
   readStat( &ret, 0);
+  flogf("\n%f mA", ret);
   readStat( &ret, 0);
-  flogf("\n%f volts", ret);
-  hps->volt = ret;
+  flogf("\n%f mA", ret);
+  readStat( &(hps->curr), 0);
+  readStat( &(hps->volt), 1);
+  readStat( &(hps->pres), 2);
+  readStat( &(hps->humi), 3);
+  // turn off
+  readStat( &ret, 4);
   return 0;
 } // hpsRead
 
@@ -136,32 +142,42 @@ int readStat (float *ret, int c) {
 		///while (true)
 			{
 			///c = cgetc();
-			switch (c = toupper(c))
+			///switch (c = toupper(c))
+                        switch (c)
 				{
-				case '0' : 
-				case '1' : 
-				case '2' : 
-				case '3' : 
-					sample = CFxADSample(ad, c - '0', uni, sgl, false);
+				///case '0' : 
+				///case '1' : 
+				///case '2' : 
+				///case '3' : 
+				case 0 : 
+				case 1 : 
+				case 2 : 
+				case 3 : 
+					///sample = CFxADSample(ad, c - '0', uni, sgl, false);
+					sample = CFxADSample(ad, c, uni, sgl, false);
 					output=CFxADRawToVolts(ad, sample, vref, uni);
-					if (c=='0') 
+					///if (c=='0') 
+					if (c==0) 
 						{
 						output=output*1000.;  //Current in mA
 						///printf("Current  = %7.1f mA\n", output);
 						}
-					if (c=='1') 
+					///if (c=='1') 
+					if (c==1) 
 						{
 						output= output*100.;  //Voltage in V
 						///printf("Bat Volt = %7.1f V\n", output);
 						}
 
-					if (c=='2') 
+					///if (c=='2') 
+					if (c==2) 
 						{
 						//output=(output*0.4+0.040)*2439.0;//pressure
 						output=(output*0.4+0.040)*2494.0;//pressure
 						///printf("Pressure = %7.1f mBar\n", output);
 						}
-					if (c=='3') 
+					///if (c=='3') 
+					if (c==3) 
 						{
 						output=(output*2-0.831)/0.029;//humidity
 						///printf("Humidity = %7.1f %\n", output);
@@ -175,7 +191,7 @@ int readStat (float *ret, int c) {
 				//case 'D' :	sgl = false;	break;
 				//case 'P' :	CFxADPowerDown(ad, true);	break;
 				///case '.' :	PIOClear(ADREF_SHDN_PIN); PIOClear(HPSENS_PWR_ON); return 0;
-				case '4' :	PIOClear(ADREF_SHDN_PIN); PIOClear(HPSENS_PWR_ON); return 0;
+				case 4 :	PIOClear(ADREF_SHDN_PIN); PIOClear(HPSENS_PWR_ON); return 0;
 				}
 			}
         }

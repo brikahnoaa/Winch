@@ -16,7 +16,7 @@ void main(void){
   int i, r=0;
   sysInit();
   mpcInit();
-  antInit();
+  // antInit();
   i=boyEngLog();
   exit(r);
 }
