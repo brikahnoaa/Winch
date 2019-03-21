@@ -46,6 +46,7 @@ void ctdStart(void) {
     utlErr(ctd_err, "ctd: no prompt");
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
   utlWrite(ctd.port, all.str, EOL);
+  utlReadWait(ctd.port, all.buf, 2);   // echo
   ctd.on = true;
 } // ctdStart
 

@@ -1,22 +1,35 @@
-// irid.c
+// ctdTst.c
 #include <utl.h>
-#include <gps.h>
+#include <ctd.h>
 #include <mpc.h>
-#include <ant.h>
 #include <sys.h>
-#include <tmr.h>
-#include <boy.h>
-#include <cfg.h>
 
-extern GpsInfo gps;
-extern BoyInfo boy;
-extern SysInfo sys;
+extern CtdInfo ctd;
 
 void main(void){
-  int i, r=0;
+  char c;
   sysInit();
   mpcInit();
-  // antInit();
-  i=boyEngLog();
-  exit(r);
+  ctdInit();
+  ctdStart();
+  ctdSample();
+  ctdDataWait();
+  ctdRead();
+  flogf("\nctdDepth %2.1f", ctdDepth());
+  ctdDataWait();
+  ctdRead();
+  flogf("\nctdDepth %2.1f", ctdDepth());
+  flogf("\nPress Q to exit\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
+  }
+  ctdStop();
 }

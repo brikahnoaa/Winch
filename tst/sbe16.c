@@ -12,7 +12,6 @@ void main(void){
   mpcInit();
   ctdInit();
   ctdStart();
-  utlNap(3);
   ctdSample();
   ctdDataWait();
   ctdRead();
