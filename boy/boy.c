@@ -135,7 +135,7 @@ PhaseType iridPhase(void) {
 PhaseType fallPhase() {
   antStart();
   ctdStart();
-  flogf("fallPhase()");
+  flogf("\nfallPhase() %s", utlDateTime());
   if (tst.test && tst.noRise) return data_pha;
   time(&boyd.fallBgn);
   fallDo(boy.currChkD, 0);
@@ -376,14 +376,14 @@ int fallDo(float targetD, int try) {
   antSample();
   ctdDataWait(); 
   antDataWait();
-  flogf(" sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
+  flogf("\n ++sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
   nowD = startD = antDepth();
   // could be cable far out, maybe dockD+100m
   // pt = sec/meter(5) * depth + fudge for possible current drift
   pt = 5*boyd.dockD+boy.fallOpM*60;
   tmrStart(phase_tmr, pt);
   ngkFlush();
-  flogf("\n\t%s: fallCmd to winch at %s", self, utlTime());
+  flogf("\n\t| fallCmd to winch at %s", utlTime());
   ngkSend(fallCmd_msg);
   tmrStart(ngkTmr, boy.ngkDelay*2);
   tmrStart(fiveTmr, 5);
@@ -401,7 +401,7 @@ int fallDo(float targetD, int try) {
     }
     // winch
     if (ngkRecv(&msg)!=null_msg) {
-      flogf("\n%s:\t| %s from winch", self, ngkMsgName(msg));
+      flogf("\n\t| %s from winch", ngkMsgName(msg));
       if (msg==fallRsp_msg)
         tmrStop(ngkTmr);
       // reached dock, probably
@@ -410,7 +410,7 @@ int fallDo(float targetD, int try) {
       if (msg==stopRsp_msg) break;
     }
     if (tmrExp(ngkTmr)) {
-      flogf("\n\t%s: WARN no response from winch %s", self, utlTime());
+      flogf("\n\t| WARN no response from winch %s", utlTime());
       // errB = true;
       // break;
     }
@@ -423,14 +423,14 @@ int fallDo(float targetD, int try) {
     // 5 seconds
     if (tmrExp(fiveTmr)) {
       tmrStart(fiveTmr, 5);
-      flogf("\n\t%s: %s depth=%3.1f", self, utlTime(), nowD);
+      flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
       if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     } 
   } // while !stop !err
   // retry if error
   if (errB) {
-    flogf("\n\t%s: ERR retry %d", self, ++try);
+    flogf("\n%s: ERR retry %d", self, ++try);
     ngkSend(stopCmd_msg);
     utlNap(boy.ngkDelay*2);
     ngkFlush();

@@ -58,7 +58,7 @@ int wspStart(void) {
   static char *self="wspStart";
   DBG()
   if (wsp.on) wspStop();
-  flogf("\nwspStart(): activating wispr#%d", wsp.card);
+  DBG1("\n%s: activating wispr#%d", self, wsp.card)
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log && strlen(wsp.logFile))
@@ -217,7 +217,7 @@ int wspDateTime(void) {
 int wspDetectM(int *detectM, int minutes) {
   static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
   char *b;
-  int r=0, detectQ=0;
+  int r=0, detQ=0;
   float free;
   static char *self="wspDetectM";
   DBGN( "(%d)", minutes )
@@ -238,14 +238,14 @@ int wspDetectM(int *detectM, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&detectQ)) Exc(10);
+      if (wspQuery(&detQ)) Exc(10);
+      *detectM += detQ;
       if (wspSpace(&free)) Exc(20);
-      *detectM += detectQ;
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
-  if (wspQuery(&detectQ)) Exc(10);
-  *detectM += detectQ;
+  if (wspQuery(&detQ)) Exc(10);
+  *detectM += detQ;
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
@@ -272,19 +272,19 @@ int wspDetectM(int *detectM, int minutes) {
 // sets: *detectH=
 // rets: 1=watchdog 10=!wspDetectM 
 int wspDetectH(int *detectH) {
-  int r=0, remains, detectM;
+  int r=0, remains, detM=0;
   static char *self="wspDetectH";
   DBG()
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
   // enough time?
   wspRemainS(&remains);
   if (remains > wsp.dutyM*60) {
-    flogf("\n%s: running WISPR for %d minutes", self, wsp.dutyM);
-    r = wspDetectM(&detectM, wsp.dutyM);
+    flogf("\n%s: running WISPR#%d for %d minutes", self, wsp.card, wsp.dutyM);
+    r = wspDetectM(&detM, wsp.dutyM);
   } else 
     flogf("\n%s: skipping detection, dutyM%d > remains%d", 
         self, wsp.dutyM, remains);
-  *detectH=detectM;
+  *detectH=detM;
   if (r) { // error
     sprintf( all.str, " !! error %d", r );
     flogf( all.str );

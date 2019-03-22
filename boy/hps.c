@@ -91,9 +91,6 @@
 int hpsRead (HpsStats *hps) {
   float ret;
   readStat( &ret, 0);
-  flogf("\n%f mA", ret);
-  readStat( &ret, 0);
-  flogf("\n%f mA", ret);
   readStat( &(hps->curr), 0);
   readStat( &(hps->volt), 1);
   readStat( &(hps->pres), 2);

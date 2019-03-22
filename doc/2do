@@ -23,10 +23,11 @@ v. set gain, gps time every data cycle (daily)
 . test cycle
 .. change gain remote
 . planned, if we have time 
+..0 on start move sys.log to syslog\date\time.log
 ..1 in case of failure to create files, execute reboot
 ..2 collect data from sbe16 and sbe39 both during descent
 ..3 special test - at 10m. go up, stop, do measurements, come back down
-..4 spectrogram only before rise, not every shutdown
+v.4 spectrogram only before rise, not every shutdown
 ..5 automatic timeout on surface, detected by winch params not buoy code
 ..6 calendar - season to stay down
 
