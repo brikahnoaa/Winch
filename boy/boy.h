@@ -70,13 +70,12 @@ static PhaseType iridPhase(void);
 static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static bool boyDocked(float depth);
-static int fall(float targetD, int try);
-static int iridPhaseDo(void);
+static int fallDo(float targetD, int try);
+static int iridDo(void);
 static int nextCycle(void);
-int oceanCurr(float *curr);
+static int oceanCurr(float *curr);
 static int safetyChk(float *curr, float *temp);
-static int rise(float targetD, int try);
-static int riseUp(float targetD, int try);
+static int riseDo(float targetD, int try);
 
 int boyEngLog(void);
 void boyFlush(void);
