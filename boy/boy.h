@@ -73,7 +73,7 @@ static bool boyDocked(float depth);
 static int fall(float targetD, int try);
 static int iridPhaseDo(void);
 static int nextCycle(void);
-static int oceanCurr(float *curr);
+int oceanCurr(float *curr);
 static int safetyChk(float *curr, float *temp);
 static int rise(float targetD, int try);
 static int riseUp(float targetD, int try);
