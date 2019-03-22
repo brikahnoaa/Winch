@@ -17,7 +17,6 @@ typedef struct AntInfo {
   bool on;
   bool sampClear;             // clear after getSamples
   bool sampStore;             // store on device with TSSon - except auton
-  bool sbe39;                 // init and use sbe39
   bool surf;                  // on surface
   char logFile[64];
   char samCmd[16];            // TS or TSSon
@@ -43,6 +42,8 @@ void ringSamp(float depth, time_t sampT);
 static bool antPending(void);
 static void antBreak(void);
 
+AntType antAntenna(void);
+Serial antPort(void);
 bool antData(void);
 bool antDataWait(void);
 bool antPrompt(void);
@@ -50,21 +51,19 @@ bool antRead(void);
 bool antSurf(void);
 float antDepth(void);
 float antSurfD(void);
-int antTemp(float *temp);
 int antAuton(bool auton);
 int antAvg(float *avg);
+int antStart(void);
+int antStop(void);
+int antTemp(float *temp);
 int antVelo(float *velo);
-void antDevice(DevType dev);
 void antDevPwr(char c, bool on);
+void antDevice(DevType dev);
 void antFlush(void);
 void antGetSamples(void);
 void antInit(void);
 void antReset(void);
 void antSample(void);
-void antStart(void);
-void antStop(void);
 void antSwitch(AntType antenna);
-Serial antPort(void);
-AntType antAntenna(void);
 
 #endif

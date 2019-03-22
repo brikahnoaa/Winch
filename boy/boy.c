@@ -349,6 +349,8 @@ int iridDo(void) {
   gpsLatLng(&boyd.gpsEnd);
   // turn off a3la
   gpsStop();
+  antStop();
+  ctdStop();
   return r;
 } // iridDo
 
@@ -368,8 +370,8 @@ int fallDo(float targetD, int try) {
   DBG()
   if (try > boy.fallRetry) return 2;
   // prime sampling pump
-  antStart();
   ctdStart();
+  antStart();
   ctdSample();
   antSample();
   ctdDataWait(); 

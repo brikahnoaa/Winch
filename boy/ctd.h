@@ -30,10 +30,10 @@ bool ctdPrompt(void);
 bool ctdRead(void);
 float ctdDepth(void);
 int ctdAuton(bool auton);
+int ctdStart(void);
+int ctdStop(void);
 void ctdGetSamples(void);
 void ctdInit(void);
 void ctdSample(void);
-void ctdStart(void);
-void ctdStop(void);
 
 #endif

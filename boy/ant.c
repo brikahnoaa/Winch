@@ -32,24 +32,28 @@ void antInit(void) {
   }
   ant.ring[i].next = ant.ring;
   antStart();
-  if (ant.sbe39) {
-    utlExpect(ant.port, all.buf, EXEC, 2);
-    utlWrite(ant.port, "TxSampleNum=N", EOL);
-    utlExpect(ant.port, all.buf, EXEC, 2);
-    utlWrite(ant.port, "txRealTime=n", EOL);
-    utlExpect(ant.port, all.buf, EXEC, 2);
-    // just in case auton is on
-    utlWrite(ant.port, "stop", EOL);
-    utlExpect(ant.port, all.buf, EXEC, 2);
-  }
+  utlExpect(ant.port, all.buf, EXEC, 2);
+  utlWrite(ant.port, "TxSampleNum=N", EOL);
+  utlExpect(ant.port, all.buf, EXEC, 2);
+  utlWrite(ant.port, "txRealTime=n", EOL);
+  utlExpect(ant.port, all.buf, EXEC, 2);
+  // just in case auton was left on
+  utlWrite(ant.port, "stop", EOL);
+  utlExpect(ant.port, all.buf, EXEC, 2);
   antStop();
 } // antInit
 
 ///
 // turn on, clean, set params, talk to sbe39
-void antStart(void) {
+int antStart(void) {
   static char *self="antStart";
-  if (ant.on) return;
+  if (ant.on) // verify
+    if (antPrompt()) {
+      return 0;
+    } else {
+      flogf("\n%s(): ERR sbe39, expected prompt", self);
+      return 1;
+    }
   ant.on = true;
   flogf("\n === antenna module start %s", utlDateTime());
   if (!ant.log && strlen(ant.logFile))
@@ -64,39 +68,36 @@ void antStart(void) {
   if (!utlExpect(ant.port, all.buf, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.buf);
   DBG1("%s", all.buf)
-  antReset();
-  // state
-  if (ant.sbe39) {
-    tmrStop(s39_tmr);
-    if (ant.auton)
-      antAuton(false);
-    if (!antPrompt()) 
-      flogf("\n%s(): ERR sbe39, expected prompt", self);
-    sprintf(all.str, "datetime=%s", utlDateTimeCtd());
-    utlWrite(ant.port, all.str, EOL);
-    if (!utlExpect(ant.port, all.buf, EXEC, 2))
-      flogf("\n%s(): ERR sbe39, datetime not executed", self);
-  }
+  antReset();           // ring buffer
+  if (ant.auton)
+    antAuton(false);
+  sprintf(all.str, "datetime=%s", utlDateTimeCtd());
+  utlWrite(ant.port, all.str, EOL);
+  if (!utlExpect(ant.port, all.buf, EXEC, 2))
+    flogf("\n%s(): ERR sbe39, datetime not executed", self);
+  return 0;
 } // antStart
 
 ///
 // turn off power to antmod 
-void antStop() {
-  if (!ant.on) return;
+int antStop() {
   ant.on = false;
   flogf("\n === antenna module stop %s", utlDateTime());
-  utlCloseFile(&ant.log);
-  antDevice(cf2_dev);
-  // just in case auton is on
+  if (ant.log)
+    utlCloseFile(&ant.log);
   if (ant.auton)
     antAuton(false);
+  antDevice(null_dev);
   PIOClear(ANT_PWR);
+  return 0;
 } // antStop
 
 ///
 // rets: true==success (returns early)
 bool antPrompt() {
   DBG1("aP")
+  if (antPending()) 
+    antDataWait();
   antDevice(cf2_dev);
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response

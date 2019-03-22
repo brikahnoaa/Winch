@@ -44,7 +44,6 @@ static CfgParam cfgP[] = {
   {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
   {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
   {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
-  {'b',  "ant.sbe39",     &ant.sbe39,       "as3",  "true"},
   {'c',  "ant.logFile",   &ant.logFile,     "alF",  "s39"},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},

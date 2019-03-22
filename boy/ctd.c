@@ -34,10 +34,17 @@ void ctdInit(void) {
 } // ctdInit
 
 ///
-void ctdStart(void) {
+int ctdStart(void) {
   static char *self="ctdStart";
-  DBG()
-  if (ctd.on) return;
+  if (ctd.on) // verify
+    if (ctdPrompt()) {
+      return 0;
+    } else {
+      flogf("\n%s(): ERR sbe39, expected prompt", self);
+      return 1;
+    }
+  ctd.on = true;
+  flogf("\n === buoy sbe16 start %s", utlDateTime());
   mpcPamDev(sbe16_pam);
   tmrStop(s16_tmr);
   if (!ctd.log && strlen(ctd.logFile))
@@ -47,20 +54,19 @@ void ctdStart(void) {
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
   utlWrite(ctd.port, all.str, EOL);
   utlReadWait(ctd.port, all.buf, 2);   // echo
-  ctd.on = true;
+  return 0;
 } // ctdStart
 
 ///
-void ctdStop(void){
+int ctdStop(void){
   static char *self="ctdStop";
-  DBG()
-  if (!ctd.on) return;
-  mpcPamDev(null_pam);
-  tmrStop(s16_tmr);
+  flogf("\n === buoy sbe16 stop %s", utlDateTime());
   utlCloseFile(&ctd.log);
   if (ctd.auton)
     ctdAuton(false);
+  mpcPamDev(null_pam);
   ctd.on = false;
+  return 0;
 } // ctdStop
 
 ///
@@ -68,6 +74,8 @@ void ctdStop(void){
 // ctdPrompt - poke buoy CTD, look for prompt
 bool ctdPrompt(void) {
   DBG1("cPt")
+  if (ctdPending()) 
+    ctdDataWait();
   ctdFlush();
   utlWrite(ctd.port, "", EOL);
   // looking for S> at end
