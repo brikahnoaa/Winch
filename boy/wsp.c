@@ -272,7 +272,7 @@ int wspDetectM(int *detectM, int minutes) {
 // sets: *detectH=
 // rets: 1=watchdog 10=!wspDetectM 
 int wspDetectH(int *detectH) {
-  int r, remains, detectM;
+  int r=0, remains, detectM;
   static char *self="wspDetectH";
   DBG()
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
@@ -281,7 +281,9 @@ int wspDetectH(int *detectH) {
   if (remains > wsp.dutyM*60) {
     flogf("\n%s: running WISPR for %d minutes", self, wsp.dutyM);
     r = wspDetectM(&detectM, wsp.dutyM);
-  }
+  } else 
+    flogf("\n%s: skipping detection, dutyM%d > remains%d", 
+        self, wsp.dutyM, remains);
   *detectH=detectM;
   if (r) { // error
     sprintf( all.str, " !! error %d", r );
@@ -289,8 +291,10 @@ int wspDetectH(int *detectH) {
     wspLog( all.str );
     return 10;
   }
-  if (wsp.spectRun==2) 
+  if (wsp.spectRun==2) {            // 2==hourly
     wspStorm(all.buf);
+    wspLog(all.buf);
+  }
   // ?? log
   if (tmrExp(hour_tmr)) return 1;   // watchdog
   wspRemainS(&remains);
@@ -351,7 +355,10 @@ int wspQuery(int *det) {
   wspLog(all.buf);
   // total det
   s = strtok(all.buf, "$,");
-  if (!strstr(s, "DXN")) return 1;
+  if (!strstr(s, "DXN")) {
+    flogf("\n%s: ERR bad detections response");
+    return 1;
+  }
   s = strtok(NULL, ",");
   *det = atoi(s);
   DBG1("detected %d", det)

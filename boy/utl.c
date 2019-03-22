@@ -176,7 +176,7 @@ void utlLogTime(void) {
 
 ///
 // HH:MM:SS now
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
@@ -189,7 +189,7 @@ char *utlTime(void) {
 
 ///
 // Date String // YY-MM-DD 
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
@@ -202,7 +202,7 @@ char *utlDate(void) {
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlDateTimeFmt(time_t secs) {
   struct tm *tim;
   tim = gmtime(&secs);
@@ -214,7 +214,7 @@ char *utlDateTimeFmt(time_t secs) {
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlDateTime(void) {
   time_t secs;
   time(&secs);
@@ -223,7 +223,7 @@ char *utlDateTime(void) {
 
 ///
 // MMDDYYYYHHMMSS 
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlDateTimeCtd(void) {
   struct tm *tim;
   time_t secs;
@@ -237,7 +237,7 @@ char *utlDateTimeCtd(void) {
 
 ///
 // format non-printable string; null terminate
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlNonPrint (char *in) {
   unsigned char ch;
   char *out = all.ret;
@@ -259,7 +259,7 @@ char *utlNonPrint (char *in) {
 
 ///
 // format non-printable string; null terminate
-// returns: global static char *all.ret
+// returns: global char *all.ret
 char *utlNonPrintBlock (char *in, int len) {
   unsigned char ch;
   char *out = all.ret;

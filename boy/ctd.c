@@ -103,10 +103,13 @@ bool ctdData() {
 ///
 // wait for data or not pending (timeout)
 bool ctdDataWait(void) {
-  DBG1("cDW")
+  static char *self="cDW";
+  DBG()
   while (ctdPending())
     if (ctdData()) 
       return true;
+  // should not fail
+  flogf(" %s:fail", self);
   return false;
 } // ctdDataWait
 

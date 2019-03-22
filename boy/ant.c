@@ -139,10 +139,13 @@ bool antData() {
 ///
 // wait for data or not pending (timeout)
 bool antDataWait(void) {
-  DBG0("aDW")
+  static char *self="aDW";
+  DBG()
   while (antPending())
     if (antData()) 
       return true;
+  // should not fail
+  flogf(" %s:fail", self);
   return false;
 } // antDataWait
 

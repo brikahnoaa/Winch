@@ -177,28 +177,31 @@ PhaseType dataPhase(void) {
 } // dataPhase
 
 ///
-// rise
-// if run, keep sending cable, run with current
-// if free, no brake, drift free with current
+// if targetD==0 then no brake, drift on surface
 int riseDo(float targetD, int try) {
+  static char *self="riseDo";
+  static char *rets="1:<targetD 2:retry";
   bool twentyB=false, targetB=false, errB=false;
   float nowD, startD, lastD, velo;
-  int est;        // estimated operation time
+  int pt;        // estimated phase time
   MsgType msg;
-  enum {opT, ngkT, twentyT, fiveT};  // local timer names
-  flogf("\nriseDo(%3.1f, %d)", targetD, try);
+  enum {ngkT, twentyT, fiveT};  // local timer names
+  DBG0("\n%s(targetD=%3.1f, try=%d)", self, targetD, try)
+  if (try > boy.riseRetry) return 2;
+  // prime sampling pump
   antStart();
   ctdStart();
-  // utlNap(15);
+  ctdSample();
   antSample();
+  ctdDataWait(); 
   antDataWait();
+  flogf(" sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
-  if (try > boy.riseRetry) return 2;
   // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
-  // est = sec/meter(3) * depth + fudge for possible current drift
-  est = 3*startD+boy.riseOp;
-  tmrStart(opT, est);
+  // pt = sec/meter(3) * depth + fudge for possible current drift
+  pt = 3*startD+boy.riseOpM*60;
+  tmrStart(phase_tmr, pt);
   tmrStart(twentyT, 20);
   tmrStart(fiveT, 5);
   ngkFlush();
@@ -221,15 +224,15 @@ int riseDo(float targetD, int try) {
       ngkSend(stopCmd_msg);
       tmrStart(ngkT, boy.ngkDelay*2);
     }
-    // op timeout - longer than estimated time + fudge
-    if (tmrExp(opT)) {
-      flogf("\n ERR \t| rise timeout %ds @ %3.1f, stop", est, nowD);
+    // pt timeout - longer than estimated time + fudge
+    if (tmrExp(phase_tmr)) {
+      flogf("\n ERR \t| rise timeout %ds @ %3.1f, stop", pt, nowD);
       errB = true;
       break;
     }
     // winch
     if (ngkRecv(&msg)!=null_msg) {
-      flogf("\nriseDo()\t| %s from winch", ngkMsgName(msg));
+      flogf("\n%s:\t| %s from winch", self, ngkMsgName(msg));
       // surface detect by winch
       if (msg==stopCmd_msg) break;
       // rise rsp
@@ -273,7 +276,7 @@ int riseDo(float targetD, int try) {
   } // while !stop
   // retry if error
   if (errB) {
-    flogf("\nriseDo() ERR\t| retry %d", ++try);
+    flogf("\n%s: ERR\t| retry %d", self, ++try);
     ngkSend(stopCmd_msg);
     utlNap(boy.ngkDelay*2);
     ngkFlush();
@@ -290,7 +293,7 @@ int riseDo(float targetD, int try) {
 int iridDo(void) {
   int r=0;
   bool helloB=false, engB=false, s16B=false;
-  tmrStart(phase_tmr, boy.iridOp*MINUTE);
+  tmrStart(phase_tmr, boy.iridOpM*60);
   gpsStart();
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
@@ -358,47 +361,45 @@ int iridDo(void) {
 int fallDo(float targetD, int try) {
   bool twentyB=false, targetB=false, errB=false;
   float nowD, startD, velo;
-  int op;        // estimated operation time
+  int pt;        // estimated phase time
   MsgType msg;
-  enum {opTmr, ngkTmr, fiveTmr};  // local timer names
-  static char *self="fall";
+  enum {ngkTmr, fiveTmr};  // local timer names
+  static char *self="fallDo";
   DBG()
-  // prime sampling pump and test
-  ctdSample();
-  if (ctdDataWait()) 
-    flogf("\n%s: sbe16@%3.1f before the fall", self, ctdDepth());
-  else
-    flogf("\n%s: ERR ctdDataWait fail before the fall", self);
-  antSample();
-  if (antDataWait()) 
-    flogf("\n%s: sbe16@%3.1f before the fall", self, ctdDepth());
-  else
-    flogf("\n%s: ERR antDataWait fail before the fall", self);
-  nowD = startD = antDepth();
   if (try > boy.fallRetry) return 2;
+  // prime sampling pump
+  antStart();
+  ctdStart();
+  ctdSample();
+  antSample();
+  ctdDataWait(); 
+  antDataWait();
+  flogf(" sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
+  nowD = startD = antDepth();
   // could be cable far out, maybe dockD+100m
-  op = boy.fallOp * MINUTE;
-  tmrStart(opTmr, op);
+  // pt = sec/meter(5) * depth + fudge for possible current drift
+  pt = 5*boyd.dockD+boy.fallOpM*60;
+  tmrStart(phase_tmr, pt);
   ngkFlush();
-  flogf("\n\tfallDo() fallCmd to winch at %s", utlTime());
+  flogf("\n\t%s: fallCmd to winch at %s", self, utlTime());
   ngkSend(fallCmd_msg);
   tmrStart(ngkTmr, boy.ngkDelay*2);
   tmrStart(fiveTmr, 5);
   while (!errB) {       // loop exits by break;
     if (ctdData()) 
       ctdRead();
-    // check: op, winch, 5s
+    // check: pt, winch, 5s
     if (antData()) 
       nowD = antDepth();
-    // op timeout // antmod may stay at surface as extra is reeled in
-    if (tmrExp(opTmr)) {
-      flogf("\nfallDo() ERR \t| fall timeout %ds @ %3.1f, stop", op, nowD);
+    // pt timeout // antmod may stay at surface as extra is reeled in
+    if (tmrExp(phase_tmr)) {
+      flogf("\n%s: ERR \t| fall timeout %ds @ %3.1f, stop", self, pt, nowD);
       errB = true;
       break;
     }
     // winch
     if (ngkRecv(&msg)!=null_msg) {
-      flogf("\nfallDo()\t| %s from winch", ngkMsgName(msg));
+      flogf("\n%s:\t| %s from winch", self, ngkMsgName(msg));
       if (msg==fallRsp_msg)
         tmrStop(ngkTmr);
       // reached dock, probably
@@ -407,7 +408,7 @@ int fallDo(float targetD, int try) {
       if (msg==stopRsp_msg) break;
     }
     if (tmrExp(ngkTmr)) {
-      flogf("\n\tfallDo() WARN no response from winch %s", utlTime());
+      flogf("\n\t%s: WARN no response from winch %s", self, utlTime());
       // errB = true;
       // break;
     }
@@ -420,14 +421,14 @@ int fallDo(float targetD, int try) {
     // 5 seconds
     if (tmrExp(fiveTmr)) {
       tmrStart(fiveTmr, 5);
-      flogf("\n\tfallDo() %s depth=%3.1f", utlTime(), nowD);
+      flogf("\n\t%s: %s depth=%3.1f", self, utlTime(), nowD);
       if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     } 
   } // while !stop !err
   // retry if error
   if (errB) {
-    flogf("\n\tfallDo() ERR retry %d", ++try);
+    flogf("\n\t%s: ERR retry %d", self, ++try);
     ngkSend(stopCmd_msg);
     utlNap(boy.ngkDelay*2);
     ngkFlush();
@@ -464,7 +465,7 @@ PhaseType deployPhase(void) {
   //
   flogf(" sbe39@%3.1f", antDepth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
-    antDepth(), ctdDepth(), utlDateTime());
+      antDepth(), ctdDepth(), utlDateTime());
   flogf("\n\t| wait up to %d minutes to reach bottom", boy.depWait);
   tmrStart( deploy_tmr, MINUTE*boy.depWait );
   // wait until under 10m

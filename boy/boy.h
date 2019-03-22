@@ -49,14 +49,14 @@ typedef struct BoyInfo {
   int cycleMax;           // max # of cycles or days
   int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)
-  int fallOp;             // operation timeout minutes (30)
+  int fallOpM;            // operation timeout minutes (30)
   int fallRetry;          // fall fails, retry times
   int filePause;          // pause between sending files
   int iridFreq;           // number of times per day to call !iridHour (0)
   int iridHour;           // 0-23 (midnight-11pm) hour to call home (1)
-  int iridOp;             // phase minutes
+  int iridOpM;            // phase minutes
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
-  int riseOp;             // operation timeout minutes (30)
+  int riseOpM;            // operation timeout minutes (30)
   int riseRetry;          // rise fails, retry times
   int startPh;            // phase to start in (0)
   int stayDown;           // stay down for days, expecting storm (0)
