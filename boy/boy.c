@@ -647,7 +647,7 @@ int boyEngLog(void) {
       gps->lat, gps->lng, gps->time);
   sprintf(b+strlen(b), "ending surface depth=%.1f\n", boyd.surfD);
   //
-  flogf("%s", b);
+  flogf("\n%s", b);
   if (utlLogFile(&log, "eng")) return 1;
   write(log, b, strlen(b));
   close(log);

@@ -1,6 +1,0 @@
-    if (antData())
-      {
-      nowD = antDepth();
-      DBG1(" depth%3.1f", nowD)
-      }
-

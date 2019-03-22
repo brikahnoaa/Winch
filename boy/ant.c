@@ -234,10 +234,9 @@ float antDepth(void) {
   return ant.depth;
 } // antDepth
 
-int antTemp(float *temp) {
+float antTemp(void) {
   antDepth();
-  *temp = ant.temp;
-  return 0;
+  return ant.temp;
 } // antTemp
 
 ///
