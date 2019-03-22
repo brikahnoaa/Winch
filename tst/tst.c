@@ -3,20 +3,30 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
-#include <boy.h>
-#include <ant.h>
 
 extern CtdInfo ctd;
 
 void main(void){
-  int r;
-  float f;
+  char c;
   sysInit();
   mpcInit();
   ctdInit();
-  antInit();
   ctdStart();
-  antStart();
-  if (!(r=oceanCurr(&f)))
-    flogf("oceanCurr(%f):>%d\n", f, r);
+  ctdSample();
+  ctdDataWait();
+  // ctdRead();
+  flogf("\nctdDepth %2.1f", ctdDepth());
+  flogf("\nPress Q to exit\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
+  }
+  ctdStop();
 }

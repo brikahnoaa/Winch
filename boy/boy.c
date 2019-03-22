@@ -594,7 +594,7 @@ int safetyChk(float *curr, float *temp) {
     r += 1;
   }
   // ice check
-  antTemp(temp);
+  *temp=antTemp();
   return r;
 } // safetyChk
 

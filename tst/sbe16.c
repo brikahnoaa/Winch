@@ -14,10 +14,7 @@ void main(void){
   ctdStart();
   ctdSample();
   ctdDataWait();
-  ctdRead();
-  flogf("\nctdDepth %2.1f", ctdDepth());
-  ctdDataWait();
-  ctdRead();
+  // ctdRead();
   flogf("\nctdDepth %2.1f", ctdDepth());
   flogf("\nPress Q to exit\n");
   while (true) {
