@@ -69,32 +69,29 @@ void mpcPamPwr(MpcPamType pam, bool on) {
 void mpcPamDev(MpcPamType pam) {
   DBG0("mpcPamDev(%d)", pam)
   if (pam==mpc.pamDev) return;
+  PIOClear(PAM_12);   //29
+  PIOClear(PAM_2);    //30
+  PIOClear(PAM_34);   //24
+  PIOClear(PAM_4);    //25
   switch (pam) {
   case wsp1_pam:
-    PIOClear(PAM_34);   //24
     PIOSet(PAM_12);     //29
-    PIOClear(PAM_2);    //30
     break;
   case wsp2_pam:
-    PIOClear(PAM_34);   //24
     PIOSet(PAM_12);     //29
     PIOSet(PAM_2);      //30
     break;
   case wsp3_pam:
-    PIOClear(PAM_12);   //29
     PIOSet(PAM_34);     //24
-    PIOClear(PAM_4);    //25
     break;
   case sbe16_pam:
-    PIOClear(PAM_12);   //29
     PIOSet(PAM_34);     //24
     PIOSet(PAM_4);      //25
     break;
   case null_pam:
-    PIOClear(PAM_12);   //29
-    PIOClear(PAM_34);   //24
     break;
   } // switch
+  utlDelay(200);
   TUTxFlush(mpc.pamPort);
   TURxFlush(mpc.pamPort);
   utlPet();

@@ -91,7 +91,6 @@ PhaseType risePhase(void) {
   int result;
   flogf("risePhase()");
   if (tst.test && tst.noRise) return irid_pha;
-  // *Start() returns immed if already on (*.on = true)
   antStart();
   ctdStart();
   // if current is too strong at bottom
@@ -115,10 +114,10 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  static char *self="iridPhase";
-  flogf("%s()", self);
+  flogf("\niridPhase %s", utlDateTime);
   if (tst.test && tst.noIrid) return fall_pha;
   antStart();
+  ctdStart();
   // log file mgmt
   boyEngLog();
   if (boy.iridAuton) 
@@ -133,10 +132,10 @@ PhaseType iridPhase(void) {
 
 ///
 PhaseType fallPhase() {
+  flogf("\nfallPhase %s", utlDateTime());
+  if (tst.test && tst.noRise) return data_pha;
   antStart();
   ctdStart();
-  flogf("\nfallPhase() %s", utlDateTime());
-  if (tst.test && tst.noRise) return data_pha;
   time(&boyd.fallBgn);
   fallDo(boy.currChkD, 0);
   safetyChk(&boyd.oceanCurr, &boyd.iceTemp);
@@ -154,7 +153,7 @@ PhaseType fallPhase() {
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
   int success, detect;
-  flogf("dataPhase()");
+  flogf("\ndataPhase %s", utlDateTime());
   if (tst.test && tst.noData) return rise_pha;
   antStop();
   ctdStop();
