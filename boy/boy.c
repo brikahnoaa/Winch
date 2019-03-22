@@ -68,11 +68,11 @@ void boyMain() {
     phasePrev = phase;
     phase = phaseNext;
     // check these every phase
-    // ?? only if testing
     if (boy.cycleMax && (all.cycle > boy.cycleMax)) 
       utlStop("cycleMax reached");
-    // ?? reset after fall phase only
-    if (boy.reset) BIOSReset();
+    // ??
+    if (boy.reset) 
+      phase = reboot_pha;
   } // while true
 } // boyMain() 
 
@@ -440,7 +440,6 @@ PhaseType deployPhase(void) {
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
   if (tst.test && tst.noDeploy) return rise_pha;
-  antStart();
   ctdStart();
   // test sbe16
   ctdSample();
@@ -449,6 +448,7 @@ PhaseType deployPhase(void) {
     utlErr(ctd_err, "sbe16 failure");
   flogf(" sbe16@%3.1f", ctdDepth());
   ctdStop();
+  antStart();
   // test sbe39
   antSample();
   antDataWait();

@@ -67,20 +67,6 @@ int wspStart(void) {
 } // wspStart
 
 ///
-// turn on and open wispr /mnt/start
-int wspOpen(void) {
-  int r=0;
-  static char *self="wspOpen";
-  DBG()
-  if (!wsp.on) wspStart();
-  if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
-    utlErr(wsp_err, "wsp start fail");
-    r=1;
-  }
-  return r;
-} // wspOpen
-
-///
 // stop wsp.card
 int wspStop(void) {
   int r=0;
@@ -96,6 +82,20 @@ int wspStop(void) {
   mpcPamPwr(wsp.card, false);
   return 0;
 } // wspStop
+
+///
+// turn on and open wispr /mnt/start
+int wspOpen(void) {
+  int r=0;
+  static char *self="wspOpen";
+  DBG()
+  if (!wsp.on) wspStart();
+  if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
+    utlErr(wsp_err, "wsp start fail");
+    r=1;
+  }
+  return r;
+} // wspOpen
 
 ///
 // close wispr /mnt/start
@@ -276,16 +276,15 @@ int wspDetectH(int *detectH) {
   static char *self="wspDetectH";
   DBG()
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
-  wspDateTime();
   // enough time?
   wspRemainS(&remains);
   if (remains > wsp.dutyM*60) {
-    flogf("\n%s running WISPR for %d minutes", wsp.dutyM);
+    flogf("\n%s: running WISPR for %d minutes", self, wsp.dutyM);
     r = wspDetectM(&detectM, wsp.dutyM);
   }
   *detectH=detectM;
   if (r) { // error
-    sprintf( all.str, "\nwspDetectM(): error %d", r );
+    sprintf( all.str, " !! error %d", r );
     flogf( all.str );
     wspLog( all.str );
     return 10;
@@ -310,15 +309,17 @@ int wspDetectD(int *detect, int iridHour, int iridFreq) {
   int laterH, detH=0, r=0;
   static char *self="wspDetectD";
   DBG()
+  flogf("\n%s: setting wispr date/time", self);
+  wspDateTime();
   *detect = 0;
   time(&now);
   wspRiseT(&riseT, iridHour, iridFreq);
   laterH = (int)(riseT-now)/60/60;
-  flogf("\nwspDetectD() starting wispr detection; end in %d hours", laterH);
-  while (time(&now) < riseT) {
+  flogf(", starting wispr detection; end in %d hours", laterH);
+  while (time(NULL) < riseT) {
     if (wspDetectH(&detH)) r+=10;
     *detect += detH;
-    flogf("\n%s wspDetectD():%d", utlDateTime(), *detect);
+    flogf("\n%s: %d detections @%s", self, *detect, utlDateTime());
   } // while < riseT
   if (wsp.spectRun==1) 
     wspStorm(all.buf);

@@ -4,9 +4,12 @@ v. data cycle, to only go up once a day
 v. write file, send file - lost ability
 . verify
 v. output s16.log s39.log
+.. datetime for 16+32
 . improvements this april
-.. humid, press, battery - and turn off after using
+v. humid, press, battery - and turn off after using
+.. gps fresh - if gps time change is >3 sec
 .. stay down command (X cycles)
+.. data from 16+32 rise and fall
 .. process land commands
 ... commands sent to buoy, stored and sent back to land after processing
 .. more info in eng report
@@ -97,3 +100,29 @@ Tue, Jun 26, 2018  3:45:55 PM
 . run out line through entire call phase
 . gather data for extended line, antMod depth with brake on
 . GPS time -> cf2 -> wispr
+
+cycle 1 @2019-03-21 20:41:58 dataPhase()
+ === antenna module stop 2019-03-21 20:41:58+antDevice(cf2)
+wspRiseT(): rise at 2019-03-21 22:00:00
+wspDetectD() starting wispr detection; end in 1 hours
+wspStart(): activating wispr#1+(log\001wsp.log)+
+utlLogFile path	| log\001wsp.log+utlExpect(<wispr>, 20)+tmrExp(20)+->''
+-ERR(wsp)	|0| 20:42:20 wsp start fail+wspRemainS():1060s+utlExpect(<wispr>, 20)+tmrExp(20)+->''
+-ERR(wsp)	|1| 20:42:41 wsp start fail
+wspStorm() exception=1, 1=open 2=RDY 3=predict 8=close+wspRemainS():1039s
+wspDetectH() idle for 17 minutes
+<<<< CRASH >>>>  (saved @ 0xB000)  <<<< CRASH >>>>
+
+ === antenna module stop 2019-03-21 20:41:58+antDevice(cf2)
+wspRiseT(): rise at 2019-03-21 22:00:00
+wspDetectD() starting wispr detection; end in 1 hours
+wspStart(): activating wispr#1+(log\001wsp.log)+
+utlLogFile path	| log\001wsp.log+utlExpect(<wispr>, 20)+tmrExp(20)+->''
+-ERR(wsp)	|0| 20:42:20 wsp start fail+wspRemainS():1060s+utlExpect(<wispr>, 20)+tmrExp(20)+->''
+-ERR(wsp)	|1| 20:42:41 wsp start fail
+wspStorm() exception=1, 1=open 2=RDY 3=predict 8=close+wspRemainS():1039s
+wspDetectH() idle for 17 minutes
+2019-03-21 21:00:01 wspDetectD():1+utlExpect(<wispr>, 20)+tmrExp(20)+->''
+-ERR(wsp)	|2| 21:00:22 wsp start fail+wspRemainS():3578s
+<<<< CRASH >>>>  (saved @ 0xB000)  <<<< CRASH >>>>
+
