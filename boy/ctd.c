@@ -45,7 +45,7 @@ int ctdStart(void) {
     }
   ctd.on = true;
   flogf("\n === buoy sbe16 start %s", utlDateTime());
-  mpcPamPwr(sbe16_pam);
+  mpcPamPwr(sbe16_pam, true);
   tmrStop(s16_tmr);
   if (!ctd.log && strlen(ctd.logFile))
     utlLogFile(&ctd.log, ctd.logFile);
@@ -64,7 +64,7 @@ int ctdStop(void){
   utlCloseFile(&ctd.log);
   if (ctd.auton)
     ctdAuton(false);
-  mpcPamPwr(null_pam);
+  mpcPamPwr(sbe16_pam, false);
   ctd.on = false;
   return 0;
 } // ctdStop

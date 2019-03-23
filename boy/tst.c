@@ -8,12 +8,11 @@
 
 void tstLoop(char cc) {
   bool b;
-  char c, CC;
+  char c;
   float f;
   int i;
   b=false; c=0; f=0.0; i=0;
-  // CC = toupper(cc);
-  printf("\nctd functions\n");
+  printf("\n%c ctd functions\n", cc);
   printf("q:quit ?:info "
       "d:data w:dataWait p:prompt r:read i:init s:sample o:start x:stop"
       "\n");
@@ -23,9 +22,10 @@ void tstLoop(char cc) {
       cputc(c);
       cputc(' ');
       switch (c) {
-      case '?':
-        printf("ctd.on=%d .log=%d .auton=%d .depth=%3.1f .temp=%3.1f\n",
-            ctd.on, ctd.log, ctd.auton, ctd.depth, ctd.temp);
+      //case '?':
+        //printf("ctd.on=%d .log=%d .auton=%d .depth=%3.1f .temp=%3.1f\n",
+            //ctd.on, ctd.log, ctd.auton, ctd.depth, ctd.temp);
+        //break;
       case 'd':
         b=ctdData();
         printf("ctdData %s\n", b?"true":"false");
@@ -60,6 +60,5 @@ void tstLoop(char cc) {
         break;
       }
     }
-  }
   }
 }
