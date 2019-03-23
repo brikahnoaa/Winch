@@ -5,3 +5,7 @@
 #include <tst.h>
 
 TstInfo tst;          // global
+
+void tstFunc(void) {
+  (*tst.funcPtr)();
+} // tstFunc

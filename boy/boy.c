@@ -291,28 +291,36 @@ int iridDo(void) {
   int r=0;
   bool helloB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOpM*60);
+if (!ctdPrompt()) tstFunc();  // dbg
   gpsStart();
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
+if (!ctdPrompt()) tstFunc();  // dbg
   gpsDateTime(&boyd.gpsBgn);
   gpsLatLng(&boyd.gpsBgn);
+if (!ctdPrompt()) tstFunc();  // dbg
   antSwitch(irid_ant);
+if (!ctdPrompt()) tstFunc();  // dbg
   while (!tmrExp(phase_tmr)) {
     // 0=success
     flogf("\n%s ====\n", utlTime());
     iridHup();
+if (!ctdPrompt()) tstFunc();  // dbg
     if ((r = iridSig())) {
       flogf("\nERR\t| iridSig()->%d", r);
       continue;
     } 
+if (!ctdPrompt()) tstFunc();  // dbg
     if ((r = iridDial())) {
       flogf("\nERR\t| iridDial()->%d", r);
       continue;
     } 
+if (!ctdPrompt()) tstFunc();  // dbg
     if ((r = iridProjHdr())) {
       flogf("\nERR\t| iridProjHdr()->%d", r);
       continue;
     } 
+if (!ctdPrompt()) tstFunc();  // dbg
     if (!helloB) {
       sprintf(all.str, "hello.txt");
       if ((r = iridSendFile(all.str))) {
@@ -320,6 +328,7 @@ int iridDo(void) {
         continue;
       } else helloB=true;
     }
+if (!ctdPrompt()) tstFunc();  // dbg
     utlNap(boy.filePause);
     if (!engB) {
       utlLogPathName(all.str, "eng", all.cycle);
@@ -328,6 +337,7 @@ int iridDo(void) {
         continue;
       } else engB=true;
     }
+if (!ctdPrompt()) tstFunc();  // dbg
     utlNap(boy.filePause);
     if (!s16B) {
       utlLogPathName(all.str, "s16", all.cycle-1);
@@ -337,17 +347,19 @@ int iridDo(void) {
       } else s16B=true;
     }
     iridHup();
+if (!ctdPrompt()) tstFunc();  // dbg
     // done?
     if (helloB && engB && s16B) break;
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
+if (!ctdPrompt()) tstFunc();  // dbg
   gpsDateTime(&boyd.gpsEnd);
   gpsLatLng(&boyd.gpsEnd);
   // turn off a3la
+if (!ctdPrompt()) tstFunc();  // dbg
   gpsStop();
-  antStop();
-  ctdStop();
+if (!ctdPrompt()) tstFunc();  // dbg
   return r;
 } // iridDo
 

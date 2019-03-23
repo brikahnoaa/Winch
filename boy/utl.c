@@ -403,7 +403,7 @@ void utlX(void) {
         break;
       case 't':
       case 'T':
-        (*tst.funcPtr)();
+        tstFunc();
         break;
       }
     } else 

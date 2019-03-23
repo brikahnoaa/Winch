@@ -18,4 +18,6 @@ typedef struct TstInfo {
 
 extern TstInfo tst;
 
+void tstFunc(void);
+
 #endif
