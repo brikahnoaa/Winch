@@ -31,6 +31,7 @@ void ctdInit(void) {
   utlWrite(ctd.port, "stop", EOL);
   utlReadWait(ctd.port, all.buf, 1);   // echo
   ctdStop();
+  tst.funcPtr = &ctdTest;
 } // ctdInit
 
 ///
@@ -282,3 +283,77 @@ void ctdGetSamples(void) {
 void ctdFlush(void) {
   TURxFlush(ctd.port);
 } // ctdFlush
+
+///
+// for tst.funcPtr
+void ctdTest(void) {
+  bool b;
+  char c;
+  float f;
+  int i;
+  b=false; c=0; f=0.0; i=0;
+  printf("\n%c ctd functions\n");
+  printf("q:quit ?:info "
+      "d:data w:dataWait p:prompt r:read s:sample "
+      "i:init o:start x:stop t:talk"
+      "\n");
+  while (c != 'q') {
+    if (cgetq()) {
+      c=cgetc();
+      cputc(c);
+      cputc(' ');
+      switch (c) {
+      case '?':
+        printf("ctd.on=%d .log=%d .auton=%d .depth=%3.1f .temp=%3.1f\n",
+            ctd.on, ctd.log, ctd.auton, ctd.depth, ctd.temp);
+        break;
+      case 'd':
+        b=ctdData();
+        printf("ctdData %s\n", b?"true":"false");
+        break;
+      case 'w':
+        b=ctdDataWait();
+        printf("ctdDataWait %s\n", b?"true":"false");
+        break;
+      case 'p':
+        b=ctdPrompt();
+        printf("ctdPrompt %s\n", b?"true":"false");
+        break;
+      case 'r':
+        b=ctdRead();
+        printf("ctdRead %s\n", b?"true":"false");
+        break;
+      case 'i':
+        ctdInit();
+        printf("ctdInit ok\n");
+        break;
+      case 's':
+        ctdSample();
+        printf("ctdSample ok\n");
+        break;
+      case 'o':
+        ctdStart();
+        printf("ctdStart ok\n");
+        break;
+      case 'x':
+        ctdStop();
+        printf("ctdStop ok\n");
+        break;
+      case 't':
+        flogf("\nTalk to sbe16 - Press Q to exit\n");
+        while (true) {
+          if (cgetq()) {
+            c=cgetc();
+            if (c=='Q') break;
+            TUTxPutByte(ctd.port,c,false);
+          }
+          if (TURxQueuedCount(ctd.port)) {
+            c=TURxGetByte(ctd.port,false);
+            cputc(c);
+          }
+        }
+        break;
+      }
+    }
+  }
+} // ctdTest

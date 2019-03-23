@@ -35,5 +35,6 @@ int ctdStop(void);
 void ctdGetSamples(void);
 void ctdInit(void);
 void ctdSample(void);
+void ctdTest(void);
 
 #endif

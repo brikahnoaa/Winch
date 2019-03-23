@@ -65,6 +65,7 @@
 #undef DBG
 // dbg is shared by all
 #include <dbg.h>
+#include <tst.h>
 
 // sync with utlInit()
 typedef enum {

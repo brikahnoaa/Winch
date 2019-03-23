@@ -403,7 +403,7 @@ void utlX(void) {
         break;
       case 't':
       case 'T':
-        tstLoop(tolower(c));
+        (*tst.funcPtr)();
         break;
       }
     } else 
