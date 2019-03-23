@@ -114,7 +114,7 @@ PhaseType risePhase(void) {
 // ??
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
-  flogf("\niridPhase %s", utlDateTime);
+  flogf("\niridPhase %s", utlDateTime());
   if (tst.test && tst.noIrid) return fall_pha;
   antStart();
   ctdStart();
@@ -542,21 +542,20 @@ PhaseType errorPhase(void) {
 // uses: .boy2ant
 int oceanCurr(float *curr) {
   float aD, cD, a, b, c;
-  ctdPrompt();
-  ctdSample();
-  if (!ctdDataWait()) {
-    utlErr(ctd_err, "ctdDataWait fail in oceanCurr()");
-    return 1;
-  }
+  if (!ctdPrompt()) utlErr(ctd_err, "oceanCurr ctdPrompt fail");
   ctdSample();
   ctdDataWait();
-  if (!ctdRead())
-    utlErr(ctd_err, "sbe16 failure");
+  if (!ctdRead()) {
+    utlErr(ctd_err, "sbe16 data failure");
+    return 1;
+  }
+  cD=ctdDepth();
   antSample();
   antDataWait();
-  if (!antRead())
-    utlErr(ant_err, "sbe39 failure");
-  cD=ctdDepth();
+  if (!antRead()) {
+    utlErr(ant_err, "sbe39 data failure");
+    return 1;
+  }
   aD=antDepth();
   // pythagoras a^2 + b^2 = c^2
   // solve for b:=horizontal displacement, caused by current
