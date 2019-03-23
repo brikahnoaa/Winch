@@ -75,6 +75,7 @@ int antStart(void) {
   utlWrite(ant.port, all.str, EOL);
   if (!utlExpect(ant.port, all.buf, EXEC, 2))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
+  antSample();
   return 0;
 } // antStart
 

@@ -54,6 +54,7 @@ int ctdStart(void) {
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
   utlWrite(ctd.port, all.str, EOL);
   utlReadWait(ctd.port, all.buf, 2);   // echo
+  ctdSample();
   return 0;
 } // ctdStart
 

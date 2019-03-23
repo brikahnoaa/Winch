@@ -184,16 +184,12 @@ int riseDo(float targetD, int try) {
   float nowD, startD, lastD, velo;
   int pt;        // estimated phase time
   MsgType msg;
-  enum {ngkT, twentyT, fiveT};  // local timer names
+  enum {ngkTmr, twentyTmr, fiveTmr};  // local timer names
   DBG0("\n%s(targetD=%3.1f, try=%d)", self, targetD, try)
   if (try > boy.riseRetry) return 2;
-  // prime sampling pump
-  antStart();
   ctdStart();
-  ctdSample();
-  antSample();
+  antStart();
   ctdDataWait(); 
-  antDataWait();
   flogf(" sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
@@ -201,18 +197,20 @@ int riseDo(float targetD, int try) {
   // pt = sec/meter(3) * depth + fudge for possible current drift
   pt = 3*startD+boy.riseOpM*60;
   tmrStart(phase_tmr, pt);
-  tmrStart(twentyT, 20);
-  tmrStart(fiveT, 5);
+  tmrStart(twentyTmr, 20);
+  tmrStart(fiveTmr, 5);
   ngkFlush();
   if (targetD)
     ngkSend(riseCmd_msg);
   else
     ngkSend(surfCmd_msg);
-  tmrStart(ngkT, boy.ngkDelay*2);
+  tmrStart(ngkTmr, boy.ngkDelay*2);
   flogf("\n\t| %s sent to winch at %s", 
     targetD?"riseCmd":"surfCmd", utlTime());
   while (!errB) {       // loop exits by break;
     utlX();
+    if (ctdData())
+      ctdRead();
     // check: target, winch, 20s, 5s
     if (antData())
       nowD = antDepth();
@@ -221,7 +219,7 @@ int riseDo(float targetD, int try) {
       flogf("\n\t| reached targetD %3.1f at %s", nowD, utlTime());
       targetB = true;
       ngkSend(stopCmd_msg);
-      tmrStart(ngkT, boy.ngkDelay*2);
+      tmrStart(ngkTmr, boy.ngkDelay*2);
     }
     // pt timeout - longer than estimated time + fudge
     if (tmrExp(phase_tmr)) {
@@ -236,7 +234,7 @@ int riseDo(float targetD, int try) {
       if (msg==stopCmd_msg) break;
       // rise rsp
       if (msg==riseRsp_msg)
-        tmrStop(ngkT);
+        tmrStop(ngkTmr);
       // target stop
       if (msg==stopRsp_msg) {
         if (targetB)
@@ -246,13 +244,13 @@ int riseDo(float targetD, int try) {
       }
       // ?? are we really stopped?
     }
-    if (tmrExp(ngkT)) {
+    if (tmrExp(ngkTmr)) {
       flogf("\n ERR \t| no response from winch %s", utlTime());
       // ?? missed it? 20s timeout will tell
       // ngkSend(riseCmd_msg);
     }
     // 20 seconds
-    if (tmrExp(twentyT)) {
+    if (tmrExp(twentyTmr)) {
       flogf("\n\t| 20sec %s startD-nowD %3.1f ", 
         utlTime(), startD-nowD);
       if (startD-nowD < 2) {
@@ -266,8 +264,8 @@ int riseDo(float targetD, int try) {
       }
     }
     // 5 seconds
-    if (tmrExp(fiveT)) {
-      tmrStart(fiveT, 5);
+    if (tmrExp(fiveTmr)) {
+      tmrStart(fiveTmr, 5);
       flogf("\n\t| %s depth=%3.1f", utlTime(), nowD);
       if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
@@ -368,13 +366,9 @@ int fallDo(float targetD, int try) {
   static char *self="fallDo";
   DBG()
   if (try > boy.fallRetry) return 2;
-  // prime sampling pump
   ctdStart();
   antStart();
-  ctdSample();
-  antSample();
   ctdDataWait(); 
-  antDataWait();
   flogf("\n ++sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
   nowD = startD = antDepth();
   // could be cable far out, maybe dockD+100m
@@ -387,6 +381,7 @@ int fallDo(float targetD, int try) {
   tmrStart(ngkTmr, boy.ngkDelay*2);
   tmrStart(fiveTmr, 5);
   while (!errB) {       // loop exits by break;
+    utlX();
     if (ctdData()) 
       ctdRead();
     // check: pt, winch, 5s
