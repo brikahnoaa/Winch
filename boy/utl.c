@@ -4,6 +4,7 @@
 #include <pwr.h>
 #include <sys.h>
 #include <tmr.h>
+#include <tst.h>
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
@@ -399,6 +400,10 @@ void utlX(void) {
       case 'x':
       case 'X':
         utlStop("user quit");
+        break;
+      case 'c':
+      case 'C':
+        tstLoop(c);
         break;
       }
     } else 
