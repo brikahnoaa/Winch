@@ -115,10 +115,9 @@ bool ctdData() {
 bool ctdDataWait(void) {
   static char *self="cDW";
   DBG()
-  while (ctdPending())
-    if (ctdData()) 
-      return true;
-  // should not fail
+  do if (ctdData()) 
+    return true;
+  while (ctdPending());
   flogf(" %s:fail", self);
   return false;
 } // ctdDataWait

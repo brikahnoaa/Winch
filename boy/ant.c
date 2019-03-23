@@ -143,10 +143,9 @@ bool antData() {
 bool antDataWait(void) {
   static char *self="aDW";
   DBG()
-  while (antPending())
-    if (antData()) 
-      return true;
-  // should not fail
+  do if (antData()) 
+    return true;
+  while (antPending());
   flogf(" %s:fail", self);
   return false;
 } // antDataWait

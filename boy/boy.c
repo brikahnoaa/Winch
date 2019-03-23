@@ -541,6 +541,7 @@ PhaseType errorPhase(void) {
 // wait currChkSettle, buoy ctd, ant td, compute
 // uses: .boy2ant
 int oceanCurr(float *curr) {
+  static char *self="oceanCurr";
   float aD, cD, a, b, c;
   if (!ctdPrompt()) utlErr(ctd_err, "oceanCurr ctdPrompt fail");
   ctdSample();
@@ -561,13 +562,13 @@ int oceanCurr(float *curr) {
   // solve for b:=horizontal displacement, caused by current
   a=cD-aD;
   c=boy.boy2ant;
-  flogf("\noceanCurr()\t| ant=%4.2f boy=%4.2f", aD, cD);
+  flogf("\n%s\t: ant=%4.2f boy=%4.2f", self, aD, cD);
   if (a<0) {
-    flogf("\noceanCurr()\t| ERR sbe16-sbe39<0");
+    flogf("\n%s\t: ERR sbe16-sbe39<0", self);
     return 2;
   }
   if (c<a) {
-    flogf("\noceanCurr()\t| boy2ant<cD-aD, updating boy.boy2ant");
+    flogf("\n%s\t: boy2ant<cD-aD, updating boy.boy2ant", self);
     boy.boy2ant = a;
     c=boy.boy2ant;
     // ?? update boy2ant?
@@ -582,16 +583,17 @@ int oceanCurr(float *curr) {
 // rets: 0 safe, +1 current!, +10 ice!, -1 err
 // uses: boy.currMax
 int safetyChk(float *curr, float *temp) {
+  static char *self="safetyChk";
   float sideways;
   int r=0;
-  flogf("\noceanCurrChk()");
+  DBG()
   // delay 20sec before measure to stabilize
   utlNap(20);
   if (oceanCurr(&sideways)) {
     utlErr(boy_err, ": oceanCurr failed");
     return -1;
   }
-  flogf(": lateral @ %.1f = %.1f", antDepth(), sideways);
+  flogf("\n%s: lateral @ %.1f = %.1f", self, antDepth(), sideways);
   *curr = sideways;
   if (sideways>boy.currMax) {
     flogf(" !! too strong, cancel ascent");
