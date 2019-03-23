@@ -401,9 +401,9 @@ void utlX(void) {
       case 'X':
         utlStop("user quit");
         break;
-      case 'c':
-      case 'C':
-        tstLoop(c);
+      case 't':
+      case 'T':
+        tstLoop(tolower(c));
         break;
       }
     } else 
