@@ -39,6 +39,7 @@ int ctdStart(void) {
   static char *self="ctdStart";
   if (ctd.on) // verify
     if (ctdPrompt()) {
+      ctdSample();
       return 0;
     } else {
       flogf("\n%s(): ERR sbe39, expected prompt", self);

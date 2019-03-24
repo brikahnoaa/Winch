@@ -101,9 +101,10 @@ PhaseType risePhase(void) {
   // R,01,00
   time(&boyd.riseBgn);
   result = riseDo(antSurfD()+1, 0);
-  if (result) {
+  if (result>1) {
     flogf("\n\t| rise fails at %3.1f m", antDepth());
-    //??  return fall_pha;
+  } else if (result==1) {
+    flogf("\n\t| rise skipped, already at %3.1f m", antDepth());
   }
   boyd.surfD = antDepth();
   time(&boyd.riseEnd);
@@ -189,7 +190,6 @@ int riseDo(float targetD, int try) {
   if (try > boy.riseRetry) return 2;
   ctdStart();
   antStart();
-  ctdDataWait(); 
   flogf(" sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
   nowD = startD = antDepth();
   if (startD < targetD) return 1;
@@ -291,36 +291,28 @@ int iridDo(void) {
   int r=0;
   bool helloB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOpM*60);
-if (!ctdPrompt()) tstFunc();  // dbg
   gpsStart();
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
-if (!ctdPrompt()) tstFunc();  // dbg
   gpsDateTime(&boyd.gpsBgn);
   gpsLatLng(&boyd.gpsBgn);
-if (!ctdPrompt()) tstFunc();  // dbg
   antSwitch(irid_ant);
-if (!ctdPrompt()) tstFunc();  // dbg
   while (!tmrExp(phase_tmr)) {
     // 0=success
     flogf("\n%s ====\n", utlTime());
     iridHup();
-if (!ctdPrompt()) tstFunc();  // dbg
     if ((r = iridSig())) {
       flogf("\nERR\t| iridSig()->%d", r);
       continue;
     } 
-if (!ctdPrompt()) tstFunc();  // dbg
     if ((r = iridDial())) {
       flogf("\nERR\t| iridDial()->%d", r);
       continue;
     } 
-if (!ctdPrompt()) tstFunc();  // dbg
     if ((r = iridProjHdr())) {
       flogf("\nERR\t| iridProjHdr()->%d", r);
       continue;
     } 
-if (!ctdPrompt()) tstFunc();  // dbg
     if (!helloB) {
       sprintf(all.str, "hello.txt");
       if ((r = iridSendFile(all.str))) {
@@ -328,7 +320,6 @@ if (!ctdPrompt()) tstFunc();  // dbg
         continue;
       } else helloB=true;
     }
-if (!ctdPrompt()) tstFunc();  // dbg
     utlNap(boy.filePause);
     if (!engB) {
       utlLogPathName(all.str, "eng", all.cycle);
@@ -337,7 +328,6 @@ if (!ctdPrompt()) tstFunc();  // dbg
         continue;
       } else engB=true;
     }
-if (!ctdPrompt()) tstFunc();  // dbg
     utlNap(boy.filePause);
     if (!s16B) {
       utlLogPathName(all.str, "s16", all.cycle-1);
@@ -347,19 +337,15 @@ if (!ctdPrompt()) tstFunc();  // dbg
       } else s16B=true;
     }
     iridHup();
-if (!ctdPrompt()) tstFunc();  // dbg
     // done?
     if (helloB && engB && s16B) break;
   } // while
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
-if (!ctdPrompt()) tstFunc();  // dbg
   gpsDateTime(&boyd.gpsEnd);
   gpsLatLng(&boyd.gpsEnd);
   // turn off a3la
-if (!ctdPrompt()) tstFunc();  // dbg
   gpsStop();
-if (!ctdPrompt()) tstFunc();  // dbg
   return r;
 } // iridDo
 
@@ -639,12 +625,12 @@ int boyEngLog(void) {
   sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
   sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));
   sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEnd));
-  sprintf(b+strlen(b), "=== physical stats ===\n");
-  hps=&boyd.physical;
-  hpsRead(hps);
-  sprintf(b+strlen(b), 
-      "current=%.2f, voltage=%.2f, pressure=%.2f, humidity=%.2f\n",
-      hps->curr, hps->volt, hps->pres, hps->humi);
+  // sprintf(b+strlen(b), "=== physical stats ===\n");
+  // hps=&boyd.physical;
+  // hpsRead(hps);
+  // sprintf(b+strlen(b), 
+      // "current=%.2f, voltage=%.2f, pressure=%.2f, humidity=%.2f\n",
+      // hps->curr, hps->volt, hps->pres, hps->humi);
   sprintf(b+strlen(b), "=== during last irid transmission ===\n");
   gps=&boyd.gpsBgn;
   sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 
@@ -657,7 +643,7 @@ int boyEngLog(void) {
   flogf("\n%s", b);
   if (utlLogFile(&log, "eng")) return 1;
   write(log, b, strlen(b));
-  close(log);
+  utlCloseFile(&log);
   return 0;
 } // boyEngLog
 

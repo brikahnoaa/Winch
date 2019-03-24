@@ -19,4 +19,7 @@ void main(void){
   antStart();
   if (!(r=oceanCurr(&f)))
     flogf("oceanCurr(%f):>%d\n", f, r);
+  utlNap(9);
+  if (!(r=oceanCurr(&f)))
+    flogf("oceanCurr(%f):>%d\n", f, r);
 }

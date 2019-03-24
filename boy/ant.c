@@ -49,6 +49,7 @@ int antStart(void) {
   static char *self="antStart";
   if (ant.on) // verify
     if (antPrompt()) {
+      antSample();
       return 0;
     } else {
       flogf("\n%s(): ERR sbe39, expected prompt", self);
