@@ -309,17 +309,18 @@ int wspDetectH(int *detectH) {
 // sets: *detect+=
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
 int wspDetectD(int *detect, int iridHour, int iridFreq) {
-  time_t now, riseT;
-  int laterH, detH=0, r=0;
   static char *self="wspDetectD";
+  float laterH;
+  int detH=0, r=0;
+  time_t now, riseT;
   DBG()
   flogf("\n%s: setting wispr date/time", self);
   wspDateTime();
   *detect = 0;
   time(&now);
   wspRiseT(&riseT, iridHour, iridFreq);
-  laterH = (int)(riseT-now)/60/60;
-  flogf(", starting wispr detection; end in %d hours", laterH);
+  laterH = (float)(riseT-now)/60/60;
+  flogf(", starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {
     if (wspDetectH(&detH)) r+=10;
     *detect += detH;

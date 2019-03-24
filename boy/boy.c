@@ -611,12 +611,12 @@ bool boyDocked(float depth) {
 // write some engineering data
 int boyEngLog(void) {
   static char *self="boyEngLog";
-  int log;
+  int log, r=0;
   GpsStats *gps;
-  HpsStats *hps;
+  // HpsStats *hps;
   char *b;
   DBG()
-  b=all.buf;
+  b=malloc(BUFSZ);
   b[0] = 0;
   sprintf(b+strlen(b), "== eng log cycle %d %s ==\n", all.cycle, utlDateTime());
   sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f @%.1fm\n", 
@@ -641,10 +641,14 @@ int boyEngLog(void) {
   sprintf(b+strlen(b), "ending surface depth=%.1f\n", boyd.surfD);
   //
   flogf("\n%s", b);
-  if (utlLogFile(&log, "eng")) return 1;
-  write(log, b, strlen(b));
-  utlCloseFile(&log);
-  return 0;
+  if (utlLogFile(&log, "eng")) 
+    r=1;
+  else {
+    write(log, b, strlen(b));
+    utlCloseFile(&log);
+  }
+  free(b);
+  return r;
 } // boyEngLog
 
 ///

@@ -32,14 +32,14 @@ void antInit(void) {
   }
   ant.ring[i].next = ant.ring;
   antStart();
-  utlExpect(ant.port, all.buf, EXEC, 2);
+  utlExpect(ant.port, all.str, EXEC, 2);
   utlWrite(ant.port, "TxSampleNum=N", EOL);
-  utlExpect(ant.port, all.buf, EXEC, 2);
+  utlExpect(ant.port, all.str, EXEC, 2);
   utlWrite(ant.port, "txRealTime=n", EOL);
-  utlExpect(ant.port, all.buf, EXEC, 2);
+  utlExpect(ant.port, all.str, EXEC, 2);
   // just in case auton was left on
   utlWrite(ant.port, "stop", EOL);
-  utlExpect(ant.port, all.buf, EXEC, 2);
+  utlExpect(ant.port, all.str, EXEC, 2);
   antStop();
 } // antInit
 
@@ -66,15 +66,15 @@ int antStart(void) {
   TUTxFlush(ant.port);
   PIOSet(ANT_PWR);
   // get cf2 startup message
-  if (!utlExpect(ant.port, all.buf, "ok", 6))
-    flogf("\n%s(): expected ok, saw '%s'", self, all.buf);
-  DBG1("%s", all.buf)
+  if (!utlExpect(ant.port, all.str, "ok", 6))
+    flogf("\n%s(): expected ok, saw '%s'", self, all.str);
+  DBG1("%s", all.str)
   antReset();           // ring buffer
   if (ant.auton)
     antAuton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
   utlWrite(ant.port, all.str, EOL);
-  if (!utlExpect(ant.port, all.buf, EXEC, 2))
+  if (!utlExpect(ant.port, all.str, EXEC, 2))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
   antSample();
   return 0;
@@ -104,17 +104,17 @@ bool antPrompt() {
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, all.buf, EXEC, 1))
+  if (utlExpect(ant.port, all.str, EXEC, 1))
     return true;
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, all.buf, EXEC, 1))
+  if (utlExpect(ant.port, all.str, EXEC, 1))
     return true;
   // try a third time after break
   antBreak();
   utlNap(2);
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, all.buf, EXEC, 1))
+  if (utlExpect(ant.port, all.str, EXEC, 1))
     return true;
   utlErr(ant_err, "antPrompt() fail");
   return false;
@@ -159,8 +159,8 @@ void antSample(void) {
   DBG0("aSam")
   // flush old data, check for sleep message and prompt if needed
   if (antData()) {
-    utlRead(ant.port, all.buf);
-    if (strstr(all.buf, "sleep"))
+    utlRead(ant.port, all.str);
+    if (strstr(all.str, "sleep"))
       antPrompt();      // wakeup
   } // antData()
   if (!ant.auton && ant.sampStore)
@@ -169,7 +169,7 @@ void antSample(void) {
     utlWrite(ant.port, "TS", EOL);
   // catch echo - none in auton
   if (!ant.auton)
-    utlReadWait(ant.port, all.buf, 1);
+    utlReadWait(ant.port, all.str, 1);
   tmrStart(s39_tmr, ant.delay);
   ant.sampT = time(0);
 } // antSample
@@ -188,17 +188,17 @@ bool antRead(void) {
   // data waiting
   // with auton there is no Executed, so look for #
   if (ant.auton)
-    p0 = utlExpect(ant.port, all.buf, "# ", 2);
+    p0 = utlExpect(ant.port, all.str, "# ", 2);
   else
-    p0 = utlExpect(ant.port, all.buf, EXEC, 2);
+    p0 = utlExpect(ant.port, all.str, EXEC, 2);
   if (!p0) {
     utlErr(ant_err, "antRead: no data");
     return false;
   } // not data
   if (ant.log)
-    write(ant.log, all.buf, strlen(all.buf));
+    write(ant.log, all.str, strlen(all.str));
   // read temp, depth // parse two numeric csv
-  p1 = strtok(all.buf, "\r\n#, ");
+  p1 = strtok(all.str, "\r\n#, ");
   p2 = strtok(NULL, ", ");
   if (!p1 || !p2) {
     utlErr(ant_err, "antRead: garbage");
@@ -441,21 +441,21 @@ int antAuton(bool auton) {
   if (auton) {
     sprintf(all.str, "sampleInterval=%d", ant.sampInt);
     utlWrite(ant.port, all.str, EOL);
-    utlExpect(ant.port, all.buf, EXEC, 2);
+    utlExpect(ant.port, all.str, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);
-    if (!utlExpect(ant.port, all.buf, "-->", 2)) {
+    if (!utlExpect(ant.port, all.str, "-->", 2)) {
       flogf("\t| startnow fail, retry ...");
       utlWrite(ant.port, "startnow", EOL);
-      if (!utlExpect(ant.port, all.buf, "-->", 2)) 
+      if (!utlExpect(ant.port, all.str, "-->", 2)) 
         flogf(" startnow failed");
     } // if -->
   } else {
     utlWrite(ant.port, "stop", EOL);
-    if (!utlExpect(ant.port, all.buf, "-->", 2)) {
+    if (!utlExpect(ant.port, all.str, "-->", 2)) {
       r = 2;
       flogf("\t| stop fail, retry ...");
       utlWrite(ant.port, "stop", EOL);
-      if (!utlExpect(ant.port, all.buf, "-->", 2)) 
+      if (!utlExpect(ant.port, all.str, "-->", 2)) 
         flogf(" stop failed");
     } // if -->
     utlNap(1);
@@ -469,7 +469,7 @@ int antAuton(bool auton) {
 // write stored sample to a file
 void antGetSamples(void) {
   char *self="antGetSamples";
-  int len1=sizeof(all.buf);
+  int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
   int log;
@@ -486,8 +486,8 @@ void antGetSamples(void) {
   utlWrite(ant.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
-    len2 = (int) TURxGetBlock(ant.port, all.buf, (long) len1, (short) 1000);
-    len3 = write(log, all.buf, len2);
+    len2 = (int) TURxGetBlock(ant.port, all.str, (long) len1, (short) 1000);
+    len3 = write(log, all.str, len2);
     if (len2!=len3)
       flogf("\t| ERR fail write to log");
     total += len3;
@@ -498,9 +498,9 @@ void antGetSamples(void) {
     utlCloseFile(&log);
   if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.buf, "-->", 2);
+    utlExpect(ant.port, all.str, "-->", 2);
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.buf, "-->", 2);
+    utlExpect(ant.port, all.str, "-->", 2);
   }
 } // antGetSamples
 

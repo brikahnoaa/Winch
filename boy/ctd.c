@@ -27,9 +27,9 @@ void ctdInit(void) {
   ctd.port = mpcPamPort();
   ctdStart();
   utlWrite(ctd.port, "DelayBeforeSampling=0", EOL);
-  utlReadWait(ctd.port, all.buf, 1);   // echo
+  utlReadWait(ctd.port, all.str, 1);   // echo
   utlWrite(ctd.port, "stop", EOL);
-  utlReadWait(ctd.port, all.buf, 1);   // echo
+  utlReadWait(ctd.port, all.str, 1);   // echo
   ctdStop();
   tst.funcPtr = &ctdTest;
 } // ctdInit
@@ -55,7 +55,7 @@ int ctdStart(void) {
     utlErr(ctd_err, "ctd: no prompt");
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
   utlWrite(ctd.port, all.str, EOL);
-  utlReadWait(ctd.port, all.buf, 2);   // echo
+  utlReadWait(ctd.port, all.str, 2);   // echo
   ctdSample();
   return 0;
 } // ctdStart
@@ -82,12 +82,12 @@ bool ctdPrompt(void) {
   ctdFlush();
   utlWrite(ctd.port, "", EOL);
   // looking for S> at end
-  if (utlExpect(ctd.port, all.buf, EXEC, 5))
+  if (utlExpect(ctd.port, all.str, EXEC, 5))
     return true;
   // try again after break
   ctdBreak();
   utlWrite(ctd.port, "", EOL);
-  if (utlExpect(ctd.port, all.buf, EXEC, 5))
+  if (utlExpect(ctd.port, all.str, EXEC, 5))
     return true;
   return false;
 } // ctdPrompt
@@ -131,8 +131,8 @@ void ctdSample(void) {
   DBG1("cSam")
   // flush old data, check for sleep message and prompt if needed
   if (ctdData()) {
-    utlRead(ctd.port, all.buf);
-    if (strstr(all.buf, "time out"))
+    utlRead(ctd.port, all.str);
+    if (strstr(all.str, "time out"))
       ctdPrompt();      // wakeup
   } // ctdData()
   if (!ctd.auton && ctd.sampStore)
@@ -141,7 +141,7 @@ void ctdSample(void) {
     utlWrite(ctd.port, "TS", EOL);
   // get echo // NOTE - sbe16 does not echo while auton
   if (!ctd.auton)
-    utlReadWait(ctd.port, all.buf, 1);
+    utlReadWait(ctd.port, all.str, 1);
   tmrStart(s16_tmr, ctd.delay);
 } // ctdSample
 
@@ -153,19 +153,19 @@ bool ctdRead(void) {
   static char *self="ctdRead";
   DBG()
   if (!ctdData()) return false;
-  // utlRead(ctd.port, all.buf);
-  p0 = utlExpect(ctd.port, all.buf, EXEC, 2);
+  // utlRead(ctd.port, all.str);
+  p0 = utlExpect(ctd.port, all.str, EXEC, 2);
   if (!p0) {
     utlErr(ctd_err, "ctdRead: no S>");
     return false;
   } // not data
   if (ctd.log) 
-    write(ctd.log, all.buf, strlen(all.buf)-2); // no S>
+    write(ctd.log, all.str, strlen(all.str)-2); // no S>
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
-  p0 = all.buf;
+  p0 = all.str;
   p1 = strtok(p0, "\r\n#, ");
   if (!p1) return false;
   ctd.temp = atof( p1 );
@@ -234,12 +234,12 @@ int ctdAuton(bool auton) {
     // utlWrite(ctd.port, "stop", EOL);
     // utlExpect(ctd.port, all.str, EXEC, 2);
     utlWrite(ctd.port, "stop", EOL);
-    if (!utlExpect(ctd.port, all.buf, "logging stopped", 4)) {
+    if (!utlExpect(ctd.port, all.str, "logging stopped", 4)) {
       flogf("\nERR\t| expected 'logging stopped', retry...");
       utlWrite(ctd.port, "stop", EOL);
-      if (!utlExpect(ctd.port, all.buf, "logging stopped", 4)) {
+      if (!utlExpect(ctd.port, all.str, "logging stopped", 4)) {
         r=2;
-        flogf("\nERR\t| got '%s'", all.buf);
+        flogf("\nERR\t| got '%s'", all.str);
         utlErr(ctd_err, "expected 'logging stopped'");
       }
     }
@@ -251,7 +251,7 @@ int ctdAuton(bool auton) {
 ///
 // get science, clear log
 void ctdGetSamples(void) {
-  int len1=sizeof(all.buf);
+  int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
   if (!ctd.log && strlen(ctd.logFile))
@@ -261,8 +261,8 @@ void ctdGetSamples(void) {
   utlWrite(ctd.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
-    len2 = (int) TURxGetBlock(ctd.port, all.buf, (long) len1, (short) 1000);
-    len3 = write(ctd.log, all.buf, len2);
+    len2 = (int) TURxGetBlock(ctd.port, all.str, (long) len1, (short) 1000);
+    len3 = write(ctd.log, all.str, len2);
     if (len2!=len3) 
       flogf("\nERR\t| ctdGetSamples() could not write %s.log", ctd.logFile);
     flogf("+[%d]", len3);
@@ -271,9 +271,9 @@ void ctdGetSamples(void) {
   utlCloseFile(&ctd.log);
   if (ctd.clearSamp) {
     utlWrite(ctd.port, "initLogging", EOL);
-    utlExpect(ctd.port, all.buf, "verify", 2);
+    utlExpect(ctd.port, all.str, "verify", 2);
     utlWrite(ctd.port, "initLogging", EOL);
-    utlExpect(ctd.port, all.buf, EXEC, 2);
+    utlExpect(ctd.port, all.str, EXEC, 2);
   }
   flogf(" = %d bytes to %s", total, ctd.logFile);
 } // ctdGetSamples
