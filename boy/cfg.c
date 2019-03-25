@@ -90,7 +90,7 @@ static CfgParam cfgP[] = {
   {'c',  "gps.platform",  &gps.platform,    "gpl",  "LR01"},
   {'c',  "gps.project",   &gps.project,     "gpr",  "QUEH"},
   {'i',  "gps.fileBlock", &gps.fileBlock,   "gfB",  "512"},
-  {'i',  "gps.fileMax",   &gps.fileMax,     "gfX",  "2000"},
+  {'i',  "gps.fileMax",   &gps.fileMax,     "gfX",  "4000"},
   {'i',  "gps.hdrPause",  &gps.hdrPause,    "ghP",  "20"},
   {'i',  "gps.hdrTry",    &gps.hdrTry,      "ghT",  "3"},
   {'i',  "gps.hupMs",     &gps.hupMs,       "ghM",  "2000"},
@@ -113,13 +113,11 @@ static CfgParam cfgP[] = {
   {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
   {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},
 
-  {'b',  "tst.fastData",  &tst.fastData,    "tfD",  "false"},
   {'b',  "tst.noData",    &tst.noData,      "tnD",  "false"},
   {'b',  "tst.noDeploy",  &tst.noDeploy,    "tne",  "false"},
   {'b',  "tst.noIrid",    &tst.noIrid,      "tnI",  "false"},
   {'b',  "tst.noRise",    &tst.noRise,      "tnR",  "false"},
   {'b',  "tst.test",      &tst.test,        "ttt",  "false"},
-  {'i',  "tst.fastRise",  &tst.fastRise,    "tfR",  "0"},
   {'i',  "tst.t1",        &tst.t1,          "tt1",  "0"},
   {'i',  "tst.t2",        &tst.t2,          "tt2",  "0"},
   {'i',  "tst.t3",        &tst.t3,          "tt3",  "0"},
@@ -141,7 +139,7 @@ static CfgParam cfgP[] = {
   {'i',  "wsp.dutyM",     &wsp.dutyM,       "wdM",  "30"},
   {'i',  "wsp.phaseH",    &wsp.phaseH,      "wpH",  "24"},
   {'i',  "wsp.spectGain", &wsp.spectGain,   "wsG",  "1"},
-  {'i',  "wsp.spectRun",  &wsp.spectRun,    "wsR",  "2"},
+  {'i',  "wsp.spectRun",  &wsp.spectRun,    "wsR",  "1"},
   {'i',  "wsp.wisprGain", &wsp.wisprGain,   "wwG",  "1"},
 
 };
