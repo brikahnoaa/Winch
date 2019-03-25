@@ -160,15 +160,17 @@ int wspStorm(char *buf) {
   static char *self="wspStorm";
   DBG()
   // cmd
+  buf[0]=0;
   b=all.str;
   sprintf( b, "%s %s", wsp.spectCmd, wsp.spectFlag );
   if (wsp.spectGain)
     sprintf( b+strlen(b), " -g%d", wsp.spectGain );
   if (wsp.spectLog)
-    sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.spectLog, all.cycle );
+    sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.spectLog, all.cycle );
   // start 
   if (wspOpen()) Exc(1);
-  utlWrite( wsp.port, all.str, EOL );
+  flogf( "\nexec '%s'", b );
+  utlWrite( wsp.port, b, EOL );
   // gather
   if (!utlExpect(wsp.port, buf, "RDY", 200)) Exc(2);
   utlWrite(wsp.port, "$WS?*", EOL);
@@ -227,10 +229,11 @@ int wspDetectM(int *detectM, int minutes) {
   if (wsp.wisprGain)
     sprintf( b+strlen(b), " -g%d", wsp.wisprGain );
   if (wsp.wisprLog)
-    sprintf( b+strlen(b), " -l %.5s%03.3d.log", wsp.wisprLog, all.cycle );
+    sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.wisprLog, all.cycle );
   // start
   if (wspOpen()) Exc(1);
-  utlWrite( wsp.port, all.str, EOL );
+  flogf( "\nexec '%s'", b );
+  utlWrite( wsp.port, b, EOL );
   // run for minutes; every .detInt, query and reset.
   // query also at end of minutes
   tmrStart(data_tmr, wsp.detInt*60);
@@ -256,7 +259,7 @@ int wspDetectM(int *detectM, int minutes) {
   }
   // ?? add to daily log
   // stop
-  if (wspClose()) Exc(8);
+  if (wspClose()) return 8;
   return 0;
 
   Except
@@ -321,7 +324,7 @@ int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq) {
   time(&now);
   wspRiseT(&riseT, iridHour, iridFreq);
   laterH = (float)(riseT-now)/60/60;
-  flogf(", starting wispr detection; end in %3.1f hours", laterH);
+  flogf("\n  starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {
     if (wspDetectH(&detH, spectr)) r+=10;
     *detect += detH;

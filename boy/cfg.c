@@ -149,6 +149,7 @@ static CfgParam cfgP[] = {
 // read config from CONFIG_FILE
 void cfgInit(void) {
   static char *self="cfgInit";
+  int r=0;
   char *cfgFileV;
   DBG()
   cfgDefault();
@@ -158,7 +159,8 @@ void cfgInit(void) {
     strcpy(cfg.file, cfgFileV);
     flogf(", VEE(CFGFILE) changes it to '%s'", self, cfg.file);
   }
-  cfgRead(cfg.file);
+  r = cfgRead(cfg.file);
+  if (r) flogf("\n%s: read %d lines from %s", self, r, cfg.file);
   cfgVee();
 } // configFile
 
