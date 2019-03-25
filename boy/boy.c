@@ -29,7 +29,7 @@ void boyMain() {
   if (tst.test) 
     flogf("\ntst.test mode");
   else if (all.starts>1) 
-    phase = reboot_pha;
+    reboot();      // reset to known state
   flogf("\nboyMain(): starting with phase %d", phase);
     
   while (true) {
@@ -57,9 +57,6 @@ void boyMain() {
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
       break;
-    case reboot_pha:
-      phaseNext = rebootPhase();
-      break;
     case error_pha:
       phaseNext = errorPhase();
       break;
@@ -68,11 +65,16 @@ void boyMain() {
     phasePrev = phase;
     phase = phaseNext;
     // check these every phase
-    if (boy.cycleMax && (all.cycle > boy.cycleMax)) 
-      utlStop("cycleMax reached");
-    // ??
-    if (boy.reset) 
-      phase = reboot_pha;
+    // reset command from land - HW reset, app mode reboots
+    if (boy.reset) {
+      sysStop("reset command from land");
+      BIOSReset();
+    }
+    // stop command from land
+    if (boy.stop) {
+      sysStop("stop command from land");
+      BIOSResetToPicoDOS();
+    }
   } // while true
 } // boyMain() 
 
@@ -94,7 +96,7 @@ PhaseType risePhase(void) {
   antStart();
   ctdStart();
   // if current is too strong at bottom
-  if (safetyChk(&boyd.oceanCurr, &boyd.iceTemp)) {
+  if (boySafeChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
     //?? return fall_pha;
   }
@@ -139,7 +141,7 @@ PhaseType fallPhase() {
   ctdStart();
   time(&boyd.fallBgn);
   fallDo(boy.currChkD, 0);
-  safetyChk(&boyd.oceanCurr, &boyd.iceTemp);
+  boySafeChk(&boyd.oceanCurr, &boyd.iceTemp);
   fallDo(0, 0);
   time(&boyd.fallEnd);
   return data_pha;
@@ -501,25 +503,27 @@ PhaseType deployPhase(void) {
 // figure out whats happening, continue as possible
 // load info from saved previous phase
 // ask antmod for our velocity
-PhaseType rebootPhase(void) {
+int reboot(void) {
   MsgType msg;
-  flogf("\n === rebootPhase()\t| stop stop fall continue %s", utlDateTime());
+  flogf("\n === rebootPhase()\t| stop stop fall fall %s", utlDateTime());
   ngkSend(stopCmd_msg);
   ngkRecvWait(&msg, 30);
   ngkSend(stopCmd_msg);
   ngkRecvWait(&msg, 30);
   ngkSend(fallCmd_msg);
   ngkRecvWait(&msg, 30);
-  return deploy_pha;
+  ngkSend(fallCmd_msg);
+  ngkRecvWait(&msg, 30);
+  return 0;
 } // reboot()
 
 ///
-// ??
 // cable is stuck. up/down tries??, down to dock. 
 // go back to normal if resolved ??
 PhaseType errorPhase(void) {
   flogf("errorPhase()");
-  return fall_pha;
+  reboot();
+  return deploy_pha;
 } // errorPhase
 
 
@@ -568,8 +572,8 @@ int oceanCurr(float *curr) {
 ///
 // rets: 0 safe, +1 current!, +10 ice!, -1 err
 // uses: boy.currMax
-int safetyChk(float *curr, float *temp) {
-  static char *self="safetyChk";
+int boySafeChk(float *curr, float *temp) {
+  static char *self="boySafeChk";
   float sideways;
   int r=0;
   DBG()
@@ -589,11 +593,14 @@ int safetyChk(float *curr, float *temp) {
   // ice check
   *temp=antTemp();
   return r;
-} // safetyChk
+} // boySafeChk
 
 ///
-// shutdown buoy, reflects boyInit
-void boyStop(void) {} // ??
+// drop winch, close log
+void boyStop(void) {
+  reboot();
+  if (boyd.log) utlCloseFile(&boyd.log);
+} // boyStop
 
 ///
 void boyFlush(void) {} // ??

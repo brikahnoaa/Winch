@@ -47,7 +47,6 @@ typedef struct BoyInfo {
   float iceDanger;        // ice danger at this temp (-1.2)
   float predFallV;        // predicted fall velo (.2)
   float predRiseV;        // predicted rise velo (.33)
-  int cycleMax;           // max # of cycles or days
   int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)
   int fallOpM;            // operation timeout minutes (30)
@@ -68,21 +67,20 @@ static PhaseType deployPhase(void);
 static PhaseType errorPhase(void);
 static PhaseType fallPhase(void);
 static PhaseType iridPhase(void);
-static PhaseType rebootPhase(void);
 static PhaseType risePhase(void);
 static bool boyDocked(float depth);
 static int fallDo(float targetD, int try);
 static int iridDo(void);
 static int nextCycle(void);
-int oceanCurr(float *curr);
-static int safetyChk(float *curr, float *temp);
+static int reboot(void);
+static int oceanCurr(float *curr);
 static int riseDo(float targetD, int try);
 
 int boyEngLog(void);
+int boySafeChk(float *curr, float *temp);
 void boyFlush(void);
 void boyInit(void);
 void boyMain(void);
-void boyStat(char *buffer);
 void boyStop(void);
 
 #endif
