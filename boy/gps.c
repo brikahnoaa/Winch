@@ -321,13 +321,15 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 // land ho! already did iridDial and iridProjHdr
 // send fname as separate files of max gps.fileMax
 int iridSendFile(char *fname) {
-  int l, r, fh, len, block;
+  static char *self="iridSendFile";
+  static char *rets="1:!file +10:!resp r:LandCmds";
+  int r=0, l, fh, len, block;
   struct stat fileinfo;
-  flogf("\niridSendFile(%s)", fname);
+  flogf("\n%s(%s)", self, fname);
   fh = open(fname, O_RDONLY);
   if (fh<0) {
-    flogf("\nERR\t| iridSendFile cannot open %s", fname);
-    return 0;
+    flogf("\nERR\t| %s cannot open %s", self, fname);
+    return 1;
   }
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
@@ -343,7 +345,7 @@ int iridSendFile(char *fname) {
   all.buf[l] = 0;
   iridProcessCmds(all.buf);
   utlWrite(gps.port, "data", "");
-  return 0;
+  return r;
 } // iridSendFile
 
 ///

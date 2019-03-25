@@ -241,6 +241,7 @@ int wspDetectM(int *detectM, int minutes) {
       if (wspQuery(&detQ)) Exc(10);
       *detectM += detQ;
       if (wspSpace(&free)) Exc(20);
+      flogf("\n%s: disk %3.0f%% free on wispr#%d", self, free, wsp.card);
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
@@ -271,7 +272,7 @@ int wspDetectM(int *detectM, int minutes) {
 // uses: .dutyM
 // sets: *detectH=
 // rets: 1=watchdog 10=!wspDetectM 
-int wspDetectH(int *detectH) {
+int wspDetectH(int *detectH, char *spectr) {
   int r=0, remains, detM=0;
   static char *self="wspDetectH";
   DBG()
@@ -292,8 +293,8 @@ int wspDetectH(int *detectH) {
     return 10;
   }
   if (wsp.spectRun==2) {            // 2==hourly
-    wspStorm(all.buf);
-    wspLog(all.buf);
+    wspStorm(spectr);
+    wspLog(spectr);
   }
   // ?? log
   if (tmrExp(hour_tmr)) return 1;   // watchdog
@@ -308,7 +309,7 @@ int wspDetectH(int *detectH) {
 // uses: .spectRun 
 // sets: *detect+=
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
-int wspDetectD(int *detect, int iridHour, int iridFreq) {
+int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq) {
   static char *self="wspDetectD";
   float laterH;
   int detH=0, r=0;
@@ -322,7 +323,7 @@ int wspDetectD(int *detect, int iridHour, int iridFreq) {
   laterH = (float)(riseT-now)/60/60;
   flogf(", starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {
-    if (wspDetectH(&detH)) r+=10;
+    if (wspDetectH(&detH, spectr)) r+=10;
     *detect += detH;
     flogf("\n%s: %d detections @%s", self, *detect, utlDateTime());
   } // while < riseT

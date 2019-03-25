@@ -47,6 +47,7 @@ void antInit(void) {
 // turn on, clean, set params, talk to sbe39
 int antStart(void) {
   static char *self="antStart";
+  antReset();           // ring buffer - do this even if on already
   if (ant.on) // verify
     if (antPrompt()) {
       antSample();
@@ -69,7 +70,6 @@ int antStart(void) {
   if (!utlExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
   DBG1("%s", all.str)
-  antReset();           // ring buffer
   if (ant.auton)
     antAuton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());

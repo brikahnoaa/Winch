@@ -153,14 +153,14 @@ PhaseType fallPhase() {
 // sleep needs a lot of optimizing to be worth the trouble
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
-  int success, detect;
+  int success;
   flogf("\ndataPhase %s", utlDateTime());
   if (tst.test && tst.noData) return rise_pha;
   antStop();
   ctdStop();
   // ngkStop();
-  success = wspDetectD(&detect, boy.iridHour, boy.iridFreq);
-  boyd.detections = detect;
+  success = wspDetectD(&boyd.detections, &boyd.spectr, 
+      boy.iridHour, boy.iridFreq);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;
@@ -618,19 +618,24 @@ int boyEngLog(void) {
   DBG()
   b=malloc(BUFSZ);
   b[0] = 0;
-  sprintf(b+strlen(b), "== eng log cycle %d %s ==\n", all.cycle, utlDateTime());
-  sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f @%.1fm\n", 
-      boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
-  sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgn));
-  sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
-  sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));
-  sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEnd));
+  sprintf(b+strlen(b), "== eng log cycle %d %s ==\n", 
+      all.cycle, utlDateTime());
+  sprintf(b+strlen(b), "program start %s, boot #%d\n",
+      utlDateTimeFmt(all.startProg), all.starts);
   // sprintf(b+strlen(b), "=== physical stats ===\n");
   // hps=&boyd.physical;
   // hpsRead(hps);
   // sprintf(b+strlen(b), 
       // "current=%.2f, voltage=%.2f, pressure=%.2f, humidity=%.2f\n",
       // hps->curr, hps->volt, hps->pres, hps->humi);
+  sprintf(b+strlen(b), "=== measures ===\n");
+  sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f at dock=%.1fm\n", 
+      boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
+  sprintf(b+strlen(b), "Spectrogram:\n%s\n", boyd.spectr);
+  sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgn));
+  sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
+  sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));
+  sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEnd));
   sprintf(b+strlen(b), "=== during last irid transmission ===\n");
   gps=&boyd.gpsBgn;
   sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 
@@ -639,6 +644,7 @@ int boyEngLog(void) {
   sprintf(b+strlen(b), "gps drift: lat=%s, long=%s, time=%s\n", 
       gps->lat, gps->lng, gps->time);
   sprintf(b+strlen(b), "ending surface depth=%.1f\n", boyd.surfD);
+  // land cmds
   //
   flogf("\n%s", b);
   if (utlLogFile(&log, "eng")) 

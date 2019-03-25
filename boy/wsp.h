@@ -36,8 +36,8 @@ static void wspRiseT(time_t *riseT, int iridHour, int iridFreq);
 
 int wspCardSwap(void);
 int wspDateTime(void);
-int wspDetectD(int *detect, int iridHour, int iridFreq);
-int wspDetectH(int *detect);
+int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq);
+int wspDetectH(int *detect, char *spectr);
 int wspDetectM(int *detect, int minutes);
 int wspLog(char *str);
 int wspQuery(int *detect);

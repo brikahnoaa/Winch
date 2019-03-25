@@ -28,12 +28,13 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
 ///
 // pre, starts, config, log, pico
-// uses: sys.starts
+// uses: sys.logfile
+// sets: all.starts
 int sysInit(void) {
   TUChParams *params;
   short qsize = 64*1024;
   preRun(10);
-  sys.starts = startCheck();
+  all.starts = startCheck();
   time(&all.startProg);     // program start time, global
   time(&all.startCycle);    // cycle start time, global
   dbgInit();                // common init: dbg0,1,2
@@ -47,7 +48,7 @@ int sysInit(void) {
   TUSetDefaultParams( params );
   // enable TUAlloc for serial ports
   TUInit(calloc, free);   
-  return sys.starts;
+  return all.starts;
 } // sysInit
 
 ///
@@ -106,7 +107,7 @@ void logInit(char *file) {
         BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
         BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
   flogf("\nProgram: %s  Version: %s  Starts: %d",
-    sys.program, sys.version, sys.starts);
+    sys.program, sys.version, all.starts);
   flogf("\nStarted: %s", utlDateTime());
   flogf("\n---   ---");
   fflush(NULL);               // ??

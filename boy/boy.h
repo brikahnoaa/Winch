@@ -15,8 +15,9 @@ typedef enum { free_ris, run_ris } RiseType;
 typedef struct BoyData {
   GpsStats gpsBgn;        // initial stats, just surfaced
   GpsStats gpsEnd;        // final stats, irid done
-  HpsStats physical;    // float curr, volt, pres, humi;
+  HpsStats physical;      // float curr, volt, pres, humi;
   Serial port;            // sbe16 or ant mod
+  char *spectr[128];      // output from last spectr run
   float dockD;            // Depth when docked in winch
   float fallV1st;         // meters/s of the first fall
   float fallVNow;         // meters/s of the most recent fall 

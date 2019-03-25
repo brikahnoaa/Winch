@@ -23,7 +23,6 @@ typedef struct SysInfo {
   int alarm[sizeof_alm];
   int day;                        // day long cycle
   int log;                        // log filehandle
-  int starts;
   long diskFree;
   long diskSize;
 } SysInfo;
