@@ -25,13 +25,13 @@ extern SysInfo sys;
 extern UtlInfo utl;
 extern WspInfo wsp;
 
-typedef struct CfgParam {
-  char type;                // b, c, f, i, l, s
-  char *var;
-  void *ptr;
-  char *id;
-  char *def;
-} CfgParam;
+//typedef struct CfgParam {
+//  char type;                // b, c, f, i, l, s
+//  char *var;
+//  void *ptr;
+//  char *id;
+//  char *def;
+//} CfgParam;
 // 
 // static CfgParam cfgP[] = array of {id, var, ptr, type}
 // scan for id or var name to set or update configurable data
@@ -76,6 +76,8 @@ static CfgParam cfgP[] = {
   {'i',  "boy.riseRetry", &boy.riseRetry,   "brR",  "3"},
   {'i',  "boy.startPh",   &boy.startPh,     "bsP",  "0"},
   {'i',  "boy.stayDown",  &boy.stayDown,    "bsD",  "0"},
+
+  {'c',  "cfg.file",      &cfg.file,        "cfe",  "lara.cfg"},
 
   {'b',  "ctd.clearSamp", &ctd.clearSamp,   "ccS",  "false"},
   {'b',  "ctd.sampStore", &ctd.sampStore,   "csS",  "true"},
@@ -148,30 +150,33 @@ static CfgParam cfgP[] = {
 ///
 // read config from CONFIG_FILE
 void cfgInit(void) {
-  cfg.cnt = sizeof(cfgP) / sizeof(CfgParam);
-  strcpy(cfg.file, VEEFetchStr( "SYS_CFG", SYS_CFG ));
+  static char *self="cfgInit";
+  char *cfgFileV;
+  DBG()
   cfgDefault();
+  flogf("\n%s: config file default name '%s'", self, cfg.file);
+  cfgFileV = VEEFetchStr( "CFGFILE", "" );
+  if (cfgFileV[0]) {
+    strcpy(cfg.file, cfgFileV);
+    flogf(", VEE(CFGFILE) changes it to '%s'", self, cfg.file);
+  }
   cfgRead(cfg.file);
-  // if (cfg.wild) {
-    // wildcard match for config files
-    // ??
-  // }
   cfgVee();
 } // configFile
 
 ///
-// set default parameters
-// uses: cfgParam
-// sets: *.*
-// rets: # of successful sets
+// set default parameters defined in cfg.c
+// sets: cfg.cnt
+// sets: *.*  // all params
 void cfgDefault(void) {
   CfgParam *param;
   int i;
   static char *self="cfgDefault";
   DBG()
-  param=cfgP;
+  cfg.cnt = sizeof(cfgP) / sizeof(CfgParam);
   i=cfg.cnt;
-  while (i--) {
+  param=cfgP;
+  while (i--) { // note: post decrement
     DBG1("\n%s=%s", param->var, param->def)
     // default value
     if (param->def[0])

@@ -10,14 +10,14 @@ v. datetime for 16+32
 .. config file
 . improvements this april
 v. humid, press, battery - and turn off after using
-v. stay down command (X cycles)
+-. stay down command (X cycles), count down in syslog
 v. save data from 16+32 rise and fall
 v. process land commands
+.. syslog disk space wspr
 v. more info in eng report
 v.. temp, ocean curr at dock; cycles
 v.. gps drift, surf depth
-... disk space wspr, # of reboots
-... detections, storm 
+... detections, storm, restart
 v.. up bgn/end, down bgn/end
 x.. voltage, current, humid, press
 .. robust winch commands (resend, detect)
