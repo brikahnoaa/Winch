@@ -598,7 +598,6 @@ int boySafeChk(float *curr, float *temp) {
 ///
 // drop winch, close log
 void boyStop(void) {
-  reboot();
   if (boyd.log) utlCloseFile(&boyd.log);
 } // boyStop
 
