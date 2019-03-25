@@ -276,7 +276,7 @@ int cfgRead(char *file) {
   //
   DBG0("cfgRead(%s)", file)
   if (stat(file, &finfo) < 0) {
-    DBG1("| file not found")
+    flogf("\n%s: cannot find file '%s'", file);
     return 0;
   }
   fh = open(file, O_RDONLY);
@@ -288,8 +288,10 @@ int cfgRead(char *file) {
   r = 0;
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
-    if (cfgString(ptr))
+    if (cfgString(ptr)) {
       r++;
+      flogf( "\n\t%s", ptr);
+    }
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
