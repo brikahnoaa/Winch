@@ -23,18 +23,18 @@ BoyData boyd;
 void boyMain() {
   PhaseType phase, phaseNext, phasePrev;
   time_t phaseStart;
-  flogf("\n  System Starts %d", all.starts);
-  ngkStart();
+  //
   phase = boy.startPh;
   if (tst.test) 
     flogf("\ntst.test mode");
   else if (all.starts>1) 
     reboot();      // reset to known state
   flogf("\nboyMain(): starting with phase %d", phase);
-    
+  //
   while (true) {
     utlX();
-    // sysFlush();                    // flush all log file buffers
+    // rise is first phase in a cycle
+    if (phase==rise_pha) nextCycle();
     time(&phaseStart);
     flogf("\ncycle %d @%s ", all.cycle, utlDateTime());
     switch (phase) {
@@ -43,7 +43,6 @@ void boyMain() {
       break;
     case rise_pha: // Ascend buoy, check for current and ice
       // new day
-      nextCycle();
       phaseNext = risePhase();
       break;
     case irid_pha: // Call home via Satellite
@@ -58,7 +57,7 @@ void boyMain() {
     case error_pha:
       phaseNext = errorPhase();
       break;
-    } // switch
+    } // switch (phase)
     //
     phasePrev = phase;
     phase = phaseNext;
@@ -83,7 +82,8 @@ void boyMain() {
 void boyInit(void) {
   static char *self="boyInit";
   DBG()
-  // boyd.log = utlLogFile(boy.logFile);
+  flogf("\n  System Starts %d", all.starts);
+  ngkStart();
 } // boyInit
 
 ///
@@ -234,7 +234,7 @@ PhaseType deployPhase(void) {
     if (tmrExp(drop_tmr)) break;
   }
   flogf("\n\t| down, pause for %ds", boy.depSettle);
-  utlNap(boy.depSettle);      // default 120sec
+  utlNap(boy.depSettle);      // default 60sec
   // we are down
   boyd.dockD = depth;
   flogf("\n\t| boyd.dockD = %4.2f", boyd.dockD);
@@ -369,7 +369,7 @@ int riseDo(float targetD) {
   while (!err) {       // loop exits by break;
     utlX();
     /// check target first
-    if (targetD && !targetB && nowD>targetD) { // reached target
+    if (targetD && !targetB && nowD<targetD) { // reached target
       send = stopCmd_msg;
       want = stopRsp_msg;
       ngkTries = 0;
@@ -575,8 +575,8 @@ int boySafeChk(float *curr, float *temp) {
   float sideways;
   int r=0;
   DBG()
-  // delay 20sec before measure to stabilize
-  utlNap(20);
+  // delay 10sec before measure to stabilize
+  utlNap(10);
   if (oceanCurr(&sideways)) {
     utlErr(boy_err, ": oceanCurr failed");
     return -1;
@@ -668,10 +668,6 @@ int nextCycle(void) {
   int r=0;
   DBG()
   all.cycle++;
-  // close and restart syslog ??
-  sprintf(all.buf, "copy sys.log log\\%03dsys.log", all.cycle);
-  execstr(all.buf);
-  // ?? close and reopen syslog
   return r;
 } // nextCycle
 

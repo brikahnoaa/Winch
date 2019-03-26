@@ -37,6 +37,7 @@ int sysInit(void) {
   all.starts = startCheck();
   time(&all.startProg);     // program start time, global
   time(&all.startCycle);    // cycle start time, global
+  // need utlInit before logInit
   dbgInit();                // common init: dbg0,1,2
   utlInit();                // malloc global all.str
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
@@ -93,14 +94,29 @@ int startCheck(void) {
 } // startCheck
 
 ///
-// opens logfile named in pico var SYS_LOG, defaults to sys.log
+// opens logfile named in pico var SYS_LOG, or defaults to sys.log
+// copies logfile and deletes it before opening
 // sets: (*file)
 void logInit(char *file) {
+  static char *self="logInit";
+  char *dt, cmd[64];
+  struct stat finfo;
+  DBG0("logInit(%s)", file)
   utlPet();
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
+  // copy to log\MMDDHHMM.sys
+  if (stat(file, &finfo)>=0) { // sys.log exists
+    dt=utlDateTimeCtd();
+    sprintf(cmd, "copy %s log\\%.4s%.4s.sys", file, dt, dt+8);
+    fprintf("\n%s: '%s'", self, cmd);
+    execstr(cmd);
+    sprintf(cmd, "del %s", file);
+    fprintf("\n%s: '%s'", self, cmd);
+    execstr(cmd);
+  }
+  //
   Initflog(file, true);
-  DBG0("logInit(%s)", file)
   flogf("\n---   ---");
   flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
   flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
