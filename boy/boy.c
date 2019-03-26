@@ -399,8 +399,8 @@ int fallDo(float targetD) {
       if (recv==stopCmd_msg) break;
       if (want!=null_msg) { // want
         if (recv==want) { // satisfied
+          if (recv==stopRsp_msg) break; // all done here
           want = null_msg;
-          continue;
         } else { // retry
           flogf(", but we want %s", ngkMsgName(want));
           send = sent;
