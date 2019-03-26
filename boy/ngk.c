@@ -9,6 +9,7 @@
 #define WINCH_ID '1'    // aka ngk.winchId
 #define EOL "\r\n"
 
+// surfCmd = "#R,02,00" -> no brake
 NgkInfo ngk = {
   { "null",
     // ngk.msgStr[] as if sent to buoy; change ID before sending to winch

@@ -39,6 +39,7 @@ typedef struct BoyInfo {
   bool iridAuton;         // record depth during irid transfer
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
+  bool useBrake;          // false->no brake, true->riseDo(antSurfD())
   char logFile[32];       // log file
   float ant2tip;          // meters from antmod ctd to antenna tip
   float boy2ant;          // meters from buoy ctd to ant ctd under still water
@@ -50,14 +51,12 @@ typedef struct BoyInfo {
   int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)
   int fallOpM;            // operation timeout minutes (30)
-  int fallRetry;          // fall fails, retry times
   int filePause;          // pause between sending files
   int iridFreq;           // number of times per day to call !iridHour (0)
   int iridHour;           // 0-23 (midnight-11pm) hour to call home (1)
   int iridOpM;            // phase minutes
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int riseOpM;            // operation timeout minutes (30)
-  int riseRetry;          // rise fails, retry times
   int startPh;            // phase to start in (0)
   int stayDown;           // stay down for days, expecting storm (0)
 } BoyInfo;

@@ -103,7 +103,11 @@ PhaseType risePhase(void) {
   }
   // R,01,00
   time(&boyd.riseBgn);
-  result = riseDo(antSurfD()+1);
+  // algorithm for rise, default no brake
+  if (boy.useBrake)
+    result = riseDo(antSurfD());
+  else
+    result = riseDo(0);
   if (result) 
     utlErr(phase_err, "rise phase failure");
   boyd.surfD = antDepth();
@@ -670,114 +674,4 @@ int nextCycle(void) {
   all.cycle++;
   return r;
 } // nextCycle
-
-/*
-///
-// if targetD==0 then no brake, drift on surface
-int riseDo(float targetD, int try) {
-  static char *self="riseDo";
-  static char *rets="1:<targetD 2:retry";
-  bool twentyB=false, targetB=false, errB=false;
-  float nowD, startD, lastD, velo;
-  int pt;        // estimated phase time
-  MsgType msg;
-  enum {ngkTmr, twentyTmr, fiveTmr};  // local timer names
-  DBG0("\n%s(targetD=%3.1f, try=%d)", self, targetD, try)
-  if (try > boy.riseRetry) return 2;
-  ctdStart();
-  antStart();
-  flogf(" sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
-  nowD = startD = antDepth();
-  if (startD < targetD) return 1;
-  // .riseOrig=as tested, .riseRate=seen, .rateAccu=fudgeFactor
-  // pt = sec/meter(3) * depth + fudge for possible current drift
-  pt = 3*startD+boy.riseOpM*60;
-  tmrStart(phase_tmr, pt);
-  tmrStart(twentyTmr, 20);
-  tmrStart(fiveTmr, 5);
-  ngkFlush();
-  if (targetD)
-    ngkSend(riseCmd_msg);
-  else
-    ngkSend(surfCmd_msg);
-  tmrStart(ngkTmr, boy.ngkDelay*2);
-  flogf("\n\t| %s sent to winch at %s", 
-    targetD?"riseCmd":"surfCmd", utlTime());
-  while (!errB) {       // loop exits by break;
-    utlX();
-    if (ctdData())
-      ctdRead();
-    // check: target, winch, 20s, 5s
-    if (antData())
-      nowD = antDepth();
-    // arrived?
-    if (targetD && nowD<targetD && !targetB) {
-      flogf("\n\t| reached targetD %3.1f at %s", nowD, utlTime());
-      targetB = true;
-      ngkSend(stopCmd_msg);
-      tmrStart(ngkTmr, boy.ngkDelay*2);
-    }
-    // pt timeout - longer than estimated time + fudge
-    if (tmrExp(phase_tmr)) {
-      flogf("\n ERR \t| rise timeout %ds @ %3.1f, stop", pt, nowD);
-      errB = true;
-      break;
-    }
-    // winch
-    if (ngkRecv(&msg)!=null_msg) {
-      flogf("\n%s:\t| %s from winch", self, ngkMsgName(msg));
-      // surface detect by winch
-      if (msg==stopCmd_msg) break;
-      // rise rsp
-      if (msg==riseRsp_msg)
-        tmrStop(ngkTmr);
-      // target stop
-      if (msg==stopRsp_msg) {
-        if (targetB)
-          break;
-          // we are good to go
-        flogf("\n ERR \t| unexpected stopRsp");
-      }
-      // ?? are we really stopped?
-    }
-    if (tmrExp(ngkTmr)) {
-      flogf("\n ERR \t| no response from winch %s", utlTime());
-      // ?? missed it? 20s timeout will tell
-      // ngkSend(riseCmd_msg);
-    }
-    // 20 seconds
-    if (tmrExp(twentyTmr)) {
-      flogf("\n\t| 20sec %s startD-nowD %3.1f ", 
-        utlTime(), startD-nowD);
-      if (startD-nowD < 2) {
-        // by now we should have moved up 4 meters in 13.5s
-        flogf("ERR < 2m");
-        // errB = true;
-        // break;
-      } else {
-        twentyB = true;
-        lastD = nowD;
-      }
-    }
-    // 5 seconds
-    if (tmrExp(fiveTmr)) {
-      tmrStart(fiveTmr, 5);
-      flogf("\n\t| %s depth=%3.1f", utlTime(), nowD);
-      if (!antVelo(&velo)) 
-        flogf(" velo=%4.2f", velo);
-    } 
-  } // while !stop
-  // retry if error
-  if (errB) {
-    flogf("\n%s: ERR\t| retry %d", self, ++try);
-    ngkSend(stopCmd_msg);
-    utlNap(boy.ngkDelay*2);
-    ngkFlush();
-    return riseDo(targetD, try);
-  } else { 
-    // normal stop
-    return 0;
-  }
-} // rise
- */
 
