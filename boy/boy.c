@@ -359,7 +359,7 @@ int iridDo(void) {
 // sets: .riseRate
 int fallDo(float targetD) {
   static char *self="fallDo";
-  MsgType msg, sent, expect=stopCmd_msg;
+  MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool twentyB=false, targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
   float nowD, startD, velo;
@@ -373,7 +373,8 @@ int fallDo(float targetD) {
   nowD = startD = antDepth();
   ngkFlush();
   ngkDelay = boy.ngkDelay*2;      // increments on every retry
-  msg = fallCmd_msg;
+  send = fallCmd_msg;
+  want = fallRsp_msg;
   // could be cable far out, maybe dockD+100m
   // phaseEst = sec/meter(5) * depth + fudge for possible current drift
   phaseEst = 5*boyd.dockD+boy.fallOpM*60;
@@ -382,26 +383,31 @@ int fallDo(float targetD) {
   while (!err) {       // loop exits by break;
     utlX();
     /// winch
-    if (msg!=null_msg) { // send msg
-      flogf("\n\t| fallCmd to winch at %s", utlTime());
-      ngkSend(msg);
-      sent = msg;
-      msg = null_msg;
+    if (send!=null_msg) { // send msg
+      flogf("\n\t| %s to winch at %s", ngkMsgName(send), utlTime());
+      ngkSend(send);
+      sent = send;
+      send = null_msg;
       tmrStart(ngkTmr, ngkDelay);
     } // send msg
-    if (ngkRecv(&msg)!=null_msg) { // msg read
-      flogf("\n\t| %s from winch", ngkMsgName(msg));
+    if (ngkRecv(&recv)!=null_msg) { // msg read
+      flogf("\n\t| %s from winch", ngkMsgName(recv));
+      if (recv!=want && want!=null_msg) 
+        flogf(", but we want %s", ngkMsgName(want));
       tmrStop(ngkTmr);
-      if (msg==fallRsp_msg) continue;
+      if (want==fallRsp_msg) {
+        send = fallCmd_msg;
+        continue;
+      }
       // reached dock, probably
-      if (msg==stopCmd_msg) break;
+      if (recv==stopCmd_msg) break;
       // stop at target ?? were we expecting this?
-      if (msg==stopRsp_msg) break;
+      if (recv==stopRsp_msg) break;
     } // msg read
     if (tmrExp(ngkTmr)) { // msg resend
       if (++ngkTries<10) {
         ngkDelay += 10*ngkTries; // timeout increments
-        msg = sent;
+        send = sent;
         flogf("\n\t| WARN winch timeout, try %d", ngkTries);
       } else {
         err = 1;
@@ -410,7 +416,7 @@ int fallDo(float targetD) {
       }
     } // msg resend
     if (targetD && !targetB && nowD>targetD) { // reached target
-      msg = stopCmd_msg;
+      send = stopCmd_msg;
       ngkTries = 0;
       ngkDelay = boy.ngkDelay*2;
       targetB = true;
