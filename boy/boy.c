@@ -51,8 +51,6 @@ void boyMain() {
       break;
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
-      if (boy.stop) 
-        utlStop("remote stop cmd");
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
@@ -66,12 +64,14 @@ void boyMain() {
     phase = phaseNext;
     // check these every phase
     // reset command from land - HW reset, app mode reboots
+    // reboot() on restart
     if (boy.reset) {
       sysStop("reset command from land");
       BIOSReset();
     }
     // stop command from land
     if (boy.stop) {
+      reboot();
       sysStop("stop command from land");
       BIOSResetToPicoDOS();
     }

@@ -57,7 +57,7 @@ int antStart(void) {
       return 1;
     }
   ant.on = true;
-  flogf("\n === antenna module start %s", utlDateTime());
+  flogf("\n === ant module start %s", utlDateTime());
   if (!ant.log && strlen(ant.logFile))
     utlLogFile(&ant.log, ant.logFile);
   antDevice(cf2_dev);

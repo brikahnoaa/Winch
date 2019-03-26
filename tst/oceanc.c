@@ -10,16 +10,16 @@ extern CtdInfo ctd;
 
 void main(void){
   int r;
-  float f;
+  float fc, ft;
   sysInit();
   mpcInit();
   ctdInit();
   antInit();
   ctdStart();
   antStart();
-  if (!(r=oceanCurr(&f)))
-    flogf("oceanCurr(%f):>%d\n", f, r);
+  if (!(r=boySafeChk(&fc, &ft)))
+    flogf("boySafeChk(%f, %f):>%d\n", fc, ft, r);
   utlNap(9);
-  if (!(r=oceanCurr(&f)))
-    flogf("oceanCurr(%f):>%d\n", f, r);
+  if (!(r=boySafeChk(&fc, &ft)))
+    flogf("boySafeChk(%f, %f):>%d\n", fc, ft, r);
 }
