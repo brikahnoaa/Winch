@@ -74,7 +74,7 @@ static int iridDo(void);
 static int nextCycle(void);
 static int reboot(void);
 static int oceanCurr(float *curr);
-static int riseDo(float targetD, int try);
+static int riseDo(float targetD);
 
 int boyEngLog(void);
 int boySafeChk(float *curr, float *temp);

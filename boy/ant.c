@@ -84,7 +84,7 @@ int antStart(void) {
 // turn off power to antmod 
 int antStop() {
   ant.on = false;
-  flogf("\n === antenna module stop %s", utlDateTime());
+  flogf("\n === ant module stop %s", utlDateTime());
   if (ant.log)
     utlCloseFile(&ant.log);
   if (ant.auton)
