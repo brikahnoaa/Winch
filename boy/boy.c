@@ -140,9 +140,9 @@ PhaseType fallPhase() {
   antStart();
   ctdStart();
   time(&boyd.fallBgn);
-  fallDo(boy.currChkD, 0);
+  fallDo(boy.currChkD);
   boySafeChk(&boyd.oceanCurr, &boyd.iceTemp);
-  fallDo(0, 0);
+  fallDo(0);
   time(&boyd.fallEnd);
   return data_pha;
 } // fallPhase
@@ -357,78 +357,86 @@ int iridDo(void) {
 // fall to dock // expect stopCmd 
 // uses: .riseRate .riseOrig .rateAccu .riseRetry
 // sets: .riseRate
-int fallDo(float targetD, int try) {
-  bool twentyB=false, targetB=false, errB=false;
-  float nowD, startD, velo;
-  int pt;        // estimated phase time
-  MsgType msg;
-  enum {ngkTmr, fiveTmr};  // local timer names
+int fallDo(float targetD) {
   static char *self="fallDo";
+  MsgType msg, sent, expect=stopCmd_msg;
+  bool twentyB=false, targetB=false;
+  enum {ngkTmr, fiveTmr};  // local timer names
+  float nowD, startD, velo;
+  int err=0, ngkTries=0, phaseEst, ngkDelay;
   DBG()
-  if (try > boy.fallRetry) return 2;
+  // 
   ctdStart();
   antStart();
   ctdDataWait(); 
-  flogf("\n ++sbe16@%3.1f sbe39@%3.1f", ctdDepth(), antDepth());
+  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, ctdDepth(), antDepth());
   nowD = startD = antDepth();
-  // could be cable far out, maybe dockD+100m
-  // pt = sec/meter(5) * depth + fudge for possible current drift
-  pt = 5*boyd.dockD+boy.fallOpM*60;
-  tmrStart(phase_tmr, pt);
   ngkFlush();
-  flogf("\n\t| fallCmd to winch at %s", utlTime());
-  ngkSend(fallCmd_msg);
-  tmrStart(ngkTmr, boy.ngkDelay*2);
+  ngkDelay = boy.ngkDelay*2;      // increments on every retry
+  msg = fallCmd_msg;
+  // could be cable far out, maybe dockD+100m
+  // phaseEst = sec/meter(5) * depth + fudge for possible current drift
+  phaseEst = 5*boyd.dockD+boy.fallOpM*60;
+  tmrStart(phase_tmr, phaseEst);
   tmrStart(fiveTmr, 5);
-  while (!errB) {       // loop exits by break;
+  while (!err) {       // loop exits by break;
     utlX();
-    if (ctdData()) 
-      ctdRead();
-    // check: pt, winch, 5s
-    if (antData()) 
-      nowD = antDepth();
-    // pt timeout // antmod may stay at surface as extra is reeled in
-    if (tmrExp(phase_tmr)) {
-      flogf("\n%s: ERR \t| fall timeout %ds @ %3.1f, stop", self, pt, nowD);
-      errB = true;
-      break;
-    }
-    // winch
-    if (ngkRecv(&msg)!=null_msg) {
+    /// winch
+    if (msg!=null_msg) { // send msg
+      flogf("\n\t| fallCmd to winch at %s", utlTime());
+      ngkSend(msg);
+      sent = msg;
+      msg = null_msg;
+      tmrStart(ngkTmr, ngkDelay);
+    } // send msg
+    if (ngkRecv(&msg)!=null_msg) { // msg read
       flogf("\n\t| %s from winch", ngkMsgName(msg));
-      if (msg==fallRsp_msg)
-        tmrStop(ngkTmr);
+      tmrStop(ngkTmr);
+      if (msg==fallRsp_msg) continue;
       // reached dock, probably
       if (msg==stopCmd_msg) break;
       // stop at target ?? were we expecting this?
       if (msg==stopRsp_msg) break;
-    }
-    if (tmrExp(ngkTmr)) {
-      flogf("\n\t| WARN no response from winch %s", utlTime());
-      // errB = true;
-      // break;
-    }
-    // stop, return if reached target
-    if (targetD && nowD>targetD && !targetB) {
-      ngkSend(stopCmd_msg);
-      tmrStart(ngkTmr, boy.ngkDelay*2);
+    } // msg read
+    if (tmrExp(ngkTmr)) { // msg resend
+      if (++ngkTries<10) {
+        ngkDelay += 10*ngkTries; // timeout increments
+        msg = sent;
+        flogf("\n\t| WARN winch timeout, try %d", ngkTries);
+      } else {
+        err = 1;
+        flogf("\n\t| ERR winch timeout retry limit");
+        break;
+      }
+    } // msg resend
+    if (targetD && !targetB && nowD>targetD) { // reached target
+      msg = stopCmd_msg;
+      ngkTries = 0;
+      ngkDelay = boy.ngkDelay*2;
       targetB = true;
-    }
-    // 5 seconds
-    if (tmrExp(fiveTmr)) {
+    } // reached target
+    if (tmrExp(fiveTmr)) { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
       if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
-    } 
-  } // while !stop !err
-  // retry if error
-  if (errB) {
-    flogf("\n%s: ERR retry %d", self, ++try);
-    ngkSend(stopCmd_msg);
-    utlNap(boy.ngkDelay*2);
-    ngkFlush();
-    return fallDo(targetD, try);
+    }  // 5 seconds
+    if (ctdData()) 
+      ctdRead();
+    if (antData()) 
+      nowD = antDepth();
+    if (tmrExp(phase_tmr)) {
+      flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
+          self, phaseEst, nowD);
+      err = 2;
+      break;
+    }
+  } // while !err
+  // fail if error
+  if (err) {
+    utlErr(fall_err, "phase failure");
+    flogf("\n%s: ERR \t| phase error %d", err);
+    return err;
   } else { 
     // normal stop
     return 0;
