@@ -71,6 +71,7 @@
 typedef enum {
     ant_err, boy_err, cfg_err, ctd_err, 
     gps_err, ngk_err, rud_err, wsp_err, 
+    rise_err, irid_err, fall_err, data_err,
     log_err, 
     sizeof_err} ErrType;
 

@@ -75,7 +75,8 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
 // uses: utl.buf
 // rets: char* to expected str, or null
 char *utlExpect(Serial port, char *buf, char *expect, int wait) {
-  char *r;
+  char *r=NULL;
+  int sz=0;
   DBG1("utlExpect(%s, %d)", expect, wait)
   buf[0] = 0;
   tmrStart(utl_tmr, wait);
@@ -86,8 +87,11 @@ char *utlExpect(Serial port, char *buf, char *expect, int wait) {
       DBG1("->'%s'", buf);
       return NULL;
     }
-    if (utlRead(port, utl.buf))
+    if (utlRead(port, utl.buf)) {
+      sz += strlen(utl.buf);
+      if (sz>=BUFSZ) return NULL;
       strcat(buf, utl.buf);
+    }
     r = strstr(buf, expect);
     if (r) break;
     utlNap(1);
