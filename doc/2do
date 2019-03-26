@@ -3,21 +3,21 @@ v errors to fix
 v. data cycle, to only go up once a day
 v. write file, send file - lost ability
 . verify
-.. output log\s16.log log\s39.log
+v. output log\s16.log log\s39.log
 v. datetime for 16+32
-.. boy.reset
-.. boy.stop
-.. config file
+v. boy.reset
+v. boy.stop
+v. config file
 . improvements this april
 v. humid, press, battery - and turn off after using
 -. stay down command (X cycles), count down in syslog
 v. save data from 16+32 rise and fall
 v. process land commands
-.. syslog disk space wspr
+v. syslog disk space wspr
 v. more info in eng report
 v.. temp, ocean curr at dock; cycles
 v.. gps drift, surf depth
-... detections, storm, restart
+v.. detections, storm, restart
 v.. up bgn/end, down bgn/end
 x.. voltage, current, humid, press
 .. robust winch commands (resend, detect)
@@ -28,7 +28,7 @@ v. set gain, gps time every data cycle (daily)
 . planned, if we have time 
 ..0 on start move sys.log to syslog\date\time.log
 ..1 in case of failure to create files, execute reboot
-..2 collect data from sbe16 and sbe39 both during descent
+v.2 collect data from sbe16 and sbe39 both during descent
 ..3 special test - at 10m. go up, stop, do measurements, come back down
 v.4 spectrogram only before rise, not every shutdown
 ..5 automatic timeout on surface, detected by winch params not buoy code
