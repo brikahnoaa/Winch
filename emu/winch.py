@@ -17,7 +17,7 @@ portSelect = 3
 
 amodDelay = 5.5
 serThreadObj = None
-slackDetect = 0
+slackDetect = 1
 
 def info():
     global go, cableLen, motorRunState

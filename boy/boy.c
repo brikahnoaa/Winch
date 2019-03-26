@@ -177,6 +177,7 @@ PhaseType dataPhase(void) {
   }
   // masters told us to stay down a few days
   if (boy.stayDown>0) {
+    flogf("\n\ndataPhase: stay down +%d cycles", boy.stayDown);
     boy.stayDown--;
     return data_pha;
   } else 

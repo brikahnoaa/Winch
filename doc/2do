@@ -10,7 +10,7 @@ v. boy.stop
 v. config file
 . improvements this april
 v. humid, press, battery - and turn off after using
--. stay down command (X cycles), count down in syslog
+v. stay down command (X cycles), count down in syslog
 v. save data from 16+32 rise and fall
 v. process land commands
 v. syslog disk space wspr
@@ -20,11 +20,12 @@ v.. gps drift, surf depth
 v.. detections, storm, restart
 v.. up bgn/end, down bgn/end
 x.. voltage, current, humid, press
-.. robust winch commands (resend, detect)
+v. robust winch commands (resend, detect)
 v. set gain, gps time every data cycle (daily)
 . test cycle
 -. change wispr gain remote (g2 => crash?)
 .. change spectra gain
+.. iridAuton
 . planned, if we have time 
 ..0 on start move sys.log to syslog\date\time.log
 ..1 in case of failure to create files, execute reboot
