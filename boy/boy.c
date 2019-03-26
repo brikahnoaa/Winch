@@ -384,6 +384,14 @@ int fallDo(float targetD) {
   tmrStart(fiveTmr, 5);
   while (!err) {       // loop exits by break;
     utlX();
+    /// check target first
+    if (targetD && !targetB && nowD>targetD) { // reached target
+      send = stopCmd_msg;
+      want = stopRsp_msg;
+      ngkTries = 0;
+      ngkDelay = boy.ngkDelay*2;
+      targetB = true;
+    } // reached target
     /// winch
     if (send!=null_msg) { // send msg
       flogf("\n\t| %s to winch at %s", ngkMsgName(send), utlTime());
@@ -418,13 +426,6 @@ int fallDo(float targetD) {
         break;
       }
     } // msg timeout
-    if (targetD && !targetB && nowD>targetD) { // reached target
-      send = stopCmd_msg;
-      want = stopRsp_msg;
-      ngkTries = 0;
-      ngkDelay = boy.ngkDelay*2;
-      targetB = true;
-    } // reached target
     if (tmrExp(fiveTmr)) { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
