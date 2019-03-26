@@ -393,18 +393,19 @@ int fallDo(float targetD) {
       tmrStart(ngkTmr, ngkDelay);
     } // send msg
     if (ngkRecv(&recv)!=null_msg) { // msg read
-      flogf("\n\t| %s from winch", ngkMsgName(recv));
-      if (recv!=want && want!=null_msg) 
-        flogf(", but we want %s", ngkMsgName(want));
       tmrStop(ngkTmr);
-      if (want==fallRsp_msg) {
-        send = fallCmd_msg;
-        continue;
-      }
-      // reached dock, probably
+      flogf("\n\t| %s from winch", ngkMsgName(recv));
+      // reached dock, or jammed // ?? check depth for err?
       if (recv==stopCmd_msg) break;
-      // stop at target ?? were we expecting this?
-      if (recv==stopRsp_msg) break;
+      if (want!=null_msg) { // want
+        if (recv==want) { // satisfied
+          want = null_msg;
+          continue;
+        } else { // retry
+          flogf(", but we want %s", ngkMsgName(want));
+          send = sent;
+        }
+      } // want
     } // msg read
     if (tmrExp(ngkTmr)) { // msg timeout
       if (++ngkTries<10) {
