@@ -363,7 +363,7 @@ int fallDo(float targetD) {
   bool twentyB=false, targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
   float nowD, startD, velo;
-  int err=0, ngkTries=0, phaseEst, ngkDelay;
+  int err=0, ngkTries, phaseEst, ngkDelay;
   DBG()
   // 
   ctdStart();
@@ -371,7 +371,9 @@ int fallDo(float targetD) {
   ctdDataWait(); 
   flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, ctdDepth(), antDepth());
   nowD = startD = antDepth();
+  // winch
   ngkFlush();
+  ngkTries = 0;
   ngkDelay = boy.ngkDelay*2;      // increments on every retry
   send = fallCmd_msg;
   want = fallRsp_msg;
@@ -404,9 +406,9 @@ int fallDo(float targetD) {
       // stop at target ?? were we expecting this?
       if (recv==stopRsp_msg) break;
     } // msg read
-    if (tmrExp(ngkTmr)) { // msg resend
+    if (tmrExp(ngkTmr)) { // msg timeout
       if (++ngkTries<10) {
-        ngkDelay += 10*ngkTries; // timeout increments
+        ngkDelay += 10*ngkTries; // timeout increments by 10, then 20 ...
         send = sent;
         flogf("\n\t| WARN winch timeout, try %d", ngkTries);
       } else {
@@ -414,9 +416,10 @@ int fallDo(float targetD) {
         flogf("\n\t| ERR winch timeout retry limit");
         break;
       }
-    } // msg resend
+    } // msg timeout
     if (targetD && !targetB && nowD>targetD) { // reached target
       send = stopCmd_msg;
+      want = stopRsp_msg;
       ngkTries = 0;
       ngkDelay = boy.ngkDelay*2;
       targetB = true;
