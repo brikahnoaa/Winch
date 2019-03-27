@@ -42,7 +42,7 @@ int ctdStart(void) {
       ctdSample();
       return 0;
     } else {
-      flogf("\n%s(): ERR sbe39, expected prompt", self);
+      flogf("\n%s(): ERR sbe16, expected prompt", self);
       return 1;
     }
   ctd.on = true;

@@ -23,11 +23,11 @@ x.. voltage, current, humid, press
 v. robust winch commands (resend, detect)
 v. set gain, gps time every data cycle (daily)
 . test cycle
--. change wispr gain remote (g2 => crash?)
-.. change spectra gain
+v. change wispr gain remote (g2 => crash?)
+v. change spectra gain
 .. iridAuton
 . planned, if we have time 
-..0 on start move sys.log to syslog\date\time.log
+v.0 on start move sys.log to syslog\date\time.log
 ..1 in case of failure to create files, execute reboot
 v.2 collect data from sbe16 and sbe39 both during descent
 ..3 special test - at 10m. go up, stop, do measurements, come back down
@@ -36,7 +36,7 @@ v.4 spectrogram only before rise, not every shutdown
 ..6 calendar - season to stay down
 ..7 more than 1 block per file
 ..8 englog: land commands
-..9 if at surf but no stop, then stopCmd
+v.9 if rise phase_tmr, then stopCmd
 
 from haru:
 CF2 program to work on (3/1/2019)
