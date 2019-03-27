@@ -424,7 +424,7 @@ int riseDo(float targetD) {
           self, phaseEst, nowD);
       err = 2;
       ngkSend(stopCmd_msg);
-      if (ngkRecvWait(&msg, 30)!=stopRsp_msg) {
+      if (ngkRecvWait(&recv, 30)!=stopRsp_msg) {
         flogf("\n%s: ERR \t| stopCmd fail");
         ngkSend(stopCmd_msg);
       }
