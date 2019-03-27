@@ -631,6 +631,8 @@ int boyEngLog(void) {
       all.cycle, utlDateTime());
   sprintf(b+strlen(b), "program start %s, boot #%d\n",
       utlDateTimeFmt(all.startProg), all.starts);
+  sprintf(b+strlen(b), "antSurfD:%3.1f, s39:%3.1f, s16:%3.1f\n",
+      antSurfD(), antDepth(), ctdDepth());
   // sprintf(b+strlen(b), "=== physical stats ===\n");
   // hps=&boyd.physical;
   // hpsRead(hps);
