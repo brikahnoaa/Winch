@@ -405,7 +405,7 @@ int riseDo(float targetD) {
       } // want
     } // msg read
     if (tmrExp(ngkTmr)) { // msg timeout
-      ngkDelay += 10*(++ngkTries); // timeout increments by 10, then 20 ...
+      ngkDelay += 20*(++ngkTries); // timeout increments by 20, then 40 ...
       send = sent;
       flogf("\n\t| WARN winch timeout, try %d", ngkTries);
     } // msg timeout
@@ -423,6 +423,11 @@ int riseDo(float targetD) {
       flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
           self, phaseEst, nowD);
       err = 2;
+      ngkSend(stopCmd_msg);
+      if (ngkRecvWait(&msg, 30)!=stopRsp_msg) {
+        flogf("\n%s: ERR \t| stopCmd fail");
+        ngkSend(stopCmd_msg);
+      }
       break;
     }
   } // while !err
@@ -498,7 +503,7 @@ int fallDo(float targetD) {
       } // want
     } // msg read
     if (tmrExp(ngkTmr)) { // msg timeout
-      ngkDelay += 10*(++ngkTries); // timeout increments by 10, then 20 ...
+      ngkDelay += 20*(++ngkTries); // timeout increments by 20, then 40 ...
       send = sent;
       flogf("\n\t| WARN winch timeout, try %d", ngkTries);
     } // msg timeout
