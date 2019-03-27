@@ -1,0 +1,855 @@
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds
+startCheck(): starts 1, max 50
+---   ---
+Program: sys.c,  Build: Mar 23 2019 16:27:22
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 1
+Started: 2019-03-24 16:29:39
+---   ---
+VEE: WSP.CARD=1
+VEE: WSP.DUTYM=12
+VEE: BOY.IRIDFREQ=1
+VEE: WSP.SPECTRUN=0
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === antenna module start 2019-03-24 16:29:40
+ === antenna module stop 2019-03-24 16:29:49
+ === buoy sbe16 start 2019-03-24 16:29:49
+ === buoy sbe16 stop 2019-03-24 16:29:53
+  System Starts 1
+boyMain(): starting with phase 0
+cycle 0 @2019-03-24 16:29:55
+deploy: testing sbe16, sbe39
+ === buoy sbe16 start 2019-03-24 16:29:55
+-ERR(ctd)	|0| 16:30:12 ctd: no prompt sbe16@18.0
+ === buoy sbe16 stop 2019-03-24 16:30:17
+ === antenna module start 2019-03-24 16:30:17 sbe39@4.0
+deployPhase()	| ant@4.0m buoy@18.0m 2019-03-24 16:30:23
+	| wait up to 240 minutes to reach bottom
+deployPhase@4.00m 16:30:23
+deployPhase@7.80m 16:30:54
+deployPhase@13.98m 16:31:25
+	| 13.98m>10m, watch for depth to settle down
+ 17.2 20.4 23.5 26.0 26.0
+	| down, pause for 60s
+	| boyd.dockD = 26.00
+	| go to surface, call home
+cycle 0 @2019-03-24 16:33:45
+SYS.LOG
+
+       1 file(s) copied
+risePhase()
+ === buoy sbe16 start 2019-03-24 16:33:47
+oceanCurr	: ant=26.00 boy=40.00 sideways=2.86
+safetyChk: lateral @ 26.0 = 2.9 sbe16@40.0 sbe39@26.0
+ngkFlush() 	| flushed out stopCmd
+		+ngkSend(#R,01,03) at 16:34:20
+	| riseCmd sent to winch at 16:34:20
+	| 16:34:26 depth=26.0 velo=0.00
+		+ngkRecv(%R,02,00) riseRsp 16:34:31
+riseDo:	| riseRsp from winch
+	| 16:34:32 depth=24.2 velo=-0.29
+	| 16:34:38 depth=22.3 velo=-0.29
+	| 20sec 16:34:41 startD-nowD 4.8
+	| 16:34:44 depth=20.3 velo=-0.43
+	| 16:34:50 depth=18.3 velo=-0.29
+	| 16:34:56 depth=16.3 velo=-0.43
+	| 16:35:02 depth=14.3 velo=-0.30
+	| 16:35:08 depth=12.4 velo=-0.29
+	| 16:35:14 depth=10.4 velo=-0.43
+	| 16:35:20 depth=8.4 velo=-0.45
+	| 16:35:26 depth=6.3 velo=-0.29
+	| 16:35:32 depth=4.3 velo=-0.29
+	| 16:35:38 depth=2.3 velo=-0.31
+	| reached targetD 2.1 at 16:35:38
+		+ngkSend(#S,01,00) at 16:35:38
+	| 16:35:44 depth=1.2
+		+ngkRecv(%S,02,00) stopRsp 16:35:50
+riseDo:	| stopRsp from winch
+cycle 1 @2019-03-24 16:35:50
+iridPhase 2019-03-24 16:35:50
+== eng log cycle 1 2019-03-24 16:35:54 ==
+temp=20.1, oceanCurr=2.9 @26.0m
+rise begin 2019-03-24 16:34:15, rise end 2019-03-24 16:35:50
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=, long=, time=
+gps drift: lat=, long=, time=
+ending surface depth=1.0
+
+16:35:58 ===
+
+GPS Sats=09 Date=03-24-2019 Time=16:36:41.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=09 Lat=44:37.2554 N Lng=124:02.6529 W
+16:36:46 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 16:37:15 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(16)->''gps.fileMax=8000''
+setting 'gps.fileMax=8000'
+iridSendFile(log\001eng.log) 1of1 [[383]]
+LandResp( x0D cmds)
+CMDS(14)->''boy.stayDown=1''
+setting 'boy.stayDown=1'
+iridSendFile(log\000s16.log) 1of1 [[276]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+16:38:07 =====
+
+GPS Sats=09 Date=03-24-2019 Time=16:38:22.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=09 Lat=44:37.2554 N Lng=124:02.6522 W
+cycle 1 @2019-03-24 16:38:27
+fallPhase 2019-03-24 16:38:27
+ ++sbe16@14.1 sbe39@1.5
+	| fallCmd to winch at 16:38:40
+		+ngkSend(#F,01,00) at 16:38:40
+	: 16:38:46 depth=1.3
+		+ngkRecv(%F,02,00) fallRsp 16:38:51
+	| fallRsp from winch
+	: 16:38:52 depth=1.3
+	: 16:38:58 depth=2.5 velo=0.17
+	: 16:39:04 depth=3.7 velo=0.18
+	: 16:39:10 depth=4.8 velo=0.26
+	: 16:39:16 depth=6.0 velo=0.26
+	: 16:39:22 depth=7.2 velo=0.26
+	: 16:39:28 depth=8.4 velo=0.26
+	: 16:39:34 depth=9.6 velo=0.26
+		+ngkSend(#S,01,00) at 16:39:35
+	: 16:39:40 depth=10.8 velo=0.26
+	: 16:39:46 depth=11.2 velo=0.00
+		+ngkRecv(%S,02,00) stopRsp 16:39:46
+	| stopRsp from winch
+oceanCurr	: ant=11.22 boy=25.22 sideways=2.86
+safetyChk: lateral @ 11.2 = 2.9
+ ++sbe16@25.2 sbe39@11.2
+	| fallCmd to winch at 16:40:22
+		+ngkSend(#F,01,00) at 16:40:22
+	: 16:40:28 depth=11.2 velo=0.00
+		+ngkRecv(%F,02,00) fallRsp 16:40:33
+	| fallRsp from winch
+	: 16:40:34 depth=12.3 velo=0.26
+	: 16:40:40 depth=13.6 velo=0.17
+	: 16:40:46 depth=14.8 velo=0.17
+	: 16:40:52 depth=16.0 velo=0.18
+	: 16:40:58 depth=17.1 velo=0.17
+	: 16:41:04 depth=18.3 velo=0.17
+	: 16:41:10 depth=19.5 velo=0.18
+	: 16:41:16 depth=20.7 velo=0.17
+	: 16:41:22 depth=21.9 velo=0.17
+	: 16:41:28 depth=23.1 velo=0.18
+	: 16:41:34 depth=24.3 velo=0.17
+	: 16:41:40 depth=25.5 velo=0.26
+	: 16:41:46 depth=26.0 velo=0.00
+		+ngkRecv(#S,02,00) stopCmd 16:41:47
+	| stopCmd from winch
+cycle 1 @2019-03-24 16:41:47
+dataPhase 2019-03-24 16:41:47
+ === antenna module stop 2019-03-24 16:41:47
+ === buoy sbe16 stop 2019-03-24 16:41:47
+wspDetectD: setting wispr date/time
+wspRiseT(): rise at 2019-03-24 17:00:00, starting wispr detection; end in 0.3 hours
+wspDetectH: running WISPR#1 for 12 minutes
+wspDetectH() idle for 5 minutes
+wspDetectD: 0 detections @2019-03-24 17:00:00
+cycle 1 @2019-03-24 17:00:00
+dataPhase 2019-03-24 17:00:00
+ === antenna module stop 2019-03-24 17:00:00
+ === buoy sbe16 stop 2019-03-24 17:00:00
+wspDetectD: setting wispr date/time
+wspRiseT(): rise at 2019-03-24 18:00:00, starting wispr detection; end in 1.0 hours
+wspDetectH: running WISPR#1 for 12 minutes
+wspDetectH() idle for 47 minutes
+wspDetectD: 0 detections @2019-03-24 18:00:00
+cycle 1 @2019-03-24 18:00:00
+SYS.LOG
+
+       1 file(s) copied
+risePhase()
+ === antenna module start 2019-03-24 18:00:01
+ === buoy sbe16 start 2019-03-24 18:00:05
+oceanCurr	: ant=26.00 boy=40.00 sideways=2.86
+safetyChk: lateral @ 26.0 = 2.9 sbe16@40.0 sbe39@26.0
+		+ngkSend(#R,01,03) at 18:00:39
+	| riseCmd sent to winch at 18:00:39
+	| 18:00:45 depth=26.0 velo=0.00
+		+ngkRecv(%R,02,00) riseRsp 18:00:51
+riseDo:	| riseRsp from winch
+	| 18:00:51 depth=24.2 velo=-0.29
+	| 18:00:57 depth=22.3 velo=-0.28
+	| 20sec 18:01:00 startD-nowD 4.6
+	| 18:01:03 depth=20.3 velo=-0.29
+	| 18:01:09 depth=18.3 velo=-0.29
+	| 18:01:15 depth=16.3 velo=-0.29
+	| 18:01:21 depth=14.4 velo=-0.29
+	| 18:01:27 depth=12.4 velo=-0.29
+	| 18:01:33 depth=10.4 velo=-0.43
+	| 18:01:39 depth=8.5 velo=-0.43
+	| 18:01:45 depth=6.5 velo=-0.43
+	| 18:01:51 depth=4.3 velo=-0.29
+	| 18:01:57 depth=2.4 velo=-0.29
+	| reached targetD 1.9 at 18:01:58
+		+ngkSend(#S,01,00) at 18:01:58
+	| 18:02:03 depth=1.5
+	| 18:02:09 depth=1.0
+		+ngkRecv(%S,02,00) stopRsp 18:02:09
+riseDo:	| stopRsp from winch
+cycle 2 @2019-03-24 18:02:09
+iridPhase 2019-03-24 18:02:09
+== eng log cycle 2 2019-03-24 18:02:13 ==
+temp=20.1, oceanCurr=2.9 @26.0m
+rise begin 2019-03-24 18:00:34, rise end 2019-03-24 18:02:09
+fall begin 2019-03-24 16:38:30, fall end 2019-03-24 16:41:47
+=== during last irid transmission ===
+gps start: lat=44:37.2554 N, long=124:02.6529 W, time=16:36:41.000
+gps drift: lat=44:37.2554 N, long=124:02.6522 W, time=16:38:22.000
+ending surface depth=1.5
+
+18:02:17 ===
+
+GPS Sats=08 Date=03-24-2019 Time=18:03:03.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2550 N Lng=124:02.6527 W
+18:03:08 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 18:03:40 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(15)->''wsp.wisprGain=0''
+setting 'wsp.wisprGain=0'
+iridSendFile(log\002eng.log) 1of1 [[457]]
+LandResp( x0D done)
+iridSendFile(log\001s16.log) 1of1 [[8000]]
+LandResp( x0D )
+ERR	| iridSendFile(
+)->12
+18:05:06 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=3 18:05:34 (0) CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\001s16.log) 1of1 [[8000]]
+LandResp(cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+18:07:17 =====
+
+GPS Sats=08 Date=03-24-2019 Time=18:07:33.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2557 N Lng=124:02.6513 W
+cycle 2 @2019-03-24 18:07:38
+fallPhase 2019-03-24 18:07:38
+ ++sbe16@14.0 sbe39@1.0
+	| fallCmd to winch at 18:07:51
+		+ngkSend(#F,01,00) at 18:07:51
+	: 18:07:57 depth=1.1
+		+ngkRecv(%F,02,00) fallRsp 18:08:02
+	| fallRsp from winch
+	: 18:08:03 depth=1.6 velo=0.26
+	: 18:08:09 depth=2.3 velo=0.26
+	: 18:08:15 depth=3.5 velo=0.18
+	: 18:08:21 depth=4.7 velo=0.26
+	: 18:08:27 depth=6.0 velo=0.18
+	: 18:08:33 depth=7.1 velo=0.28
+	: 18:08:39 depth=8.4 velo=0.17
+	: 18:08:45 depth=9.6 velo=0.18
+		+ngkSend(#S,01,00) at 18:08:47
+	: 18:08:51 depth=10.8 velo=0.19
+	: 18:08:57 depth=11.3 velo=0.00
+		+ngkRecv(%S,02,00) stopRsp 18:08:58
+	| stopRsp from winch
+oceanCurr	: ant=11.27 boy=25.27 sideways=2.86
+safetyChk: lateral @ 11.3 = 2.9
+ ++sbe16@25.3 sbe39@11.3
+	| fallCmd to winch at 18:09:34
+		+ngkSend(#F,01,00) at 18:09:34
+	: 18:09:40 depth=11.3 velo=0.00
+		+ngkRecv(%F,02,00) fallRsp 18:09:45
+	| fallRsp from winch
+	: 18:09:46 depth=12.3 velo=0.26
+	: 18:09:52 depth=13.6 velo=0.17
+	: 18:09:58 depth=14.8 velo=0.17
+	: 18:10:04 depth=16.0 velo=0.18
+	: 18:10:10 depth=17.2 velo=0.17
+	: 18:10:16 depth=18.4 velo=0.17
+	: 18:10:22 depth=19.5 velo=0.17
+	: 18:10:28 depth=20.8 velo=0.17
+	: 18:10:34 depth=21.9 velo=0.17
+	: 18:10:40 depth=23.1 velo=0.26
+	: 18:10:46 depth=24.3 velo=0.17
+	: 18:10:52 depth=25.5 velo=0.26
+	: 18:10:58 depth=26.0 velo=0.00
+		+ngkRecv(#S,02,00) stopCmd 18:10:58
+	| stopCmd from winch
+cycle 2 @2019-03-24 18:10:58
+dataPhase 2019-03-24 18:10:59
+ === antenna module stop 2019-03-24 18:10:59
+ === buoy sbe16 stop 2019-03-24 18:10:59
+wspDetectD: setting wispr date/time
+wspRiseT(): rise at 2019-03-24 19:00:00, starting wispr detection; end in 0.8 hours
+wspDetectH: running WISPR#1 for 12 minutes
+wspDetectH() idle for 36 minutes
+wspDetectD: 0 detections @2019-03-24 19:00:00
+cycle 2 @2019-03-24 19:00:00
+SYS.LOG
+
+       1 file(s) copied
+risePhase()
+ === antenna module start 2019-03-24 19:00:01
+ === buoy sbe16 start 2019-03-24 19:00:05
+oceanCurr	: ant=26.00 boy=40.00 sideways=2.86
+safetyChk: lateral @ 26.0 = 2.9 sbe16@40.0 sbe39@26.0
+		+ngkSend(#R,01,03) at 19:00:39
+	| riseCmd sent to winch at 19:00:39
+	| 19:00:45 depth=26.0 velo=0.00
+		+ngkRecv(%R,02,00) riseRsp 19:00:51
+riseDo:	| riseRsp from winch
+	| 19:00:51 depth=24.2 velo=-0.29
+	| 19:00:57 depth=22.2 velo=-0.29
+	| 20sec 19:01:00 startD-nowD 4.8
+	| 19:01:03 depth=20.3 velo=-0.29
+	| 19:01:09 depth=18.3 velo=-0.29
+	| 19:01:15 depth=16.3 velo=-0.29
+	| 19:01:21 depth=14.4 velo=-0.43
+	| 19:01:27 depth=12.4 velo=-0.29
+	| 19:01:33 depth=10.4 velo=-0.43
+	| 19:01:39 depth=8.3 velo=-0.29
+	| 19:01:45 depth=6.5 velo=-0.43
+	| 19:01:51 depth=4.3 velo=-0.29
+	| 19:01:57 depth=2.4 velo=-0.29
+	| reached targetD 1.9 at 19:01:58
+		+ngkSend(#S,01,00) at 19:01:58
+	| 19:02:03 depth=0.8
+	| 19:02:09 depth=0.9
+		+ngkRecv(%S,02,00) stopRsp 19:02:09
+riseDo:	| stopRsp from winch
+cycle 3 @2019-03-24 19:02:09
+iridPhase 2019-03-24 19:02:09
+== eng log cycle 3 2019-03-24 19:02:13 ==
+temp=20.1, oceanCurr=2.9 @26.0m
+rise begin 2019-03-24 19:00:34, rise end 2019-03-24 19:02:09
+fall begin 2019-03-24 18:07:41, fall end 2019-03-24 18:10:58
+=== during last irid transmission ===
+gps start: lat=44:37.2550 N, long=124:02.6527 W, time=18:03:03.000
+gps drift: lat=44:37.2557 N, long=124:02.6513 W, time=18:07:33.000
+ending surface depth=1.2
+
+19:02:22 ===
+
+GPS Sats=08 Date=03-24-2019 Time=19:03:05.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2559 N Lng=124:02.6513 W
+19:03:10 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 19:03:41 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+iridSendFile(log\003eng.log) 1of1 [[457]]
+LandResp( x0D cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+iridSendFile(log\002s16.log) 1of1 [[8000]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+19:05:16 =====
+
+GPS Sats=08 Date=03-24-2019 Time=19:05:35.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2559 N Lng=124:02.6518 W
+cycle 3 @2019-03-24 19:05:40
+fallPhase 2019-03-24 19:05:40
+ ++sbe16@14.0 sbe39@1.3
+	| fallCmd to winch at 19:05:53
+		+ngkSend(#F,01,00) at 19:05:53
+	: 19:05:59 depth=1.2
+		+ngkRecv(%F,02,00) fallRsp 19:06:04
+	| fallRsp from winch
+	: 19:06:05 depth=1.0
+	: 19:06:11 depth=2.3 velo=0.17
+	: 19:06:17 depth=3.5 velo=0.19
+	: 19:06:23 depth=4.7 velo=0.26
+	: 19:06:29 depth=5.9 velo=0.26
+	: 19:06:35 depth=7.1 velo=0.27
+	: 19:06:41 depth=8.3 velo=0.26
+	: 19:06:47 depth=9.6 velo=0.17
+		+ngkSend(#S,01,00) at 19:06:49
+	: 19:06:53 depth=10.7 velo=0.27
+	: 19:06:59 depth=11.2 velo=0.00
+		+ngkRecv(%S,02,00) stopRsp 19:07:00
+	| stopRsp from winch
+oceanCurr	: ant=11.16 boy=25.16 sideways=2.86
+safetyChk: lateral @ 11.2 = 2.9
+ ++sbe16@25.2 sbe39@11.2
+	| fallCmd to winch at 19:07:35
+		+ngkSend(#F,01,00) at 19:07:35
+	: 19:07:42 depth=11.2 velo=0.00
+		+ngkRecv(%F,02,00) fallRsp 19:07:47
+	| fallRsp from winch
+	: 19:07:48 depth=12.3 velo=0.26
+	: 19:07:54 depth=13.5 velo=0.26
+	: 19:08:00 depth=14.7 velo=0.27
+	: 19:08:06 depth=16.0 velo=0.17
+	: 19:08:12 depth=17.2 velo=0.17
+	: 19:08:18 depth=18.4 velo=0.19
+	: 19:08:24 depth=19.6 velo=0.18
+	: 19:08:30 depth=20.8 velo=0.17
+	: 19:08:36 depth=22.0 velo=0.19
+	: 19:08:42 depth=23.2 velo=0.17
+	: 19:08:48 depth=24.4 velo=0.17
+	: 19:08:54 depth=25.6 velo=0.18
+	: 19:09:00 depth=26.0 velo=0.00
+		+ngkRecv(#S,02,00) stopCmd 19:09:00
+	| stopCmd from winch
+cycle 3 @2019-03-24 19:09:00
+dataPhase 2019-03-24 19:09:00
+ === antenna module stop 2019-03-24 19:09:01
+ === buoy sbe16 stop 2019-03-24 19:09:01
+wspDetectD: setting wispr date/time
+wspRiseT(): rise at 2019-03-24 20:00:00, starting wispr detection; end in 0.8 hours
+wspDetectH: running WISPR#1 for 12 minutes
+wspDetectH() idle for 38 minutes
+wspDetectD: 0 detections @2019-03-24 20:00:00
+cycle 3 @2019-03-24 20:00:00
+SYS.LOG
+
+       1 file(s) copied
+risePhase()
+ === antenna module start 2019-03-24 20:00:01
+ === buoy sbe16 start 2019-03-24 20:00:05
+oceanCurr	: ant=26.00 boy=40.00 sideways=2.86
+safetyChk: lateral @ 26.0 = 2.9 sbe16@40.0 sbe39@26.0
+		+ngkSend(#R,01,03) at 20:00:39
+	| riseCmd sent to winch at 20:00:39
+	| 20:00:45 depth=26.0 velo=0.00
+		+ngkRecv(%R,02,00) riseRsp 20:00:51
+riseDo:	| riseRsp from winch
+	| 20:00:51 depth=24.2 velo=-0.29
+	| 20:00:57 depth=22.2 velo=-0.29
+	| 20sec 20:01:00 startD-nowD 4.8
+	| 20:01:03 depth=20.3 velo=-0.29
+	| 20:01:09 depth=18.3 velo=-0.29
+	| 20:01:15 depth=16.3 velo=-0.29
+	| 20:01:21 depth=14.4 velo=-0.43
+	| 20:01:27 depth=12.4 velo=-0.29
+	| 20:01:33 depth=10.4 velo=-0.43
+	| 20:01:39 depth=8.5 velo=-0.43
+	| 20:01:45 depth=6.4 velo=-0.43
+	| 20:01:51 depth=4.5 velo=-0.43
+	| 20:01:57 depth=2.5 velo=-0.30
+	| reached targetD 2.0 at 20:01:57
+		+ngkSend(#S,01,00) at 20:01:58
+	| 20:02:03 depth=1.3
+		+ngkRecv(%S,02,00) stopRsp 20:02:09
+riseDo:	| stopRsp from winch
+cycle 4 @2019-03-24 20:02:09
+iridPhase 2019-03-24 20:02:09
+== eng log cycle 4 2019-03-24 20:02:13 ==
+temp=20.1, oceanCurr=2.9 @26.0m
+rise begin 2019-03-24 20:00:34, rise end 2019-03-24 20:02:09
+fall begin 2019-03-24 19:05:43, fall end 2019-03-24 19:09:00
+=== during last irid transmission ===
+gps start: lat=44:37.2559 N, long=124:02.6513 W, time=19:03:05.000
+gps drift: lat=44:37.2559 N, long=124:02.6518 W, time=19:05:35.000
+ending surface depth=0.8
+
+20:02:17 ===
+
+GPS Sats=08 Date=03-24-2019 Time=20:02:59.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=08 Lat=44:37.2563 N Lng=124:02.6512 W
+20:03:04 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 20:03:33 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+iridSendFile(log\004eng.log) 1of1 [[457]]
+LandResp( x0D cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+iridSendFile(log\003s16.log) 1of1 [[8000]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+20:05:07 =====
+
+GPS Sats=08 Date=03-24-2019 Time=20:05:23.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2565 N Lng=124:02.6511 W
+cycle 4 @2019-03-24 20:05:28
+fallPhase 2019-03-24 20:05:28
+ ++sbe16@14.1 sbe39@1.2
+	| fallCmd to winch at 20:05:41
+		+ngkSend(#F,01,00) at 20:05:41
+	: 20:05:47 depth=1.2
+		+ngkRecv(%F,02,00) fallRsp 20:05:52
+	| fallRsp from winch
+	: 20:05:53 depth=1.2
+	: 20:05:59 depth=2.4 velo=0.17
+	: 20:06:05 depth=3.6 velo=0.19
+	: 20:06:11 depth=4.8 velo=0.18
+	: 20:06:17 depth=6.0 velo=0.26
+	: 20:06:23 depth=7.2 velo=0.27
+	: 20:06:29 depth=8.4 velo=0.26
+	: 20:06:35 depth=9.7 velo=0.17
+		+ngkSend(#S,01,00) at 20:06:37
+	: 20:06:41 depth=10.8 velo=0.27
+	: 20:06:47 depth=11.3 velo=0.00
+		+ngkRecv(%S,02,00) stopRsp 20:06:48
+	| stopRsp from winch
+oceanCurr	: ant=11.27 boy=25.27 sideways=2.86
+safetyChk: lateral @ 11.3 = 2.9
+ ++sbe16@25.3 sbe39@11.3
+	| fallCmd to winch at 20:07:23
+		+ngkSend(#F,01,00) at 20:07:23
+	: 20:07:30 depth=11.3 velo=0.00
+		+ngkRecv(%F,02,00) fallRsp 20:07:35
+	| fallRsp from winch
+	: 20:07:36 depth=12.4 velo=0.26
+	: 20:07:42 depth=13.6 velo=0.26
+	: 20:07:48 depth=14.8 velo=0.27
+	: 20:07:54 depth=16.1 velo=0.17
+	: 20:08:00 depth=17.3 velo=0.18
+	: 20:08:06 depth=18.5 velo=0.19
+	: 20:08:12 depth=19.7 velo=0.17
+	: 20:08:18 depth=20.9 velo=0.17
+	: 20:08:24 depth=22.1 velo=0.18
+	: 20:08:30 depth=23.3 velo=0.17
+	: 20:08:36 depth=24.5 velo=0.17
+	: 20:08:42 depth=25.7 velo=0.19
+	: 20:08:48 depth=26.0 velo=0.00
+		+ngkRecv(#S,02,00) stopCmd 20:08:48
+	| stopCmd from winch
+cycle 4 @2019-03-24 20:08:48
+dataPhase 2019-03-24 20:08:48
+ === antenna module stop 2019-03-24 20:08:48
+ === buoy sbe16 stop 2019-03-24 20:08:48
+wspDetectD: setting wispr date/time
+wspRiseT(): rise at 2019-03-24 21:00:00, starting wispr detection; end in 0.9 hours
+wspDetectH: running WISPR#1 for 12 minutes
+wspDetectH() idle for 38 minutes
+wspDetectD: 0 detections @2019-03-24 21:00:00
+cycle 4 @2019-03-24 21:00:00
+SYS.LOG
+
+       1 file(s) copied
+risePhase()
+ === antenna module start 2019-03-24 21:00:01
+ === buoy sbe16 start 2019-03-24 21:00:06
+oceanCurr	: ant=26.00 boy=40.00 sideways=2.86
+safetyChk: lateral @ 26.0 = 2.9 sbe16@40.0 sbe39@26.0
+		+ngkSend(#R,01,03) at 21:00:39
+	| riseCmd sent to winch at 21:00:39
+	| 21:00:45 depth=26.0 velo=0.00
+		+ngkRecv(%R,02,00) riseRsp 21:00:51
+riseDo:	| riseRsp from winch
+	| 21:00:51 depth=24.2 velo=-0.29
+	| 21:00:57 depth=22.2 velo=-0.29
+	| 20sec 21:01:00 startD-nowD 4.6
+	| 21:01:03 depth=20.3 velo=-0.29
+	| 21:01:09 depth=18.3 velo=-0.29
+	| 21:01:15 depth=16.3 velo=-0.29
+	| 21:01:21 depth=14.4 velo=-0.29
+	| 21:01:27 depth=12.4 velo=-0.29
+	| 21:01:33 depth=10.4 velo=-0.43
+	| 21:01:39 depth=8.5 velo=-0.43
+	| 21:01:45 depth=6.5 velo=-0.43
+	| 21:01:51 depth=4.3 velo=-0.29
+	| 21:01:57 depth=2.4 velo=-0.29
+	| reached targetD 1.9 at 21:01:58
+		+ngkSend(#S,01,00) at 21:01:58
+	| 21:02:03 depth=1.1
+	| 21:02:09 depth=1.0
+		+ngkRecv(%S,02,00) stopRsp 21:02:09
+riseDo:	| stopRsp from winch
+cycle 5 @2019-03-24 21:02:09
+iridPhase 2019-03-24 21:02:09
+== eng log cycle 5 2019-03-24 21:02:13 ==
+temp=20.1, oceanCurr=2.9 @26.0m
+rise begin 2019-03-24 21:00:34, rise end 2019-03-24 21:02:09
+fall begin 2019-03-24 20:05:31, fall end 2019-03-24 20:08:48
+=== during last irid transmission ===
+gps start: lat=44:37.2563 N, long=124:02.6512 W, time=20:02:59.000
+gps drift: lat=44:37.2565 N, long=124:02.6511 W, time=20:05:23.000
+ending surface depth=0.9
+
+21:02:17 ===
+
+GPS Sats=10 Date=03-24-2019 Time=21:03:03.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=10 Lat=44:37.2560 N Lng=124:02.6517 W
+21:03:08 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=3 21:03:39 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+iridSendFile(log\005eng.log) 1of1 [[457]]
+LandResp( x0D cmds)
+CMDS(15)->''wsp.wisprGain=2''
+setting 'wsp.wisprGain=2'
+iridSendFile(log\004s16.log) 1of1 [[8000]]
+LandResp( x0D cmds)
+CMDS(5)->''send3''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+21:05:16 =====
+
+GPS Sats=10 Date=03-24-2019 Time=21:05:32.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=10 Lat=44:37.2558 N Lng=124:02.6526 W
+cycle 5 @2019-03-24 21:05:37
+fallPhase 2019-03-24 21:05:37
+ ++sbe16@14.0 sbe39@0.9
+	| fallCmd to winch at 21:05:50
+		+ngkSend(#F,01,00) at 21:05:50
+	: 21:05:56 depth=1.0
+		+ngkRecv(%F,02,00) fallRsp 21:06:01
+	| fallRsp from winch
+	: 21:06:02 depth=1.0
+	: 21:06:08 depth=2.3 velo=0.17
+	: 21:06:14 depth=3.5 velo=0.19
+	: 21:06:20 depth=4.7 velo=0.26
+	: 21:06:26 depth=5.9 velo=0.26
+	: 21:06:32 depth=7.1 velo=0.27
+	: 21:06:38 depth=8.3 velo=0.26
+	: 21:06:44 depth=9.6 velo=0.17
+		+ngkSend(#S,01,00) at 21:06:46
+	: 21:06:50 depth=10.7 velo=0.28
+	: 21:06:56 depth=11.2 velo=0.00
+		+ngkRecv(%S,02,00) stopRsp 21:06:57
+	| stopRsp from winch
+oceanCurr	: ant=11.16 boy=25.16 sideways=2.86
+safetyChk: lateral @ 11.2 = 2.9
+ ++sbe16@25.2 sbe39@11.2
+	| fallCmd to winch at 21:07:32
+		+ngkSend(#F,01,00) at 21:07:32
+	: 21:07:39 depth=11.2 velo=0.00
+		+ngkRecv(%F,02,00) fallRsp 21:07:44
+	| fallRsp from winch
+	: 21:07:45 depth=12.3 velo=0.17
+	: 21:07:51 depth=13.5 velo=0.26
+	: 21:07:57 depth=14.7 velo=0.27
+	: 21:08:03 depth=15.9 velo=0.26
+	: 21:08:09 depth=17.2 velo=0.18
+	: 21:08:15 depth=18.3 velo=0.27
+	: 21:08:21 depth=19.5 velo=0.26
+	: 21:08:27 depth=20.7 velo=0.26
+	: 21:08:33 depth=22.0 velo=0.17
+	: 21:08:39 depth=23.2 velo=0.17
+	: 21:08:45 depth=24.4 velo=0.18
+	: 21:08:51 depth=25.6 velo=0.17
+	: 21:08:57 depth=26.0 velo=0.00
+		+ngkRecv(#S,02,00) stopCmd 21:08:57
+	| stopCmd from winch
+cycle 5 @2019-03-24 21:08:57
+dataPhase 2019-03-24 21:08:58
+ === antenna module stop 2019-03-24 21:08:58
+ === buoy sbe16 stop 2019-03-24 21:08:58
+wspDetectD: setting wispr date/time
+wspRiseT(): rise at 2019-03-24 22:00:00, starting wispr detection; end in 0.8 hours
+wspDetectH: running WISPR#1 for 12 minutes
+
+
+<<<< CRASH >>>>  (saved @ 0xB000)  <<<< CRASH >>>>
+
+CPU STATE:   PC.00E0A77E  SS.0000FC9A  SR.2015
+D0.00000000  D1.00000001  D2.00000044  D3.00000001
+D4.00023633  D5.00000001  D6.0000FEC6  D7.0000FEC5
+A0.2444583F  A1.0000FED2  A2.2444583F  A3.00003EE6
+A4.00E0A8E4  A5.00022C18  A6.00023635  A7.0000FC9A
+VB.00000000  US.00210041  SF.00000005  DF.00000005
+
+STACK FRAME: PC.00E0A77E  SR.2015  FT.C  VT.008/02
+S0.2444583F  S1.244458FF  S2.00E0A77E  S3.0007004D
+
+EXCEPTION VECTOR: 0x02 = "BERR"
+
+PC HISTORY:  PC.00E0A77E
+00E0A75E  00E0 96B4 2608 2008 4FEF 000A 6700 00A4
+00E0A76E  2043 91CA 2808 6000 009A 204A 70FF 5280
+00E0A77E  4A18 66FA 3800 6000 008A 58AF 0254 206F
+00E0A78E  0254 2468 FFFC 7000 102F 021A 670C 5540
+
+
+STACK DUMP:  A7.0000FC9A
+0000FC7A  0000 0000 0000 0001 0002 3633 0000 0001
+0000FC8A  0000 FEC6 0000 FEC5 0000 FF2C 0000 3EE6
+0000FC9A  2015 00E0 A77E C008 2444 583F 2444 58FF
+0000FCAA  00E0 A77E 0007 004D E000 0002 D1BA 00E3
+0000FCBA  D1CA 0000 FCC0 00E3 CBF6 0222 0000 0000
+0000FCCA  FCDE 0000 00E3 D224 0000 FCDD 0001 0001
+0000FCDA  0222 0001 5C97 F1F5 00E3 C22E 0222 0000
+0000FCEA  9C40 0000 00F0 00E3 0046 0000 0000 0000
+
+<<< MORE? (Y/N/A) [N] >>> 10..9..8..7..6..5..4..3..2..1..
+
+<<< RESETTING >>>
+
+
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>date
+Clock reads: Monday, March 25, 2019  02:50:02 am
+
+
+
+
+-----
+
+
+--- Embedded Ocean Systems WISPR V1.0 --- (10 sec to shell)
+/bin/wispr_bw -v2 -T8 -b15 -M2 -F2 -g2 -l wispr005.log
+Mounted /mnt successful
+Logging all messages to /mnt/wispr005.log
+Undefined instruction
+<5> - May be used to emulate instructions that are not defined for
+<5>   a particular processor implementation.
+Deferred Exception context
+CURRENT PROCESS:
+COMM=wispr_bw PID=210  CPU=0
+TEXT = 0x00200040-0x0022e1c0        DATA = 0x0022e1e0-0x00235714
+ BSS = 0x00235714-0x002413c0  USER-STACK = 0x00242f3c
+
+return address: [0x00200022]; contents of:
+0x00200000:  4662  544c  0000  0400  0000  4400  0200  c0e1
+0x00200010:  0300  f456  0400  a013  0000  0010  0300  f456
+0x00200020:  0000 [4611] 0000  0100  0b59  dc81  0000  0000
+0x00200030:  0000  0000  0000  0000  0000  0000  0000  0000
+
+ADSP-BF537-0.3 250(MHz CCLK) 125(MHz SCLK) (mpu off)
+Linux version 2.6.34.7-ADI-2010R1 (cjones@localhost.localdomain) (gcc version 4.3.5 (ADI-2010R1-RC4) ) #128 Sun Mar 6 14:31:51 PST 2011
+
+SEQUENCER STATUS:               Not tainted
+ SEQSTAT: 00000021  IPEND: 0008  IMASK: ffff  SYSCFG: 0006
+  EXCAUSE   : 0x21
+  physical IVG3 asserted : <0xffa0073c> { _trap + 0x0 }
+ RETE: <0x00000000> /* Maybe null pointer? */
+ RETN: <0x015ac000> [ inetd + 0x0 ]
+ RETX: <0x00000480> /* Maybe fixed code section */
+ RETS: <0x00200b32> [ wispr_bw + 0xaf2 ]
+ PC  : <0x00200022> [ wispr_bw + 0x22 ]
+DCPLB_FAULT_ADDR: <0x00242dd0> [ wispr_bw + 0x42dd0 ]
+ICPLB_FAULT_ADDR: <0x00200022> [ wispr_bw + 0x22 ]
+PROCESSOR STATE:
+ R0 : 3dcccccd    R1 : 00000000    R2 : 00000000    R3 : 80000000
+ R4 : 00235460    R5 : 00235b88    R6 : 5c97f21d    R7 : 3dcccccd
+ P0 : 002355c4    P1 : 00234f80    P2 : 00234e94    P3 : 00235738
+ P4 : 00235744    P5 : 00235758    FP : 00242dd0    SP : 015abf24
+ LB0: 0022629d    LT0: 0022629a    LC0: 00000000
+ LB1: 00225469    LT1: 00225468    LC1: 00000000
+ B0 : 00000137    L0 : 00000000    M0 : 00000000    I0 : 00000000
+ B1 : 000000c0    L1 : 00000000    M1 : 00000000    I1 : 00000001
+ B2 : 7ffff000    L2 : 00000000    M2 : 001f7b35    I2 : 7e5da380
+ B3 : 00000000    L3 : 00000000    M3 : 0000005b    I3 : 000001ed
+A0.w: 00000000   A0.x: 00000000   A1.w: 00000000   A1.x: 00000000
+USP : 00242dbc  ASTAT: 02001065
+
+Hardware Trace:
+   0 Target : <0x00003e5c> { _trap_c + 0x0 }
+     Source : <0xffa006ce> { _exception_to_level5 + 0x96 } CALL pcrel
+   1 Target : <0xffa00638> { _exception_to_level5 + 0x0 }
+     Source : <0xffa00502> { _bfin_return_from_exception + 0x6 } RTX
+   2 Target : <0xffa004fc> { _bfin_return_from_exception + 0x0 }
+     Source : <0xffa00598> { _ex_trap_c + 0x74 } JUMP.S
+   3 Target : <0xffa00524> { _ex_trap_c + 0x0 }
+     Source : <0xffa00766> { _trap + 0x2a } JUMP (P4)
+   4 Target : <0xffa0073c> { _trap + 0x0 }
+      FAULT : <0x00200022> [ wispr_bw + 0x22 ] 0x4611
+     Source : <0x00200020> [ wispr_bw + 0x20 ] NOP
+   5 Target : <0x00200020> [ wispr_bw + 0x20 ]
+     Source : <0x00200200> [ wispr_bw + 0x1c0 ] JUMP.S
+   6 Target : <0x002001f8> [ wispr_bw + 0x1b8 ]
+     Source : <0x00200b2e> [ wispr_bw + 0xaee ] CALL pcrel
+   7 Target : <0x00200b26> [ wispr_bw + 0xae6 ]
+     Source : <0x00200ac6> [ wispr_bw + 0xa86 ] IF CC JUMP pcrel (BP)
+   8 Target : <0x00200a9c> [ wispr_bw + 0xa5c ]
+     Source : <0x00200b8e> [ wispr_bw + 0xb4e ] JUMP.S
+   9 Target : <0x00200b8e> [ wispr_bw + 0xb4e ]
+     Source : <0x002005a6> [ wispr_bw + 0x566 ] RTS
+  10 Target : <0x002005a0> [ wispr_bw + 0x560 ]
+     Source : <0x00203210> [ wispr_bw + 0x31d0 ] RTS
+  11 Target : <0x00203208> [ wispr_bw + 0x31c8 ]
+     Source : <0x00225a76> [ wispr_bw + 0x25a36 ] RTS
+  12 Target : <0x00225a6e> [ wispr_bw + 0x25a2e ]
+     Source : <0x00225a64> [ wispr_bw + 0x25a24 ] JUMP.S
+  13 Target : <0x00225a64> [ wispr_bw + 0x25a24 ]
+     Source : <0x0021eeb8> [ wispr_bw + 0x1ee78 ] RTS
+  14 Target : <0x0021eeb2> [ wispr_bw + 0x1ee72 ]
+     Source : <0x0021ee9a> [ wispr_bw + 0x1ee5a ] IF CC JUMP pcrel (BP)
+  15 Target : <0x0021ee86> [ wispr_bw + 0x1ee46 ]
+     Source : <0x002204a0> [ wispr_bw + 0x20460 ] RTS
+Userspace Stack
+Stack info:
+ SP: [0x00242dbc] <0x00242dbc> [ wispr_bw + 0x42dbc ]
+ FP: (0x00242ecc)
+ Memory from 0x00242db0 to 00243000
+00242db0: 000a8f20  00242dd8  002005a0 [00234ed8] 0177d2f0  00fde800  00235b88  00000848
+00242dd0: 00242df0  00200b32  00235758  256e8500  343a3930  00000039  5c97f215  0009a4c0
+00242df0: 00242e2c  00200c1a  00234ed8  00235928  00235758  0177d2f0  00fde800  00000000
+00242e10: 000f4000  004c4b40  00242e40  002236a0  00242ec8  5c97f21d  00000000  00242ecc
+00242e30: 002016fe  00234ed8  00235928  00235758  0177d2f0  00fde800  00000000  00242e68
+00242e50: 0000001a  3ea8f5c3  432a0000  3e4ccccd  3f19999a  ffffffff  52206f4e  66204354
+00242e70: 74636e75  2c6e6f69  206f6e20  636f6c63  726f206b  636f6c20  6f697461  6573206e
+00242e90: 00002e74  00000000  00000000  00000000  00000000  00000000  70736977  35303072
+00242eb0: 676f6c2e  00000000  00000000  00000000  00000000  00000000  00000000 (00242efc)
+00242ed0:<00228568> 00000000  00000009  00235710  00000000  00242f40  0022e190  00201000
+00242ef0: 00000000  00000000  00000000 (00000000) 0152e49c  0022e1e0  00441250  00441250
+00242f10: 00000000  00000000  0049df50  00000000  00000000  00000000  00000000  0022e190
+00242f30: 0022e1a2  00000000  0044342c  00000009  00242f7a <00242f88> 00242f8c  00242f90
+00242f50: 00242f95  00242f99  00242f9d  00242fa1  00242fa4  00000000  00242fb1  00242fd4
+00242f70: 00242fda  00000000  622f0000  772f6e69  72707369  0077625f  0032762d  0038542d
+00242f90: 3531622d  324d2d00  32462d00  32672d00  006c2d00  70736977  35303072  676f6c2e
+00242fb0: 54415000  622f3d48  2f3a6e69  2f727375  3a6e6962  6962732f  752f3a6e  732f7273
+00242fd0: 006e6962  3d445750  5548002f  565f4853  49535245  313d4e4f  2e36312e  622f0032
+00242ff0: 772f6e69  72707369  0077625f  00000000
+Return addresses in stack:
+   frame  1 : <0x00228568> [ wispr_bw + 0x28528 ]
+    address : <0x00242f88> [ wispr_bw + 0x42f88 ]
+bfin-wdt: Unexpected close, not stopping watchdog!
+ILL
+/dev/sda1 on /mnt type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=cp437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
+umounting /mnt ...
+try     mount /dev/sda1 /mnt
+
+
+BusyBox v1.16.2 (2011-03-06 14:29:17 PST) hush - the humble shell
+Enter 'help' for a list of built-in commands.
+
+root:/>
+
