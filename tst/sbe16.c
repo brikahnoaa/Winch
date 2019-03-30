@@ -15,7 +15,9 @@ void main(void){
   ctdSample();
   ctdDataWait();
   // ctdRead();
-  flogf("\nctdDepth %2.1f", ctdDepth());
+  flogf("ctdDepth %2.1f", ctdDepth());
+  if (!ctdPrompt())
+    flogf("ctdPrompt fail\n");
   flogf("\nPress Q to exit\n");
   while (true) {
     if (cgetq()) {
