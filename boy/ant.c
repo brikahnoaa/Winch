@@ -74,7 +74,7 @@ int antStart(void) {
     antAuton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
   utlWrite(ant.port, all.str, EOL);
-  if (!utlExpect(ant.port, all.str, EXEC, 2))
+  if (!utlExpect(ant.port, all.str, EXEC, 5))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
   antSample();
   return 0;

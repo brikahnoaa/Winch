@@ -321,7 +321,7 @@ int iridDo(void) {
       } else engB=true;
     }
     utlNap(boy.filePause);
-    if (!s16B) {
+    if (!s16B && all.cycle!=0) {  // testing exception
       utlLogPathName(all.str, "s16", all.cycle-1);
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
@@ -424,10 +424,6 @@ int riseDo(float targetD) {
           self, phaseEst, nowD);
       err = 2;
       ngkSend(stopCmd_msg);
-      if (ngkRecvWait(&recv, 30)!=stopRsp_msg) {
-        flogf("\n%s: ERR \t| stopCmd fail");
-        ngkSend(stopCmd_msg);
-      }
       break;
     }
   } // while !err

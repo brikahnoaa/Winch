@@ -3,23 +3,32 @@
 #include <ctd.h>
 #include <mpc.h>
 #include <sys.h>
-#include <boy.h>
-#include <ant.h>
 
 extern CtdInfo ctd;
 
 void main(void){
-  int r;
-  float fc, ft;
+  char c;
   sysInit();
   mpcInit();
   ctdInit();
-  antInit();
   ctdStart();
-  antStart();
-  if (!(r=boySafeChk(&fc, &ft)))
-    flogf("boySafeChk(%f, %f):>%d\n", fc, ft, r);
-  utlNap(9);
-  if (!(r=boySafeChk(&fc, &ft)))
-    flogf("boySafeChk(%f, %f):>%d\n", fc, ft, r);
+  if (!ctdPrompt()) flogf("ctdPrompt fail\n");
+  ctdSample();
+  ctdDataWait();
+  // ctdRead();
+  flogf("ctdDepth %2.1f", ctdDepth());
+  if (!ctdPrompt()) flogf("ctdPrompt fail\n");
+  flogf("\nPress Q to exit\n");
+  while (true) {
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      TUTxPutByte(ctd.port,c,false);
+    }
+    if (TURxQueuedCount(ctd.port)) {
+      c=TURxGetByte(ctd.port,false);
+      cputc(c);
+    }
+  }
+  ctdStop();
 }
