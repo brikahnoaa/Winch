@@ -1,3 +1,26 @@
+gps reads: 3x, consistent
++++ remove, just hangup
+print actual value after land instruct
+default pumpmode=1 biowiper=y
+
+1. At the beginning of noise*.log file from 0 to 8, for a few days dates
+were 3/30/2019. Times were different. Could be GPS time reading errors,
+but why it fixed the time later?
+2. Noise008.log is very large. Seems it concatenated to a one file. This
+is the period when LARA stayed at depth for the storm to pass.
+2. It seems missing the acoustic wind data of the time just before LARA
+rises.  For example, there are date between 07:30 and 08:30, and no data
+near 08:00.
+3. Starting time of noise*.log gradually becomes later as the dive/fall
+cycles progresses. Does it mean that the winch fall speed got slower?
+4. noise34.log did not end with the acoustic wind speed.
+
+. errs found post deploy
+.. iridSendFile
+... pre-alloc larger buffer, up to max block size
+... iridBlkSz (<gps.buf)
+... send multiple blocks
+.. gps datetime read / save glitch
 Fri, Mar  1, 2019  4:23:42 PM
 v errors to fix
 v. data cycle, to only go up once a day

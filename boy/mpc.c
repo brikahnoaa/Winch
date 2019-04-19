@@ -16,6 +16,7 @@ MpcInfo mpc;
 
 // Enable watch dog  HM 3/6/2014
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
+// #define CUSTOM_SYPCR 
 
 //
 // Set IO pins, set SYSCLK

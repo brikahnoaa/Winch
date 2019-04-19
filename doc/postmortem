@@ -1,0 +1,25 @@
+Tue, Apr  9, 2019 10:23:47 AM
+.1 how to test
+.. hint - number of cycles ~= 20?
+... what happens in a cycle
+... test 40 cycles of gps, wispr, rise/fall with ctd
+.. identify fail mode
+... first cannot create files, then cannot open Hello to read ?
+... are data files being created?
+.. if this is similar to last deploy fail mode
+... what is the same, different?
+.2 protection, sanity checks
+.. send hello from string, to max ability for commands
+.. read/write static file, should always work
+.. limits on err types (dangerous, settable)
+.. watchdog
+.3 external to cf2: wispr, cf card, boy2ant
+.4 other weak spots
+.. timing; delays to let external ops complete
+... file open, block, block, close
+.. serial buffering
+... wispr stack trace that occurs during interactions
+... enumerate interactions
+.5 wispr hardening
+.. eliminate serial input
+.. limit async actions (e.g. parameter for announcing detections)

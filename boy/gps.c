@@ -320,6 +320,7 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 ///
 // land ho! already did iridDial and iridProjHdr
 // send fname as separate files of max gps.fileMax
+// sets: gps.buf=malloc
 int iridSendFile(char *fname) {
   static char *self="iridSendFile";
   static char *rets="1:!file +10:!resp r:LandCmds";
@@ -333,10 +334,13 @@ int iridSendFile(char *fname) {
   }
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
+  // ?? bad move. all.buf is 4K
+  // ?? alloc gps.buf here, because param .fileMax may change during run
   if (len>=gps.fileMax)
     block = read(fh, all.buf, gps.fileMax);
   else
     block = read(fh, all.buf, len);
+  // ?? send multiple blocks
   iridSendBlock(all.buf, block, 1, 1);
   flogf(" [[%d]]", block);
   if ((r = iridLandResp(all.str))) return 10+r;

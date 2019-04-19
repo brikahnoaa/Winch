@@ -16,8 +16,9 @@ typedef struct GpsInfo {
   char project[16];         // rudicsland
   char projHdr[16];         // ???csProjPlat
   char logFile[64];
+  char *buf;                // buffer for file transfer
   int fileBlock;            // how many bytes to upload in a file block (512)
-  int fileMax;              // how many bytes max in a file (3000)
+  int fileMax;              // how many bytes max in a file (8000)
   int fileCnt;              // how many files to upload in a connection
   int hdrPause;             // wait sec for rudics header response (20)
   int hdrTry;               // header retry (3)

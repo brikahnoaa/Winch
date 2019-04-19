@@ -1,0 +1,30 @@
+rise begin 2019-04-02 17:32:19 rise end 2019-04-02 17:34:59  160 seconds
+fall begin 2019-04-02 17:39:32 fall end 2019-04-02 17:45:14  342 seconds
+
+rise begin 2019-04-03 00:00:23 rise end 2019-04-03 00:02:36  133 seconds
+fall begin 2019-04-03 00:06:03 fall end 2019-04-03 00:11:25  322 seconds
+
+rise begin 2019-04-03 08:00:23 rise end 2019-04-03 08:02:30  127 seconds
+fall begin 2019-04-03 08:06:42 fall end 2019-04-03 08:11:27  285 seconds
+
+rise begin 2019-04-03 16:00:23 rise end 2019-04-03 16:02:31  128 seconds
+fall begin 2019-04-03 16:05:55 fall end 2019-04-03 16:10:38  283 seconds
+
+rise begin 2019-04-04 00:00:23 rise end 2019-04-04 00:02:33  130 seconds
+fall begin 2019-04-04 00:05:52 fall end 2019-04-04 00:10:48  296 seconds
+
+rise begin 2019-04-04 08:00:23 rise end 2019-04-04 08:02:32  129 seconds
+fall begin 2019-04-04 08:06:22 fall end 2019-04-04 08:10:54  272 seconds
+
+rise begin 2019-04-04 16:00:23 rise end 2019-04-04 16:02:32  129 seconds
+fall begin 2019-04-04 16:06:13 fall end 2019-04-04 16:10:33  260 seconds
+
+rise begin 2019-04-05 00:00:23 rise end 2019-04-05 00:02:38  135 seconds
+fall begin 2019-04-05 00:06:12 fall end 2019-04-05 00:11:08  296 seconds
+
+rise begin 2019-04-08 16:00:23 rise end 2019-04-08 16:02:41  138 seconds
+fall begin 2019-04-08 16:06:26 fall end 2019-04-08 16:11:30  304 seconds
+
+rise begin 2019-04-09 00:00:23 rise end 2019-04-09 00:03:06  163 seconds
+
+grep 'begin.*end' eng.txt | tr ',^M' ' ' | while read a; do set $a; b=$(date -d "$3 $4" "+%s"); e=$(date -d "$7 $8" "+%s"); d=$(( $e - $b )); echo -n "$*"; echo "  $d seconds"; done
