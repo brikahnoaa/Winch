@@ -3,7 +3,7 @@ buoyID = '02'
 winchID = '01'
 
 # design
-mooring = 50
+mooring = 40
 buoyLine = 10
 floatsLine = 14
 antLine = 0
