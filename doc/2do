@@ -1,3 +1,17 @@
+Fri, May  3, 2019 10:03:24 AM
+. haru email
+https://www.designnews.com/electronics-test/5-lessons-learn-boeing-737-max-fiasco/132367532460732?ADTRK=UBM&elq_mid=8499&elq_cid=90046
+Most critical sensor in LARA.
+1) CTDs (pressure should be 0 to 100)
+2) No RS232 response from Iridium and GPS (we lost the antenna).
+Excessive current draw and low battery voltage.
+3) acoustic wind speed. Exceedingly high, e.g., 100 m/s
+4) battery voltage (<16V and >10 V)
+5) internal pressure (>700 <1100)
+We should include if clause to check the sanity of CTD pressure value.
+If it is out of the expected range (0-100) or no response, it should
+stay down.
+
 gps reads: 3x, consistent
 +++ remove, just hangup
 print actual value after land instruct

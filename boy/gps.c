@@ -5,7 +5,7 @@
 #include <tmr.h>
 #include <cfg.h>
 
-// gps and iridium routines have a lot of ways to fail, so return 0 or errcode
+// gps and iridium routines have a lot of ways to fail; return 0=success
 //
 #define EOL "\r"
 #define CALL_DELAY 20
@@ -23,6 +23,10 @@ void gpsInit(void) {
   gps.port = antPort();
   if (!gps.port)
     utlErr(gps_err, "no gps.port, was gpsInit called before antInit?");
+  gps.buf = malloc(1024 * 32);
+  if (!gps.buf)
+    utlErr(gps_err, "cannot malloc() - heap full?");
+  gps.buf[0] = 0;
   // sets projHdr to 13 char project header, 0 in byte 14
   sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
   // poke in cs high and low bytes
@@ -334,20 +338,19 @@ int iridSendFile(char *fname) {
   }
   stat(fname, &fileinfo);
   len = fileinfo.st_size;
-  // ?? bad move. all.buf is 4K
-  // ?? alloc gps.buf here, because param .fileMax may change during run
+  // read whole file into memory
   if (len>=gps.fileMax)
-    block = read(fh, all.buf, gps.fileMax);
+    block = read(fh, gps.buf, gps.fileMax);
   else
-    block = read(fh, all.buf, len);
+    block = read(fh, gps.buf, len);
   // ?? send multiple blocks
-  iridSendBlock(all.buf, block, 1, 1);
+  iridSendBlock(gps.buf, block, 1, 1);
   flogf(" [[%d]]", block);
   if ((r = iridLandResp(all.str))) return 10+r;
   if (strstr(all.str, "cmds"))
-    r = iridLandCmds(all.buf, &l);
-  all.buf[l] = 0;
-  iridProcessCmds(all.buf);
+    r = iridLandCmds(gps.buf, &l);
+  gps.buf[l] = 0;
+  iridProcessCmds(gps.buf);
   utlWrite(gps.port, "data", "");
   return r;
 } // iridSendFile

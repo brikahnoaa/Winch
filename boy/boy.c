@@ -30,6 +30,8 @@ void boyMain() {
   else if (all.starts>1) 
     reboot();      // reset to known state
   flogf("\nboyMain(): starting with phase %d", phase);
+  antStart();
+  ctdStart();
   //
   while (true) {
     utlX();
@@ -52,7 +54,11 @@ void boyMain() {
       phaseNext = fallPhase();
       break;
     case data_pha: // data collect by WISPR
+      antStop();
+      ctdStop();
       phaseNext = dataPhase();
+      antStart();
+      ctdStart();
       break;
     case error_pha:
       phaseNext = errorPhase();
@@ -94,8 +100,6 @@ PhaseType risePhase(void) {
   int result;
   flogf("\n%s %s", self, utlDateTime());
   if (tst.test && tst.noRise) return irid_pha;
-  antStart();
-  ctdStart();
   // if current is too strong at bottom
   if (boySafeChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
@@ -121,8 +125,6 @@ PhaseType risePhase(void) {
 PhaseType iridPhase(void) {
   flogf("\niridPhase %s", utlDateTime());
   if (tst.test && tst.noIrid) return fall_pha;
-  antStart();
-  ctdStart();
   // log file mgmt
   boyEngLog();
   if (boy.iridAuton) 
@@ -141,8 +143,6 @@ PhaseType fallPhase() {
   int result;
   flogf("\n%s %s", self, utlDateTime());
   if (tst.test && tst.noRise) return data_pha;
-  antStart();
-  ctdStart();
   time(&boyd.fallBgn);
   fallDo(boy.currChkD);
   boySafeChk(&boyd.oceanCurr, &boyd.iceTemp);
@@ -164,8 +164,6 @@ PhaseType dataPhase(void) {
   int success;
   flogf("\ndataPhase %s", utlDateTime());
   if (tst.test && tst.noData) return rise_pha;
-  antStop();
-  ctdStop();
   // ngkStop();
   success = wspDetectD(&boyd.detections, &boyd.spectr, 
       boy.iridHour, boy.iridFreq);
@@ -353,8 +351,6 @@ int riseDo(float targetD) {
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG()
   // 
-  ctdStart();
-  antStart();
   ctdDataWait(); 
   flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, ctdDepth(), antDepth());
   nowD = startD = antDepth();
@@ -449,8 +445,6 @@ int fallDo(float targetD) {
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG()
   // 
-  ctdStart();
-  antStart();
   ctdDataWait(); 
   flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, ctdDepth(), antDepth());
   nowD = startD = antDepth();
@@ -581,6 +575,7 @@ int boySafeChk(float *curr, float *temp) {
   float sideways;
   int r=0;
   DBG()
+  if (tst.test) return -10;
   // delay 10sec before measure to stabilize
   utlNap(10);
   if (oceanCurr(&sideways)) {
