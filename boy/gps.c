@@ -23,7 +23,7 @@ void gpsInit(void) {
   gps.port = antPort();
   if (!gps.port)
     utlErr(gps_err, "no gps.port, was gpsInit called before antInit?");
-  gps.buf = malloc(1024 * 32);
+  gps.buf = malloc((size_t)1024 * 32);
   if (!gps.buf)
     utlErr(gps_err, "cannot malloc() - heap full?");
   gps.buf[0] = 0;
