@@ -59,7 +59,7 @@ int antStart(void) {
   ant.on = true;
   flogf("\n === ant module start %s", utlDateTime());
   if (!ant.log && strlen(ant.logFile))
-    utlLogFile(&ant.log, ant.logFile);
+    utlLogOpen(&ant.log, ant.logFile);
   antDevice(cf2_dev);
   PIOClear(ANT_PWR);
   utlDelay(200);
@@ -86,7 +86,7 @@ int antStop() {
   ant.on = false;
   flogf("\n === ant module stop %s", utlDateTime());
   if (ant.log)
-    utlCloseFile(&ant.log);
+    utlLogClose(&ant.log);
   if (ant.auton)
     antAuton(false);
   antDevice(null_dev);
@@ -478,7 +478,7 @@ void antGetSamples(void) {
   if (ant.log)
     log = ant.log;
   else
-    if (utlLogFile(&log, ant.logFile)) {
+    if (utlLogOpen(&log, ant.logFile)) {
       flogf("%s() failed", self);
       return;
     }
@@ -495,7 +495,7 @@ void antGetSamples(void) {
   flogf(": %d bytes to %s", total, ant.logFile);
   // close log file if local only
   if (!ant.log)
-    utlCloseFile(&log);
+    utlLogClose(&log);
   if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
     utlExpect(ant.port, all.str, "-->", 2);

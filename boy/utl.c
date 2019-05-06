@@ -304,15 +304,15 @@ void utlLogPathName(char *path, char *base, int day) {
 // takes a base name and makes a full path, opens file, writes dateTime
 // ?? moves existing file to backup dir
 // rets: fileID or 0=err
-int utlLogFile(int *log, char *base) {
+int utlLogOpen(int *log, char *base) {
   int r=0, fd, flags;
   char path[64];
-  static char *self="utlLogFile";
+  static char *self="utlLogOpen";
   DBG()
   utlLogPathName(path, base, all.cycle);
   flags = O_APPEND | O_CREAT | O_WRONLY;
   *log=0;
-  fd = open(path, flags );
+  fd = open(path, flags);
   if (fd<=0) {
     sprintf(utl.str, "open ERR %d (errno %d), path %s", fd, errno, path);
     utlErr(log_err, utl.str);
@@ -320,6 +320,7 @@ int utlLogFile(int *log, char *base) {
   } else {
     DBG1("\n%s path\t| %s", self, path);
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
+    flogf("\n%s(%s):%d", self, path, fd);
     r = write(fd, utl.str, strlen(utl.str)); 
     if (r<1) {
       sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
@@ -330,23 +331,24 @@ int utlLogFile(int *log, char *base) {
   }
   *log=fd;
   return 0;
-} // utlLogFile
+} // utlLogOpen
 
 /// 
 // close file
-int utlCloseFile(int *fd) {
-  static char *self="utlCloseFile";
+int utlLogClose(int *fd) {
+  static char *self="utlLogClose";
   int f;
   DBG()
   if (*fd<1) return 0;   // no fd
   f=*fd;
+  flogf("\n%s(fd=%d) ", self, f);
   *fd=0;
   if (close(f)<0) {
     flogf("\n%s(): ERR closing file (fd=%d)", self, f);
     return 1;
   }
   return 0;
-} // utlCloseFile
+} // utlLogClose
 
 /// file handling error - FATAL
 // log error and shutdown

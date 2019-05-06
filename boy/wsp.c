@@ -62,7 +62,7 @@ int wspStart(void) {
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log && strlen(wsp.logFile))
-    utlLogFile(&wsp.log, wsp.logFile);
+    utlLogOpen(&wsp.log, wsp.logFile);
   return r;
 } // wspStart
 
@@ -73,12 +73,8 @@ int wspStop(void) {
   static char *self="wspStop";
   DBG()
   wsp.on = false;
-  if (wsp.log) {
-    // close log
-    if (close(wsp.log)) 
-      utlCloseErr( "wsp.log" );
-    wsp.log = 0;
-  }
+  if (wsp.log) 
+    utlLogClose(&wsp.log);
   mpcPamPwr(wsp.card, false);
   return 0;
 } // wspStop

@@ -107,8 +107,8 @@ char *utlExpect(Serial port, char *buf, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
-int utlLogFile(int *log, char *base);
-int utlCloseFile(int *fd);
+int utlLogOpen(int *log, char *base);
+int utlLogClose(int *fd);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);
 int utlTrim(char *str);
 int utlRead(Serial port, char *in);

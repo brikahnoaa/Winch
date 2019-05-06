@@ -50,7 +50,7 @@ int ctdStart(void) {
   mpcPamPwr(sbe16_pam, true);
   tmrStop(s16_tmr);
   if (!ctd.log && strlen(ctd.logFile))
-    utlLogFile(&ctd.log, ctd.logFile);
+    utlLogOpen(&ctd.log, ctd.logFile);
   if (!ctdPrompt())
     utlErr(ctd_err, "ctd: no prompt");
   sprintf(all.str, "datetime=%s", utlDateTimeCtd());
@@ -64,7 +64,7 @@ int ctdStart(void) {
 int ctdStop(void){
   static char *self="ctdStop";
   flogf("\n === buoy sbe16 stop %s", utlDateTime());
-  utlCloseFile(&ctd.log);
+  utlLogClose(&ctd.log);
   if (ctd.auton)
     ctdAuton(false);
   mpcPamPwr(sbe16_pam, false);
@@ -255,7 +255,7 @@ void ctdGetSamples(void) {
   int len2=len1, len3=len1;
   int total=0;
   if (!ctd.log && strlen(ctd.logFile))
-    if (utlLogFile(&ctd.log, ctd.logFile)) return;
+    if (utlLogOpen(&ctd.log, ctd.logFile)) return;
   flogf("\n+ctdGetSamples()");
   ctdPrompt();          // wakeup
   utlWrite(ctd.port, "GetSamples:", EOL);
@@ -268,7 +268,7 @@ void ctdGetSamples(void) {
     flogf("+[%d]", len3);
     total += len3;
   } // while ==
-  utlCloseFile(&ctd.log);
+  utlLogClose(&ctd.log);
   if (ctd.clearSamp) {
     utlWrite(ctd.port, "initLogging", EOL);
     utlExpect(ctd.port, all.str, "verify", 2);

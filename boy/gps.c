@@ -57,8 +57,7 @@ void gpsStop(void) {
   static char *self="gpsStop";
   DBG()
   if (gps.log)
-    close(gps.log);
-  gps.log = 0;
+    utlLogClose(&gps.log);
   antDevice(a3la_dev);
   utlWrite(gps.port, "at*p", EOL);
   utlExpect(gps.port, all.buf, "OK", 2);

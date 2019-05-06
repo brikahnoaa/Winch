@@ -597,7 +597,7 @@ int boySafeChk(float *curr, float *temp) {
 ///
 // drop winch, close log
 void boyStop(void) {
-  if (boyd.log) utlCloseFile(&boyd.log);
+  if (boyd.log) utlLogClose(&boyd.log);
 } // boyStop
 
 ///
@@ -654,11 +654,11 @@ int boyEngLog(void) {
   // land cmds
   //
   flogf("\n%s", b);
-  if (utlLogFile(&log, "eng")) 
+  if (utlLogOpen(&log, "eng")) 
     r=1;
   else {
     write(log, b, strlen(b));
-    utlCloseFile(&log);
+    utlLogClose(&log);
   }
   free(b);
   return r;
