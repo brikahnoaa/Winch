@@ -40,26 +40,26 @@ void main(void){
   sysInit();
   mpcInit();
 
-  printf("\n q to exit, c=count, f=first close, l=last close, o=open, a=all\n");
+  flogf("\n q to exit, c=count, f=first close, l=last close, o=open, a=all\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      printf("\n %c: ", c);
+      flogf("\n %c: ", c);
       if (c=='Q') break;
       if (c=='q') break;
       if (c=='c') {
-        printf("%d open files\n", count());
+        flogf("%d open files\n", count());
         continue;
       }
       if (c=='f') {
         f=first();
-        printf(" close %d ", f);
+        flogf(" close %d ", f);
         utlLogClose(&fd[f]);
         continue;
       }
       if (c=='l') {
         f=last();
-        printf(" close %d ", f);
+        flogf(" close %d ", f);
         utlLogClose(&fd[f]);
         continue;
       }
@@ -68,13 +68,13 @@ void main(void){
         f=last()+1;
         if (f>MAX) continue;
         utlLogOpen(&fd[f], s);
-        printf(" open #%d fd=%d ", f, fd[f]);
+        flogf(" open #%d fd=%d ", f, fd[f]);
         continue;
       }
       if (c=='a') {
         for (f=0; f<MAX; f++)
           if (fd[f]) 
-            printf(" %d:fd=%d", f, fd[f]);
+            flogf(" %d:fd=%d", f, fd[f]);
         continue;
       }
     }
