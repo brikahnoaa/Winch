@@ -34,7 +34,8 @@ int count() {
 
 
 void main(void){
-  char s[128], c;
+  char s[]="t1t";
+  char c;
   int n=0;
   sysInit();
   mpcInit();
@@ -59,7 +60,7 @@ void main(void){
         continue;
       }
       if (c=='o') {
-        sprintf( s, "t1t%03d", n++ );
+        all.cycle++;
         utlLogOpen(&fd[last()+1], s);
         continue;
       }
