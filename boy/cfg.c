@@ -282,6 +282,7 @@ int cfgRead(char *file) {
   buf = (char *)malloc(finfo.st_size+2);
   read(fh, buf, finfo.st_size);
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
+  close(fh);
   // parse cfg strings (dos or linux) and return count r
   r = 0;
   ptr = strtok(buf, "\r\n");
