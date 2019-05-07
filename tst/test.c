@@ -36,7 +36,7 @@ int count() {
 void main(void){
   char s[]="t1t";
   char c;
-  int n=0;
+  int f=0;
   sysInit();
   mpcInit();
 
@@ -44,7 +44,7 @@ void main(void){
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      printf("%c \n", c);
+      printf("\n %c: ", c);
       if (c=='Q') break;
       if (c=='q') break;
       if (c=='c') {
@@ -52,16 +52,22 @@ void main(void){
         continue;
       }
       if (c=='f') {
-        utlLogClose(&fd[first()]);
+        f=first();
+        printf(" close %d ", f);
+        utlLogClose(&fd[f]);
         continue;
       }
       if (c=='l') {
-        utlLogClose(&fd[last()]);
+        f=last();
+        printf(" close %d ", f);
+        utlLogClose(&fd[f]);
         continue;
       }
       if (c=='o') {
         all.cycle++;
-        utlLogOpen(&fd[last()+1], s);
+        f=last()+1;
+        printf(" open %d ", f);
+        utlLogOpen(&fd[f], s);
         continue;
       }
     }
