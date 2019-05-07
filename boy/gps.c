@@ -345,7 +345,8 @@ int iridSendFile(char *fname) {
   // ?? send multiple blocks
   iridSendBlock(gps.buf, block, 1, 1);
   flogf(" [[%d]]", block);
-  if ((r = iridLandResp(all.str))) return 10+r;
+  if ((r = iridLandResp(all.str))) 
+    return 10+r;
   if (strstr(all.str, "cmds"))
     r = iridLandCmds(gps.buf, &l);
   gps.buf[l] = 0;

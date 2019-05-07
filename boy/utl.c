@@ -302,7 +302,6 @@ void utlLogPathName(char *path, char *base, int day) {
 
 ///
 // takes a base name and makes a full path, opens file, writes dateTime
-// ?? moves existing file to backup dir
 // rets: fileID or 0=err
 int utlLogOpen(int *log, char *base) {
   int r=0, fd, flags;
