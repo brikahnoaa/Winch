@@ -342,6 +342,7 @@ int iridSendFile(char *fname) {
     block = read(fh, gps.buf, gps.fileMax);
   else
     block = read(fh, gps.buf, len);
+  close(fh);
   // ?? send multiple blocks
   iridSendBlock(gps.buf, block, 1, 1);
   flogf(" [[%d]]", block);
