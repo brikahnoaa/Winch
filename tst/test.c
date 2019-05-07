@@ -39,15 +39,15 @@ void main(void){
   sysInit();
   mpcInit();
 
-  flogf("\n q to exit, c=count, f=first close, l=last close, o=open");
+  printf("q to exit, c=count, f=first close, l=last close, o=open\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
-      flogf("%c \n", c);
+      printf("%c \n", c);
       if (c=='Q') break;
       if (c=='q') break;
       if (c=='c') {
-        flogf("%d open files\n", count());
+        printf("%d open files\n", count());
         continue;
       }
       if (c=='f') {
