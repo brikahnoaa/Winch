@@ -1,0 +1,1392 @@
+
+C:\>
+###MX Load: CRC 010000 026B5F = 8DCB1BB5
+Gs boy
+Saving 93024 bytes to BOY.PXE...
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds
+startCheck(): starts 2, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: May  6 2019 15:11:51
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 2
+Started: 2019-05-06 22:12:20
+---   ---
+cfgInit: config file default name 'lara.cfg'
+	boy.iridHour=7
+	wsp.spectRun=2
+	wsp.card=1
+cfgInit: read 3 lines from lara.cfg
+VEE: BOY.IRIDFREQ=2
+VEE: TST.TEST=1
+VEE: TST.NODATA=1
+VEE: TST.NODEPLOY=1
+VEE: TST.NORISE=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2019-05-06 22:12:23
+utlLogOpen(log\000s39.log):2
+ === ant module stop 2019-05-06 22:12:32
+utlLogClose(fd=2)
+  System Starts 2
+ === buoy sbe16 start 2019-05-06 22:12:33
+utlLogOpen(log\000s16.log):2
+ === buoy sbe16 stop 2019-05-06 22:12:37
+utlLogClose(fd=2)
+tst.test mode
+boyMain(): starting with phase 0
+ === ant module start 2019-05-06 22:12:39
+utlLogOpen(log\000s39.log):2
+ === buoy sbe16 start 2019-05-06 22:12:44
+utlLogOpen(log\000s16.log):3
+cycle 0 @2019-05-06 22:12:45
+deploy: testing sbe16, sbe39
+cycle 1 @2019-05-06 22:12:46
+risePhase 2019-05-06 22:12:46
+cycle 1 @2019-05-06 22:12:46
+iridPhase 2019-05-06 22:12:46
+== eng log cycle 1 2019-05-06 22:12:46 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=, long=, time=
+gps drift: lat=, long=, time=
+ending surface depth=0.0
+
+utlLogOpen(log\001eng.log):4
+utlLogClose(fd=4)
+22:12:50 ===
+
+GPS Sats=08 Date=05-06-2019 Time=22:13:35.000
+gpsSetTime()	| off by 1 seconds
+GPS Sats=08 Lat=44:37.2561 N Lng=124:02.6522 W
+22:13:40 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:14:11 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\001eng.log) 1of1 [[2305]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\000s16.log) 1of1 [[502]]
+LandResp( x0D cmds)
+CMDS(4)->''send''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:15:21 =====
+
+GPS Sats=08 Date=05-06-2019 Time=22:15:37.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2564 N Lng=124:02.6519 W
+cycle 1 @2019-05-06 22:15:42
+fallPhase 2019-05-06 22:15:42
+cycle 1 @2019-05-06 22:15:42
+ === ant module stop 2019-05-06 22:15:42
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:15:43
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:15:43
+ === ant module start 2019-05-06 22:15:43
+utlLogOpen(log\001s39.log):2
+ === buoy sbe16 start 2019-05-06 22:15:48
+utlLogOpen(log\001s16.log):3
+cycle 2 @2019-05-06 22:15:49
+risePhase 2019-05-06 22:15:49
+cycle 2 @2019-05-06 22:15:49
+iridPhase 2019-05-06 22:15:49
+== eng log cycle 2 2019-05-06 22:15:49 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2561 N, long=124:02.6522 W, time=22:13:35.000
+gps drift: lat=44:37.2564 N, long=124:02.6519 W, time=22:15:37.000
+ending surface depth=0.0
+
+utlLogOpen(log\002eng.log):7
+utlLogClose(fd=7)
+22:15:54 ===
+
+GPS Sats=06 Date=05-06-2019 Time=22:16:39.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=06 Lat=44:37.2566 N Lng=124:02.6521 W
+22:16:44 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:17:12 (0) CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\002eng.log) 1of1 [[1605]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\001s16.log) 1of1 [[4000]]
+ERR	| iridSendFile()->11
+22:19:06 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:19:38 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\001s16.log) 1of1 [[4000]]
+ERR	| iridSendFile()->11
+22:20:56 =====
+
+GPS Sats=06 Date=05-06-2019 Time=22:21:12.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=06 Lat=44:37.2567 N Lng=124:02.6513 W
+cycle 2 @2019-05-06 22:21:17
+fallPhase 2019-05-06 22:21:17
+cycle 2 @2019-05-06 22:21:17
+ === ant module stop 2019-05-06 22:21:17
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:21:18
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:21:18
+ === ant module start 2019-05-06 22:21:18
+utlLogOpen(log\002s39.log):2
+ === buoy sbe16 start 2019-05-06 22:21:23
+utlLogOpen(log\002s16.log):3
+cycle 3 @2019-05-06 22:21:24
+risePhase 2019-05-06 22:21:24
+cycle 3 @2019-05-06 22:21:24
+iridPhase 2019-05-06 22:21:24
+== eng log cycle 3 2019-05-06 22:21:24 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2566 N, long=124:02.6521 W, time=22:16:39.000
+gps drift: lat=44:37.2567 N, long=124:02.6513 W, time=22:21:12.000
+ending surface depth=0.0
+
+utlLogOpen(log\003eng.log):11
+utlLogClose(fd=11)
+22:21:29 ===
+
+GPS Sats=06 Date=05-06-2019 Time=22:22:11.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=06 Lat=44:37.2567 N Lng=124:02.6528 W
+22:22:16 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:22:45 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\003eng.log) 1of1 [[1605]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\002s16.log) 1of1 [[1210]]
+ERR	| iridSendFile()->11
+22:24:01 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:24:25 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\002s16.log) 1of1 [[1210]]
+LandResp(cmds)
+CMDS(5)->''send1''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:25:14 =====
+
+GPS Sats=07 Date=05-06-2019 Time=22:25:30.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=07 Lat=44:37.2569 N Lng=124:02.6516 W
+cycle 3 @2019-05-06 22:25:35
+fallPhase 2019-05-06 22:25:35
+cycle 3 @2019-05-06 22:25:35
+ === ant module stop 2019-05-06 22:25:35
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:25:36
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:25:36
+ === ant module start 2019-05-06 22:25:36
+utlLogOpen(log\003s39.log):2
+ === buoy sbe16 start 2019-05-06 22:25:41
+utlLogOpen(log\003s16.log):3
+cycle 4 @2019-05-06 22:25:42
+risePhase 2019-05-06 22:25:42
+cycle 4 @2019-05-06 22:25:42
+iridPhase 2019-05-06 22:25:42
+== eng log cycle 4 2019-05-06 22:25:42 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2567 N, long=124:02.6528 W, time=22:22:11.000
+gps drift: lat=44:37.2569 N, long=124:02.6516 W, time=22:25:30.000
+ending surface depth=0.0
+
+utlLogOpen(log\004eng.log):15
+utlLogClose(fd=15)
+22:25:47 ===
+
+GPS Sats=07 Date=05-06-2019 Time=22:26:33.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=07 Lat=44:37.2560 N Lng=124:02.6526 W
+22:26:38 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:27:09 (0) CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\004eng.log) 1of1 [[1069]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\003s16.log) 1of1 [[1210]]
+LandResp( x0D cmds)
+CMDS(4)->''send''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:28:32 =====
+
+GPS Sats=07 Date=05-06-2019 Time=22:28:47.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=07 Lat=44:37.2556 N Lng=124:02.6514 W
+cycle 4 @2019-05-06 22:28:52
+fallPhase 2019-05-06 22:28:52
+cycle 4 @2019-05-06 22:28:52
+ === ant module stop 2019-05-06 22:28:52
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:28:53
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:28:53
+ === ant module start 2019-05-06 22:28:53
+utlLogOpen(log\004s39.log):2
+ === buoy sbe16 start 2019-05-06 22:28:58
+utlLogOpen(log\004s16.log):3
+cycle 5 @2019-05-06 22:28:59
+risePhase 2019-05-06 22:28:59
+cycle 5 @2019-05-06 22:28:59
+iridPhase 2019-05-06 22:28:59
+== eng log cycle 5 2019-05-06 22:29:00 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2560 N, long=124:02.6526 W, time=22:26:33.000
+gps drift: lat=44:37.2556 N, long=124:02.6514 W, time=22:28:47.000
+ending surface depth=0.0
+
+utlLogOpen(log\005eng.log):18
+utlLogClose(fd=18)
+22:29:04 ===
+
+GPS Sats=06 Date=05-06-2019 Time=22:29:41.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=06 Lat=44:37.2568 N Lng=124:02.6513 W
+22:29:46 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:30:17 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\005eng.log) 1of1 [[1069]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\004s16.log) 1of1 [[1210]]
+LandResp( x0D cmds)
+CMDS(4)->''send''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:31:18 =====
+
+GPS Sats=06 Date=05-06-2019 Time=22:31:34.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=06 Lat=44:37.2563 N Lng=124:02.6515 W
+cycle 5 @2019-05-06 22:31:39
+fallPhase 2019-05-06 22:31:39
+cycle 5 @2019-05-06 22:31:39
+ === ant module stop 2019-05-06 22:31:39
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:31:40
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:31:40
+ === ant module start 2019-05-06 22:31:40
+utlLogOpen(log\005s39.log):2
+ === buoy sbe16 start 2019-05-06 22:31:45
+utlLogOpen(log\005s16.log):3
+cycle 6 @2019-05-06 22:31:47
+risePhase 2019-05-06 22:31:47
+cycle 6 @2019-05-06 22:31:47
+iridPhase 2019-05-06 22:31:47
+== eng log cycle 6 2019-05-06 22:31:47 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2568 N, long=124:02.6513 W, time=22:29:41.000
+gps drift: lat=44:37.2563 N, long=124:02.6515 W, time=22:31:34.000
+ending surface depth=0.0
+
+utlLogOpen(log\006eng.log):21
+utlLogClose(fd=21)
+22:31:52 ===
+
+GPS Sats=07 Date=05-06-2019 Time=22:32:34.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=07 Lat=44:37.2552 N Lng=124:02.6517 W
+22:32:39 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:33:08 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\006eng.log) 1of1 [[534]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\005s16.log) 1of1 [[0]]
+LandResp( x0D cmds)
+CMDS(4)->''send''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:34:00 =====
+
+GPS Sats=07 Date=05-06-2019 Time=22:34:20.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=07 Lat=44:37.2572 N Lng=124:02.6515 W
+cycle 6 @2019-05-06 22:34:25
+fallPhase 2019-05-06 22:34:25
+cycle 6 @2019-05-06 22:34:25
+ === ant module stop 2019-05-06 22:34:26
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:34:26
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:34:26
+ === ant module start 2019-05-06 22:34:26
+utlLogOpen(log\006s39.log):2
+ === buoy sbe16 start 2019-05-06 22:34:31
+utlLogOpen(log\006s16.log):3
+cycle 7 @2019-05-06 22:34:33
+risePhase 2019-05-06 22:34:33
+cycle 7 @2019-05-06 22:34:33
+iridPhase 2019-05-06 22:34:33
+== eng log cycle 7 2019-05-06 22:34:33 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2552 N, long=124:02.6517 W, time=22:32:34.000
+gps drift: lat=44:37.2572 N, long=124:02.6515 W, time=22:34:20.000
+ending surface depth=0.0
+
+utlLogOpen(log\007eng.log):24
+utlLogClose(fd=24)
+22:34:38 ===
+
+GPS Sats=06 Date=05-06-2019 Time=22:35:11.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=06 Lat=44:37.2577 N Lng=124:02.6524 W
+22:35:16 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:35:44 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\007eng.log) 1of1 [[534]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\006s16.log) 1of1 [[0]]
+LandResp( x0D cmds)
+CMDS(4)->''send''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:36:36 =====
+
+GPS Sats=07 Date=05-06-2019 Time=22:36:53.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=07 Lat=44:37.2571 N Lng=124:02.6520 W
+cycle 7 @2019-05-06 22:36:58
+fallPhase 2019-05-06 22:36:58
+cycle 7 @2019-05-06 22:36:58
+ === ant module stop 2019-05-06 22:36:58
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:36:59
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:36:59
+ === ant module start 2019-05-06 22:36:59
+utlLogOpen(log\007s39.log):2
+ === buoy sbe16 start 2019-05-06 22:37:04
+utlLogOpen(log\007s16.log):3
+cycle 8 @2019-05-06 22:37:06
+risePhase 2019-05-06 22:37:06
+cycle 8 @2019-05-06 22:37:06
+iridPhase 2019-05-06 22:37:06
+== eng log cycle 8 2019-05-06 22:37:06 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2577 N, long=124:02.6524 W, time=22:35:11.000
+gps drift: lat=44:37.2571 N, long=124:02.6520 W, time=22:36:53.000
+ending surface depth=0.0
+
+utlLogOpen(log\008eng.log):27
+utlLogClose(fd=27)
+22:37:11 ===
+
+GPS Sats=06 Date=05-06-2019 Time=22:37:41.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=06 Lat=44:37.2561 N Lng=124:02.6526 W
+22:37:46 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:38:17 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\008eng.log) 1of1 [[534]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\007s16.log) 1of1 [[0]]
+LandResp( x0D cmds)
+CMDS(4)->''send''
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+22:39:16 =====
+
+GPS Sats=06 Date=05-06-2019 Time=22:39:32.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=06 Lat=44:37.2568 N Lng=124:02.6524 W
+cycle 8 @2019-05-06 22:39:37
+fallPhase 2019-05-06 22:39:37
+cycle 8 @2019-05-06 22:39:37
+ === ant module stop 2019-05-06 22:39:37
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:39:38
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:39:38
+ === ant module start 2019-05-06 22:39:38
+utlLogOpen(log\008s39.log):2
+ === buoy sbe16 start 2019-05-06 22:39:43
+utlLogOpen(log\008s16.log):3
+cycle 9 @2019-05-06 22:39:45
+risePhase 2019-05-06 22:39:45
+cycle 9 @2019-05-06 22:39:45
+iridPhase 2019-05-06 22:39:45
+== eng log cycle 9 2019-05-06 22:39:45 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2561 N, long=124:02.6526 W, time=22:37:41.000
+gps drift: lat=44:37.2568 N, long=124:02.6524 W, time=22:39:32.000
+ending surface depth=0.0
+
+utlLogOpen(log\009eng.log):30
+utlLogClose(fd=30)
+22:39:50 ===
+
+GPS Sats=08 Date=05-06-2019 Time=22:40:33.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=08 Lat=44:37.2563 N Lng=124:02.6519 W
+22:40:38 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:41:08 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+
+iridSendFile(hello.txt) 1of1 [[7]]
+LandResp(cmds)
+CMDS(5)->''send1''
+iridSendFile(log\009eng.log) 1of1 [[534]]
+LandResp( x0D cmds)
+CMDS(5)->''send2''
+iridSendFile(log\008s16.log)
+ERR	| iridSendFile cannot open log\008s16.log
+ERR	| iridSendFile(log\008s16.log)->1
+22:42:22 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:42:33 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\008s16.log)
+ERR	| iridSendFile cannot open log\008s16.log
+ERR	| iridSendFile(log\008s16.log)->1
+22:43:06 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=3 22:43:18 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\008s16.log)
+ERR	| iridSendFile cannot open log\008s16.log
+ERR	| iridSendFile(log\008s16.log)->1
+22:43:53 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:44:00 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\008s16.log)
+ERR	| iridSendFile cannot open log\008s16.log
+ERR	| iridSendFile(log\008s16.log)->1
+22:44:34 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:44:45 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(log\008s16.log)
+ERR	| iridSendFile cannot open log\008s16.log
+ERR	| iridSendFile(log\008s16.log)->1
+22:45:18 =====
+
+GPS Sats=08 Lat=44:37.2556 N Lng=124:02.6512 W
+cycle 9 @2019-05-06 22:45:40
+fallPhase 2019-05-06 22:45:40
+cycle 9 @2019-05-06 22:45:40
+ === ant module stop 2019-05-06 22:45:40
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:45:40
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:45:41
+ === ant module start 2019-05-06 22:45:41
+utlLogOpen(log\009s39.log):2
+ === buoy sbe16 start 2019-05-06 22:45:45
+utlLogOpen(log\009s16.log):3
+cycle 10 @2019-05-06 22:45:47
+risePhase 2019-05-06 22:45:47
+cycle 10 @2019-05-06 22:45:47
+iridPhase 2019-05-06 22:45:47
+== eng log cycle 10 2019-05-06 22:45:47 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2563 N, long=124:02.6519 W, time=22:40:33.000
+gps drift: lat=44:37.2556 N, long=124:02.6512 W, time=22:39:32.000
+ending surface depth=0.0
+
+-ERR(log)	|0| 22:45:48 open ERR -1 (errno 18), path log\010eng.log
+22:45:51 ===
+
+GPS Sats=08 Date=05-06-2019 Time=22:46:34.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=08 Lat=44:37.2561 N Lng=124:02.6505 W
+22:46:38 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:47:08 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:47:40 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:47:53 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:48:24 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:48:36 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:49:10 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:49:22 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:49:55 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:50:03 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:50:35 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=3 22:50:42 (0) (1) (2) (3) (4)
+-ERR(gps)	|0| 22:52:12 call retry exceeded
+ERR	| iridDial()->4
+22:52:12 =====
+
+GPS Sats=08 Lat=44:37.2568 N Lng=124:02.6528 W
+cycle 10 @2019-05-06 22:52:34
+fallPhase 2019-05-06 22:52:34
+cycle 10 @2019-05-06 22:52:34
+ === ant module stop 2019-05-06 22:52:34
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:52:34
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:52:34
+ === ant module start 2019-05-06 22:52:34
+utlLogOpen(log\010s39.log):2
+ === buoy sbe16 start 2019-05-06 22:52:39
+utlLogOpen(log\010s16.log):3
+cycle 11 @2019-05-06 22:52:41
+risePhase 2019-05-06 22:52:41
+cycle 11 @2019-05-06 22:52:41
+iridPhase 2019-05-06 22:52:41
+== eng log cycle 11 2019-05-06 22:52:41 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2561 N, long=124:02.6505 W, time=22:46:34.000
+gps drift: lat=44:37.2568 N, long=124:02.6528 W, time=22:39:32.000
+ending surface depth=0.0
+
+-ERR(log)	|1| 22:52:42 open ERR -1 (errno 18), path log\011eng.log
+22:52:45 ===
+
+GPS Sats=07 Date=05-06-2019 Time=22:53:28.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=07 Lat=44:37.2564 N Lng=124:02.6531 W
+22:53:32 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:54:04 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:54:35 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:54:47 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:55:21 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:55:32 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:56:04 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 22:56:11 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:56:43 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:56:54 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:57:26 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 22:57:37 CONNECT 9600rudBaud@1800 +5555us  proj proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+22:58:18 =====
+
+GPS Sats=07 Lat=44:37.2565 N Lng=124:02.6521 W
+cycle 11 @2019-05-06 22:58:40
+fallPhase 2019-05-06 22:58:40
+cycle 11 @2019-05-06 22:58:40
+ === ant module stop 2019-05-06 22:58:40
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 22:58:40
+utlLogClose(fd=3)
+dataPhase 2019-05-06 22:58:41
+ === ant module start 2019-05-06 22:58:41
+utlLogOpen(log\011s39.log):2
+ === buoy sbe16 start 2019-05-06 22:58:45
+utlLogOpen(log\011s16.log):3
+cycle 12 @2019-05-06 22:58:47
+risePhase 2019-05-06 22:58:47
+cycle 12 @2019-05-06 22:58:47
+iridPhase 2019-05-06 22:58:47
+== eng log cycle 12 2019-05-06 22:58:47 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2564 N, long=124:02.6531 W, time=22:53:28.000
+gps drift: lat=44:37.2565 N, long=124:02.6521 W, time=22:39:32.000
+ending surface depth=0.0
+
+-ERR(log)	|2| 22:58:48 open ERR -1 (errno 18), path log\012eng.log
+22:58:52 ===
+
+GPS Sats=07 Date=05-06-2019 Time=22:59:40.000
+gpsSetTime()	| off by 0 seconds
+GPS Sats=07 Lat=44:37.2571 N Lng=124:02.6521 W
+22:59:44 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=0 csq=0 csq=0 csq=1 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0
+ERR	| iridSig()->2
+23:01:09 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:01:39 (0) (1) (2) (3) (4)
+-ERR(gps)	|1| 23:02:02 call retry exceeded
+ERR	| iridDial()->4
+23:02:02 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:02:31 (0) (1) (2) (3) (4)
+-ERR(gps)	|2| 23:02:54 call retry exceeded
+ERR	| iridDial()->4
+23:02:54 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:03:20 (0) (1) (2) (3) (4)
+-ERR(gps)	|3| 23:03:44 call retry exceeded
+ERR	| iridDial()->4
+23:03:44 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:04:15 (0) (1) (2) (3) (4)
+-ERR(gps)	|4| 23:04:38 call retry exceeded
+ERR	| iridDial()->4
+23:04:38 =====
+
+GPS Sats=07 Date=05-06-2019 Time=23:04:54.000
+gpsSetTime()	| off by -1 seconds
+GPS Sats=07 Lat=44:37.2567 N Lng=124:02.6527 W
+cycle 12 @2019-05-06 23:04:59
+fallPhase 2019-05-06 23:04:59
+cycle 12 @2019-05-06 23:04:59
+ === ant module stop 2019-05-06 23:04:59
+utlLogClose(fd=2)
+ === buoy sbe16 stop 2019-05-06 23:05:00
+utlLogClose(fd=3)
+dataPhase 2019-05-06 23:05:00
+ === ant module start 2019-05-06 23:05:00
+utlLogOpen(log\012s39.log):2
+ === buoy sbe16 start 2019-05-06 23:05:05
+utlLogOpen(log\012s16.log):3
+cycle 13 @2019-05-06 23:05:06
+risePhase 2019-05-06 23:05:06
+cycle 13 @2019-05-06 23:05:06
+iridPhase 2019-05-06 23:05:06
+== eng log cycle 13 2019-05-06 23:05:06 ==
+program start 2019-05-06 22:12:19, boot #2
+antSurfD:1.1, s39:16.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Spectrogram:
+
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2571 N, long=124:02.6521 W, time=22:59:40.000
+gps drift: lat=44:37.2567 N, long=124:02.6527 W, time=23:04:54.000
+ending surface depth=0.0
+
+-ERR(log)	|3| 23:05:07 open ERR -1 (errno 18), path log\013eng.log
+23:05:11 ===
+
+GPS Sats=07 Date=01-07-1980 Time=23:05:41.000
+gpsSetTime()	| off by 1241049600 seconds
+GPS Sats=07 Lat=44:37.2572 N Lng=124:02.6522 W
+23:05:45 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:06:14 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:06:45 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:06:56 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:07:30 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:07:37 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:08:10 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:08:17 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+ERR	| iridProjHdr()->1
+23:09:34 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=0 csq=1 csq=0 csq=2 23:10:08 CONNECT 9600rudBaud@1800 +5555us  proj proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:11:01 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:11:13 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:11:45 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:11:58 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:12:29 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:12:36 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:13:08 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:13:15 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:13:47 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:13:55 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:14:27 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:14:39 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:15:11 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:15:18 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:15:50 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:15:57 (0) CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:16:59 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:17:11 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:17:44 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:17:57 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+ERR	| iridProjHdr()->1
+23:19:14 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:19:45 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:20:23 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:20:30 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:21:03 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:21:11 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:21:43 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:21:55 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:22:28 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:22:35 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+ERR	| iridProjHdr()->1
+23:23:51 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:24:19 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:24:51 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:24:58 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:25:37 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:25:44 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:26:20 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:26:27 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:27:00 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:27:07 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:27:39 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:27:47 (0) CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:28:37 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:28:44 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:29:16 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:29:24 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:29:58 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:30:06 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:30:38 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:30:45 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:31:19 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:31:26 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:31:58 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:32:11 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+ERR	| iridProjHdr()->1
+23:33:30 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:33:59 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:34:30 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:34:38 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:35:10 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:35:18 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:35:50 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:35:57 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:36:30 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:36:38 (0) (1) (2) (3) (4)
+-ERR(gps)	|5| 23:37:20 call retry exceeded
+ERR	| iridDial()->4
+23:37:20 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:37:53 (0) (1) (2) (3) (4)
+-ERR(gps)	|6| 23:39:55 call retry exceeded
+ERR	| iridDial()->4
+23:39:55 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:40:02 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:40:39 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=3 23:40:51 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+ERR	| iridProjHdr()->1
+23:42:14 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:42:44 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:43:17 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:43:24 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:43:56 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:44:04 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:44:36 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:44:48 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:45:24 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:45:31 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:46:03 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:46:15 (0) (1) (2) (3) (4)
+-ERR(gps)	|7| 23:47:39 call retry exceeded
+ERR	| iridDial()->4
+23:47:39 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:47:51 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:48:32 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:48:39 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:49:16 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:49:28 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:50:00 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:50:07 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:50:39 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:50:51 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:51:22 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:51:35 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:52:18 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:52:29 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:53:00 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:53:13 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:53:44 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:53:55 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:54:26 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:54:39 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:55:15 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=3 23:55:26 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:56:04 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=4 23:56:16 (0) (1) CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:57:15 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:57:27 CONNECT 9600rudBaud@1800 +5555us  proj proj proj
+ERR	| iridProjHdr()->1
+23:58:43 ====
+
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:59:13 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+23:59:44 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 23:59:57 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+00:00:29 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 00:00:40 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+00:01:12 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 00:01:19 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+00:01:51 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 00:01:58 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+00:02:31 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 00:02:43 CONNECT 9600rudBaud@1800 +5555us  proj
+
+iridSendFile(hello.txt)
+ERR	| iridSendFile cannot open hello.txt
+ERR	| iridSendFile(hello.txt)->1
+00:03:14 ====
+
+clcc-> x0D  x0A +CLCC:000 x0D  x0A  x0D  x0A OK x0D  x0A
+iridSig() csq=5 00:03:27 CONNECT 9600rudBaud@1800 +5555us  proj
+ === ant module stop 1980-01-08 00:03:42
+utlLogClose(fd=2)
+ === buoy sbe16 stop 1980-01-08 00:03:42
+utlLogClose(fd=3)
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>

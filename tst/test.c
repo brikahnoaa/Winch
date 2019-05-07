@@ -19,7 +19,7 @@ int first() {
     
 int last() {
   int i=0;
-  for (i=MAX; i>=0; i--)
+  for (i=MAX-1; i>=0; i--)
     if (fd[i]) return i;
   return -1;
 }
@@ -37,8 +37,10 @@ void main(void){
   char s[]="t1t";
   char c;
   int f=0;
+
+  for (f=0; f<MAX; f++) fd[f]=0;
   sysInit();
-  mpcInit();
+  // mpcInit();
 
   flogf("\n q to exit, c=count, f=first close, l=last close, o=open, a=all\n");
   while (true) {
@@ -48,33 +50,36 @@ void main(void){
       if (c=='Q') break;
       if (c=='q') break;
       if (c=='c') {
-        flogf("%d open files\n", count());
+        flogf("\n%d open files\n", count());
         continue;
       }
       if (c=='f') {
         f=first();
-        flogf(" close %d ", f);
+        flogf("\n close %d ", f);
         utlLogClose(&fd[f]);
         continue;
       }
       if (c=='l') {
         f=last();
-        flogf(" close %d ", f);
+        flogf("\n close %d ", f);
         utlLogClose(&fd[f]);
         continue;
       }
       if (c=='o') {
         all.cycle++;
         f=last()+1;
-        if (f>MAX) continue;
+        if (f>MAX) {
+          flogf("\n too many files #%d", f);
+          continue;
+        }
         utlLogOpen(&fd[f], s);
-        flogf(" open #%d fd=%d ", f, fd[f]);
+        flogf("\n open #%d fd=%d ", f, fd[f]);
         continue;
       }
       if (c=='a') {
         for (f=0; f<MAX; f++)
           if (fd[f]) 
-            flogf(" %d:fd=%d", f, fd[f]);
+            flogf("\n %d:fd=%d", f, fd[f]);
         continue;
       }
     }
