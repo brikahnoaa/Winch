@@ -40,7 +40,7 @@ void main(void){
   sysInit();
   mpcInit();
 
-  printf("\n q to exit, c=count, f=first close, l=last close, o=open\n");
+  printf("\n q to exit, c=count, f=first close, l=last close, o=open, a=all\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -69,6 +69,12 @@ void main(void){
         if (f>MAX) continue;
         utlLogOpen(&fd[f], s);
         printf(" open #%d fd=%d ", f, fd[f]);
+        continue;
+      }
+      if (c=='a') {
+        for (f=0; f<MAX; f++)
+          if (fd[f]) 
+            printf(" %d:fd=%d", f, fd[f]);
         continue;
       }
     }
