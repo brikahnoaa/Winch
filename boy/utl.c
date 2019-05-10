@@ -340,7 +340,7 @@ int utlLogClose(int *fd) {
   DBG()
   if (*fd<1) return 0;   // no fd
   f=*fd;
-  flogf("\n%s(fd=%d) ", self, f);
+  flogf("\n%s():%d ", self, f);
   *fd=0;
   if (close(f)<0) {
     flogf("\n%s(): ERR closing file (fd=%d)", self, f);

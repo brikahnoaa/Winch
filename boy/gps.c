@@ -300,7 +300,7 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
   cs = iridCRC(buff+5, bufSz-5);
   buff[3] = (char) (cs>>8 & 0xFF);
   buff[4] = (char) (cs & 0xFF);
-  flogf(" %dof%d", blockNum, blockMany);
+  flogf(" %d/%d", blockNum, blockMany);
   // send data
   sendSz = gps.sendSz;
   uDelay = (long) sendSz * gps.rudUsec;
@@ -345,7 +345,7 @@ int iridSendFile(char *fname) {
   close(fh);
   // ?? send multiple blocks
   iridSendBlock(gps.buf, block, 1, 1);
-  flogf(" [[%d]]", block);
+  flogf(" [[%d/%d]]", block, len);
   if ((r = iridLandResp(all.str))) 
     return 10+r;
   if (strstr(all.str, "cmds"))
