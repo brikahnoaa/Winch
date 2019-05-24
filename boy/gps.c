@@ -335,7 +335,10 @@ int iridSendFile(char *fname) {
     flogf("\nERR\t| %s cannot open %s", self, fname);
     return 1;
   }
-  stat(fname, &fileinfo);
+  if ( stat(fname, &fileinfo) ) {
+    flogf("\nERR\t| errno %d on %s", errno, fname);
+    return 1;
+  }
   len = fileinfo.st_size;
   // read whole file into memory
   if (len>=gps.fileMax)
