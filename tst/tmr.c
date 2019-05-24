@@ -1,5 +1,5 @@
-#include <../boy/tmr.c>
 
+#include <main.h>
 int main(){
   time_t now=time(NULL);
 

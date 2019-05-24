@@ -1,10 +1,8 @@
 // ant.c - for working with antenna module
-#include <utl.h>
-#include <ant.h>
-#include <tmr.h>
+#include <main.h>
 
 #define EOL "\r"
-#define ANT_BAUD 9600
+#define BAUD 9600L
 #define EXEC "<Executed/>"
 
 AntInfo ant;
@@ -19,7 +17,7 @@ void antInit(void) {
   // port
   rx = TPUChanFromPin(ANT_RX);
   tx = TPUChanFromPin(ANT_TX);
-  ant.port = TUOpen(rx, tx, ANT_BAUD, 0);
+  ant.port = TUOpen(rx, tx, BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
   antDevice(null_dev);

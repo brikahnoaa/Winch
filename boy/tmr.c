@@ -1,6 +1,5 @@
 // tmr.c - interval timer
-#include <utl.h>
-#include <tmr.h>
+#include <main.h>
 
 // initialized to all zeros, that works
 static struct {

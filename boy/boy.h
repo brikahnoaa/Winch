@@ -1,6 +1,7 @@
 // boy.h
 #ifndef H_BOY
 #define H_BOY
+
 #include <gps.h>
 #include <hps.h>
 

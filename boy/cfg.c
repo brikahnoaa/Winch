@@ -1,22 +1,12 @@
 // cfg.c
-#include <utl.h>
-#include <cfg.h>
-
-#include <ant.h>
-#include <boy.h>
-#include <ctd.h>
-#include <gps.h>
-#include <mpc.h>
-#include <ngk.h>
-#include <pwr.h>
-#include <sys.h>
-#include <wsp.h>
+#include <main.h>
 
 CfgInfo cfg;
 
 extern AntInfo ant;
 extern BoyInfo boy;
 extern CtdInfo ctd;
+// extern EngInfo eng;
 extern GpsInfo gps;
 extern MpcInfo mpc;
 extern NgkInfo ngk;
@@ -83,6 +73,15 @@ static CfgParam cfgP[] = {
   {'i',  "ctd.delay",     &ctd.delay,       "cde",  "6"},
   {'i',  "ctd.sampleInt", &ctd.sampleInt,   "csI",  "10"},
 
+  {'b',  "dbg.noData",    &dbg.noData,      "dnD",  "false"},
+  {'b',  "dbg.noDeploy",  &dbg.noDeploy,    "dne",  "false"},
+  {'b',  "dbg.noIrid",    &dbg.noIrid,      "dnI",  "false"},
+  {'b',  "dbg.noRise",    &dbg.noRise,      "dnR",  "false"},
+  {'b',  "dbg.test",      &dbg.test,        "dtt",  "false"},
+  {'i',  "dbg.t1",        &dbg.t1,          "dt1",  "0"},
+  {'i',  "dbg.t2",        &dbg.t2,          "dt2",  "0"},
+  {'i',  "dbg.t3",        &dbg.t3,          "dt3",  "0"},
+
   {'b',  "gps.setTime",   &gps.setTime,     "gsT",  "true"},
   {'c',  "gps.phoneNum",  &gps.phoneNum,    "gph",  "0088160000519"},
   {'c',  "gps.platform",  &gps.platform,    "gpl",  "LR01"},
@@ -110,15 +109,6 @@ static CfgParam cfgP[] = {
 
   {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
   {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},
-
-  {'b',  "tst.noData",    &tst.noData,      "tnD",  "false"},
-  {'b',  "tst.noDeploy",  &tst.noDeploy,    "tne",  "false"},
-  {'b',  "tst.noIrid",    &tst.noIrid,      "tnI",  "false"},
-  {'b',  "tst.noRise",    &tst.noRise,      "tnR",  "false"},
-  {'b',  "tst.test",      &tst.test,        "ttt",  "false"},
-  {'i',  "tst.t1",        &tst.t1,          "tt1",  "0"},
-  {'i',  "tst.t2",        &tst.t2,          "tt2",  "0"},
-  {'i',  "tst.t3",        &tst.t3,          "tt3",  "0"},
 
   {'b',  "utl.ignoreCon", &utl.ignoreCon,   "uiC",  "false"},
 

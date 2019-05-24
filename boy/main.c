@@ -1,15 +1,8 @@
 // main.c
-#include <utl.h>
-#include <ant.h>
-#include <ctd.h>
-#include <gps.h>
-#include <mpc.h>
-#include <ngk.h>
-#include <pwr.h>
-#include <sys.h>
-#include <tmr.h>
-#include <wsp.h>
-#include <boy.h>
+#include <main.h>
+
+// this file is not used by Winch/tst
+
 void main(void) {
   all.starts = sysInit();
   mpcInit();

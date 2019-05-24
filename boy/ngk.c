@@ -1,10 +1,7 @@
 // ngk.c
-#include <utl.h>
-#include <ngk.h>
-#include <sys.h>
-#include <tmr.h>
+#include <main.h>
 
-#define MDM_BAUD 4800L
+#define BAUD 4800L
 #define BUOY_ID '2'
 #define WINCH_ID '1'    // aka ngk.winchId
 #define EOL "\r\n"
@@ -39,7 +36,7 @@ void ngkInit(void) {
   ngkStart();
   utlDelay(SETTLE);
   // PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
-  p = TUOpen(mdmRX, mdmTX, MDM_BAUD, 0);
+  p = TUOpen(mdmRX, mdmTX, BAUD, 0);
   if (p == 0)
     utlStop("\nERR\t|ngkInit() Bad ngk serial port");
   else {

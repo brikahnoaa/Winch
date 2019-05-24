@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <time.h>
-#include <tmr.h>
 
+#include <main.h>
 char *clockTimeDate(char *out);
 
 char * clockTimeDate(char *out) {

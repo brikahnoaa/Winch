@@ -1,16 +1,5 @@
 // boy.c
-#include <utl.h>
-#include <ant.h> 
-#include <ctd.h>
-#include <gps.h>
-#include <hps.h>
-#include <mpc.h>
-#include <ngk.h>
-#include <pwr.h>
-#include <sys.h>
-#include <tmr.h>
-#include <wsp.h>
-#include <boy.h> 
+#include <main.h>
 
 #define MINUTE 60
 
@@ -25,8 +14,8 @@ void boyMain() {
   time_t phaseStart;
   //
   phase = boy.startPh;
-  if (tst.test) 
-    flogf("\ntst.test mode");
+  if (dbg.test) 
+    flogf("\ndbg.test mode");
   else if (all.starts>1) 
     reboot();      // reset to known state
   flogf("\nboyMain(): starting with phase %d", phase);
@@ -99,7 +88,7 @@ PhaseType risePhase(void) {
   static char *self="risePhase";
   int result;
   flogf("\n%s %s", self, utlDateTime());
-  if (tst.test && tst.noRise) return irid_pha;
+  if (dbg.test && dbg.noRise) return irid_pha;
   // if current is too strong at bottom
   if (boySafeChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
@@ -124,7 +113,7 @@ PhaseType risePhase(void) {
 // on irid/gps (takes 30 sec).  // read gps date, loc. 
 PhaseType iridPhase(void) {
   flogf("\niridPhase %s", utlDateTime());
-  if (tst.test && tst.noIrid) return fall_pha;
+  if (dbg.test && dbg.noIrid) return fall_pha;
   // log file mgmt
   boyEngLog();
   if (boy.iridAuton) 
@@ -142,7 +131,7 @@ PhaseType fallPhase() {
   static char *self="fallPhase";
   int result;
   flogf("\n%s %s", self, utlDateTime());
-  if (tst.test && tst.noRise) return data_pha;
+  if (dbg.test && dbg.noRise) return data_pha;
   time(&boyd.fallBgn);
   fallDo(boy.currChkD);
   boySafeChk(&boyd.oceanCurr, &boyd.iceTemp);
@@ -163,7 +152,7 @@ PhaseType fallPhase() {
 PhaseType dataPhase(void) {
   int success;
   flogf("\ndataPhase %s", utlDateTime());
-  if (tst.test && tst.noData) return rise_pha;
+  if (dbg.test && dbg.noData) return rise_pha;
   // ngkStop();
   success = wspDetectD(&boyd.detections, &boyd.spectr, 
       boy.iridHour, boy.iridFreq);
@@ -190,7 +179,7 @@ PhaseType deployPhase(void) {
   float depth, lastD;
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
-  if (tst.test && tst.noDeploy) return rise_pha;
+  if (dbg.test && dbg.noDeploy) return rise_pha;
   ctdStart();
   // test sbe16
   ctdSample();
@@ -575,7 +564,7 @@ int boySafeChk(float *curr, float *temp) {
   float sideways;
   int r=0;
   DBG()
-  if (tst.test) return -10;
+  if (dbg.test) return -10;
   // delay 10sec before measure to stabilize
   utlNap(10);
   if (oceanCurr(&sideways)) {

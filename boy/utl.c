@@ -1,17 +1,11 @@
 // utl.c - utility stuff
-#include <utl.h>
-#include <mpc.h>
-#include <pwr.h>
-#include <sys.h>
-#include <tmr.h>
-#include <tst.h>
+#include <main.h>
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
 
 // all is a global structure for shared data: all.cycle
 AllInfo all;
-
 UtlInfo utl;
 
 ///
@@ -390,6 +384,12 @@ void utlStop(char *out) {
 } // utlStop
 
 ///
+// loop to run all tests
+void utlTestLoop(void) {
+  ctdTest();
+} // utlTestLoop
+
+///
 // do misc activity, frequently
 void utlX(void) {
   char c;
@@ -398,17 +398,17 @@ void utlX(void) {
   // console?
   if (cgetq()) {
     if (!utl.ignoreCon) {
-      c = cgetc();
+      c = tolower( cgetc() );
       switch (c) {
       case 'q':
-      case 'Q':
       case 'x':
-      case 'X':
         utlStop("user quit");
         break;
-      case 't':
-      case 'T':
-        tstFunc();
+      case 'd': // adhoc func for debug
+        (*dbg.funcPtr)();
+        break;
+      case 't': // start time test
+        utlTestLoop();
         break;
       }
     } else 

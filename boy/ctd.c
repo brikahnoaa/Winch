@@ -1,8 +1,5 @@
 // ctd.c sbe16
-#include <utl.h>
-#include <ctd.h>
-#include <mpc.h>
-#include <tmr.h>
+#include <main.h>
 
 #define EOL "\r"
 #define EXEC "S>"
@@ -31,7 +28,6 @@ void ctdInit(void) {
   utlWrite(ctd.port, "stop", EOL);
   utlReadWait(ctd.port, all.str, 1);   // echo
   ctdStop();
-  tst.funcPtr = &ctdTest;
 } // ctdInit
 
 ///
@@ -285,7 +281,7 @@ void ctdFlush(void) {
 } // ctdFlush
 
 ///
-// for tst.funcPtr
+// loop to test sbe16
 void ctdTest(void) {
   bool b;
   char c;

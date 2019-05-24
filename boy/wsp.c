@@ -1,10 +1,5 @@
 // wsp.c 
-#include <utl.h>
-#include <pwr.h>
-#include <boy.h>
-#include <wsp.h>
-#include <mpc.h>
-#include <tmr.h>
+#include <main.h>
 
 #define EOL "\r"
 

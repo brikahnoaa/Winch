@@ -1,13 +1,5 @@
 // hps.c
-#include <utl.h>
-#include <gps.h>
-#include <mpc.h>
-#include <ant.h>
-#include <sys.h>
-#include <tmr.h>
-#include <boy.h>
-#include <cfg.h>
-#include <hps.h>
+#include <main.h>
 
 extern GpsInfo gps;
 extern BoyInfo boy;

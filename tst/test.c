@@ -1,7 +1,5 @@
 // files.c
-#include <utl.h>
-#include <mpc.h>
-#include <sys.h>
+#include <main.h>
 
 #define MAX 12
 int fd[MAX];

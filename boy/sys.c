@@ -1,15 +1,5 @@
 // sys.c
-#include <utl.h>
-#include <sys.h>
-
-#include <ant.h>
-#include <boy.h>
-#include <cfg.h>
-#include <ctd.h>
-#include <mpc.h>
-#include <ngk.h>
-#include <pwr.h>
-#include <wsp.h>
+#include <main.h>
 
 SysInfo sys;
 

@@ -1,8 +1,5 @@
 // wspTst.c
-#include <utl.h>
-#include <wsp.h>
-#include <mpc.h>
-#include <sys.h>
+#include <main.h>
 
 
 void main(void){

@@ -1,6 +1,5 @@
 // pwr.c
-#include <utl.h>
-#include <pwr.h>
+#include <main.h>
 
 PwrInfo pwr;
 

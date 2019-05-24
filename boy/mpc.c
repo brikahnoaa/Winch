@@ -1,7 +1,5 @@
 // mpc.c - hardware, mpc specific; pam x 4
-#include <utl.h>
-#include <mpc.h>
-#include <sys.h>
+#include <main.h>
 
 MpcInfo mpc;
 

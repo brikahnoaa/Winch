@@ -1,4 +1,5 @@
 #define DBG(...) \
+#include <main.h>
 #ifdef DEBUG \
 __VA_ARGS__
 #endif

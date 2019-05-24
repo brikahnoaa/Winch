@@ -1,8 +1,5 @@
 // wspTst.c
-#include <utl.h>
-#include <mpc.h>
-#include <sys.h>
-#include <wsp.h>
+#include <main.h>
 
 void main(void){
   sysInit();

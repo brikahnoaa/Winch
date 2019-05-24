@@ -1,6 +1,5 @@
 // dbg.c
-#include <utl.h>
-#include <dbg.h>
+#include <main.h>
 
 DbgInfo dbg;        // global
 

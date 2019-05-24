@@ -1,6 +1,5 @@
 // dos.c - utility stuff
-#include <utl.h>
-#include <dos.h>
+#include <main.h>
 
 /*
 int sysOSCmd(char *command, long filenum, char *ext, char *extt) {

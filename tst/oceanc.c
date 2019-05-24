@@ -1,10 +1,5 @@
 // ctdTst.c
-#include <utl.h>
-#include <ctd.h>
-#include <mpc.h>
-#include <sys.h>
-#include <boy.h>
-#include <ant.h>
+#include <main.h>
 
 extern CtdInfo ctd;
 

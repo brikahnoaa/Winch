@@ -1,7 +1,5 @@
 // dosfile.c
-#include <utl.h>
-#include <cfg.h>
-#include <sys.h>
+#include <main.h>
 
 void main(void){
   char cmd[128];

@@ -1,8 +1,5 @@
 // winchTst.c - move winch
-#include <utl.h>
-#include <mpc.h>
-#include <sys.h>
-#include <ngk.h>
+#include <main.h>
 
 #define CTRL_C 3
 

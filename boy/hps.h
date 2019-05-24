@@ -50,7 +50,6 @@
 #ifndef		__Ads8345_H
 #define		__Ads8345_H
 
-// #include	<cfxbios.h>	// Persistor CF1 BIOS and I/O Definitions
 
 #ifndef	NOT_R216_RECIPECARD
 #ifndef	NO_AD_REF_SHDN_PIN
@@ -95,4 +94,4 @@ typedef struct HpsStats {
 int hpsRead(HpsStats *hps);
 int readStat (float *ret, int c);
 
-#endif
+#endif 

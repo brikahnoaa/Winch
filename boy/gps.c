@@ -1,9 +1,5 @@
 // gps.c
-#include <utl.h>
-#include <gps.h>
-#include <ant.h>
-#include <tmr.h>
-#include <cfg.h>
+#include <main.h>
 
 // gps and iridium routines have a lot of ways to fail; return 0=success
 //

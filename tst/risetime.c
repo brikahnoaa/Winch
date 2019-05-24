@@ -1,9 +1,5 @@
 // risetime.c - test next 2pm
-#include <utl.h>
-#include <mpc.h>
-#include <pwr.h>
-#include <sys.h>
-#include <tmr.h>
+#include <main.h>
 
 char *utlTim(void);
 ///

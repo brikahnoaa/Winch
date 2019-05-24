@@ -1,4 +1,5 @@
 /*
+#include <main.h>
 Summing "shorts" for giving sampling interval which lasts
 #seconds=(2^#bits*PITRATE*PITINT)
 Here we can average a large number of samples at a quick rate due to bit shift
@@ -22,8 +23,6 @@ averaged.
    C) ADSTIME will be saved as a "ushort" and can be divided by "10.0" to
 transfer into the real power write time.
  */
-#include <test.h>
-#include <ADExamples.h>
 
 #define FCHAN 0   // first channel
 #define NCHAN 2   // number of channels, just accumulating current in buffers.

@@ -1,9 +1,5 @@
 // antTst.c
-#include <utl.h>
-#include <ctd.h>
-#include <mpc.h>
-#include <sys.h>
-#include <ant.h>
+#include <main.h>
 
 extern AntInfo ant;
 extern CtdInfo ctd;

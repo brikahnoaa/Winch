@@ -5,8 +5,6 @@
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
 
-// #include <ADExamples.h>
-
 #define FCHAN 0   // first channel
 #define NCHAN 2   // number of channels, just accumulating current in buffers.
 #define PITRATE 1 // 1=51ms cycle, 2=102ms,etc..... @ 100us. 250=25ms.
