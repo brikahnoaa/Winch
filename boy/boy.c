@@ -25,7 +25,6 @@ void boyMain() {
   while (true) {
     utlX();
     // rise is first phase in a cycle
-    if (phase==rise_pha) nextCycle();
     time(&phaseStart);
     flogf("\ncycle %d @%s ", all.cycle, utlDateTime());
     switch (phase) {
@@ -37,7 +36,9 @@ void boyMain() {
       phaseNext = risePhase();
       break;
     case irid_pha: // Call home via Satellite
+      cycleEnd();
       phaseNext = iridPhase();
+      cycleBegin();
       break;
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
@@ -594,7 +595,7 @@ void boyFlush(void) {} // ??
 
 ///
 // do not use until 
-bool boyDocked(float depth) {
+bool docked(float depth) {
   if (boyd.dockD==0.0) return false;
   else return (abs(depth-boyd.dockD)<1.0);
 }
@@ -654,12 +655,22 @@ int boyEngLog(void) {
 } // boyEngLog
 
 ///
-// next cycle. manage log files, etc
-int nextCycle(void) {
-  static char *self="nextCycle";
+// begin cycle. increment, open log files, etc
+int cycleBegin(void) {
+  static char *self="cycleBegin";
   int r=0;
   DBG()
   all.cycle++;
   return r;
-} // nextCycle
+} // nextBegin
+
+
+///
+// end cycle. close log files, etc
+int cycleEnd(void) {
+  static char *self="cycleEnd";
+  int r=0;
+  DBG()
+  return r;
+} // nextEnd
 
