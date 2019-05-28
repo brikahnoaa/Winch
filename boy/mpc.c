@@ -34,7 +34,7 @@ void mpcInit(void) {
     flogf(" %d", outputpins[i]);
   }
   // PIOMirrorList(outputpins);
-  // setup pam port, shared by wispr and science ctd sbe16
+  // setup pam port, shared by wispr and science s16 sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
   mpc.pamPort = TUOpen(rx, tx, PAM_BAUD, 0);

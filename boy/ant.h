@@ -22,7 +22,7 @@ typedef struct AntInfo {
   char samCmd[16];            // TS or TSSon
   float depth;
   float subD;                 // subsurfaceD; ant.surfD + boy.ant2tip
-  float surfD;                // surfaceDepth of CTD when ant is floating
+  float surfD;                // surfaceDepth of buoy when ant is floating
   float temp;
   int delay;
   int log;

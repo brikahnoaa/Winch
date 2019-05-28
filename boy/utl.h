@@ -9,7 +9,7 @@
 
 // sync with utlInit()
 typedef enum {
-    ant_err, boy_err, cfg_err, ctd_err, 
+    ant_err, boy_err, cfg_err, s16_err, 
     gps_err, ngk_err, rud_err, wsp_err, 
     phase_err, log_err, 
     sizeof_err} ErrType;
@@ -39,7 +39,7 @@ extern AllInfo all;
 
 char *utlDate(void);
 char *utlDateTime(void);
-char *utlDateTimeCtd(void);
+char *utlDateTimeS16(void);
 char *utlDateTimeFmt(time_t secs);
 char *utlExpect(Serial port, char *buf, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string

@@ -24,7 +24,7 @@ void utlInit(void) {
   utl.errName[ant_err] = "ant";
   utl.errName[boy_err] = "boy";
   utl.errName[cfg_err] = "cfg";
-  utl.errName[ctd_err] = "ctd";
+  utl.errName[s16_err] = "s16";
   utl.errName[gps_err] = "gps";
   utl.errName[ngk_err] = "ngk";
   utl.errName[wsp_err] = "wsp";
@@ -223,7 +223,7 @@ char *utlDateTime(void) {
 ///
 // MMDDYYYYHHMMSS 
 // returns: global char *all.ret
-char *utlDateTimeCtd(void) {
+char *utlDateTimeS16(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
@@ -232,7 +232,7 @@ char *utlDateTimeCtd(void) {
           tim->tm_mon+1, tim->tm_mday, tim->tm_year + 1900, 
           tim->tm_hour, tim->tm_min, tim->tm_sec);
   return all.ret;
-} // utlDateTimeCtd
+} // utlDateTimeS16
 
 ///
 // format non-printable string; null terminate
@@ -386,7 +386,7 @@ void utlStop(char *out) {
 ///
 // loop to run all tests
 void utlTestLoop(void) {
-  ctdTest();
+  s16Test();
 } // utlTestLoop
 
 ///

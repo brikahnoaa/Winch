@@ -20,7 +20,7 @@ void boyMain() {
     reboot();      // reset to known state
   flogf("\nboyMain(): starting with phase %d", phase);
   antStart();
-  ctdStart();
+  s16Start();
   //
   while (true) {
     utlX();
@@ -45,10 +45,10 @@ void boyMain() {
       break;
     case data_pha: // data collect by WISPR
       antStop();
-      ctdStop();
+      s16Stop();
       phaseNext = dataPhase();
       antStart();
-      ctdStart();
+      s16Start();
       break;
     case error_pha:
       phaseNext = errorPhase();
@@ -181,14 +181,14 @@ PhaseType deployPhase(void) {
   enum {deploy_tmr, drop_tmr};
   flogf("\ndeploy: testing sbe16, sbe39");
   if (dbg.test && dbg.noDeploy) return rise_pha;
-  ctdStart();
+  s16Start();
   // test sbe16
-  ctdSample();
-  ctdDataWait();
-  if (!ctdRead())
-    utlErr(ctd_err, "sbe16 failure");
-  flogf(" sbe16@%3.1f", ctdDepth());
-  ctdStop();
+  s16Sample();
+  s16DataWait();
+  if (!s16Read())
+    utlErr(s16_err, "sbe16 failure");
+  flogf(" sbe16@%3.1f", s16Depth());
+  s16Stop();
   antStart();
   // test sbe39
   antSample();
@@ -198,7 +198,7 @@ PhaseType deployPhase(void) {
   //
   flogf(" sbe39@%3.1f", antDepth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
-      antDepth(), ctdDepth(), utlDateTime());
+      antDepth(), s16Depth(), utlDateTime());
   flogf("\n\t| wait up to %d minutes to reach bottom", boy.depWait);
   tmrStart( deploy_tmr, MINUTE*boy.depWait );
   // wait until under 10m
@@ -341,8 +341,8 @@ int riseDo(float targetD) {
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG()
   // 
-  ctdDataWait(); 
-  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, ctdDepth(), antDepth());
+  s16DataWait(); 
+  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), antDepth());
   nowD = startD = antDepth();
   // winch
   ngkFlush();
@@ -401,8 +401,8 @@ int riseDo(float targetD) {
       if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     }  // 5 seconds
-    if (ctdData()) 
-      ctdRead();
+    if (s16Data()) 
+      s16Read();
     if (antData()) 
       nowD = antDepth();
     if (tmrExp(phase_tmr)) {
@@ -435,8 +435,8 @@ int fallDo(float targetD) {
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG()
   // 
-  ctdDataWait(); 
-  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, ctdDepth(), antDepth());
+  s16DataWait(); 
+  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), antDepth());
   nowD = startD = antDepth();
   // winch
   ngkFlush();
@@ -493,8 +493,8 @@ int fallDo(float targetD) {
       if (!antVelo(&velo)) 
         flogf(" velo=%4.2f", velo);
     }  // 5 seconds
-    if (ctdData()) 
-      ctdRead();
+    if (s16Data()) 
+      s16Read();
     if (antData()) 
       nowD = antDepth();
     if (tmrExp(phase_tmr)) {
@@ -516,19 +516,19 @@ int fallDo(float targetD) {
 
 
 ///
-// wait currChkSettle, buoy ctd, ant td, compute
+// wait currChkSettle, buoy s16, ant td, compute
 // uses: .boy2ant
 int oceanCurr(float *curr) {
   static char *self="oceanCurr";
   float aD, cD, a, b, c;
-  if (!ctdPrompt()) utlErr(ctd_err, "oceanCurr ctdPrompt fail");
-  ctdSample();
-  ctdDataWait();
-  if (!ctdRead()) {
-    utlErr(ctd_err, "sbe16 data failure");
+  if (!s16Prompt()) utlErr(s16_err, "oceanCurr s16Prompt fail");
+  s16Sample();
+  s16DataWait();
+  if (!s16Read()) {
+    utlErr(s16_err, "sbe16 data failure");
     return 1;
   }
-  cD=ctdDepth();
+  cD=s16Depth();
   antSample();
   antDataWait();
   if (!antRead()) {
@@ -618,7 +618,7 @@ int boyEngLog(void) {
   sprintf(b+strlen(b), "program start %s, boot #%d\n",
       utlDateTimeFmt(all.startProg), all.starts);
   sprintf(b+strlen(b), "antSurfD:%3.1f, s39:%3.1f, s16:%3.1f\n",
-      antSurfD(), antDepth(), ctdDepth());
+      antSurfD(), antDepth(), s16Depth());
   // sprintf(b+strlen(b), "=== physical stats ===\n");
   // hps=&boyd.physical;
   // hpsRead(hps);

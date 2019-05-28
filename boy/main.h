@@ -65,7 +65,7 @@ typedef TUPort * Serial;
 #include <ant.h>
 #include <boy.h>
 #include <cfg.h>
-#include <ctd.h>
+#include <s16.h>
 #include <dbg.h>
 #include <dos.h>
 #include <eng.h>

@@ -5,7 +5,7 @@ CfgInfo cfg;
 
 extern AntInfo ant;
 extern BoyInfo boy;
-extern CtdInfo ctd;
+extern S16Info s16;
 // extern EngInfo eng;
 extern GpsInfo gps;
 extern MpcInfo mpc;
@@ -67,11 +67,11 @@ static CfgParam cfgP[] = {
 
   {'c',  "cfg.file",      &cfg.file,        "cfe",  "lara.cfg"},
 
-  {'b',  "ctd.clearSamp", &ctd.clearSamp,   "ccS",  "false"},
-  {'b',  "ctd.sampStore", &ctd.sampStore,   "csS",  "true"},
-  {'c',  "ctd.logFile",   &ctd.logFile,     "clF",  "s16"},
-  {'i',  "ctd.delay",     &ctd.delay,       "cde",  "6"},
-  {'i',  "ctd.sampleInt", &ctd.sampleInt,   "csI",  "10"},
+  {'b',  "s16.clearSamp", &s16.clearSamp,   "ccS",  "false"},
+  {'b',  "s16.sampStore", &s16.sampStore,   "csS",  "true"},
+  {'c',  "s16.logFile",   &s16.logFile,     "clF",  "s16"},
+  {'i',  "s16.delay",     &s16.delay,       "cde",  "6"},
+  {'i',  "s16.sampleInt", &s16.sampleInt,   "csI",  "10"},
 
   {'b',  "dbg.noData",    &dbg.noData,      "dnD",  "false"},
   {'b',  "dbg.noDeploy",  &dbg.noDeploy,    "dne",  "false"},

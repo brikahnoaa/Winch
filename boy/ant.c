@@ -70,7 +70,7 @@ int antStart(void) {
   DBG1("%s", all.str)
   if (ant.auton)
     antAuton(false);
-  sprintf(all.str, "datetime=%s", utlDateTimeCtd());
+  sprintf(all.str, "datetime=%s", utlDateTimeS16());
   utlWrite(ant.port, all.str, EOL);
   if (!utlExpect(ant.port, all.str, EXEC, 5))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);

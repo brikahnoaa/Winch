@@ -97,7 +97,7 @@ void logInit(char *file) {
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   // copy to log\MMDDHHMM.sys
   if (stat(file, &finfo)>=0) { // sys.log exists
-    dt=utlDateTimeCtd();
+    dt=utlDateTimeS16();
     sprintf(cmd, "copy %s log\\%.4s%.4s.sys", file, dt, dt+8);
     fprintf("\n%s: '%s'", self, cmd);
     execstr(cmd);
@@ -128,7 +128,7 @@ void sysStop(char *out) {
   VEEStoreStr("SHUTDOWN", out);
   antStop();
   boyStop();
-  ctdStop();
+  s16Stop();
   ngkStop();
   pwrStop();
   wspStop();
@@ -172,5 +172,5 @@ void sysFlush(void) {
   boyFlush();
   pwrFlush();
   // antFlush();
-  // ctdFlush();
+  // s16Flush();
 } // sysFlush

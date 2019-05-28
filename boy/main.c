@@ -9,7 +9,7 @@ void main(void) {
   pwrInit();
   antInit();
   boyInit();
-  ctdInit();
+  s16Init();
   gpsInit();
   ngkInit();
   wspInit();

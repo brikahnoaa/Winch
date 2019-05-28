@@ -1,8 +1,8 @@
-// ctd.h
-#ifndef H_CTD
-#define H_CTD
+// s16.h
+#ifndef H_S16
+#define H_S16
 
-typedef struct CtdInfo {
+typedef struct S16Info {
   bool auton;
   bool clearSamp;             // clear stored samples
   bool sampStore;             // store on device with TSSon - except auton
@@ -18,23 +18,23 @@ typedef struct CtdInfo {
   int sampleInt;              // sample Interval for auton
   time_t time;
   Serial port;                // same as mpc.port, ant.port
-} CtdInfo;
+} S16Info;
 
-static void ctdBreak(void);
-static void ctdFlush(void);
+static void s16Break(void);
+static void s16Flush(void);
 
-bool ctdData(void);
-bool ctdDataWait(void);
-bool ctdPending(void);
-bool ctdPrompt(void);
-bool ctdRead(void);
-float ctdDepth(void);
-int ctdAuton(bool auton);
-int ctdStart(void);
-int ctdStop(void);
-void ctdGetSamples(void);
-void ctdInit(void);
-void ctdSample(void);
-void ctdTest(void);
+bool s16Data(void);
+bool s16DataWait(void);
+bool s16Pending(void);
+bool s16Prompt(void);
+bool s16Read(void);
+float s16Depth(void);
+int s16Auton(bool auton);
+int s16Start(void);
+int s16Stop(void);
+void s16GetSamples(void);
+void s16Init(void);
+void s16Sample(void);
+void s16Test(void);
 
 #endif
