@@ -2,9 +2,12 @@
 #ifndef H_SYS
 #define H_SYS
 
+#define null NULL
+
 #define STARTS "0"
 #define STARTS_MAX "50"
 #define SYS_LOG "SYS.LOG"
+#define C_DRV ('C'-'A')
 
 typedef enum {
   null_alm=0,

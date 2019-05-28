@@ -21,6 +21,7 @@ S16Info s16;
 void s16Init(void) {
   static char *self="s16Init";
   DBG()
+  s16.me="s16";
   s16.port = mpcPamPort();
   s16Start();
   utlWrite(s16.port, "DelayBeforeSampling=0", EOL);
@@ -45,8 +46,6 @@ int s16Start(void) {
   flogf("\n === buoy sbe16 start %s", utlDateTime());
   mpcPamPwr(sbe16_pam, true);
   tmrStop(s16_tmr);
-  if (!s16.log && strlen(s16.logFile))
-    utlLogOpen(&s16.log, s16.logFile);
   if (!s16Prompt())
     utlErr(s16_err, "s16: no prompt");
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
@@ -67,6 +66,25 @@ int s16Stop(void){
   s16.on = false;
   return 0;
 } // s16Stop
+
+///
+// open or reopen log file
+int s16LogOpen(void) {
+  int r=0;
+  if (!s16.log)
+    r = utlLogOpen(&s16.log, s16.me);
+  return r;
+} // s16LogOpen
+
+///
+///
+// open or reopen log file
+int s16LogClose(void) {
+  int r=0;
+  if (!s16.log)
+    r = utlLogClose(&s16.log);
+  return r;
+} // s16LogClose
 
 ///
 // sbe16
@@ -143,7 +161,7 @@ void s16Sample(void) {
 
 ///
 // sample, read data, log to file
-// sets: .temp .cond .depth 
+// sets: .temp .depth 
 bool s16Read(void) {
   char *p0, *p1, *p2, *p3;
   static char *self="s16Read";
@@ -167,7 +185,7 @@ bool s16Read(void) {
   s16.temp = atof( p1 );
   p2 = strtok(NULL, ", "); 
   if (!p2) return false;
-  s16.cond = atof( p2 );
+  // s16.cond = atof( p2 );
   p3 = strtok(NULL, ", ");
   if (!p3) return false;
   s16.depth = atof( p3 );
@@ -250,8 +268,7 @@ void s16GetSamples(void) {
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
-  if (!s16.log && strlen(s16.logFile))
-    if (utlLogOpen(&s16.log, s16.logFile)) return;
+  s16LogOpen();
   flogf("\n+s16GetSamples()");
   s16Prompt();          // wakeup
   utlWrite(s16.port, "GetSamples:", EOL);
@@ -260,18 +277,18 @@ void s16GetSamples(void) {
     len2 = (int) TURxGetBlock(s16.port, all.str, (long) len1, (short) 1000);
     len3 = write(s16.log, all.str, len2);
     if (len2!=len3) 
-      flogf("\nERR\t| s16GetSamples() could not write %s.log", s16.logFile);
+      flogf("\nERR\t| s16GetSamples() could not write %s.log", s16.me);
     flogf("+[%d]", len3);
     total += len3;
   } // while ==
-  utlLogClose(&s16.log);
+  s16LogClose();
   if (s16.clearSamp) {
     utlWrite(s16.port, "initLogging", EOL);
     utlExpect(s16.port, all.str, "verify", 2);
     utlWrite(s16.port, "initLogging", EOL);
     utlExpect(s16.port, all.str, EXEC, 2);
   }
-  flogf(" = %d bytes to %s", total, s16.logFile);
+  flogf(" = %d bytes to %s.log", total, s16.me);
 } // s16GetSamples
 
 ///

@@ -20,6 +20,7 @@ WspInfo wsp;
 void wspInit(void) {
   static char *self="wspInit";
   DBG()
+  wsp.me="wsp";
   wsp.port = mpcPamPort();
   mpcPamPwr(wsp1_pam, false);
   mpcPamPwr(wsp2_pam, false);
@@ -56,8 +57,8 @@ int wspStart(void) {
   DBG1("\n%s: activating wispr#%d", self, wsp.card)
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
-  if (!wsp.log && strlen(wsp.logFile))
-    utlLogOpen(&wsp.log, wsp.logFile);
+  if (!wsp.log)
+    utlLogOpen(&wsp.log, wsp.me);
   return r;
 } // wspStart
 

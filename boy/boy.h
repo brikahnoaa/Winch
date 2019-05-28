@@ -41,7 +41,6 @@ typedef struct BoyInfo {
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
   bool useBrake;          // false->no brake, true->riseDo(antSurfD())
-  char logFile[32];       // log file
   float ant2tip;          // meters from antmod s16 to antenna tip
   float boy2ant;          // meters from buoy s16 to ant s16 under still water
   float currChkD;         // stop at this depth to check ocean current

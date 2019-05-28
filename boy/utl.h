@@ -2,10 +2,18 @@
 #ifndef H_UTL
 #define H_UTL
 
+#define BUFSZ 4096
+
+// allow up to .05 second between chars, normally chars take .001-.016
+#define CHAR_DELAY 50
 #define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+#define SETTLE 200
+
 // faux exception processing: Exc(10);  -->  print # and char *rets, return
 #define Exc(X_VALUE) { all.exc=X_VALUE; goto X_LABEL; }
 #define Except X_LABEL: flogf("\n%s() exception=%d, %s", self, all.exc, rets);
+
+typedef TUPort * Serial;
 
 // sync with utlInit()
 typedef enum {

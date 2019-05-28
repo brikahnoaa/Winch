@@ -95,22 +95,18 @@ int antStop() {
 
 ///
 // open or reopen log file
-int antLogOpen(void) {
-  int r=0;
-  if (!ant.log)
-    r = utlLogOpen(&ant.log, ant.me);
-  return r;
-} // antLogOpen
+int s39LogOpen(void) {
+  if (!s39.log)
+    return utlLogOpen(&s39.log, ant.me);
+} // s39LogOpen
 
 ///
 ///
 // open or reopen log file
-int antLogClose(void) {
-  int r=0;
-  if (!ant.log)
-    r = utlLogClose(&ant.log);
-  return r;
-} // antLogClose
+int s39LogClose(void) {
+  if (!s39.log)
+    return utlLogClose(&s39.log, ant.me);
+} // s39LogClose
 
 ///
 // rets: true==success (returns early)

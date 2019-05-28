@@ -34,7 +34,6 @@ static CfgParam cfgP[] = {
   {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
   {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
   {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
-  {'c',  "ant.logFile",   &ant.logFile,     "alF",  "s39"},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
   {'i',  "ant.delay",     &ant.delay,       "ade",  "3"},
@@ -45,7 +44,6 @@ static CfgParam cfgP[] = {
   {'b',  "boy.reset",     &boy.reset,       "bre",  "false"},
   {'b',  "boy.stop",      &boy.stop,        "bst",  "false"},
   {'b',  "boy.useBrake",  &boy.useBrake,    "buB",  "false"},
-  {'c',  "boy.logFile",   &boy.logFile,     "blF",  "boy"},
   {'f',  "boy.ant2tip",   &boy.ant2tip,     "bat",  "2.35"},
   {'f',  "boy.boy2ant",   &boy.boy2ant,     "bba",  "14.29"},
   {'f',  "boy.currChkD",  &boy.currChkD,    "bcD",  "10.0"},
@@ -69,7 +67,6 @@ static CfgParam cfgP[] = {
 
   {'b',  "s16.clearSamp", &s16.clearSamp,   "ccS",  "false"},
   {'b',  "s16.sampStore", &s16.sampStore,   "csS",  "true"},
-  {'c',  "s16.logFile",   &s16.logFile,     "clF",  "s16"},
   {'i',  "s16.delay",     &s16.delay,       "cde",  "6"},
   {'i',  "s16.sampleInt", &s16.sampleInt,   "csI",  "10"},
 
@@ -102,7 +99,6 @@ static CfgParam cfgP[] = {
   {'i',  "ngk.winchId",   &ngk.winchId,     "nwI",  "1"},
 
   {'b',  "pwr.on",        &pwr.on,          "pon",  "false"},
-  {'c',  "pwr.logFile",   &pwr.logFile,     "plF",  "pwr"},
   {'f',  "pwr.charge",    &pwr.charge,      "pch",  "12000.0"},
   {'f',  "pwr.chargeMin", &pwr.chargeMin,   "pcM",  "200.0"},
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
@@ -113,7 +109,6 @@ static CfgParam cfgP[] = {
   {'b',  "utl.ignoreCon", &utl.ignoreCon,   "uiC",  "false"},
 
   {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
-  {'c',  "wsp.logFile",   &wsp.logFile,     "wlF",  "wsp"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},
   {'c',  "wsp.spectFlag", &wsp.spectFlag,   "wsF",  "-v1 -C12 -n512 -o256"},
   {'c',  "wsp.spectLog",  &wsp.spectLog,    "wsL",  "noise"},
