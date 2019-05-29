@@ -3,10 +3,10 @@
 #define H_S16
 
 typedef struct S16Info {
-  Serial port;                // same as mpc.port, ant.port
+  Serial port;                // this is pam4
   bool auton;                 // now doing autonomous sampling
-  bool clearSamp;             // clear stored samples after GetSamples()
   bool on;                    // now init'd
+  bool sampClear;             // clear stored samples after GetSamples()
   bool sampStore;             // store on device with TSSon - except auton
   char *me;
   float depth;
@@ -14,15 +14,15 @@ typedef struct S16Info {
   int delay;                  // Delay seconds expected between polled samples
   int log;                    // log fileid
   int sampleInt;              // sample Interval for auton
-  time_t time;
+  time_t sampT;
 } S16Info;
 
 static void s16Break(void);
 static void s16Flush(void);
+static bool s16Pending(void);
 
 bool s16Data(void);
 bool s16DataWait(void);
-bool s16Pending(void);
 bool s16Prompt(void);
 bool s16Read(void);
 float s16Depth(void);

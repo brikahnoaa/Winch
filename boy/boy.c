@@ -44,11 +44,7 @@ void boyMain() {
       phaseNext = fallPhase();
       break;
     case data_pha: // data collect by WISPR
-      antStop();
-      s16Stop();
       phaseNext = dataPhase();
-      antStart();
-      s16Start();
       break;
     case error_pha:
       phaseNext = errorPhase();
@@ -104,7 +100,7 @@ PhaseType risePhase(void) {
     result = riseDo(0);
   if (result) 
     utlErr(phase_err, "rise phase failure");
-  boyd.surfD = antDepth();
+  boyd.surfD = antDepth(); // ??
   time(&boyd.riseEnd);
   return irid_pha;
 } // risePhase
@@ -116,12 +112,16 @@ PhaseType iridPhase(void) {
   flogf("\niridPhase %s", utlDateTime());
   if (dbg.test && dbg.noIrid) return fall_pha;
   // log file mgmt
+  antLogClose();
+  s16LogClose();
   boyEngLog();
   if (boy.iridAuton) 
     antAuton(true);
   if (iridDo()) { // 0==success
     // ?? check for fail
   }
+  antLogOpen();
+  s16LogOpen();
   if (boy.iridAuton) 
     antAuton(false);
   return fall_pha;
@@ -154,6 +154,9 @@ PhaseType dataPhase(void) {
   int success;
   flogf("\ndataPhase %s", utlDateTime());
   if (dbg.test && dbg.noData) return rise_pha;
+  // save power
+  antStop();
+  s16Stop();
   // ngkStop();
   success = wspDetectD(&boyd.detections, &boyd.spectr, 
       boy.iridHour, boy.iridFreq);
@@ -168,8 +171,14 @@ PhaseType dataPhase(void) {
     flogf("\n\ndataPhase: stay down +%d cycles", boy.stayDown);
     boy.stayDown--;
     return data_pha;
-  } else 
+  } else {
+    antStart();
+    antLogOpen();
+    s16Start();
+    s16LogOpen();
+    // ngkStart();
     return rise_pha;
+  }
   // ngkStart();
 } // dataPhase
 

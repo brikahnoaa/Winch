@@ -65,7 +65,7 @@ static CfgParam cfgP[] = {
 
   {'c',  "cfg.file",      &cfg.file,        "cfe",  "lara.cfg"},
 
-  {'b',  "s16.clearSamp", &s16.clearSamp,   "ccS",  "false"},
+  {'b',  "s16.sampClear", &s16.sampClear,   "ccS",  "false"},
   {'b',  "s16.sampStore", &s16.sampStore,   "csS",  "true"},
   {'i',  "s16.delay",     &s16.delay,       "cde",  "6"},
   {'i',  "s16.sampleInt", &s16.sampleInt,   "csI",  "10"},

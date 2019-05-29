@@ -194,7 +194,7 @@ bool s16Read(void) {
     return false;
   }
   DBG1("= %4.2", s16.depth)
-  s16.time = time(0);
+  s16.sampT = time(0);
   s16Sample();
   return true;
 } // s16Read
@@ -282,7 +282,7 @@ void s16GetSamples(void) {
     total += len3;
   } // while ==
   s16LogClose();
-  if (s16.clearSamp) {
+  if (s16.sampClear) {
     utlWrite(s16.port, "initLogging", EOL);
     utlExpect(s16.port, all.str, "verify", 2);
     utlWrite(s16.port, "initLogging", EOL);
