@@ -85,6 +85,8 @@ PhaseType risePhase(void) {
   int result;
   flogf("\n%s %s", self, utlDateTime());
   if (dbg.test && dbg.noRise) return irid_pha;
+  antLogOpen();
+  s16LogOpen();
   // if current is too strong at bottom
   if (boySafeChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
@@ -101,6 +103,8 @@ PhaseType risePhase(void) {
     utlErr(phase_err, "rise phase failure");
   boyd.surfD = antDepth(); // ??
   time(&boyd.riseEnd);
+  antLogClose();
+  s16LogClose();
   return irid_pha;
 } // risePhase
 
@@ -110,17 +114,12 @@ PhaseType risePhase(void) {
 PhaseType iridPhase(void) {
   flogf("\niridPhase %s", utlDateTime());
   if (dbg.test && dbg.noIrid) return fall_pha;
-  // log file mgmt
-  antLogClose();
-  s16LogClose();
   boyEngLog();
   if (boy.iridAuton) 
     antAuton(true);
   if (iridDo()) { // 0==success
     // ?? check for fail
   }
-  antLogOpen();
-  s16LogOpen();
   if (boy.iridAuton) 
     antAuton(false);
   return fall_pha;
@@ -132,6 +131,8 @@ PhaseType fallPhase() {
   int result;
   flogf("\n%s %s", self, utlDateTime());
   if (dbg.test && dbg.noRise) return data_pha;
+  antLogOpen();
+  s16LogOpen();
   time(&boyd.fallBgn);
   fallDo(boy.currChkD);
   boySafeChk(&boyd.oceanCurr, &boyd.iceTemp);
@@ -139,6 +140,8 @@ PhaseType fallPhase() {
   if (result) 
     utlErr(phase_err, "fall phase failure");
   time(&boyd.fallEnd);
+  antLogClose();
+  s16LogClose();
   return data_pha;
 } // fallPhase
 
@@ -172,9 +175,7 @@ PhaseType dataPhase(void) {
     return data_pha;
   } else {
     antStart();
-    antLogOpen();
     s16Start();
-    s16LogOpen();
     // ngkStart();
     return rise_pha;
   }
