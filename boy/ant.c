@@ -84,10 +84,8 @@ int antStart(void) {
 int antStop() {
   ant.on = false;
   flogf("\n === ant module stop %s", utlDateTime());
-  if (ant.log)
-    utlLogClose(&ant.log);
-  if (ant.auton)
-    antAuton(false);
+  if (ant.log) utlLogClose(&ant.log);
+  if (ant.auton) antAuton(false);
   antDevice(null_dev);
   PIOClear(ANT_PWR);
   return 0;

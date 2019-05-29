@@ -59,9 +59,8 @@ int s16Start(void) {
 int s16Stop(void){
   static char *self="s16Stop";
   flogf("\n === buoy sbe16 stop %s", utlDateTime());
-  utlLogClose(&s16.log);
-  if (s16.auton)
-    s16Auton(false);
+  if (s16.log) utlLogClose(&s16.log);
+  if (s16.auton) s16Auton(false);
   mpcPamPwr(sbe16_pam, false);
   s16.on = false;
   return 0;

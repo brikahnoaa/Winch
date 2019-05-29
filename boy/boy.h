@@ -68,8 +68,6 @@ static PhaseType fallPhase(void);
 static PhaseType iridPhase(void);
 static PhaseType risePhase(void);
 static bool docked(float depth);
-static int cycleBegin(void);
-static int cycleEnd(void);
 static int fallDo(float targetD);
 static int iridDo(void);
 static int nextCycle(void);

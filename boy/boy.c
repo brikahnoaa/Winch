@@ -36,9 +36,8 @@ void boyMain() {
       phaseNext = risePhase();
       break;
     case irid_pha: // Call home via Satellite
-      cycleEnd();
       phaseNext = iridPhase();
-      cycleBegin();
+      all.cycle++;
       break;
     case fall_pha: // Descend buoy, science sampling
       phaseNext = fallPhase();
@@ -319,7 +318,7 @@ int iridDo(void) {
     }
     utlNap(boy.filePause);
     if (!s16B && all.cycle!=0) {  // testing exception
-      utlLogPathName(all.str, "s16", all.cycle-1);
+      utlLogPathName(all.str, "s16", all.cycle);
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
         continue;
@@ -662,24 +661,4 @@ int boyEngLog(void) {
   free(b);
   return r;
 } // boyEngLog
-
-///
-// begin cycle. increment, open log files, etc
-int cycleBegin(void) {
-  static char *self="cycleBegin";
-  int r=0;
-  DBG()
-  all.cycle++;
-  return r;
-} // nextBegin
-
-
-///
-// end cycle. close log files, etc
-int cycleEnd(void) {
-  static char *self="cycleEnd";
-  int r=0;
-  DBG()
-  return r;
-} // nextEnd
 
