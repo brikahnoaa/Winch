@@ -318,7 +318,7 @@ int iridDo(void) {
       } else engB=true;
     }
     utlNap(boy.filePause);
-    if (!s16B && all.cycle!=0) {  // testing exception
+    if (!s16B) {  
       utlLogPathName(all.str, "s16", all.cycle);
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
