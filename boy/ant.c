@@ -95,6 +95,8 @@ int antStop() {
 int antLogOpen(void) {
   static char *self="antLogOpen";
   int r=0;
+  if (!ant.on)
+    antStart();
   if (!ant.log)
     r = utlLogOpen(&ant.log, ant.me);
   else

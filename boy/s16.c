@@ -72,6 +72,8 @@ int s16Stop(void){
 int s16LogOpen(void) {
   static char *self="s16LogOpen";
   int r=0;
+  if (!s16.on)
+    s16Start();
   if (!s16.log)
     r = utlLogOpen(&s16.log, s16.me);
   else

@@ -32,14 +32,22 @@ void boyMain() {
       phaseNext = deployPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
+      antLogOpen();
+      s16LogOpen();
       phaseNext = risePhase();
+      antLogClose();
+      s16LogClose();
       break;
     case irid_pha: // Call home via Satellite
       phaseNext = iridPhase();
       all.cycle++;
       break;
     case fall_pha: // Descend buoy, science sampling
+      antLogOpen();
+      s16LogOpen();
       phaseNext = fallPhase();
+      antLogClose();
+      s16LogClose();
       break;
     case data_pha: // data collect by WISPR
       phaseNext = dataPhase();
@@ -84,8 +92,6 @@ PhaseType risePhase(void) {
   int result;
   flogf("\n%s %s", self, utlDateTime());
   if (dbg.test && dbg.noRise) return irid_pha;
-  antLogOpen();
-  s16LogOpen();
   // if current is too strong at bottom
   if (boySafeChk(&boyd.oceanCurr, &boyd.iceTemp)) {
     sysAlarm(bottomCurr_alm);
@@ -102,8 +108,6 @@ PhaseType risePhase(void) {
     utlErr(phase_err, "rise phase failure");
   boyd.surfD = antDepth(); // ??
   time(&boyd.riseEnd);
-  antLogClose();
-  s16LogClose();
   return irid_pha;
 } // risePhase
 
