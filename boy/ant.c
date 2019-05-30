@@ -108,7 +108,7 @@ int antLogOpen(void) {
 int antLogClose(void) {
   static char *self="antLogClose";
   int r=0;
-  if (!ant.log)
+  if (ant.log)
     r = utlLogClose(&ant.log);
   else
     DBG4("%s: log already closed", self);

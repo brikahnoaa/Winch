@@ -85,7 +85,7 @@ int s16LogOpen(void) {
 int s16LogClose(void) {
   static char *self="s16LogClose";
   int r=0;
-  if (!s16.log)
+  if (s16.log)
     r = utlLogClose(&s16.log);
   else
     DBG4("%s: log already closed", self);
