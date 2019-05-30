@@ -5,16 +5,16 @@
 #define CHAR_DELAY 50
 
 // all is a global structure for shared data: all.cycle
-AllInfo all;
+AllData all;
 UtlInfo utl;
 
 ///
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
-  DBG2("utlInit()")
-  // all.ret is semi-global, it is only returned by some char *utlFuncs()
+  DBG2("utlInit()");
+  // utl.ret is semi-global, it is returned by some char *utlFuncs()
+  all.file = malloc(FILESZ);
   all.buf = malloc(BUFSZ);
-  all.ret = malloc(BUFSZ);    // not used as all.ret
   all.str = malloc(BUFSZ);
   utl.buf = malloc(BUFSZ);
   utl.ret = malloc(BUFSZ);
@@ -36,7 +36,7 @@ void utlInit(void) {
 int utlTrim(char *line) {
   char c;
   int len = strlen(line);
-  DBG2("utlTrim()")
+  DBG2("utlTrim()");
   // trim off crlf at end 
   c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
   c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
@@ -50,7 +50,7 @@ int utlTrim(char *line) {
 int utlMatchAfter(char *out, char *str, char *sub, char *set) {
   char *here;
   int len=0;
-  DBG1("utlMatchAfter(%s)", sub)
+  DBG1("utlMatchAfter(%s)", sub);
   out[0] = 0;
   here = strstr(str, sub);
   if (here==NULL) return 0;
@@ -71,13 +71,13 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
 char *utlExpect(Serial port, char *buf, char *expect, int wait) {
   char *r=NULL;
   int sz=0;
-  DBG1("utlExpect(%s, %d)", expect, wait)
+  DBG1("utlExpect(%s, %d)", expect, wait);
   buf[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
   while (true) {
     if (tmrExp(utl_tmr)) {
-      DBG0("utlExpect(%s, %d) timeout", expect, wait)
+      DBG0("utlExpect(%s, %d) timeout", expect, wait);
       DBG1("->'%s'", buf);
       return NULL;
     }
@@ -100,8 +100,8 @@ void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
   delay = 2 * (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
-  DBG3("[>>]=%d", sent)
-  // DBG3(">>'%s'", utlNonPrintBlock(out, len))
+  DBG2("[>>]=%d", sent);
+  // DBG2(">>'%s'", utlNonPrintBlock(out, len));
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock
@@ -117,8 +117,8 @@ void utlWrite(Serial port, char *out, char *eol) {
   len = strlen(utl.str);
   delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
-  DBG2(">>=%d", sent)
-  DBG3(">>'%s'", utlNonPrint(utl.str))
+  DBG2(">>=%d", sent);
+  DBG2(">>'%s'", utlNonPrint(utl.str));
   if (len!=sent) 
     flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
 } // utlWrite
@@ -136,8 +136,8 @@ int utlRead(Serial port, char *in) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG2("<<=%d", len)
-  DBG3("<<'%s'", utlNonPrint(in))
+  DBG2("<<=%d", len);
+  DBG2("<<'%s'", utlNonPrint(in));
   return len;
 } // utlRead
 
@@ -160,8 +160,8 @@ int utlReadWait(Serial port, char *in, int wait) {
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG2("<<(%d)=%d", wait, len)
-  DBG3("<<'%s'", utlNonPrint(in))
+  DBG2("<<(%d)=%d", wait, len);
+  DBG2("<<'%s'", utlNonPrint(in));
   return len;
 }
 
@@ -175,45 +175,45 @@ void utlLogTime(void) {
 
 ///
 // HH:MM:SS now
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(all.ret, "%02d:%02d:%02d",
+  sprintf(utl.ret, "%02d:%02d:%02d",
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return all.ret;
+  return utl.ret;
 } // utlTime
 
 ///
 // Date String // YY-MM-DD 
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(all.ret, "%02d-%02d-%02d", 
+  sprintf(utl.ret, "%02d-%02d-%02d", 
           tim->tm_year-100, tim->tm_mon+1, tim->tm_mday);
-  return all.ret;
+  return utl.ret;
 } // utlDate
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlDateTimeFmt(time_t secs) {
   struct tm *tim;
   tim = gmtime(&secs);
-  sprintf(all.ret, "%04d-%02d-%02d %02d:%02d:%02d",  
+  sprintf(utl.ret, "%04d-%02d-%02d %02d:%02d:%02d",  
           tim->tm_year + 1900, tim->tm_mon+1, tim->tm_mday, 
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return all.ret;
+  return utl.ret;
 } // utlDateTime
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlDateTime(void) {
   time_t secs;
   time(&secs);
@@ -222,24 +222,24 @@ char *utlDateTime(void) {
 
 ///
 // MMDDYYYYHHMMSS 
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlDateTimeS16(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);
   tim = gmtime(&secs);
-  sprintf(all.ret, "%02d%02d%04d%02d%02d%02d", 
+  sprintf(utl.ret, "%02d%02d%04d%02d%02d%02d", 
           tim->tm_mon+1, tim->tm_mday, tim->tm_year + 1900, 
           tim->tm_hour, tim->tm_min, tim->tm_sec);
-  return all.ret;
+  return utl.ret;
 } // utlDateTimeS16
 
 ///
 // format non-printable string; null terminate
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlNonPrint (char *in) {
   unsigned char ch;
-  char *out = all.ret;
+  char *out = utl.ret;
   int i, o;
   // walk thru input until 0 or BUFSZ
   i = o = 0;
@@ -258,10 +258,10 @@ char *utlNonPrint (char *in) {
 
 ///
 // format non-printable string; null terminate
-// returns: global char *all.ret
+// returns: global char *utl.ret
 char *utlNonPrintBlock (char *in, int len) {
   unsigned char ch;
-  char *out = all.ret;
+  char *out = utl.ret;
   int i, o;
   // copy len bytes
   i = o = 0;
@@ -290,7 +290,7 @@ void utlLogPathName(char *path, char *base, int day) {
   strcat(path, day000);
   strcat(path, base);
   strcat(path, ".log");
-  DBG1("(%s)", path)
+  DBG1("(%s)", path);
   return;
 } // utlLogPathName
 
@@ -301,7 +301,7 @@ int utlLogOpen(int *log, char *base) {
   int r=0, fd, flags;
   char path[64];
   static char *self="utlLogOpen";
-  DBG()
+  DBG();
   utlLogPathName(path, base, all.cycle);
   flags = O_APPEND | O_CREAT | O_WRONLY;
   *log=0;
@@ -313,7 +313,7 @@ int utlLogOpen(int *log, char *base) {
   } else {
     DBG1("\n%s path\t| %s", self, path);
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
-    flogf("\n%s(%s):%d", self, path, fd);
+    DBG4("\n%s(%s):%d", self, path, fd);
     r = write(fd, utl.str, strlen(utl.str)); 
     if (r<1) {
       sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
@@ -331,10 +331,10 @@ int utlLogOpen(int *log, char *base) {
 int utlLogClose(int *fd) {
   static char *self="utlLogClose";
   int f;
-  DBG()
+  DBG();
   if (*fd<1) return 0;   // no fd
   f=*fd;
-  flogf("\n%s():%d ", self, f);
+  DBG4("\n%s():%d ", self, f);
   *fd=0;
   if (close(f)<0) {
     flogf("\n%s(): ERR closing file (fd=%d)", self, f);
@@ -346,7 +346,7 @@ int utlLogClose(int *fd) {
 /// file handling error - FATAL
 // log error and shutdown
 void utlCloseErr(char *str) {
-  DBG0("utlCloseErr(%s)", str)
+  DBG0("utlCloseErr(%s)", str);
   sprintf(utl.str, "utlCloseErr(%s): close error", str);
   utlErr(log_err, utl.str);
   // ?? reboot
@@ -363,7 +363,7 @@ void utlErr( ErrType err, char *str) {
 ///
 // nap called often
 void utlNap(int sec) {
-  DBG2("utlNap(%d)", sec)
+  DBG2("utlNap(%d)", sec);
   while(sec-- > 0) {
     utlX();
     pwrNap(1);

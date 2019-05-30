@@ -13,7 +13,7 @@ AntInfo ant;
 void antInit(void) {
   short rx, tx, i;
   static char *self="antInit";
-  DBG()
+  DBG();
   ant.me="ant";
   // port
   rx = TPUChanFromPin(ANT_RX);
@@ -57,8 +57,7 @@ int antStart(void) {
     }
   ant.on = true;
   flogf("\n === ant module start %s", utlDateTime());
-  if (!ant.log)
-    utlLogOpen(&ant.log, ant.me);
+  antLogOpen();
   antDevice(cf2_dev);
   PIOClear(ANT_PWR);
   utlDelay(200);
@@ -68,7 +67,7 @@ int antStart(void) {
   // get cf2 startup message
   if (!utlExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  DBG1("%s", all.str)
+  DBG1("%s", all.str);
   if (ant.auton)
     antAuton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
@@ -84,8 +83,8 @@ int antStart(void) {
 int antStop() {
   ant.on = false;
   flogf("\n === ant module stop %s", utlDateTime());
-  if (ant.log) utlLogClose(&ant.log);
   if (ant.auton) antAuton(false);
+  antLogClose();
   antDevice(null_dev);
   PIOClear(ANT_PWR);
   return 0;
@@ -94,9 +93,12 @@ int antStop() {
 ///
 // open or reopen log file
 int antLogOpen(void) {
+  static char *self="antLogOpen";
   int r=0;
   if (!ant.log)
     r = utlLogOpen(&ant.log, ant.me);
+  else
+    DBG4("%s: log already open", self);
   return r;
 } // antLogOpen
 
@@ -104,16 +106,19 @@ int antLogOpen(void) {
 ///
 // open or reopen log file
 int antLogClose(void) {
+  static char *self="antLogClose";
   int r=0;
   if (!ant.log)
     r = utlLogClose(&ant.log);
+  else
+    DBG4("%s: log already closed", self);
   return r;
 } // antLogClose
 
 ///
 // rets: true==success (returns early)
 bool antPrompt() {
-  DBG1("aP")
+  DBG1("aP");
   if (antPending()) 
     antDataWait();
   antDevice(cf2_dev);
@@ -140,7 +145,7 @@ bool antPrompt() {
 // reset or exit sync mode
 void antBreak(void) {
   static char *self="antBreak";
-  DBG()
+  DBG();
   TUTxPutByte(ant.port, (ushort) 2,1);      // ^B  (blocking)
 } // antBreak
 
@@ -148,7 +153,7 @@ void antBreak(void) {
 // data waiting
 bool antData() {
   int r;
-  DBG2("aD")
+  DBG2("aD");
   r=TURxQueuedCount(ant.port);
   if (r)
     tmrStop(s39_tmr);
@@ -159,7 +164,7 @@ bool antData() {
 // wait for data or not pending (timeout)
 bool antDataWait(void) {
   static char *self="aDW";
-  DBG()
+  DBG();
   do if (antData()) 
     return true;
   while (antPending());
@@ -172,7 +177,7 @@ bool antDataWait(void) {
 // sets: s39_tmr
 void antSample(void) {
   if (antPending()) return;
-  DBG0("aSam")
+  DBG0("aSam");
   // flush old data, check for sleep message and prompt if needed
   if (antData()) {
     utlRead(ant.port, all.str);
@@ -199,7 +204,7 @@ void antSample(void) {
 bool antRead(void) {
   char *p0, *p1, *p2;
   static char *self="antRead";
-  DBG0("aRd")
+  DBG0("aRd");
   if (!antData()) return false;
   // data waiting
   // with auton there is no Executed, so look for #
@@ -230,7 +235,7 @@ bool antRead(void) {
   }
   // save in ring
   ringSamp(ant.depth, ant.sampT);
-  DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
+  DBG2("= %4.2f, %4.2f", ant.temp, ant.depth);
   antSample();
   return true;
 } // antRead
@@ -245,7 +250,7 @@ bool antPending(void) {
 // if data then read
 // retn: .depth
 float antDepth(void) {
-  DBG1("aDep")
+  DBG1("aDep");
   if (antData())
     antRead();
   return ant.depth;
@@ -265,7 +270,7 @@ int antVelo(float *velo) {
   int r=0, samp=ant.ringSize;
   float v;
   RingNode *n;
-  DBG0("antVelo")
+  DBG0("antVelo");
   // empty ring
   if (!ant.ring->sampT) {
     *velo=0.0;
@@ -295,7 +300,7 @@ int antVelo(float *velo) {
     if (n==ant.ring) break;
   } // walk ring
   *velo = v;
-  DBG2("aV=%4.2f", *velo)
+  DBG2("aV=%4.2f", *velo);
   return r;
 } // antVelo
 
@@ -305,7 +310,7 @@ int antAvg(float *avg) {
   int r=0, samp=ant.ringSize;
   float a=0.0;
   RingNode *n;
-  DBG0("antVelo")
+  DBG0("antVelo");
   // empty ring
   if (!ant.ring->sampT) {
     *avg=0.0;
@@ -344,7 +349,7 @@ int ringDir(float v) {
   // direction - check all samples for consistent direction
   dir = (v>0) ? 1 : -1;
   for (n=ant.ring; n->next!=ant.ring; n=n->next) {
-    DBG3("rd:%3.1f", n->depth)
+    DBG2("rd:%3.1f", n->depth);
     if (dir==1) // fall
       if (n->depth > n->next->depth)
         dir = 0;
@@ -374,7 +379,7 @@ void ringPrint(void) {
 void antReset(void) {
   RingNode *n;
   static char *self="antReset";
-  DBG()
+  DBG();
   n = ant.ring; 
   while (true) {
     n->depth = 0.0;
@@ -388,7 +393,7 @@ void antReset(void) {
 // antmod uMPC cf2 and iridium A3LA
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
-  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
+  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la");
   if (dev==ant.dev) return;
   utlDelay(SETTLE);
   if (dev==cf2_dev)
@@ -415,7 +420,7 @@ Serial antPort(void) {
 // should be in gps.c??
 void antDevPwr(char c, bool on) {
   DevType currDev=ant.dev;
-  DBG0("antDevPwr(%c, %d)", c, on)
+  DBG0("antDevPwr(%c, %d)", c, on);
   antDevice(cf2_dev);
   if (on)
     TUTxPutByte(ant.port, 3, false);
@@ -430,7 +435,7 @@ void antDevPwr(char c, bool on) {
 void antSwitch(AntType antenna) {
   DevType dev;
   if (antenna==ant.antenna) return;
-  DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
+  DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid");
   dev = ant.dev;
   antDevice(cf2_dev);
   TUTxPutByte(ant.port, 1, false);        // ^A
@@ -484,12 +489,13 @@ int antAuton(bool auton) {
 ///
 // write stored sample to a file
 void antGetSamples(void) {
-  char *self="antGetSamples";
+  static char *self="antGetSamples";
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
   int log;
-  DBG()
+  DBG();
+  len1 = len2 = len3 = sizeof(all.file);
   antAuton(false);
   if (ant.log)
     log = ant.log;
@@ -502,21 +508,18 @@ void antGetSamples(void) {
   utlWrite(ant.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
-    len2 = (int) TURxGetBlock(ant.port, all.str, (long) len1, (short) 1000);
-    len3 = write(log, all.str, len2);
+    len2 = (int) TURxGetBlock(ant.port, all.file, (long) len1, (short) 1000);
+    len3 = write(log, all.file, len2);
     if (len2!=len3)
       flogf("\t| ERR fail write to log");
     total += len3;
   } // while ==
   flogf(": %d bytes to %s", total, ant.me);
-  // close log file if local only
-  if (!ant.log)
-    utlLogClose(&log);
   if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.str, "-->", 2);
+    utlExpect(ant.port, all.file, "-->", 2);
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.str, "-->", 2);
+    utlExpect(ant.port, all.file, "-->", 2);
   }
 } // antGetSamples
 

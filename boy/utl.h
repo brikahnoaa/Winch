@@ -2,7 +2,9 @@
 #ifndef H_UTL
 #define H_UTL
 
+// 4K and 32K
 #define BUFSZ 4096
+#define FILESZ ((size_t)1024 * 32)
 
 // allow up to .05 second between chars, normally chars take .001-.016
 #define CHAR_DELAY 50
@@ -26,24 +28,24 @@ typedef struct UtlInfo {
   bool ignoreCon;             // ignore console input
   char *buf;
   char *errName[sizeof_err];
-  char *ret;
+  char *ret;                // semi-global, returned by some char *utlFunc()
   char *str;
   int errCnt[sizeof_err];
 } UtlInfo;
 
-typedef struct AllInfo {
-  char *buf;
-  char *str;
-  char *ret;                // returned by some char *utlFuncs()
+typedef struct AllData {
+  char *file;               // 32K file buffer (FILESZ)
+  char *buf;                // 4K buffer (BUFSZ)
+  char *str;                // 4K buffer (BUFSZ)
   int cycle;                // RiseCallFallData cycles
   int exc;                  // exception value
   int starts;               // number of starts (VEEPROM)
   time_t startCycle;        // cycle start
   time_t startProg;         // program start
-} AllInfo;
+} AllData;
 
 // the globals below are used by all modules // malloc'd in utlInit()
-extern AllInfo all;
+extern AllData all;
 
 char *utlDate(void);
 char *utlDateTime(void);

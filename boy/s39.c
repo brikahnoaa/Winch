@@ -13,7 +13,7 @@ AntInfo ant;
 void antInit(void) {
   short rx, tx, i;
   static char *self="antInit";
-  DBG()
+  DBG();
   ant.me="ant";
   // port
   rx = TPUChanFromPin(ANT_RX);
@@ -68,7 +68,7 @@ int antStart(void) {
   // get cf2 startup message
   if (!utlExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  DBG1("%s", all.str)
+  DBG1("%s", all.str);
   if (ant.auton)
     antAuton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
@@ -111,7 +111,7 @@ int s39LogClose(void) {
 ///
 // rets: true==success (returns early)
 bool antPrompt() {
-  DBG1("aP")
+  DBG1("aP");
   if (antPending()) 
     antDataWait();
   antDevice(cf2_dev);
@@ -138,7 +138,7 @@ bool antPrompt() {
 // reset or exit sync mode
 void antBreak(void) {
   static char *self="antBreak";
-  DBG()
+  DBG();
   TUTxPutByte(ant.port, (ushort) 2,1);      // ^B  (blocking)
 } // antBreak
 
@@ -146,7 +146,7 @@ void antBreak(void) {
 // data waiting
 bool antData() {
   int r;
-  DBG2("aD")
+  DBG2("aD");
   r=TURxQueuedCount(ant.port);
   if (r)
     tmrStop(s39_tmr);
@@ -157,7 +157,7 @@ bool antData() {
 // wait for data or not pending (timeout)
 bool antDataWait(void) {
   static char *self="aDW";
-  DBG()
+  DBG();
   do if (antData()) 
     return true;
   while (antPending());
@@ -170,7 +170,7 @@ bool antDataWait(void) {
 // sets: s39_tmr
 void antSample(void) {
   if (antPending()) return;
-  DBG0("aSam")
+  DBG0("aSam");
   // flush old data, check for sleep message and prompt if needed
   if (antData()) {
     utlRead(ant.port, all.str);
@@ -197,7 +197,7 @@ void antSample(void) {
 bool antRead(void) {
   char *p0, *p1, *p2;
   static char *self="antRead";
-  DBG0("aRd")
+  DBG0("aRd");
   if (!antData()) return false;
   // data waiting
   // with auton there is no Executed, so look for #
@@ -228,7 +228,7 @@ bool antRead(void) {
   }
   // save in ring
   ringSamp(ant.depth, ant.sampT);
-  DBG2("= %4.2f, %4.2f", ant.temp, ant.depth)
+  DBG2("= %4.2f, %4.2f", ant.temp, ant.depth);
   antSample();
   return true;
 } // antRead
@@ -243,7 +243,7 @@ bool antPending(void) {
 // if data then read
 // retn: .depth
 float antDepth(void) {
-  DBG1("aDep")
+  DBG1("aDep");
   if (antData())
     antRead();
   return ant.depth;
@@ -263,7 +263,7 @@ int antVelo(float *velo) {
   int r=0, samp=ant.ringSize;
   float v;
   RingNode *n;
-  DBG0("antVelo")
+  DBG0("antVelo");
   // empty ring
   if (!ant.ring->sampT) {
     *velo=0.0;
@@ -293,7 +293,7 @@ int antVelo(float *velo) {
     if (n==ant.ring) break;
   } // walk ring
   *velo = v;
-  DBG2("aV=%4.2f", *velo)
+  DBG2("aV=%4.2f", *velo);
   return r;
 } // antVelo
 
@@ -303,7 +303,7 @@ int antAvg(float *avg) {
   int r=0, samp=ant.ringSize;
   float a=0.0;
   RingNode *n;
-  DBG0("antVelo")
+  DBG0("antVelo");
   // empty ring
   if (!ant.ring->sampT) {
     *avg=0.0;
@@ -342,7 +342,7 @@ int ringDir(float v) {
   // direction - check all samples for consistent direction
   dir = (v>0) ? 1 : -1;
   for (n=ant.ring; n->next!=ant.ring; n=n->next) {
-    DBG3("rd:%3.1f", n->depth)
+    DBG2("rd:%3.1f", n->depth);
     if (dir==1) // fall
       if (n->depth > n->next->depth)
         dir = 0;
@@ -372,7 +372,7 @@ void ringPrint(void) {
 void antReset(void) {
   RingNode *n;
   static char *self="antReset";
-  DBG()
+  DBG();
   n = ant.ring; 
   while (true) {
     n->depth = 0.0;
@@ -386,7 +386,7 @@ void antReset(void) {
 // antmod uMPC cf2 and iridium A3LA
 // switch between devices on com1, clear pipe
 void antDevice(DevType dev) {
-  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la")
+  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la");
   if (dev==ant.dev) return;
   utlDelay(SETTLE);
   if (dev==cf2_dev)
@@ -413,7 +413,7 @@ Serial antPort(void) {
 // should be in gps.c??
 void antDevPwr(char c, bool on) {
   DevType currDev=ant.dev;
-  DBG0("antDevPwr(%c, %d)", c, on)
+  DBG0("antDevPwr(%c, %d)", c, on);
   antDevice(cf2_dev);
   if (on)
     TUTxPutByte(ant.port, 3, false);
@@ -428,7 +428,7 @@ void antDevPwr(char c, bool on) {
 void antSwitch(AntType antenna) {
   DevType dev;
   if (antenna==ant.antenna) return;
-  DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid")
+  DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid");
   dev = ant.dev;
   antDevice(cf2_dev);
   TUTxPutByte(ant.port, 1, false);        // ^A
@@ -487,7 +487,7 @@ void antGetSamples(void) {
   int len2=len1, len3=len1;
   int total=0;
   int log;
-  DBG()
+  DBG();
   antAuton(false);
   if (ant.log)
     log = ant.log;

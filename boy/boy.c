@@ -32,7 +32,6 @@ void boyMain() {
       phaseNext = deployPhase();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
-      // new day
       phaseNext = risePhase();
       break;
     case irid_pha: // Call home via Satellite
@@ -72,7 +71,7 @@ void boyMain() {
 // open log
 void boyInit(void) {
   static char *self="boyInit";
-  DBG()
+  DBG();
   flogf("\n  System Starts %d", all.starts);
   ngkStart();
 } // boyInit
@@ -134,11 +133,11 @@ PhaseType fallPhase() {
   antLogOpen();
   s16LogOpen();
   time(&boyd.fallBgn);
-  fallDo(boy.currChkD);
-  boySafeChk(&boyd.oceanCurr, &boyd.iceTemp);
   result = fallDo(0);
-  if (result) 
+  if (result) {
+    flogf( "\nERR %s: error number %d", self, result);
     utlErr(phase_err, "fall phase failure");
+  }
   time(&boyd.fallEnd);
   antLogClose();
   s16LogClose();
@@ -158,7 +157,6 @@ PhaseType dataPhase(void) {
   if (dbg.test && dbg.noData) return rise_pha;
   // save power
   antStop();
-  s16Stop();
   // ngkStop();
   success = wspDetectD(&boyd.detections, &boyd.spectr, 
       boy.iridHour, boy.iridFreq);
@@ -175,7 +173,6 @@ PhaseType dataPhase(void) {
     return data_pha;
   } else {
     antStart();
-    s16Start();
     // ngkStart();
     return rise_pha;
   }
@@ -197,7 +194,6 @@ PhaseType deployPhase(void) {
   if (!s16Read())
     utlErr(s16_err, "sbe16 failure");
   flogf(" sbe16@%3.1f", s16Depth());
-  s16Stop();
   antStart();
   // test sbe39
   antSample();
@@ -348,7 +344,7 @@ int riseDo(float targetD) {
   enum {ngkTmr, fiveTmr};  // local timer names
   float nowD, startD, velo;
   int err=0, ngkTries, phaseEst, ngkDelay;
-  DBG()
+  DBG();
   // 
   s16DataWait(); 
   flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), antDepth());
@@ -442,7 +438,7 @@ int fallDo(float targetD) {
   enum {ngkTmr, fiveTmr};  // local timer names
   float nowD, startD, velo;
   int err=0, ngkTries, phaseEst, ngkDelay;
-  DBG()
+  DBG();
   // 
   s16DataWait(); 
   flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), antDepth());
@@ -573,7 +569,7 @@ int boySafeChk(float *curr, float *temp) {
   static char *self="boySafeChk";
   float sideways;
   int r=0;
-  DBG()
+  DBG();
   if (dbg.test) return -10;
   // delay 10sec before measure to stabilize
   utlNap(10);
@@ -619,7 +615,7 @@ int boyEngLog(void) {
   GpsStats *gps;
   // HpsStats *hps;
   char *b;
-  DBG()
+  DBG();
   b=malloc(BUFSZ);
   b[0] = 0;
   sprintf(b+strlen(b), "== eng log cycle %d %s ==\n", 

@@ -134,7 +134,7 @@ void cfgInit(void) {
   static char *self="cfgInit";
   int r=0;
   char *cfgFileV;
-  DBG()
+  DBG();
   cfgDefault();
   flogf("\n%s: config file default name '%s'", self, cfg.file);
   cfgFileV = VEEFetchStr( "CFGFILE", "" );
@@ -155,12 +155,12 @@ void cfgDefault(void) {
   CfgParam *param;
   int i;
   static char *self="cfgDefault";
-  DBG()
+  DBG();
   cfg.cnt = sizeof(cfgP) / sizeof(CfgParam);
   i=cfg.cnt;
   param=cfgP;
   while (i--) { // note: post decrement
-    DBG1("\n%s=%s", param->var, param->def)
+    DBG1("\n%s=%s", param->var, param->def);
     // default value
     if (param->def[0])
       cfgSet(param->ptr, param->type, param->def);
@@ -198,7 +198,7 @@ bool cfgString(char *str){
     // ignore case compare with cfgCmp
     if (cfgCmp(ref, id) || cfgCmp(ref, var)) {
       cfgSet(ptr, type, val);
-      DBG1("\n(%c) %s=%s", type, var, val)
+      DBG1("\n(%c) %s=%s", type, var, val);
       return true;
     }
   } // for cfg
@@ -257,7 +257,7 @@ int cfgRead(char *file) {
   int r, fh;
   struct stat finfo;
   //
-  DBG0("cfgRead(%s)", file)
+  DBG0("cfgRead(%s)", file);
   if (stat(file, &finfo) < 0) {
     flogf("\n%s: cannot find file '%s'", file);
     return 0;
@@ -288,7 +288,7 @@ void cfgVee(void) {
   VEEVar *vv;
   char *name, *val, cfgstr[128];
   static char *self="cfgVee";
-  DBG()
+  DBG();
   vv = VEEFetchNext(NULL);
   while (vv) {
     name = VEEGetName(vv);

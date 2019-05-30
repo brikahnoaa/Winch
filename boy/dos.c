@@ -95,8 +95,7 @@ char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
 
   //
   path[0] = dfname[0] = 'C'; // C: drive
-  DBG0(flogf("\n\t|GetFileName(.%3s): %s", FileType,
-            Lowest ? "Lowest" : "Highest");)
+  DBG0(flogf("\n\t|GetFileName(.%3s): %s", FileType, Lowest ? "Lowest" : "Highest"););
 
   // Do this with *log extension next
   if ((err = DIRFindFirst(path, &de)) != dsdEndOfDir) {
@@ -115,10 +114,10 @@ char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
             break;
         if (i == 8) { // all digits
           if (Lowest && val < minval) {
-            // DBG1(flogf("\nNew lowest value: %ld", val);)
+            // DBG1(flogf("\nNew lowest value: %ld", val););
             minval = val;
           } else if (val > maxval) {
-            // DBG1(flogf("\nNew highest value: %ld", val);)
+            // DBG1(flogf("\nNew highest value: %ld", val););
             maxval = val;
           }
         }
@@ -128,10 +127,10 @@ char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
 
     if (Lowest) {
       if (minval < 0 && counter < 0 || minval == 99999999) {
-        DBG1(flogf("\n\t|Did not find any .%3s files", FileType);)
+        DBG1(flogf("\n\t|Did not find any .%3s files", FileType););
         return NULL;
       } else if (minval > counter) {
-        DBG1(flogf("\n\t|New min val: %ld", minval);)
+        DBG1(flogf("\n\t|New min val: %ld", minval););
         counter = minval;
       }
     } else {
@@ -139,7 +138,7 @@ char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
         counter = 0;                 // 2003-08-21
 
       else if (maxval >= counter) { // 2003-08-21
-        DBG1(flogf("\n\t|New maxval: %ld", maxval);)
+        DBG1(flogf("\n\t|New maxval: %ld", maxval););
         counter = maxval;
         if (incIndex)
           counter++;
@@ -155,8 +154,8 @@ char *GetFileName(bool Lowest, bool incIndex, long *fcounter,
   else
     *fcounter = counter;
 
-  DBG1(flogf("\n%s|GetFileName(): %s", Time(NULL), dfname);)
-  DBG1(flogf("\n\t|filecounter: %ld", filecounter);)
+  DBG1(flogf("\n%s|GetFileName(): %s", Time(NULL), dfname););
+  DBG1(flogf("\n\t|filecounter: %ld", filecounter););
 
   return dfname;
 

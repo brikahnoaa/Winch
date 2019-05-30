@@ -20,7 +20,7 @@ S16Info s16;
 // sets: s16.port .s16Pending
 void s16Init(void) {
   static char *self="s16Init";
-  DBG()
+  DBG();
   s16.me="s16";
   s16.port = mpcPamPort();
   s16Start();
@@ -43,6 +43,7 @@ int s16Start(void) {
       return 1;
     }
   s16.on = true;
+  s16LogOpen();
   flogf("\n === buoy sbe16 start %s", utlDateTime());
   mpcPamPwr(sbe16_pam, true);
   tmrStop(s16_tmr);
@@ -59,7 +60,7 @@ int s16Start(void) {
 int s16Stop(void){
   static char *self="s16Stop";
   flogf("\n === buoy sbe16 stop %s", utlDateTime());
-  if (s16.log) utlLogClose(&s16.log);
+  antLogClose();
   if (s16.auton) s16Auton(false);
   mpcPamPwr(sbe16_pam, false);
   s16.on = false;
@@ -69,9 +70,12 @@ int s16Stop(void){
 ///
 // open or reopen log file
 int s16LogOpen(void) {
+  static char *self="s16LogOpen";
   int r=0;
   if (!s16.log)
     r = utlLogOpen(&s16.log, s16.me);
+  else
+    DBG4("%s: log already open", self);
   return r;
 } // s16LogOpen
 
@@ -79,9 +83,12 @@ int s16LogOpen(void) {
 ///
 // open or reopen log file
 int s16LogClose(void) {
+  static char *self="s16LogClose";
   int r=0;
   if (!s16.log)
     r = utlLogClose(&s16.log);
+  else
+    DBG4("%s: log already closed", self);
   return r;
 } // s16LogClose
 
@@ -89,7 +96,7 @@ int s16LogClose(void) {
 // sbe16
 // s16Prompt - poke buoy CTD, look for prompt
 bool s16Prompt(void) {
-  DBG1("cPt")
+  DBG1("cPt");
   if (s16Pending()) 
     s16DataWait();
   s16Flush();
@@ -109,7 +116,7 @@ bool s16Prompt(void) {
 // reset, exit sync mode
 void s16Break(void) {
   static char *self="s16Break";
-  DBG()
+  DBG();
   TUTxBreak(s16.port, 5000);
 } // s16Break
 
@@ -117,7 +124,7 @@ void s16Break(void) {
 // data waiting
 bool s16Data() {
   int r;
-  DBG2("cDa")
+  DBG2("cDa");
   r=TURxQueuedCount(s16.port);
   if (r)
     tmrStop(s16_tmr);
@@ -128,7 +135,7 @@ bool s16Data() {
 // wait for data or not pending (timeout)
 bool s16DataWait(void) {
   static char *self="cDW";
-  DBG()
+  DBG();
   do if (s16Data()) 
     return true;
   while (s16Pending());
@@ -141,7 +148,7 @@ bool s16DataWait(void) {
 // sets: s16_tmr
 void s16Sample(void) {
   if (s16Pending()) return;
-  DBG1("cSam")
+  DBG1("cSam");
   // flush old data, check for sleep message and prompt if needed
   if (s16Data()) {
     utlRead(s16.port, all.str);
@@ -164,7 +171,7 @@ void s16Sample(void) {
 bool s16Read(void) {
   char *p0, *p1, *p2, *p3;
   static char *self="s16Read";
-  DBG()
+  DBG();
   if (!s16Data()) return false;
   // utlRead(s16.port, all.str);
   p0 = utlExpect(s16.port, all.str, EXEC, 2);
@@ -192,7 +199,7 @@ bool s16Read(void) {
     utlErr(ant_err, "antRead: null values");
     return false;
   }
-  DBG1("= %4.2", s16.depth)
+  DBG1("= %4.2", s16.depth);
   s16.sampT = time(0);
   s16Sample();
   return true;
@@ -206,7 +213,7 @@ bool s16Pending(void) {
 
 ///
 float s16Depth(void) {
-  DBG1("cDep")
+  DBG1("cDep");
   if (s16Data())
       s16Read();
   return s16.depth;

@@ -44,43 +44,43 @@ extern DbgInfo dbg;
 #define DEBUGX
 
 #ifdef DEBUG0
-#define DBG() if (dbg.dbg0) flogf(" %s()", self);
+#define DBG() if (dbg.dbg0) flogf(" %s()", self)
 #else
 #define DBG(...)
 #endif
 
 #ifdef DEBUG0
-#define DBGN(D_FMT, ...) if (dbg.dbg0) flogf(" %s" D_FMT, self, __VA_ARGS__);
+#define DBGN(D_FMT, ...) if (dbg.dbg0) flogf(" %s" D_FMT, self, __VA_ARGS__)
 #else
 #define DBGN(...)
 #endif
 
 #ifdef DEBUG0
-#define DBG0(...) if (dbg.dbg0) flogf(" " __VA_ARGS__);
+#define DBG0(...) if (dbg.dbg0) flogf(" " __VA_ARGS__)
 #else
 #define DBG0(...)
 #endif
 
 #ifdef DEBUG1
-#define DBG1(...) if (dbg.dbg1) flogf("+" __VA_ARGS__);
+#define DBG1(...) if (dbg.dbg1) flogf("+" __VA_ARGS__)
 #else
 #define DBG1(...)
 #endif
 
 #ifdef DEBUG2
-#define DBG2(...) if (dbg.dbg2) flogf("_" __VA_ARGS__);
+#define DBG2(...) if (dbg.dbg2) flogf("_" __VA_ARGS__)
 #else
 #define DBG2(...)
 #endif
 
 #ifdef DEBUG3
-#define DBG3(...) if (dbg.dbg3) flogf(" " __VA_ARGS__);
+#define DBG3(...) if (dbg.dbg3) flogf(" " __VA_ARGS__)
 #else
 #define DBG3(...)
 #endif
 
 #ifdef DEBUG4
-#define DBG4(...) if (dbg.dbg4) flogf(" " __VA_ARGS__);
+#define DBG4(...) if (dbg.dbg4) flogf(" " __VA_ARGS__)
 #else
 #define DBG4(...)
 #endif

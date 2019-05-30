@@ -56,7 +56,7 @@ void mpcInit(void) {
 // turn pam on/off
 void mpcPamPwr(MpcPamType pam, bool on) {
   static char *self="mpcPamPwr";
-  DBGN("p:%d on:%d", pam, on)
+  DBGN("p:%d on:%d", pam, on);
   mpcPamDev(pam);
   if (on) mpcPamPulse(WISPR_PWR_ON);
   else mpcPamPulse(WISPR_PWR_OFF);
@@ -66,7 +66,7 @@ void mpcPamPwr(MpcPamType pam, bool on) {
 // pam port shares rx/tx between com3, com4
 // switch between devices on pam port, clear 
 void mpcPamDev(MpcPamType pam) {
-  DBG0("mpcPamDev(%d)", pam)
+  DBG0("mpcPamDev(%d)", pam);
   if (pam==mpc.pamDev) return;
   PIOClear(PAM_12);   //29
   PIOClear(PAM_2);    //30

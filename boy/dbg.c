@@ -7,7 +7,7 @@ DbgInfo dbg;        // global
 // the DBG* global vars are used in macros
 // #ifdef DEBUG0 
 // #define DBG0 if (dbg0) flogf(args);
-// DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" )
+// DBG0( "is printed if both #define DEBUG0  and  c:> set DBG0=1   (!=999)" );
 // sets: dbg.dbg0, .dbg1, .dbg2 .dbg3 (global vars)
 void dbgInit(void) {
   if (atoi(VEEFetchStr("DBG0", "999"))!=999) dbg.dbg0 = true;

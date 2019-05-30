@@ -19,7 +19,7 @@ WspInfo wsp;
 // sets: wsp.port .wspPending
 void wspInit(void) {
   static char *self="wspInit";
-  DBG()
+  DBG();
   wsp.me="wsp";
   wsp.port = mpcPamPort();
   mpcPamPwr(wsp1_pam, false);
@@ -52,9 +52,9 @@ int wspCardSwap(void) {
 int wspStart(void) {
   int r=0;
   static char *self="wspStart";
-  DBG()
+  DBG();
   if (wsp.on) wspStop();
-  DBG1("\n%s: activating wispr#%d", self, wsp.card)
+  DBG1("\n%s: activating wispr#%d", self, wsp.card);
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log)
@@ -67,7 +67,7 @@ int wspStart(void) {
 int wspStop(void) {
   int r=0;
   static char *self="wspStop";
-  DBG()
+  DBG();
   wsp.on = false;
   if (wsp.log) 
     utlLogClose(&wsp.log);
@@ -80,7 +80,7 @@ int wspStop(void) {
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
-  DBG()
+  DBG();
   if (!wsp.on) wspStart();
   if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
     utlErr(wsp_err, "wsp start fail");
@@ -94,7 +94,7 @@ int wspOpen(void) {
 int wspClose(void) {
   int r=0;
   static char *self="wspClose";
-  DBG()
+  DBG();
   if (!utlExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
     flogf("\n%s: did not get %s ", self, WSP_CLOSE);
     r=1;
@@ -111,7 +111,7 @@ void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
   time_t r, now;
   struct tm *tmPtr, tmLocal;
   static char *self="wspRiseT";
-  DBG()
+  DBG();
   // get time, break it down
   time(&now);
   tmPtr = gmtime(&now);
@@ -150,7 +150,7 @@ int wspStorm(char *buf) {
   static char *rets="1=open 2=RDY 3=predict 8=close";
   char *b;
   static char *self="wspStorm";
-  DBG()
+  DBG();
   // cmd
   buf[0]=0;
   b=all.str;
@@ -194,7 +194,7 @@ int wspLog(char *str) {
 // set date time on wispr
 int wspDateTime(void) {
   static char *self="wspDateTime";
-  DBG()
+  DBG();
   if (wspOpen()) return 1;
   sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
   utlWrite(wsp.port, all.str, EOL);
@@ -214,7 +214,7 @@ int wspDetectM(int *detectM, int minutes) {
   int r=0, detQ=0;
   float free;
   static char *self="wspDetectM";
-  DBGN( "(%d)", minutes )
+  DBGN( "(%d)", minutes );
   // cmd
   b=all.str;
   sprintf( b, "%s %s", wsp.wisprCmd, wsp.wisprFlag );
@@ -270,7 +270,7 @@ int wspDetectM(int *detectM, int minutes) {
 int wspDetectH(int *detectH, char *spectr) {
   int r=0, remains, detM=0;
   static char *self="wspDetectH";
-  DBG()
+  DBG();
   tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
   // enough time?
   wspRemainS(&remains);
@@ -309,7 +309,7 @@ int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq) {
   float laterH;
   int detH=0, r=0;
   time_t now, riseT;
-  DBG()
+  DBG();
   flogf("\n%s: setting wispr date/time", self);
   wspDateTime();
   *detect = 0;
@@ -336,7 +336,7 @@ void wspRemainS(int *remains) {
   time(&now);
   tim = gmtime(&now);
   *remains = ((60-tim->tm_min)*60) - tim->tm_sec;
-  DBG1("wspRemainS():%ds", *remains)
+  DBG1("wspRemainS():%ds", *remains);
 } // wspRemainS
 
 ///
@@ -358,7 +358,7 @@ int wspQuery(int *det) {
   }
   s = strtok(NULL, ",");
   *det = atoi(s);
-  DBG1("detected %d", det)
+  DBG1("detected %d", det);
   return 0;
 } // wspQuery
 
@@ -369,7 +369,7 @@ int wspSpace(float *free) {
   *free = 0.0;
   utlWrite(wsp.port, "$DFP*", EOL);
   if (!utlReadWait(wsp.port, all.buf, 2)) return 2;
-  DBG2("%s", all.buf)
+  DBG2("%s", all.buf);
   s = strstr(all.buf, "DFP");
   if (!s) return 1;
   strtok(s, ",");

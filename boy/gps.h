@@ -40,7 +40,7 @@ int gpsDateTime(GpsStats *stats);
 int gpsLatLng(GpsStats *stats);
 int gpsStart(void);
 int iridDial(void);
-int iridLandCmds(char *buff, int *len);
+int iridLandCmds(char *buff);
 int iridLandResp(char *buff);
 int iridProcessCmds(char *buff);
 int iridProjHdr(void);

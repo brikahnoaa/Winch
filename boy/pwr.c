@@ -211,7 +211,7 @@ void Setup_Acquisition(ushort bitshift) {
   intervalSamples = (ushort)(1 << bitshift);
   pwr.interval = (10 * intervalSamples * (PITRATE * PITPERIOD));
 
-  DBG1("\t|Writing every %4.1fSeconds", pwr.interval / 10.0)
+  DBG1("\t|Writing every %4.1fSeconds", pwr.interval / 10.0);
   utlDelay(1);
 
   // Set the Rate and start the PIT
@@ -264,7 +264,7 @@ reading.
 // 
 //
 void powerWrite(ushort *AveragedEnergy) {
-  DBG0("powerWrite")
+  DBG0("powerWrite");
   // global
   CLK(start_clock = clock();)
   pwr.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
@@ -287,7 +287,7 @@ void powerWrite(ushort *AveragedEnergy) {
     return;
   if (close(pwr.filehdl) < 0)
     flogf("\nERROR  |powerWrite() %s Close error: %d", ADAvgFileName, errno);
-  // DBG(   else      flogf("\n\t|powerWrite() %s Closed", ADAvgFileName);)
+  // DBG(   else      flogf("\n\t|powerWrite() %s Closed", ADAvgFileName););
  
   utlDelay(10);
 
@@ -348,7 +348,7 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   if (filelength < 6) {
     if (close(pwr.filehdl) < 0)
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
-    DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
+    DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed"););
     return 0.0;
   }
 
@@ -369,7 +369,7 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
 
     if (close(pwr.filehdl) < 0)
       flogf("\nERROR  |PowerMonitor: File Close error: %d", errno);
-    DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed");)
+    DBG(else flogf("\n\t|PowerMonitor: ADSFile Closed"););
 
     utlDelay(25);
     if (DataCount != 0) {
@@ -409,7 +409,7 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
                          "Volt:%.2fV\nMin Volt:%.2fV\nMax Current:%.3fA\n",
             TotalTime, kjoules, voltage, MinVoltage, MaxCurrent);
 
-  DBG1("%s", WriteBuffer)
+  DBG1("%s", WriteBuffer);
   if (filehandle > 0)
     byteswritten = write(filehandle, WriteBuffer, strlen(WriteBuffer));
 
@@ -431,7 +431,7 @@ void GetPowerSettings(void) {
   p = VEEFetchData(MINSYSVOLT_NAME).str;
   strncpy(ADS.MINVOLT, p ? p : MINSYSVOLT_DEFAULT, sizeof(ADS.MINVOLT));
   //	MPC.MINVOLT =p;
-  DBG1("MINVOLT=%s (%s)", ADS.MINVOLT, p ? "vee" : "def")
+  DBG1("MINVOLT=%s (%s)", ADS.MINVOLT, p ? "vee" : "def");
   if (MIN_BATTERY_VOLTAGE > atof(ADS.MINVOLT)) {
     sprintf(ADS.MINVOLT, "%5.2f", MIN_BATTERY_VOLTAGE);
     VEEStoreStr(MINSYSVOLT_NAME, ADS.MINVOLT);
@@ -439,12 +439,12 @@ void GetPowerSettings(void) {
 
   p = VEEFetchData(BATTERYCAPACITY_NAME).str;
   strncpy(ADS.BATCAP, p ? p : BATTERYCAPACITY_DEFAULT, sizeof(ADS.BATCAP));
-  DBG1("BATCAP=%s (%s)", ADS.BATCAP, p ? "vee" : "def")
+  DBG1("BATCAP=%s (%s)", ADS.BATCAP, p ? "vee" : "def");
 
   //"t" 0 or 1
   p = VEEFetchData(BATTERYLOGGER_NAME).str;
   ADS.BATLOG = atoi(p ? p : BATTERYLOGGER_DEFAULT);
-  DBG1("BATLOG=%u (%s)", ADS.BATLOG, p ? "vee" : "def")
+  DBG1("BATLOG=%u (%s)", ADS.BATLOG, p ? "vee" : "def");
 }
 
 //
@@ -456,7 +456,7 @@ void GetPowerSettings(void) {
 void powDelay(short Sec) {
   short i;
   long last, rem;
-  DBG1(" {%d} ", Sec )
+  DBG1(" {%d} ", Sec );
   cdrain();
   last = Sec / 5;
   rem = Sec - last * 5;

@@ -1,10 +1,12 @@
 Thu, May 23, 2019  5:08:20 PM
 .0 redo cycle from fall to transmit (deploy is like a fall)
 .1 redo log file handling
-.1.1 {boy,eng,s16,s39} *LogOpen *LogClose *Log(string)
+.1.1 {ant,boy,eng,s16} *LogOpen *LogClose *Log(string)
 .1.2 ' ' .me="ant"
 .1.3 cfg.c ' ' remove logFile[32]
-.1.4 remove velocity ringnode from s39.c
+.1.4 remove current check at 10m, descending
+.2 later - separate s39 from ant
+.2.1 remove velocity ringnode from s39.c
 .. open/close logs
 .. s39
 

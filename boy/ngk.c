@@ -79,7 +79,7 @@ void ngkSend(MsgType msg) {
 // wait for and log ngk response
 MsgType ngkRecvWait(MsgType *msg, int wait) {
   static char *self="ngkRecvWait";
-  DBG()
+  DBG();
   tmrStart(ngk_tmr, wait);
   while (!tmrExp(ngk_tmr))
     if (ngkRecv(msg)!=null_msg)

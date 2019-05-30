@@ -91,7 +91,7 @@ void logInit(char *file) {
   static char *self="logInit";
   char *dt, cmd[64];
   struct stat finfo;
-  DBG0("logInit(%s)", file)
+  DBG0("logInit(%s)", file);
   utlPet();
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
