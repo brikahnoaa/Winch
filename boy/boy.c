@@ -5,6 +5,7 @@
 
 BoyInfo boy;
 BoyData boyd;
+WspData wspd;
 
 ///
 // deploy or reboot, then loop over phases data/rise/irid/fall
@@ -162,15 +163,14 @@ PhaseType dataPhase(void) {
   // save power
   antStop();
   // ngkStop();
-  success = wspDetectD(&boyd.detections, &boyd.spectr, 
-      boy.iridHour, boy.iridFreq);
+  success = wspDetectD(&wspd, boy.dataFreq, boy.riseHour);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;
   case 12: flogf("\nhour.startFail"); break;
   case 13: flogf("\nhour.minimum"); break;
   }
-  // masters told us to stay down a few days
+  // masters told us to stay down multiple cycles
   if (boy.stayDown>0) {
     flogf("\n\ndataPhase: stay down +%d cycles", boy.stayDown);
     boy.stayDown--;
@@ -610,7 +610,7 @@ bool docked(float depth) {
 }
 
 ///
-// uses: .cycle boyd.*Bgn .*End .oceanCurr .surfD
+// uses: all.cycle boyd.*Bgn .*End .oceanCurr .surfD
 // sets: boyd.physical
 // write some engineering data
 int boyEngLog(void) {
@@ -637,7 +637,9 @@ int boyEngLog(void) {
   sprintf(b+strlen(b), "=== measures ===\n");
   sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f at dock=%.1fm\n", 
       boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
-  sprintf(b+strlen(b), "Spectrogram:\n%s\n", boyd.spectr);
+  sprintf(b+strlen(b), "Wispr: disk %3.0f%% free on wispr#%d, %d detections\n",
+      wspd.free, wspd.card, wspd.detects);
+  sprintf(b+strlen(b), "Spectrogram:\n  %s\n", wspd.spectr);
   sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgn));
   sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
   sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));

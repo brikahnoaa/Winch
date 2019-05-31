@@ -68,6 +68,11 @@
 //#include <dosdrive.h>
 
 #define PICODEV 4
+#ifndef NOT_R216_RECIPECARD
+#ifndef NO_AD_REF_SHDN_PIN
+#define     AD_REF_SHDN_PIN     28  // default /SHDN on Pii boards
+#endif /*  */
+#endif /*  */
 //#define ADTYPE ADisADS8344
 //#ifdef DEBUG
   	//#define	DBG(X)	X	// template:	DBG( cprintf("\n"); )

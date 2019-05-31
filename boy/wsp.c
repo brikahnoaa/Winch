@@ -2,6 +2,8 @@
 #include <main.h>
 
 #define EOL "\r"
+#define WSP_OPEN "<wispr>"
+#define WSP_CLOSE "</wispr>"
 
 WspInfo wsp;
 
@@ -105,8 +107,8 @@ int wspClose(void) {
 
 ///
 // calculate rise time
-// sets: *riseT = next iridHour, or iridFreq hours interval from midnight
-void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
+// sets: *riseT = next riseHour, or dataFreq hours interval from midnight
+void wspRiseT(time_t *riseT, int dataFreq, int riseHour) {
   int hour;
   time_t r, now;
   struct tm *tmPtr, tmLocal;
@@ -117,11 +119,11 @@ void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
   tmPtr = gmtime(&now);
   memcpy(&tmLocal, tmPtr, sizeof(struct tm));
   // figure target hour
-  if (iridFreq) {
+  if (dataFreq) {
     // instead of a fixed rise hour, figure next interval
-    hour = ((int)(tmLocal.tm_hour/iridFreq)+1) * iridFreq;
+    hour = ((int)(tmLocal.tm_hour/dataFreq)+1) * dataFreq;
   } else {
-    hour=iridHour;
+    hour=riseHour;
   }
   // check the hour, is it past? add one interval
   tmLocal.tm_hour = hour;
@@ -132,8 +134,8 @@ void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
     // next day/interval 
     DBG1("r<now");
     // be careful with long math and big ints, do not (time_t) (24*60*60)
-    if (iridFreq) {
-      r = r + (time_t) iridFreq*60*60;
+    if (dataFreq) {
+      r = r + (time_t) dataFreq*60*60;
     } else {
       r = r + (time_t) 24*60*60;
     }
@@ -145,11 +147,11 @@ void wspRiseT(time_t *riseT, int iridHour, int iridFreq) {
 
 ///
 // wsp storm check started. interact.
-// rets: 1=start 2=RDY 3=spectr 9=stop
+// rets: 1=open 2=RDY 3=predict 8=close
 int wspStorm(char *buf) {
+  static char *self="wspStorm";
   static char *rets="1=open 2=RDY 3=predict 8=close";
   char *b;
-  static char *self="wspStorm";
   DBG();
   // cmd
   buf[0]=0;
@@ -160,20 +162,20 @@ int wspStorm(char *buf) {
   if (wsp.spectLog)
     sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.spectLog, all.cycle );
   // start 
-  if (wspOpen()) Exc(1);
+  if (wspOpen()) throw(1);
   flogf( "\nexec '%s'", b );
   utlWrite( wsp.port, b, EOL );
   // gather
-  if (!utlExpect(wsp.port, buf, "RDY", 200)) Exc(2);
+  if (!utlExpect(wsp.port, buf, "RDY", 200)) throw(2);
   utlWrite(wsp.port, "$WS?*", EOL);
-  if (!utlReadWait(wsp.port, buf, 60)) Exc(3);
+  if (!utlReadWait(wsp.port, buf, 60)) throw(3);
   flogf("\nwspStorm prediction: %s", buf);
   // ?? add to daily
   // stop
   if (wspClose()) return 9;
   return 0;
 
-  Except
+  catch
     return(all.exc);
 } // wspStorm
 
@@ -207,13 +209,13 @@ int wspDateTime(void) {
 // if this fails, assume card is bad
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
 // sets: *detectM+=
-// rets: 1=start 9=stop 10=!wspQuery 20=!wspClose
+// rets: 1=start 3=FIN 8=close 9=stop 10=query 20=space
 int wspDetectM(int *detectM, int minutes) {
+  static char *self="wspDetectM";
   static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
   char *b;
   int r=0, detQ=0;
   float free;
-  static char *self="wspDetectM";
   DBGN( "(%d)", minutes );
   // cmd
   b=all.str;
@@ -223,7 +225,7 @@ int wspDetectM(int *detectM, int minutes) {
   if (wsp.wisprLog)
     sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.wisprLog, all.cycle );
   // start
-  if (wspOpen()) Exc(1);
+  if (wspOpen()) throw(1);
   flogf( "\nexec '%s'", b );
   utlWrite( wsp.port, b, EOL );
   // run for minutes; every .detInt, query and reset.
@@ -233,28 +235,29 @@ int wspDetectM(int *detectM, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&detQ)) Exc(10);
+      if (wspQuery(&detQ)) throw(10);
       *detectM += detQ;
-      if (wspSpace(&free)) Exc(20);
+      if (wspSpace(&free)) throw(20);
       flogf("\n%s: disk %3.0f%% free on wispr#%d", self, free, wsp.card);
+      
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
-  if (wspQuery(&detQ)) Exc(10);
+  if (wspQuery(&detQ)) throw(10);
   *detectM += detQ;
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
     flogf("\n%s(): expected FIN, got '%s'", self, all.buf);
-    Exc(3);
+    throw(3);
   }
   // ?? add to daily log
   // stop
   if (wspClose()) return 8;
   return 0;
 
-  Except
+  catch
     wspStop();
     return(all.exc);
 } // wspDetectM
@@ -304,7 +307,7 @@ int wspDetectH(int *detectH, char *spectr) {
 // uses: .spectRun 
 // sets: *detect+=
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
-int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq) {
+int wspDetectD(WspData *wspd, int dataFreq, int riseHour) {
   static char *self="wspDetectD";
   float laterH;
   int detH=0, r=0;
@@ -312,15 +315,15 @@ int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq) {
   DBG();
   flogf("\n%s: setting wispr date/time", self);
   wspDateTime();
-  *detect = 0;
+  wspd->detects = 0;
   time(&now);
-  wspRiseT(&riseT, iridHour, iridFreq);
+  wspRiseT(&riseT, dataFreq, riseHour);
   laterH = (float)(riseT-now)/60/60;
   flogf("\n  starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {
-    if (wspDetectH(&detH, spectr)) r+=10;
-    *detect += detH;
-    flogf("\n%s: %d detections @%s", self, *detect, utlDateTime());
+    if (wspDetectH(&detH, wspd->spectr)) r+=10;
+    wspd->detects += detH;
+    flogf("\n%s: %d detections @%s", self, wspd->detects, utlDateTime());
   } // while < riseT
   if (wsp.spectRun==1) 
     wspStorm(all.buf);

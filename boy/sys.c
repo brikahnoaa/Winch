@@ -1,6 +1,11 @@
 // sys.c
 #include <main.h>
 
+#define STARTS "0"
+#define STARTS_MAX "50"
+#define SYS_LOG "SYS.LOG"
+#define C_DRV ('C'-'A')
+
 SysInfo sys;
 
 ///

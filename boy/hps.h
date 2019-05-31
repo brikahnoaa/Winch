@@ -47,15 +47,6 @@
 **	
 *******************************************************************************/
 
-#ifndef		__Ads8345_H
-#define		__Ads8345_H
-
-
-#ifndef	NOT_R216_RECIPECARD
-#ifndef	NO_AD_REF_SHDN_PIN
-#define		AD_REF_SHDN_PIN		28	// default /SHDN on Pii boards
-#endif /*  */
-#endif /*  */
 extern const uchar Ads8345SglChSel[8];	// convert chan to single-ended selector
 extern const uchar Ads8345DifChSel[8];	// convert chan to differential selector
 enum
@@ -81,7 +72,7 @@ ushort Ads8345SampleOrigin (ushort qslot, ushort chan, bool uni, bool sgl,
 			    bool pd);
 float Ads8345RawToVolts (ushort raw, float vref, bool);
 
-#endif //      __Ads8345_H
+// #endif //      __Ads8345_H
 
 //int hpsStats(void);
 

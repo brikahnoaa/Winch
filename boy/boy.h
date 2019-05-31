@@ -12,13 +12,12 @@ typedef enum {
 } PhaseType;
 typedef enum { free_ris, run_ris } RiseType;
 
-// boy data
+// boy data - aka engineering data
 typedef struct BoyData {
   GpsStats gpsBgn;        // initial stats, just surfaced
   GpsStats gpsEnd;        // final stats, irid done
   HpsStats physical;      // float curr, volt, pres, humi;
   Serial port;            // sbe16 or ant mod
-  char *spectr[128];      // output from last spectr run
   float dockD;            // Depth when docked in winch
   float fallV1st;         // meters/s of the first fall
   float fallVNow;         // meters/s of the most recent fall 
@@ -27,7 +26,6 @@ typedef struct BoyData {
   float riseV1st;         // meters/min of the first rise 
   float riseVNow;         // meters/min of the most recent rise 
   float surfD;            // depth floating at surface
-  int detections;
   int log;                // log filehandle
   time_t fallBgn;
   time_t fallEnd;
@@ -48,14 +46,14 @@ typedef struct BoyInfo {
   float iceDanger;        // ice danger at this temp (-1.2)
   float predFallV;        // predicted fall velo (.2)
   float predRiseV;        // predicted rise velo (.33)
+  int dataFreq;           // number of times per day to call !iridHour (0)
   int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)
   int fallOpM;            // operation timeout minutes (30)
   int filePause;          // pause between sending files
-  int iridFreq;           // number of times per day to call !iridHour (0)
-  int iridHour;           // 0-23 (midnight-11pm) hour to call home (1)
   int iridOpM;            // phase minutes
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
+  int riseHour;           // 0-23 (midnight-11pm) hour to call home (1)
   int riseOpM;            // operation timeout minutes (30)
   int startPh;            // phase to start in (0)
   int stayDown;           // stay down for days, expecting storm (0)

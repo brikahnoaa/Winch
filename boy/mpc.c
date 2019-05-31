@@ -1,6 +1,10 @@
 // mpc.c - hardware, mpc specific; pam x 4
 #include <main.h>
 
+#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
+#define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
+#define PAM_BAUD 9600
+
 MpcInfo mpc;
 
 //

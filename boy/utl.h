@@ -2,18 +2,19 @@
 #ifndef H_UTL
 #define H_UTL
 
+#define null NULL
+
 // 4K and 32K
 #define BUFSZ 4096
 #define FILESZ ((size_t)1024 * 32)
 
-// allow up to .05 second between chars, normally chars take .001-.016
-#define CHAR_DELAY 50
 #define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+// settle time for electronics power on
 #define SETTLE 200
 
-// faux exception processing: Exc(10);  -->  print # and char *rets, return
-#define Exc(X_VALUE) { all.exc=X_VALUE; goto X_LABEL; }
-#define Except X_LABEL: flogf("\n%s() exception=%d, %s", self, all.exc, rets);
+// faux exception processing: throw(10) ---> catch {return all.exc;}
+#define throw(X_VALUE) { all.exc=X_VALUE; goto X_LABEL; }
+#define catch X_LABEL: flogf("\n%s() exception=%d", self, all.exc);
 
 typedef TUPort * Serial;
 

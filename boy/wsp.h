@@ -2,8 +2,6 @@
 #ifndef H_WSP
 #define H_WSP
 
-#define WSP_OPEN "<wispr>"
-#define WSP_CLOSE "</wispr>"
 typedef struct WspInfo {
   Serial port;                // mpcPamPort()
   bool on;                    // run wispr
@@ -28,17 +26,25 @@ typedef struct WspInfo {
   int wisprGain;              // mic sensitivity
 } WspInfo;
 
+// declared in boy.c, passed to wspDetectD
+typedef struct WspData {      // pass from boy to wsp
+  char spectr[128];           // wsp: output from spectrogram
+  float free;                 // wsp: free disk on current card
+  int card;                   // wsp: current card
+  int detects;                // wsp: detections
+} WspData;
+
 static int wspClose(void);
 static int wspOpen(void);
 static int wspStart(void);
 static void wspRemainS(int *remains);
-static void wspRiseT(time_t *riseT, int iridHour, int iridFreq);
+static void wspRiseT(time_t *riseT, int dataFreq, int riseHour);
 
 int wspCardSwap(void);
 int wspDateTime(void);
-int wspDetectD(int *detect, char *spectr, int iridHour, int iridFreq);
-int wspDetectH(int *detect, char *spectr);
-int wspDetectM(int *detect, int minutes);
+int wspDetectD(WspData *wspd, int iridHour, int iridFreq);
+int wspDetectH(int *detectH, char *spectr);
+int wspDetectM(int *detectM, int minutes);
 int wspLog(char *str);
 int wspQuery(int *detect);
 int wspSpace(float *disk);
