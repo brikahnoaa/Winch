@@ -462,7 +462,7 @@ int antAuton(bool auton) {
   }
   antPrompt();
   if (auton) {
-    sprintf(all.str, "sampleInterval=%d", ant.sampInt);
+    sprintf(all.str, "sampleInterval=%d", ant.sampInter);
     utlWrite(ant.port, all.str, EOL);
     utlExpect(ant.port, all.str, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);

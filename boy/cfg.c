@@ -38,7 +38,7 @@ static CfgParam cfgP[] = {
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
   {'i',  "ant.delay",     &ant.delay,       "ade",  "3"},
   {'i',  "ant.ringSize",  &ant.ringSize,    "arS",  "5"},
-  {'i',  "ant.sampInt",   &ant.sampInt,     "asI",  "10"},
+  {'i',  "ant.sampInter", &ant.sampInter,   "asI",  "10"},
 
   {'b',  "boy.iridAuton", &boy.iridAuton,   "biA",  "false"},
   {'b',  "boy.reset",     &boy.reset,       "bre",  "false"},
@@ -65,10 +65,12 @@ static CfgParam cfgP[] = {
 
   {'c',  "cfg.file",      &cfg.file,        "cfe",  "lara.cfg"},
 
+  {'b',  "s16.auton",     &s16.auton,       "can",  "false"},
   {'b',  "s16.sampClear", &s16.sampClear,   "ccS",  "false"},
   {'b',  "s16.sampStore", &s16.sampStore,   "csS",  "true"},
-  {'i',  "s16.delay",     &s16.delay,       "cde",  "6"},
-  {'i',  "s16.sampleInt", &s16.sampleInt,   "csI",  "10"},
+  {'i',  "s16.pumpMode",  &s16.pumpMode,    "cpM",  "1"},
+  {'i',  "s16.sampInter", &s16.sampInter,   "csI",  "10"},
+  {'i',  "s16.timer",     &s16.timer,       "ctr",  "6"},
 
   {'b',  "dbg.noData",    &dbg.noData,      "dnD",  "false"},
   {'b',  "dbg.noDeploy",  &dbg.noDeploy,    "dne",  "false"},

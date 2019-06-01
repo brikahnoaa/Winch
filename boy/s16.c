@@ -28,6 +28,7 @@ void s16Init(void) {
   utlReadWait(s16.port, all.str, 1);   // echo
   utlWrite(s16.port, "stop", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
+  if (dbg.test) s16.pumpMode=0;
   s16Stop();
 } // s16Init
 
@@ -49,6 +50,10 @@ int s16Start(void) {
   tmrStop(s16_tmr);
   if (!s16Prompt())
     utlErr(s16_err, "s16: no prompt");
+  // 0=no 1=.5sec 2=during
+  sprintf(all.str, "pumpmode=%d", s16.pumpMode);
+  utlWrite(s16.port, all.str, EOL);
+  utlReadWait(s16.port, all.str, 2);   // echo
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
   utlWrite(s16.port, all.str, EOL);
   utlReadWait(s16.port, all.str, 2);   // echo
@@ -164,7 +169,7 @@ void s16Sample(void) {
   // get echo // NOTE - sbe16 does not echo while auton
   if (!s16.auton)
     utlReadWait(s16.port, all.str, 1);
-  tmrStart(s16_tmr, s16.delay);
+  tmrStart(s16_tmr, s16.timer);
 } // s16Sample
 
 ///
@@ -239,7 +244,7 @@ int s16Auton(bool auton) {
     if (s16Pending())
       s16DataWait();
     s16Prompt();
-    sprintf(all.str, "sampleInterval=%d", s16.sampleInt);
+    sprintf(all.str, "sampleInterval=%d", s16.sampInter);
     utlWrite(s16.port, all.str, EOL);
     utlExpect(s16.port, all.str, EXEC, 2);
     utlWrite(s16.port, "txRealTime=n", EOL);

@@ -26,7 +26,7 @@ typedef struct AntInfo {
   int delay;
   int log;
   int ringSize;               // number of nodes in the (depth,time) ring
-  int sampInt;                // sample interval for auton
+  int sampInter;              // sample interval for auton
   time_t sampT;               // read time() of last sample 
   RingNode *ring;             // nodes in the (depth,time) ring
   AntType antenna;

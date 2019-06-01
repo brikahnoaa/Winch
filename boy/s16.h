@@ -8,12 +8,13 @@ typedef struct S16Info {
   bool on;                    // now init'd
   bool sampClear;             // clear stored samples after GetSamples()
   bool sampStore;             // store on device with TSSon - except auton
-  char *me;
+  char *me;                   // s16
   float depth;
   float temp;
-  int delay;                  // Delay seconds expected between polled samples
   int log;                    // log fileid
-  int sampleInt;              // sample Interval for auton
+  int pumpMode;               // 0=no 1=.5sec 2=during
+  int sampInter;              // sample Interval for auton
+  int timer;                  // Delay seconds expected between polled samples
   time_t sampT;
 } S16Info;
 
