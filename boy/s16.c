@@ -23,12 +23,12 @@ void s16Init(void) {
   DBG();
   s16.me="s16";
   s16.port = mpcPamPort();
+  if (dbg.test) s16.pumpMode=0;
   s16Start();
   utlWrite(s16.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
   utlWrite(s16.port, "stop", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
-  if (dbg.test) s16.pumpMode=0;
   s16Stop();
 } // s16Init
 
