@@ -303,9 +303,11 @@ int iridDo(void) {
       continue;
     } 
     if (!helloB) {
+      // sprintf(all.str, "hello.txt");
+      // if ((r = iridSendFile(all.str))) {
       sprintf(all.str, "hello");
-      if ((r = iridSendFile(all.str))) {
-        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+      if ((r = iridSendBlock(all.str, 5, 1, 1))) {
+        flogf("\nERR\t| iridSendBlock(%s)->%d", all.str, r);
         continue;
       } else helloB=true;
     }
