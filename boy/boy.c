@@ -289,7 +289,6 @@ int iridDo(void) {
   while (!tmrExp(phase_tmr)) {
     // 0=success
     flogf("\n%s ====\n", utlTime());
-    iridHup();
     if ((r = iridSig())) {
       flogf("\nERR\t| iridSig()->%d", r);
       continue;
@@ -300,6 +299,7 @@ int iridDo(void) {
     } 
     if ((r = iridProjHdr())) {
       flogf("\nERR\t| iridProjHdr()->%d", r);
+      iridHup();
       continue;
     } 
     if (!helloB) {
@@ -308,14 +308,19 @@ int iridDo(void) {
       sprintf(all.str, "hello");
       if ((r = iridSendBlock(all.str, 5, 1, 1))) {
         flogf("\nERR\t| iridSendBlock(%s)->%d", all.str, r);
+        iridHup();
         continue;
-      } else helloB=true;
+      } else {
+        helloB=true;
+        flogf("\n\tHelloHelloHello");
+      }
     }
     utlNap(boy.filePause);
     if (!engB) {
       utlLogPathName(all.str, "eng", all.cycle);
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+        iridHup();
         continue;
       } else engB=true;
     }
@@ -324,10 +329,10 @@ int iridDo(void) {
       utlLogPathName(all.str, "s16", all.cycle);
       if ((r = iridSendFile(all.str))) {
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+        iridHup();
         continue;
       } else s16B=true;
     }
-    iridHup();
     // done?
     if (helloB && engB && s16B) break;
   } // while
