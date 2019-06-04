@@ -1,0 +1,169 @@
+
+C:\>
+###MX Load: CRC 010000 026CB7 = D09E149C
+Gs boy
+Saving 93368 bytes to BOY.PXE...
+
+C:\>boy
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 23, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Jun  4 2019 16:05:25
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 23
+Started: 2019-06-04 23:05:50
+---   ---
+cfgInit: config file default name 'lara.cfg'
+-ERR(cfg)	|0| 23:05:50 cfgString() no match on name/id boy.iridHour=7 ??
+	wsp.spectRun=2
+	wsp.card=1
+cfgInit: read 2 lines from lara.cfg
+VEE: BOY.IRIDFREQ=2
+-ERR(cfg)	|1| 23:05:51 cfgString() no match on name/id BOY.IRIDFREQ=2 ??
+VEE: DBG.TEST=1
+VEE: DBG.NODATA=1
+VEE: DBG.NODEPLOY=1
+VEE: DBG.NORISE=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2019-06-04 23:05:51 
+utlLogOpen(log\000ant.log):1 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>'datetime=06042019230555 x0D '
+antStart(): ERR sbe39, datetime not executed >>'TSSon x0D ' >>'TxSampleNum=N x0D ' >>'txRealTime=n x0D ' >>'stop x0D '
+ === ant module stop 2019-06-04 23:06:15 
+utlLogClose():1 
+  System Starts 23 
+utlLogOpen(log\000s16.log):1
+ === buoy sbe16 start 2019-06-04 23:06:15 >>' x0D ' >>' x0D '
+-ERR(s16)	|0| 23:06:33 s16: no prompt >>'pumpmode=0 x0D ' >>'datetime=06042019230635 x0D ' >>'TSSon x0D ' >>'DelayBeforeSampling=0 x0D ' >>'stop x0D '
+ === buoy sbe16 stop 2019-06-04 23:06:40 antLogClose: log already closed
+dbg.test mode
+boyMain(): starting with phase 0
+ === ant module start 2019-06-04 23:06:42 
+utlLogOpen(log\000ant.log):2 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>'datetime=06042019230645 x0D '
+antStart(): ERR sbe39, datetime not executed >>'TSSon x0D ' s16LogOpen: log already open
+ === buoy sbe16 start 2019-06-04 23:06:53 >>' x0D ' >>' x0D ' <<''
+-ERR(s16)	|1| 23:07:10 s16: no prompt >>'pumpmode=0 x0D ' >>'datetime=06042019230710 x0D ' >>'TSSon x0D '
+cycle 0 @2019-06-04 23:07:11 
+deploy: testing sbe16, sbe39
+cycle 0 @2019-06-04 23:07:11  antLogOpen: log already open s16LogOpen: log already open
+risePhase 2019-06-04 23:07:11 
+utlLogClose():2  
+utlLogClose():1 
+cycle 0 @2019-06-04 23:07:11 
+iridPhase 2019-06-04 23:07:11
+== eng log cycle 0 2019-06-04 23:07:11 ==
+program start 2019-06-04 23:05:50, boot #23
+antSurfD:1.1, s39:0.0, s16:0.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Wispr: disk   0% free on wispr#0, 0 detections
+Spectrogram:
+  
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=, long=, time=
+gps drift: lat=, long=, time=
+ending surface depth=0.0
+ 
+utlLogOpen(log\000eng.log):1 
+utlLogClose():1  <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+23:07:15 ===
+ >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-12-3236 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-12-3236 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=01-08-1980 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=00 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=03 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=03 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=03 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=04 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=04 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Invalid Position Fix x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A '
+GPS Sats=06 >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A ' Date=06-04-2019 >>'at+pt x0D ' <<' x0D  x0A +PT: x0D  x0A UTC Time=23:08:03.000 x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A ' Time=23:08:03.000
+gpsSetTime()	| off by -1 seconds >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A '
+GPS Sats=06 >>'at+pl x0D ' <<' x0D  x0A +PL: x0D  x0A Latitude=44:37.2565 North x0D  x0A Longitude=124:02.6514 West x0D  x0A Altitude=11.2 meters x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A ' Lat=44:37.2565 N Lng=124:02.6514 W
+23:08:06 ====
+
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 23:08:08 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' (0) >>'atd0088160000519 x0D ' (1) >>'atd0088160000519 x0D ' CONNECT 9600rudBaud@1800 +5555us  proj <<'ACK x0A '
+ 1/1
+	HelloHelloHello
+
+=== off_t is 0b, int is 4b ===
+
+
+iridSendFile(log\000eng.log) 1/1 [[1024/5001]] 1/1 [[1024/5001]] 1/1 [[1024/5001]] 1/1 [[1024/5001]] 1/1 [[905/5001]]
+LandResp(cmds) @ @ @
+CMDS(5)->''send1'' >>'data'
+
+=== off_t is 0b, int is 4b ===
+
+
+iridSendFile(log\000s16.log) 1/1 [[300/300]]
+LandResp( x0D )
+ERR	| iridSendFile(
+)->12 >>'+++' <<'NO CARRIER x0D  x0A ' >>'+++' >>'+++' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A '
+clcc-> x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A  >>'at+chup x0D ' <<' x0D  x0A OK x0D  x0A '
+23:09:43 ====
+
+iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5 23:09:50 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' CONNECT 9600rudBaud@1800 +5555us  proj <<'ACK x0A '
+
+
+=== off_t is 0b, int is 4b ===
+
+
+iridSendFile(log\000s16.log) 1/1 [[300/300]]
+LandResp(cmds) @ @ @
+CMDS(5)->''send1'' >>'data'
+23:10:28 =====
+ >>'at+pd x0D ' <<' x0D  x0A NO CARRIER x0D  x0A ' >>'at+pd x0D ' <<' x0D  x0A +PD: x0D  x0A UTC Date=06-04-2019 x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A '
+GPS Sats=06 >>'at+pl x0D ' <<' x0D  x0A +PL: x0D  x0A Latitude=44:37.2542 North x0D  x0A Longitude=124:02.6530 West x0D  x0A Altitude=14.2 meters x0D  x0A Satellites Used=06 x0D  x0A  x0D  x0A OK x0D  x0A ' Lat=44:37.2542 N Lng=124:02.6530 W >>'at*p x0D ' <<' x0D  x0A OK x0D  x0A '
+cycle 1 @2019-06-04 23:10:48  
+utlLogOpen(log\001ant.log):1 
+utlLogOpen(log\001s16.log):2
+fallPhase 2019-06-04 23:10:48 
+utlLogClose():1  
+utlLogClose():2 
+cycle 1 @2019-06-04 23:10:48 
+dataPhase 2019-06-04 23:10:48
+cycle 1 @2019-06-04 23:10:48  
+utlLogOpen(log\001ant.log):1 
+utlLogOpen(log\001s16.log):2
+risePhase 2019-06-04 23:10:49 
+utlLogClose():1  
+utlLogClose():2 
+cycle 1 @2019-06-04 23:10:49 
+iridPhase 2019-06-04 23:10:49 <<' 20.1000,  0.10000,   30.000, 0.1000, 0.1000,   0.1000, 04 Jun 2019 23:07:14 x0D  x0A S>time out x0D  x0A ' >>'TSSon x0D '
+== eng log cycle 1 2019-06-04 23:10:49 ==
+program start 2019-06-04 23:05:50, boot #23
+antSurfD:1.1, s39:0.0, s16:30.0
+=== measures ===
+temp=0.0, oceanCurr=0.0 at dock=0.0m
+Wispr: disk   0% free on wispr#0, 0 detections
+Spectrogram:
+  
+rise begin 1970-01-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2565 N, long=124:02.6514 W, time=23:08:03.000
+gps drift: lat=44:37.2542 N, long=124:02.6530 W, time=
+ending surface depth=0.0
+ 
+utlLogOpen(log\001eng.log):1 
+utlLogClose():1 
+ === ant module stop 2019-06-04 23:10:52 antLogClose: log already closed
+ === buoy sbe16 stop 2019-06-04 23:10:52 antLogClose: log already closed
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
