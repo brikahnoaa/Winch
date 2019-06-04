@@ -35,14 +35,13 @@ typedef struct UtlInfo {
 } UtlInfo;
 
 typedef struct AllData {
-  char *file;               // 32K file buffer (FILESZ)
   char *buf;                // 4K buffer (BUFSZ)
   char *str;                // 4K buffer (BUFSZ)
   int cycle;                // RiseCallFallData cycles
-  int exc;                  // exception value
+  int exc;                  // exception value for faux catch/throw
   int starts;               // number of starts (VEEPROM)
-  time_t startCycle;        // cycle start
-  time_t startProg;         // program start
+  time_t startCycle;        // cycle start time
+  time_t startProg;         // program start time
 } AllData;
 
 // the globals below are used by all modules // malloc'd in utlInit()

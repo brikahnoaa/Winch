@@ -13,7 +13,6 @@ UtlInfo utl;
 void utlInit(void) {
   DBG2("utlInit()");
   // utl.ret is semi-global, it is returned by some char *utlFuncs()
-  all.file = malloc(FILESZ);
   all.buf = malloc(BUFSZ);
   all.str = malloc(BUFSZ);
   utl.buf = malloc(BUFSZ);

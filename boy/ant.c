@@ -497,7 +497,7 @@ void antGetSamples(void) {
   int total=0;
   int log;
   DBG();
-  len1 = len2 = len3 = sizeof(all.file);
+  len1 = len2 = len3 = sizeof(all.buf);
   antAuton(false);
   if (ant.log)
     log = ant.log;
@@ -510,8 +510,8 @@ void antGetSamples(void) {
   utlWrite(ant.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
-    len2 = (int) TURxGetBlock(ant.port, all.file, (long) len1, (short) 1000);
-    len3 = write(log, all.file, len2);
+    len2 = (int) TURxGetBlock(ant.port, all.buf, (long) len1, (short) 1000);
+    len3 = write(log, all.buf, len2);
     if (len2!=len3)
       flogf("\t| ERR fail write to log");
     total += len3;
@@ -519,9 +519,9 @@ void antGetSamples(void) {
   flogf(": %d bytes to %s", total, ant.me);
   if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.file, "-->", 2);
+    utlExpect(ant.port, all.str, "-->", 2);
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.file, "-->", 2);
+    utlExpect(ant.port, all.str, "-->", 2);
   }
 } // antGetSamples
 

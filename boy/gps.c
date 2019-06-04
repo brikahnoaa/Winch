@@ -7,18 +7,19 @@
 #define CALL_DELAY 20
 
 GpsInfo gps;
+GpsData gpsd;
 
 
 ///
 // set up for gps, call this after gpsInit
-// sets: gps.port .projHdr[]
+// sets: gpsd.port .projHdr[]
 void gpsInit(void) {
   int cs;
   static char *self="gpsInit";
   DBG();
-  gps.port = antPort();
-  if (!gps.port)
-    utlErr(gps_err, "no gps.port, was gpsInit called before antInit?");
+  gpsd.port = antPort();
+  if (!gpsd.port)
+    utlErr(gps_err, "no gpsd.port, was gpsInit called before antInit?");
   // sets projHdr to 13 char project header, 0 in byte 14
   sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
   // poke in cs high and low bytes
@@ -34,12 +35,12 @@ int gpsStart(void) {
   DBG0("gpsStart() %s", utlTime());
   antDevice(cf2_dev);
   // power up a3la
-  TUTxPutByte(gps.port, 3, false);
-  TUTxPutByte(gps.port, 'I', false);
+  TUTxPutByte(gpsd.port, 3, false);
+  TUTxPutByte(gpsd.port, 'I', false);
   antDevice(a3la_dev);
-  if (!utlExpect(gps.port, all.buf, "COMMAND MODE", 12)) return 1;
-  utlWrite(gps.port, "ate0", EOL);
-  if (!utlExpect(gps.port, all.str, "OK", 5)) return 2;
+  if (!utlExpect(gpsd.port, all.buf, "COMMAND MODE", 12)) return 1;
+  utlWrite(gpsd.port, "ate0", EOL);
+  if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 2;
   return 0;
 } // gpsStart
 
@@ -48,14 +49,14 @@ int gpsStart(void) {
 void gpsStop(void) {
   static char *self="gpsStop";
   DBG();
-  if (gps.log)
-    utlLogClose(&gps.log);
+  if (gpsd.log)
+    utlLogClose(&gpsd.log);
   antDevice(a3la_dev);
-  utlWrite(gps.port, "at*p", EOL);
-  utlExpect(gps.port, all.buf, "OK", 2);
+  utlWrite(gpsd.port, "at*p", EOL);
+  utlExpect(gpsd.port, all.buf, "OK", 2);
   antDevice(cf2_dev);
-  TUTxPutByte(gps.port, 4, false);      // ^D powerdown
-  TUTxPutByte(gps.port, 'I', false);      // S | I
+  TUTxPutByte(gpsd.port, 4, false);      // ^D powerdown
+  TUTxPutByte(gpsd.port, 'I', false);      // S | I
 } // gpsStop
 
 ///
@@ -67,14 +68,14 @@ int gpsDateTime(GpsStats *stats){
   DBG();
   if (gpsSats()) return 1;
   // date
-  utlWrite(gps.port, "at+pd", EOL);
-  if (!utlExpect(gps.port, all.buf, "OK", 12)) return 2;
+  utlWrite(gpsd.port, "at+pd", EOL);
+  if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 2;
   utlMatchAfter(all.str, all.buf, "Date=", "-0123456789");
   flogf(" Date=%s", all.str);
   strcpy(stats->date, all.str);
   // time
-  utlWrite(gps.port, "at+pt", EOL);
-  if (!utlExpect(gps.port, all.buf, "OK", 12)) return 3;
+  utlWrite(gpsd.port, "at+pt", EOL);
+  if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 3;
   utlMatchAfter(all.str, all.buf, "Time=", ".:0123456789");
   flogf(" Time=%s", all.str);
   strcpy(stats->time, all.str);
@@ -90,8 +91,8 @@ int gpsLatLng(GpsStats *stats){
   static char *self="gpsLatLng";
   DBG();
   if (gpsSats()) return 1;
-  utlWrite(gps.port, "at+pl", EOL);
-  if (!utlExpect(gps.port, all.buf, "OK", 12)) return 4;
+  utlWrite(gpsd.port, "at+pl", EOL);
+  if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 4;
   utlMatchAfter(all.str, all.buf, "Latitude=", ".:0123456789 NEWS");
   flogf(" Lat=%s", all.str);
   strcpy(stats->lat, all.str);
@@ -137,19 +138,19 @@ bool gpsSetTime(GpsStats *stats) {
   
 
 ///
-// sets: gps.sats
+// sets: gpsd.sats
 // rets: 0=success
 int gpsSats(void){
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
     utlNap(2);
-    utlWrite(gps.port, "at+pd", EOL);
-    if (!utlExpect(gps.port, all.buf, "OK", 12)) return 1;
+    utlWrite(gpsd.port, "at+pd", EOL);
+    if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 1;
     if (!strstr(all.buf, "Invalid Position") && strstr(all.buf, "Used=")) {
       tmrStop(gps_tmr);
       utlMatchAfter(all.str, all.buf, "Used=", "0123456789");
       flogf("\nGPS Sats=%s", all.str);
-      gps.sats = atoi(all.str);
+      gpsd.sats = atoi(all.str);
       return 0;
     }
   } // while timeout
@@ -159,21 +160,21 @@ int gpsSats(void){
 } // gpsSats
 
 ///
-// sets: gps.signal
+// sets: gpsd.signal
 // rets: 0=success
 int iridSig(void) {
   flogf("\niridSig()");
   tmrStart(gps_tmr, gps.timeout);
   while (!tmrExp(gps_tmr)) {
-    utlWrite(gps.port, "at+csq", EOL);
-    if (!utlExpect(gps.port, all.buf, "OK", 12)) return 1;
+    utlWrite(gpsd.port, "at+csq", EOL);
+    if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 1;
     if (utlMatchAfter(all.str, all.buf, "CSQ:", "0123456789")) {
-      gps.signal = atoi(all.str);
-      flogf(" csq=%d", gps.signal);
-      if (gps.signal>gps.signalMin) return 0;
+      gpsd.signal = atoi(all.str);
+      flogf(" csq=%d", gpsd.signal);
+      if (gpsd.signal>gps.signalMin) return 0;
     } // if CSQ
   // accept min signal if its all we got
-  if (gps.signal>=gps.signalMin) return 0;
+  if (gpsd.signal>=gps.signalMin) return 0;
   } // while timer
   return 2;
 } // iridSig
@@ -218,14 +219,14 @@ int iridDial(void) {
   // set up timing for data
   //  10^6 * 10bits / rudBaud
   gps.rudUsec = (int) ((pow(10, 6)*10) / gps.rudBaud);
-  utlWrite(gps.port, "at+cpas", EOL);
-  if (!utlExpect(gps.port, all.str, "OK", 5)) return 2;
-  utlWrite(gps.port, "at+clcc", EOL);
-  if (!utlExpect(gps.port, all.str, "OK", 5)) return 3;
+  utlWrite(gpsd.port, "at+cpas", EOL);
+  if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 2;
+  utlWrite(gpsd.port, "at+clcc", EOL);
+  if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 3;
   utlMatchAfter(str, all.str, "+CLCC:", "0123456789");
   if (!strcmp(str, "006")==0) {
-    utlWrite(gps.port, "at+chup", EOL);
-    if (!utlExpect(gps.port, all.str, "OK", 5)) return 4;
+    utlWrite(gpsd.port, "at+chup", EOL);
+    if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 4;
   }
   sprintf(str, "atd%s", gps.phoneNum);
   // dial
@@ -233,9 +234,9 @@ int iridDial(void) {
     // fails "NO CONNECT" without this pause
     utlNap(4);
     // flush
-    utlRead(gps.port, all.str);
-    utlWrite(gps.port, str, EOL);
-    utlReadWait(gps.port, all.str, CALL_DELAY);
+    utlRead(gpsd.port, all.str);
+    utlWrite(gpsd.port, str, EOL);
+    utlReadWait(gpsd.port, all.str, CALL_DELAY);
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
       flogf(" CONNECT 9600");
@@ -257,8 +258,8 @@ int iridProjHdr(void) {
   while (!s) {
     if (try-- <= 0) return 1;
     flogf(" proj");
-    utlWriteBlock(gps.port, gps.projHdr, hdr);
-    s = utlExpect(gps.port, all.str, "ACK", gps.hdrPause);
+    utlWriteBlock(gpsd.port, gps.projHdr, hdr);
+    s = utlExpect(gpsd.port, all.str, "ACK", gps.hdrPause);
   }
   flogf("\n");
   return 0;
@@ -294,17 +295,18 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
   buff[4] = (char) (cs & 0xFF);
   flogf(" %d/%d", blockNum, blockMany);
   // send data
+  // pause every sendSz# chars to slow down baud stream
   sendSz = gps.sendSz;
   uDelay = (long) sendSz * gps.rudUsec;
-  DBG4(" {%d %d %ld}", sendSz, gps.rudUsec, uDelay);
+  DBG2(" {%d %d %ld}", sendSz, gps.rudUsec, uDelay);
   for (i=0; i<bufSz; i+=sendSz) {
-    // TUTxPutByte(gps.port, buff[i], false);
+    // TUTxPutByte(gpsd.port, buff[i], false);
     // RTCDelayMicroSeconds((long) gps.rudUsec);
     if (i+sendSz>bufSz) {
       sendSz = bufSz-i;
       uDelay = (long) sendSz * gps.rudUsec;
     }
-    TUTxPutBlock(gps.port, buff+i, (long) sendSz, 9999);
+    TUTxPutBlock(gpsd.port, buff+i, (long) sendSz, 9999);
     // extra delay us per byte to emulate lower baud rate
     RTCDelayMicroSeconds(uDelay);
     utlX();
@@ -315,39 +317,50 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 ///
 // land ho! already did iridDial and iridProjHdr
 // send fname as separate files of max gps.fileMax
-// sets: all.file all.buf
+// rets: 1:!file +10:!resp r:LandCmds
+// sets: gpsd.block all.buf
 int iridSendFile(char *fname) {
   static char *self="iridSendFile";
-  static char *rets="1:!file +10:!resp r:LandCmds";
-  int r=0, fh, len, block;
+  int r=0, fh, bytes;
+  bool moreB=true;
   struct stat fileinfo;
+  off_t size;              // off_t is type of stat.st_size
+  flogf("\n\n=== off_t is %db, int is %db ===\n\n", sizeof(off_t), sizeof(int));
   flogf("\n%s(%s)", self, fname);
+  // 
+  if ( stat(fname, &fileinfo) ) {
+    flogf("\nERR\t| errno %d on %s", errno, fname);
+    return 1;
+  }
+  size = fileinfo.st_size;
+  if (size > (off_t)1024*gps.fileMaxKB)
+    size = (off_t)1024*gps.fileMaxKB;
   fh = open(fname, O_RDONLY);
   if (fh<0) {
     flogf("\nERR\t| %s cannot open %s", self, fname);
     return 1;
   }
-  // does stat on a new file work right?
-  if ( stat(fname, &fileinfo) ) {
-    flogf("\nERR\t| errno %d on %s", errno, fname);
-    return 1;
+  /// read and send blocks
+  // verify block buffer size, could be changed during run
+  if (gpsd.blockSz != gps.blockSz) {
+    if (gpsd.block) free(gpsd.block);
+    gpsd.block = malloc(gps.blockSz);
+    gpsd.blockSz = gps.blockSz;
   }
-  len = fileinfo.st_size;
-  // read whole file into memory
-  if (len>=gps.fileMax)
-    block = read(fh, all.file, gps.fileMax);
-  else
-    block = read(fh, all.file, len);
+  // send blocks
+  do {
+    bytes = read(fh, gpsd.block, gpsd.blockSz);
+    iridSendBlock(gpsd.block, bytes, 1, 1);
+    flogf(" [[%d/%ld]]", bytes, size);
+  } while (bytes == gpsd.blockSz);
   close(fh);
   // ?? send multiple blocks
-  iridSendBlock(all.file, block, 1, 1);
-  flogf(" [[%d/%d]]", block, len);
   if ((r = iridLandResp(all.str))) 
     return 10+r;
   if (strstr(all.str, "cmds"))
     r = iridLandCmds(all.buf);
   iridProcessCmds(all.buf);
-  utlWrite(gps.port, "data", "");
+  utlWrite(gpsd.port, "data", "");
   return r;
 } // iridSendFile
 
@@ -379,9 +392,9 @@ int iridLandResp(char *buff) {
   tmrStart(gps_tmr, gps.rudResp);
   memset(buff, 0, len);
   for (r=0; r<len; r++) {
-    while (TURxQueuedCount(gps.port)==0)
+    while (TURxQueuedCount(gpsd.port)==0)
       if (tmrExp(gps_tmr)) return 1;
-    buff[r] = TURxGetByte(gps.port, true);
+    buff[r] = TURxGetByte(gpsd.port, true);
     if (buff[r]==0x0A)
       break;
   }
@@ -405,12 +418,12 @@ int iridLandCmds(char *buff) {
   // skip @@@ @@ or @ - protocol is sloppy, first CS byte could = @
   for (i=0; i<3; i++) {
     // wait for byte
-    while (TURxQueuedCount(gps.port)==0)
+    while (TURxQueuedCount(gpsd.port)==0)
       if (tmrExp(gps_tmr)) return 1;
-    c = TURxPeekByte(gps.port, 0);
+    c = TURxPeekByte(gpsd.port, 0);
     DBG4("%s", utlNonPrintBlock(&c,1));
     if (c=='@') 
-      TURxGetByte(gps.port, false);
+      TURxGetByte(gpsd.port, false);
     else 
       break;
   }
@@ -418,9 +431,9 @@ int iridLandCmds(char *buff) {
   // @@@ 2 CS bytes, 2 len bytes, 'C', 1, 1
   for (i=0; i<hdr; i++) {
     // wait for byte
-    while (TURxQueuedCount(gps.port)==0)
+    while (TURxQueuedCount(gpsd.port)==0)
       if (tmrExp(gps_tmr)) return 3;
-    buff[i]=TURxGetByte(gps.port, false);
+    buff[i]=TURxGetByte(gpsd.port, false);
   }
   // 2 CS bytes
   // 2 len bytes
@@ -436,9 +449,9 @@ int iridLandCmds(char *buff) {
   memset(buff, 0, msgSz+1);
   for (i=0; i<msgSz; i++) {
     // wait for byte
-    while (TURxQueuedCount(gps.port)==0)
+    while (TURxQueuedCount(gpsd.port)==0)
       if (tmrExp(gps_tmr)) return 5;
-    buff[i]=TURxGetByte(gps.port, false);
+    buff[i]=TURxGetByte(gpsd.port, false);
   }
   flogf("\nCMDS(%d)->", msgSz);
   flogf("''%s''", utlNonPrintBlock(buff, msgSz));
@@ -451,23 +464,23 @@ void iridHup(void) {
   int try=3;
   while (try--) {
     utlDelay(gps.hupMs);
-    utlWrite(gps.port, "+++", "");
+    utlWrite(gpsd.port, "+++", "");
     utlDelay(gps.hupMs);
-    if (utlExpect(gps.port, all.buf, "OK", 2)) break;
+    if (utlExpect(gpsd.port, all.buf, "OK", 2)) break;
   }
-  utlWrite(gps.port, "at+clcc", EOL);
-  if (utlExpect(gps.port, all.buf, "OK", 5))
+  utlWrite(gpsd.port, "at+clcc", EOL);
+  if (utlExpect(gpsd.port, all.buf, "OK", 5))
     flogf("\nclcc->%s", utlNonPrint(all.buf));
-  utlWrite(gps.port, "at+chup", EOL);
-  utlExpect(gps.port, all.buf, "OK", 5);
+  utlWrite(gpsd.port, "at+chup", EOL);
+  utlExpect(gpsd.port, all.buf, "OK", 5);
 } // iridHup
 
 ///
 // return: 0 success
 int iridPrompt() {
-  TURxFlush(gps.port);
-  utlWrite(gps.port, "at", EOL);
-  if (!utlExpect(gps.port, all.buf, "OK", 4)) return 1;
+  TURxFlush(gpsd.port);
+  utlWrite(gpsd.port, "at", EOL);
+  if (!utlExpect(gpsd.port, all.buf, "OK", 4)) return 1;
   else return 0;
 } // iridPrompt
 

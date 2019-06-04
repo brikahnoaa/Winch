@@ -15,9 +15,8 @@ typedef struct GpsInfo {
   char platform[16];        // rudicsland
   char project[16];         // rudicsland
   char projHdr[16];         // ???csProjPlat
-  char *buf;                // buffer for file transfer
-  int fileBlock;            // how many bytes to upload in a file block (512)
-  int fileMax;              // how many bytes max in a file (8000)
+  int blockSz;              // how many bytes to upload in a file block (1024)
+  int fileMaxKB;            // how many kilobytes max in a file (64K)
   int fileCnt;              // how many files to upload in a connection
   int hdrPause;             // wait sec for rudics header response (20)
   int hdrTry;               // header retry (3)
@@ -25,15 +24,22 @@ typedef struct GpsInfo {
   int redial;               // how many calls to make (5)
   int rudBaud;              // effective baud rate for rudics (2400)
   int rudResp;              // wait secs for respond to a block (30)
-  int rudUsec;              // microsec delay from rudBaud
-  int sendSz;               // how many bytes to send in a burst
-  int signal;
-  int signalMin;
-  int timeout;
+  int rudUsec;              // microsec delay calculated from rudBaud
+  int sendSz;               // send some chars, then wait rudUsec (64)
+  int signalMin;            // min irid signal level to try transmit (2)
+  int timeout;              // seconds for steps like signal, sats (60)
+} GpsInfo;
+
+typedef struct GpsData {
+  GpsStats stats1;
+  GpsStats stats2;
+  Serial port;
+  char *block;              // buffer for file transfer
+  int blockSz;              // size of *block - verify GspInfo.blockSz
   int log;
   int sats;
-  Serial port;
-} GpsInfo;
+  int signal;
+} GpsData;
 
 bool gpsSetTime(GpsStats *stats);
 int gpsDateTime(GpsStats *stats);

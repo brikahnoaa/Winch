@@ -1,85 +1,64 @@
-// files.c
+// iridFile.c
 #include <main.h>
 
-#define MAX 12
-int fd[MAX];
-
-int first();
-int last();
-int count();
-
-int first() {
-  int i=0;
-  for (i=0; i<MAX; i++)
-    if (fd[i]) return i;
-  return -1;
-}
-    
-int last() {
-  int i=0;
-  for (i=MAX-1; i>=0; i--)
-    if (fd[i]) return i;
-  return -1;
-}
-
-int count() {
-  int i=0;
-  int j=0;
-  for (i=0; i<MAX; i++)
-    if (fd[i]) j++;
-  return j;
-}
-
+extern GpsInfo gps;
+extern GpsData gpsd;
+extern BoyInfo boy;
+extern SysInfo sys;
 
 void main(void){
-  char s[]="t1t";
-  char c;
-  int f=0;
-
-  for (f=0; f<MAX; f++) fd[f]=0;
+  // Serial port;
+  // char c;
+  char *buff;
+  int len, cnt;
+  int i, r;
+  i=0;
   sysInit();
-  // mpcInit();
-
-  flogf("\n q to exit, c=count, f=first close, l=last close, o=open, a=all\n");
-  while (true) {
-    if (cgetq()) {
-      c=cgetc();
-      flogf("\n %c: ", c);
-      if (c=='Q') break;
-      if (c=='q') break;
-      if (c=='c') {
-        flogf("\n%d open files\n", count());
-        continue;
-      }
-      if (c=='f') {
-        f=first();
-        flogf("\n close %d ", f);
-        utlLogClose(&fd[f]);
-        continue;
-      }
-      if (c=='l') {
-        f=last();
-        flogf("\n close %d ", f);
-        utlLogClose(&fd[f]);
-        continue;
-      }
-      if (c=='o') {
-        all.cycle++;
-        f=last()+1;
-        if (f>MAX) {
-          flogf("\n too many files #%d", f);
-          continue;
-        }
-        utlLogOpen(&fd[f], s);
-        flogf("\n open #%d fd=%d ", f, fd[f]);
-        continue;
-      }
-      if (c=='a') {
-        for (f=0; f<MAX; f++)
-          if (fd[f]) 
-            flogf("\n %d:fd=%d", f, fd[f]);
-        continue;
-      }
-    }
+  mpcInit();
+  antInit();
+  gpsInit();
+  //
+  antStart();
+  gpsStart();
+  //
+  len = dbg.t2;
+  cnt = dbg.t1;
+  cprintf("\nlength dbg.t2=%d, count dbg.t1=%d ", len, cnt);
+  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
+  buff = malloc(len);
+  // antSwitch(gps_ant);
+  // gpsStats();
+  antSwitch(irid_ant);
+  if (iridSig()) return;
+  if (iridDial()) return;
+  if (iridProjHdr()) return;
+  /*
+  for (i=1; i<=cnt; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d [%d]", 
+      i, cnt, len, gps.rudBaud, gps.sendSz);
+    buff[len-1] = 'Z';
+    r = iridSendBlock(buff, len, i, cnt);
+    cprintf("(%d)\n", r);
+    // utlDelay(500);
   }
+   */
+  iridSendFile("test\\test.log");
+  iridLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iridLandCmds(all.buf);
+  strcpy(buff, all.buf);
+  utlDelay(500);
+  utlWrite(gpsd.port, "done", "");
+  utlDelay(500);
+  iridHup();
+  iridSig();
+  flogf("\n%s\n", utlTime());
+  flogf("\nsetting '%s'", utlNonPrint(buff));
+  cfgString(buff);
+  flogf("\nsys.program = %s", sys.program);
+  // antSwitch(gps_ant);
+  // gpsStats();
+  gpsStop();
+  antStop();
 }
