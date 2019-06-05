@@ -321,7 +321,7 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
 // sets: gpsd.block all.buf
 int iridSendFile(char *fname) {
   static char *self="iridSendFile";
-  int r=0, fh, bytes;
+  int r=0, fh, bytes, bcnt, bnum;
   bool moreB=true;
   struct stat fileinfo;
   long size;
