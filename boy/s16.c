@@ -82,7 +82,7 @@ int s16LogOpen(void) {
   if (!s16.log)
     r = utlLogOpen(&s16.log, s16.me);
   else
-    DBG4("%s: log already open", self);
+    DBG2("%s: log already open", self);
   return r;
 } // s16LogOpen
 
@@ -95,7 +95,7 @@ int s16LogClose(void) {
   if (s16.log)
     r = utlLogClose(&s16.log);
   else
-    DBG4("%s: log already closed", self);
+    DBG2("%s: log already closed", self);
   return r;
 } // s16LogClose
 

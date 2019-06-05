@@ -324,8 +324,7 @@ int iridSendFile(char *fname) {
   int r=0, fh, bytes;
   bool moreB=true;
   struct stat fileinfo;
-  off_t size;              // off_t is type of stat.st_size
-  flogf("\n\n=== off_t is %db, int is %db ===\n\n", sizeof(off_t), sizeof(int));
+  long size;
   flogf("\n%s(%s)", self, fname);
   // 
   if ( stat(fname, &fileinfo) ) {
@@ -341,18 +340,19 @@ int iridSendFile(char *fname) {
     return 1;
   }
   /// read and send blocks
-  // verify block buffer size, could be changed during run
+  // block buffer, size could change during run
   if (gpsd.blockSz != gps.blockSz) {
     if (gpsd.block) free(gpsd.block);
     gpsd.block = malloc(gps.blockSz);
     gpsd.blockSz = gps.blockSz;
   }
   // send blocks
-  do {
+  bcnt=(int)(size/gpsd.blockSz);
+  if (size%gpsd.blockSz) bcnt += 1; // add one if partial
+  for (bnum=1; bnum>bcnt; bnum++) {
     bytes = read(fh, gpsd.block, gpsd.blockSz);
-    iridSendBlock(gpsd.block, bytes, 1, 1);
-    flogf(" [[%d/%ld]]", bytes, size);
-  } while (bytes == gpsd.blockSz);
+    iridSendBlock(gpsd.block, bytes, bnum, bcnt);
+  } 
   close(fh);
   // ?? send multiple blocks
   if ((r = iridLandResp(all.str))) 
@@ -421,7 +421,7 @@ int iridLandCmds(char *buff) {
     while (TURxQueuedCount(gpsd.port)==0)
       if (tmrExp(gps_tmr)) return 1;
     c = TURxPeekByte(gpsd.port, 0);
-    DBG4("%s", utlNonPrintBlock(&c,1));
+    DBG3("%s", utlNonPrintBlock(&c,1));
     if (c=='@') 
       TURxGetByte(gpsd.port, false);
     else 

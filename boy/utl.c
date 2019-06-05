@@ -312,7 +312,7 @@ int utlLogOpen(int *log, char *base) {
   } else {
     DBG1("\n%s path\t| %s", self, path);
     sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
-    DBG4("\n%s(%s):%d", self, path, fd);
+    DBG2("\n%s(%s):%d", self, path, fd);
     r = write(fd, utl.str, strlen(utl.str)); 
     if (r<1) {
       sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
@@ -333,7 +333,7 @@ int utlLogClose(int *fd) {
   DBG();
   if (*fd<1) return 0;   // no fd
   f=*fd;
-  DBG4("\n%s():%d ", self, f);
+  DBG2("\n%s():%d ", self, f);
   *fd=0;
   if (close(f)<0) {
     flogf("\n%s(): ERR closing file (fd=%d)", self, f);

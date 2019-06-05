@@ -16,8 +16,10 @@ void dbgInit(void) {
   else dbg.dbg1 = false;
   if (atoi(VEEFetchStr("DBG2", "999"))!=999) dbg.dbg2 = true;
   else dbg.dbg2 = false;
+  // echo serial lines in/out
   if (atoi(VEEFetchStr("DBG3", "999"))!=999) dbg.dbg3 = true;
   else dbg.dbg3 = false;
+  // special test case
   if (atoi(VEEFetchStr("DBG4", "999"))!=999) dbg.dbg4 = true;
   else dbg.dbg4 = false;
   if (atoi(VEEFetchStr("DBGX", "999"))!=999) dbg.dbgx = true;

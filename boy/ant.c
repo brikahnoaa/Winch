@@ -100,7 +100,7 @@ int antLogOpen(void) {
   if (!ant.log)
     r = utlLogOpen(&ant.log, ant.me);
   else
-    DBG4("%s: log already open", self);
+    DBG2("%s: log already open", self);
   return r;
 } // antLogOpen
 
@@ -113,7 +113,7 @@ int antLogClose(void) {
   if (ant.log)
     r = utlLogClose(&ant.log);
   else
-    DBG4("%s: log already closed", self);
+    DBG2("%s: log already closed", self);
   return r;
 } // antLogClose
 
