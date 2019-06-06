@@ -163,7 +163,7 @@ PhaseType dataPhase(void) {
   // save power
   antStop();
   // ngkStop();
-  success = wspDetectD(&wspd, boy.dataFreq, boy.riseHour);
+  success = wspDetectD(&wspd, boy.callFreq, boy.callHour);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;

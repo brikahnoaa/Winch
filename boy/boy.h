@@ -46,14 +46,14 @@ typedef struct BoyInfo {
   float iceDanger;        // ice danger at this temp (-1.2)
   float predFallV;        // predicted fall velo (.2)
   float predRiseV;        // predicted rise velo (.33)
-  int dataFreq;           // number of times per day to call !iridHour (0)
+  int callFreq;           // number of times per day to call !iridHour (0)
+  int callHour;           // 0-23 (midnight-11pm) hour to call home (1)
   int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)
   int fallOpM;            // operation timeout minutes (30)
   int filePause;          // pause between sending files
   int iridOpM;            // phase minutes
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
-  int riseHour;           // 0-23 (midnight-11pm) hour to call home (1)
   int riseOpM;            // operation timeout minutes (30)
   int startPh;            // phase to start in (0)
   int stayDown;           // stay down for days, expecting storm (0)
