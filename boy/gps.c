@@ -332,8 +332,8 @@ int iridSendFile(char *fname) {
     return 1;
   }
   size = fileinfo.st_size;
-  if (size > (off_t)1024*gps.fileMaxKB)
-    size = (off_t)1024*gps.fileMaxKB;
+  if (size > (long)1024*gps.fileMaxKB)
+    size = (long)1024*gps.fileMaxKB;
   fh = open(fname, O_RDONLY);
   if (fh<0) {
     flogf("\nERR\t| %s cannot open %s", self, fname);
@@ -349,6 +349,7 @@ int iridSendFile(char *fname) {
   // send blocks
   bcnt=(int)(size/gpsd.blockSz);
   if (size%gpsd.blockSz) bcnt += 1; // add one if partial
+  DBG4("\n%s: size=%ld, bcnt=%d", size, bcnt);
   for (bnum=1; bnum>bcnt; bnum++) {
     bytes = read(fh, gpsd.block, gpsd.blockSz);
     iridSendBlock(gpsd.block, bytes, bnum, bcnt);
