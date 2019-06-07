@@ -403,6 +403,12 @@ void utlX(void) {
       case 'x':
         utlStop("user quit");
         break;
+      // turn dbg on/off
+      case '0': dbg.dbg0 = !dbg.dbg0; break;
+      case '1': dbg.dbg1 = !dbg.dbg1; break;
+      case '2': dbg.dbg2 = !dbg.dbg2; break;
+      case '3': dbg.dbg3 = !dbg.dbg3; break;
+      case '4': dbg.dbg4 = !dbg.dbg4; break;
       case 'd': // adhoc func for debug
         (*dbg.funcPtr)();
         break;

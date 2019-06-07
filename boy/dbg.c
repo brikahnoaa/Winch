@@ -22,6 +22,7 @@ void dbgInit(void) {
   // special test case
   if (atoi(VEEFetchStr("DBG4", "999"))!=999) dbg.dbg4 = true;
   else dbg.dbg4 = false;
+  // execute block of code, not just print
   if (atoi(VEEFetchStr("DBGX", "999"))!=999) dbg.dbgx = true;
   else dbg.dbgx = false;
 }
