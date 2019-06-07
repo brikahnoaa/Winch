@@ -24,7 +24,7 @@ void utlInit(void) {
   utl.errName[boy_err] = "boy";
   utl.errName[cfg_err] = "cfg";
   utl.errName[s16_err] = "s16";
-  utl.errName[gps_err] = "gps";
+  utl.errName[iri_err] = "iri";
   utl.errName[ngk_err] = "ngk";
   utl.errName[wsp_err] = "wsp";
   utl.errName[log_err] = "log";

@@ -7,7 +7,7 @@ extern AntInfo ant;
 extern BoyInfo boy;
 extern S16Info s16;
 // extern EngInfo eng;
-extern GpsInfo gps;
+extern IriInfo iri;
 extern MpcInfo mpc;
 extern NgkInfo ngk;
 extern PwrInfo pwr;
@@ -73,22 +73,22 @@ static CfgParam cfgP[] = {
   {'i',  "dbg.t2",        &dbg.t2,          "dt2",  "0"},
   {'i',  "dbg.t3",        &dbg.t3,          "dt3",  "0"},
 
-  {'b',  "gps.setTime",   &gps.setTime,     "gsT",  "true"},
-  {'c',  "gps.phoneNum",  &gps.phoneNum,    "gph",  "0088160000519"},
-  {'c',  "gps.platform",  &gps.platform,    "gpl",  "LR01"},
-  {'c',  "gps.project",   &gps.project,     "gpr",  "QUEH"},
-  {'i',  "gps.blockSz",   &gps.blockSz,     "gbS",  "1024"},
-  {'i',  "gps.fileMaxKB", &gps.fileMaxKB,   "gfX",  "64"},
-  {'i',  "gps.filePause", &gps.filePause,   "gfP",  "1"},
-  {'i',  "gps.hdrPause",  &gps.hdrPause,    "ghP",  "20"},
-  {'i',  "gps.hdrTry",    &gps.hdrTry,      "ghT",  "3"},
-  {'i',  "gps.hupMs",     &gps.hupMs,       "ghM",  "2000"},
-  {'i',  "gps.redial",    &gps.redial,      "gre",  "5"},
-  {'i',  "gps.rudBaud",   &gps.rudBaud,     "grB",  "1800"},
-  {'i',  "gps.rudResp",   &gps.rudResp,     "grR",  "20"},
-  {'i',  "gps.sendSz",    &gps.sendSz,      "gsS",  "64"},
-  {'i',  "gps.signalMin", &gps.signalMin,   "gsM",  "2"},
-  {'i',  "gps.timeout",   &gps.timeout,     "gto",  "60"},
+  {'b',  "iri.setTime",   &iri.setTime,     "isT",  "true"},
+  {'c',  "iri.phoneNum",  &iri.phoneNum,    "iph",  "0088160000519"},
+  {'c',  "iri.platform",  &iri.platform,    "ipl",  "LR01"},
+  {'c',  "iri.project",   &iri.project,     "ipr",  "QUEH"},
+  {'i',  "iri.blockSz",   &iri.blockSz,     "ibS",  "1024"},
+  {'i',  "iri.fileMaxKB", &iri.fileMaxKB,   "ifX",  "64"},
+  {'i',  "iri.filePause", &iri.filePause,   "ifP",  "1"},
+  {'i',  "iri.hdrPause",  &iri.hdrPause,    "ihP",  "20"},
+  {'i',  "iri.hdrTry",    &iri.hdrTry,      "ihT",  "3"},
+  {'i',  "iri.hupMs",     &iri.hupMs,       "ihM",  "2000"},
+  {'i',  "iri.redial",    &iri.redial,      "ire",  "5"},
+  {'i',  "iri.rudBaud",   &iri.rudBaud,     "irB",  "1800"},
+  {'i',  "iri.rudResp",   &iri.rudResp,     "irR",  "20"},
+  {'i',  "iri.sendSz",    &iri.sendSz,      "isS",  "64"},
+  {'i',  "iri.signalMin", &iri.signalMin,   "isM",  "2"},
+  {'i',  "iri.timeout",   &iri.timeout,     "ito",  "60"},
 
   {'i',  "ngk.delay",     &ngk.delay,       "nde",  "8"},
   {'i',  "ngk.winchId",   &ngk.winchId,     "nwI",  "1"},

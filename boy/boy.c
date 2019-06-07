@@ -278,54 +278,54 @@ int iridDo(void) {
   int r=0;
   bool dialB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOpM*60);
-  gpsStart();
+  iriStart();
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
-  gpsDateTime(&boyd.gpsBgn);
-  gpsLatLng(&boyd.gpsBgn);
+  iriDateTime(&boyd.gpsBgn);
+  iriLatLng(&boyd.gpsBgn);
   antSwitch(irid_ant);
   while (!tmrExp(phase_tmr)) {
     flogf("\n%s Call Home ====\n", utlTime());
     if (dialB) {
-      iridHup();
+      iriHup();
       dialB = false;
     }
-    if ((r = iridSig())) {
-      flogf("\nERR\t| iridSig()->%d", r);
+    if ((r = iriSig())) {
+      flogf("\nERR\t| iriSig()->%d", r);
       continue;
     } 
-    if ((r = iridDial())) {
-      flogf("\nERR\t| iridDial()->%d", r);
+    if ((r = iriDial())) {
+      flogf("\nERR\t| iriDial()->%d", r);
       continue;
     } else dialB = true;
-    if ((r = iridProjHello(all.buf))) {
-      flogf("\nERR\t| iridProjHello()->%d", r);
+    if ((r = iriProjHello(all.buf))) {
+      flogf("\nERR\t| iriProjHello()->%d", r);
       continue;
     } 
     if (!engB) {
-      iridData();
+      iriData();
       utlLogPathName(all.str, "eng", all.cycle);
-      if ((r = iridSendFile(all.str)))
-        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+      if ((r = iriSendFile(all.str)))
+        flogf("\nERR\t| iriSendFile(%s)->%d", all.str, r);
       engB=true;
     } // engB
     if (!s16B) {  
-      iridData();
+      iriData();
       utlLogPathName(all.str, "s16", all.cycle);
-      if ((r = iridSendFile(all.str))) 
-        flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
+      if ((r = iriSendFile(all.str))) 
+        flogf("\nERR\t| iriSendFile(%s)->%d", all.str, r);
       s16B=true;
     } // s16B
     if (engB && s16B) break;
   } // phase_tmr
-  iridHup();
-  // utlWrite(gpsd.port, "done", "");
+  iriHup();
+  // utlWrite(irid.port, "done", "");
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
-  gpsDateTime(&boyd.gpsEnd);
-  gpsLatLng(&boyd.gpsEnd);
+  iriDateTime(&boyd.gpsEnd);
+  iriLatLng(&boyd.gpsEnd);
   // turn off a3la
-  gpsStop();
+  iriStop();
   return r;
 } // iridDo
 

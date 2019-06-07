@@ -1,4 +1,4 @@
-// gps.c
+// iri.c
 #include <main.h>
 
 // gps and iridium routines have a lot of ways to fail; return 0=success
@@ -9,96 +9,96 @@
 #define IRID_OFF 5
 #define IRID_HDR 10
 
-GpsInfo gps;
-GpsData gpsd;
+IriInfo iri;
+IriData irid;
 
 
 ///
-// set up for gps, call this after gpsInit
-// sets: gpsd.port .projHdr[]
-void gpsInit(void) {
+// set up for iri, call this after iriInit
+// sets: irid.port .projHdr[]
+void iriInit(void) {
   int cs;
-  static char *self="gpsInit";
+  static char *self="iriInit";
   DBG();
-  gpsd.port = antPort();
-  if (!gpsd.port)
-    utlErr(gps_err, "no gpsd.port, was gpsInit called before antInit?");
+  irid.port = antPort();
+  if (!irid.port)
+    utlErr(iri_err, "no irid.port, was iriInit called before antInit?");
   // we malloc GpsStats instead of static to make swapping them easier
-  gpsd.stats1 = malloc(sizeof(GpsStats));
-  gpsd.stats2 = malloc(sizeof(GpsStats));
+  irid.stats1 = malloc(sizeof(GpsStats));
+  irid.stats2 = malloc(sizeof(GpsStats));
   // sets projHdr to 13 char project header, 0 in byte 14
-  sprintf(gpsd.projHdr, "???cs%4s%4s", gps.project, gps.platform);
+  sprintf(irid.projHdr, "???cs%4s%4s", iri.project, iri.platform);
   // poke in cs high and low bytes
-  cs = iridCRC(gpsd.projHdr+5, 8);
-  gpsd.projHdr[3] = (char) (cs >> 8) & 0xFF;
-  gpsd.projHdr[4] = (char) (cs & 0xFF);
-} // gpsInit
+  cs = iriCRC(irid.projHdr+5, 8);
+  irid.projHdr[3] = (char) (cs >> 8) & 0xFF;
+  irid.projHdr[4] = (char) (cs & 0xFF);
+} // iriInit
 
 ///
 // turn on, clean, set params, talk to sbe39
 // requires: antStart
-int gpsStart(void) {
-  DBG0("gpsStart() %s", utlTime());
+int iriStart(void) {
+  DBG0("iriStart() %s", utlTime());
   antDevice(cf2_dev);
   // power up a3la
-  TUTxPutByte(gpsd.port, 3, false);
-  TUTxPutByte(gpsd.port, 'I', false);
+  TUTxPutByte(irid.port, 3, false);
+  TUTxPutByte(irid.port, 'I', false);
   antDevice(a3la_dev);
-  if (!utlExpect(gpsd.port, all.buf, "COMMAND MODE", 12)) return 1;
-  utlWrite(gpsd.port, "ate0", EOL);
-  if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 2;
+  if (!utlExpect(irid.port, all.buf, "COMMAND MODE", 12)) return 1;
+  utlWrite(irid.port, "ate0", EOL);
+  if (!utlExpect(irid.port, all.str, "OK", 5)) return 2;
   return 0;
-} // gpsStart
+} // iriStart
 
 ///
-// turn off power to gpsmod
-void gpsStop(void) {
-  static char *self="gpsStop";
+// turn off power to irimod
+void iriStop(void) {
+  static char *self="iriStop";
   DBG();
-  if (gpsd.log)
-    utlLogClose(&gpsd.log);
+  if (irid.log)
+    utlLogClose(&irid.log);
   antDevice(a3la_dev);
-  utlWrite(gpsd.port, "at*p", EOL);
-  utlExpect(gpsd.port, all.buf, "OK", 2);
+  utlWrite(irid.port, "at*p", EOL);
+  utlExpect(irid.port, all.buf, "OK", 2);
   antDevice(cf2_dev);
-  TUTxPutByte(gpsd.port, 4, false);      // ^D powerdown
-  TUTxPutByte(gpsd.port, 'I', false);      // S | I
-} // gpsStop
+  TUTxPutByte(irid.port, 4, false);      // ^D powerdown
+  TUTxPutByte(irid.port, 'I', false);      // S | I
+} // iriStop
 
 ///
 // get gps .date .time 
 // sets: .date .time 
 // return: 0=success
-int gpsDateTime(GpsStats *stats){
-  static char *self="gpsDateTime";
+int iriDateTime(GpsStats *stats){
+  static char *self="iriDateTime";
   DBG();
-  if (gpsSats()) return 1;
+  if (iriSats()) return 1;
   // date
-  utlWrite(gpsd.port, "at+pd", EOL);
-  if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 2;
+  utlWrite(irid.port, "at+pd", EOL);
+  if (!utlExpect(irid.port, all.buf, "OK", 12)) return 2;
   utlMatchAfter(all.str, all.buf, "Date=", "-0123456789");
   flogf(" Date=%s", all.str);
   strcpy(stats->date, all.str);
   // time
-  utlWrite(gpsd.port, "at+pt", EOL);
-  if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 3;
+  utlWrite(irid.port, "at+pt", EOL);
+  if (!utlExpect(irid.port, all.buf, "OK", 12)) return 3;
   utlMatchAfter(all.str, all.buf, "Time=", ".:0123456789");
   flogf(" Time=%s", all.str);
   strcpy(stats->time, all.str);
-  if (gps.setTime) 
-    gpsSetTime(stats);
+  if (iri.setTime) 
+    iriSetTime(stats);
   return 0;
-} // gpsDateTime
+} // iriDateTime
 
 // get gps .lat .lng
 // sets: .lng .lat 
 // return: 0=success
-int gpsLatLng(GpsStats *stats){
-  static char *self="gpsLatLng";
+int iriLatLng(GpsStats *stats){
+  static char *self="iriLatLng";
   DBG();
-  if (gpsSats()) return 1;
-  utlWrite(gpsd.port, "at+pl", EOL);
-  if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 4;
+  if (iriSats()) return 1;
+  utlWrite(irid.port, "at+pl", EOL);
+  if (!utlExpect(irid.port, all.buf, "OK", 12)) return 4;
   utlMatchAfter(all.str, all.buf, "Latitude=", ".:0123456789 NEWS");
   flogf(" Lat=%s", all.str);
   strcpy(stats->lat, all.str);
@@ -106,17 +106,17 @@ int gpsLatLng(GpsStats *stats){
   flogf(" Lng=%s", all.str);
   strcpy(stats->lng, all.str);
   return 0;
-} // gpsLatLng
+} // iriLatLng
 
 ///
 // sets: system time
-bool gpsSetTime(GpsStats *stats) {
+bool iriSetTime(GpsStats *stats) {
   struct tm t;
   time_t gpsSeconds, diff;
   char *s;
-  DBG0("gpsSetTime(%s %s)", stats->date, stats->time);
+  DBG0("iriSetTime(%s %s)", stats->date, stats->time);
   if (!stats->date || !stats->time) {
-    flogf("\ngpsSetTime()\t| called with null data");
+    flogf("\niriSetTime()\t| called with null data");
     return false;
   }
   strcpy(all.str, stats->date);
@@ -136,60 +136,60 @@ bool gpsSetTime(GpsStats *stats) {
   gpsSeconds = mktime(&t);
   diff = time(0) - gpsSeconds;
   if (diff < -2L || diff > 2L) {
-    flogf("\ngpsSetTime()\t| off by %ld seconds", diff);
+    flogf("\niriSetTime()\t| off by %ld seconds", diff);
     RTCSetTime(gpsSeconds, NULL);
   }
   return true;
-} // gpsSetTime
+} // iriSetTime
   
 
 ///
-// sets: gpsd.sats
+// sets: irid.sats
 // rets: 0=success
-int gpsSats(void){
-  tmrStart(gps_tmr, gps.timeout);
-  while (!tmrExp(gps_tmr)) {
+int iriSats(void){
+  tmrStart(iri_tmr, iri.timeout);
+  while (!tmrExp(iri_tmr)) {
     utlNap(2);
-    utlWrite(gpsd.port, "at+pd", EOL);
-    if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 1;
+    utlWrite(irid.port, "at+pd", EOL);
+    if (!utlExpect(irid.port, all.buf, "OK", 12)) return 1;
     if (!strstr(all.buf, "Invalid Position") && strstr(all.buf, "Used=")) {
-      tmrStop(gps_tmr);
+      tmrStop(iri_tmr);
       utlMatchAfter(all.str, all.buf, "Used=", "0123456789");
       flogf("\nGPS Sats=%s", all.str);
-      gpsd.sats = atoi(all.str);
+      irid.sats = atoi(all.str);
       return 0;
     }
   } // while timeout
-  flogf("\ngpsSats\t| i got nothing");
+  flogf("\niriSats\t| i got nothing");
   flogf("\n'%s'", all.buf);
   return 2;
-} // gpsSats
+} // iriSats
 
 ///
-// sets: gpsd.signal
+// sets: irid.signal
 // rets: 0=success
-int iridSig(void) {
-  flogf("\niridSig()");
-  tmrStart(gps_tmr, gps.timeout);
-  while (!tmrExp(gps_tmr)) {
-    utlWrite(gpsd.port, "at+csq", EOL);
-    if (!utlExpect(gpsd.port, all.buf, "OK", 12)) return 1;
+int iriSig(void) {
+  flogf("\niriSig()");
+  tmrStart(iri_tmr, iri.timeout);
+  while (!tmrExp(iri_tmr)) {
+    utlWrite(irid.port, "at+csq", EOL);
+    if (!utlExpect(irid.port, all.buf, "OK", 12)) return 1;
     if (utlMatchAfter(all.str, all.buf, "CSQ:", "0123456789")) {
-      gpsd.signal = atoi(all.str);
-      flogf(" csq=%d", gpsd.signal);
-      if (gpsd.signal>gps.signalMin) return 0;
+      irid.signal = atoi(all.str);
+      flogf(" csq=%d", irid.signal);
+      if (irid.signal>iri.signalMin) return 0;
     } // if CSQ
   // accept min signal if its all we got
-  if (gpsd.signal>=gps.signalMin) return 0;
+  if (irid.signal>=iri.signalMin) return 0;
   } // while timer
   return 2;
-} // iridSig
+} // iriSig
 
 ///
-int iridCRC(char *buf, int cnt) {
+int iriCRC(char *buf, int cnt) {
   long accum=0x00000000;
   int i, j;
-  static char *self="iridCRC";
+  static char *self="iriCRC";
   DBG();
   if (cnt <= 0) return 0;
   while (cnt--) {
@@ -210,86 +210,86 @@ int iridCRC(char *buf, int cnt) {
     }
   }
   return (accum >> 8);
-} // iridCRC
+} // iriCRC
 
 ///
 // call home
 // uses: all.str
 // rets: 0=success
-int iridDial(void) {
+int iriDial(void) {
   char str[32];
   int i;
-  static char *self="iridDial";
+  static char *self="iriDial";
   DBG();
   flogf(" %s", utlTime());
   // set up timing for data
   //  10^6 * 10bits / rudBaud
-  gpsd.rudUsec = (int) ((pow(10, 6)*10) / gps.rudBaud);
-  utlWrite(gpsd.port, "at+cpas", EOL);
-  if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 2;
-  utlWrite(gpsd.port, "at+clcc", EOL);
-  if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 3;
+  irid.rudUsec = (int) ((pow(10, 6)*10) / iri.rudBaud);
+  utlWrite(irid.port, "at+cpas", EOL);
+  if (!utlExpect(irid.port, all.str, "OK", 5)) return 2;
+  utlWrite(irid.port, "at+clcc", EOL);
+  if (!utlExpect(irid.port, all.str, "OK", 5)) return 3;
   utlMatchAfter(str, all.str, "+CLCC:", "0123456789");
   if (!strcmp(str, "006")==0) {
-    utlWrite(gpsd.port, "at+chup", EOL);
-    if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 4;
+    utlWrite(irid.port, "at+chup", EOL);
+    if (!utlExpect(irid.port, all.str, "OK", 5)) return 4;
   }
-  sprintf(str, "atd%s", gps.phoneNum);
+  sprintf(str, "atd%s", iri.phoneNum);
   // dial
-  for (i=0; i<gps.redial; i++) {
+  for (i=0; i<iri.redial; i++) {
     // fails "NO CONNECT" without this pause
     utlNap(4);
     // flush
-    utlRead(gpsd.port, all.str);
-    utlWrite(gpsd.port, str, EOL);
-    utlReadWait(gpsd.port, all.str, CALL_DELAY);
+    utlRead(irid.port, all.str);
+    utlWrite(irid.port, str, EOL);
+    utlReadWait(irid.port, all.str, CALL_DELAY);
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
       flogf(" CONNECT 9600");
-      flogf("rudBaud@%d +%dus ", gps.rudBaud, gpsd.rudUsec);
+      flogf("rudBaud@%d +%dus ", iri.rudBaud, irid.rudUsec);
       return 0;
     }
     flogf(" (%d)", i);
   }
-  utlErr(gps_err, "call retry exceeded");
+  utlErr(iri_err, "call retry exceeded");
   return 4;
-} // iridDial
+} // iriDial
 
 ///
 // send proj hdr followed by "Hello", catch landResponse
 // rets: *buf<-landResp
-int iridProjHello(char *buf) {
-  static char *self="iridProjHello";
+int iriProjHello(char *buf) {
+  static char *self="iriProjHello";
   int r, try, hdr=13;
   char *s=NULL;
-  try = gps.hdrTry;
+  try = iri.hdrTry;
   while (!s) {
     if (try-- <= 0) throw(1);
     flogf(" projHdr");
-    utlWriteBlock(gpsd.port, gpsd.projHdr, hdr);
-    s = utlExpect(gpsd.port, all.str, "ACK", gps.hdrPause);
+    utlWriteBlock(irid.port, irid.projHdr, hdr);
+    s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
   }
   flogf(", Hello?");
-  iridSendBlock("hello", 5, 1, 1);
-  if ((r = iridLandResp(buf))) throw(10+r);
+  iriSendBlock("hello", 5, 1, 1);
+  if ((r = iriLandResp(buf))) throw(10+r);
   return 0;
 
   catch: return all.x;
-} // iridProjHello
+} // iriProjHello
 
 ///
 // send block Num of Many
-// rets: 0=success 1=gps.hdrTry 2=block fail
-int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
-  static char *self="iridSendBlock";
+// rets: 0=success 1=iri.hdrTry 2=block fail
+int iriSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
+  static char *self="iriSendBlock";
   int cs, i, bufSz, blockSz, sendSz;
   long uDelay;
   char *buff;
-  DBG0("iridSendBlock(%d,%d,%d)", msgSz, blockNum, blockMany);
-  buff = gpsd.buf;
+  DBG0("iriSendBlock(%d,%d,%d)", msgSz, blockNum, blockMany);
+  buff = irid.buf;
   blockSz = msgSz+IRID_OFF;
   bufSz = msgSz+IRID_HDR;
-  DBG2("projHdr:%s", utlNonPrint(gpsd.projHdr));
+  DBG2("projHdr:%s", utlNonPrint(irid.projHdr));
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
   // 2 bytes of crc checksum;
@@ -302,37 +302,37 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
     (char) blockNum, (char) blockMany);
   memcpy(buff+IRID_HDR, msg, msgSz);
   // poke in cs high and low bytes
-  cs = iridCRC(buff+IRID_OFF, bufSz-IRID_OFF);
+  cs = iriCRC(buff+IRID_OFF, bufSz-IRID_OFF);
   buff[3] = (char) (cs>>8 & 0xFF);
   buff[4] = (char) (cs & 0xFF);
   flogf(" %d/%d", blockNum, blockMany);
   // send data
   // pause every sendSz# chars to slow down baud stream
-  sendSz = gps.sendSz;
-  uDelay = (long) sendSz * gpsd.rudUsec;
-  DBG2(" {%d %d %ld}", sendSz, gpsd.rudUsec, uDelay);
+  sendSz = iri.sendSz;
+  uDelay = (long) sendSz * irid.rudUsec;
+  DBG2(" {%d %d %ld}", sendSz, irid.rudUsec, uDelay);
   for (i=0; i<bufSz; i+=sendSz) {
-    // TUTxPutByte(gpsd.port, buff[i], false);
-    // RTCDelayMicroSeconds((long) gpsd.rudUsec);
+    // TUTxPutByte(irid.port, buff[i], false);
+    // RTCDelayMicroSeconds((long) irid.rudUsec);
     if (i+sendSz>bufSz) {
       sendSz = bufSz-i;
-      uDelay = (long) sendSz * gpsd.rudUsec;
+      uDelay = (long) sendSz * irid.rudUsec;
     }
-    TUTxPutBlock(gpsd.port, buff+i, (long) sendSz, 9999);
+    TUTxPutBlock(irid.port, buff+i, (long) sendSz, 9999);
     // extra delay us per byte to emulate lower baud rate
     RTCDelayMicroSeconds(uDelay);
     utlX();
   }
   return 0;
-} // iridSendBlock
+} // iriSendBlock
 
 ///
-// land ho! already did iridDial and iridProjHdr
-// send fname as separate files of max gps.fileMax
+// land ho! already did iriDial and iriProjHdr
+// send fname as separate files of max iri.fileMax
 // rets: 1:!file +10:!resp r:LandCmds
-// sets: gpsd.block all.buf
-int iridSendFile(char *fname) {
-  static char *self="iridSendFile";
+// sets: irid.block all.buf
+int iriSendFile(char *fname) {
+  static char *self="iriSendFile";
   int r=0, fh, bytes, bcnt, bnum;
   bool moreB=true;
   struct stat fileinfo;
@@ -344,8 +344,8 @@ int iridSendFile(char *fname) {
     return 1;
   }
   size = (long)fileinfo.st_size;
-  if (size > 1024L*gps.fileMaxKB) {
-    size = 1024L*gps.fileMaxKB;
+  if (size > 1024L*iri.fileMaxKB) {
+    size = 1024L*iri.fileMaxKB;
     flogf("\n%s: ERR file too large, trunc to %ld", self, size);
   }
   fh = open(fname, O_RDONLY);
@@ -355,35 +355,35 @@ int iridSendFile(char *fname) {
   }
   /// read and send 
   // block & buf, size could change during run
-  if (gpsd.blockSz != gps.blockSz) {
-    flogf("\n%s: setting blockSize to %d", self, gps.blockSz);
-    gpsd.blockSz = gps.blockSz;
-    if (gpsd.block) free(gpsd.block);
-    if (gpsd.buf) free(gpsd.buf);
-    gpsd.block = malloc(gps.blockSz);
-    gpsd.buf = malloc(gps.blockSz + IRID_HDR);
+  if (irid.blockSz != iri.blockSz) {
+    flogf("\n%s: setting blockSize to %d", self, iri.blockSz);
+    irid.blockSz = iri.blockSz;
+    if (irid.block) free(irid.block);
+    if (irid.buf) free(irid.buf);
+    irid.block = malloc(iri.blockSz);
+    irid.buf = malloc(iri.blockSz + IRID_HDR);
   }
   // send blocks
-  bnum=(int)(size/gpsd.blockSz);
-  if (size%gpsd.blockSz) bnum += 1; // add one if partial
+  bnum=(int)(size/irid.blockSz);
+  if (size%irid.blockSz) bnum += 1; // add one if partial
   DBG2("\n%s: size=%ld, bnum=%d", self, size, bnum);
   for (bcnt=1; bcnt<=bnum; bcnt++) {
-    bytes = read(fh, gpsd.block, gpsd.blockSz);
-    iridSendBlock(gpsd.block, bytes, bcnt, bnum);
+    bytes = read(fh, irid.block, irid.blockSz);
+    iriSendBlock(irid.block, bytes, bcnt, bnum);
   } 
   close(fh);
-  if ((r = iridLandResp(all.str))) 
+  if ((r = iriLandResp(all.str))) 
     return 10+r;
   if (strstr(all.str, "cmds"))
-    r = iridLandCmds(all.buf);
-  iridProcessCmds(all.buf);
+    r = iriLandCmds(all.buf);
+  iriProcessCmds(all.buf);
   return r;
-} // iridSendFile
+} // iriSendFile
 
 ///
 // process cmds from Land. could be a.b=c;d.e=f
-int iridProcessCmds(char *buff) {
-  static char *self="iridProcessCmds";
+int iriProcessCmds(char *buff) {
+  static char *self="iriProcessCmds";
   char *p0;
   int r=0;
   p0 = strtok(buff, ";");
@@ -396,21 +396,21 @@ int iridProcessCmds(char *buff) {
     p0 = strtok(NULL, ";");
   }
   return r;
-} // iridProcessCmds
+} // iriProcessCmds
 
 ///
 // we just sent the last block, should get cmds or done
 // looks like a bug in how "cmds" is sent, sometimes 0x0d in front
 // 5 char the first time, six after; read until \n 0x0a
 // rets: 0=success 1=respTO
-int iridLandResp(char *buff) {
+int iriLandResp(char *buff) {
   int r, len=6;
-  tmrStart(gps_tmr, gps.rudResp);
+  tmrStart(iri_tmr, iri.rudResp);
   memset(buff, 0, len);
   for (r=0; r<len; r++) {
-    while (TURxQueuedCount(gpsd.port)==0)
-      if (tmrExp(gps_tmr)) return 1;
-    buff[r] = TURxGetByte(gpsd.port, true);
+    while (TURxQueuedCount(irid.port)==0)
+      if (tmrExp(iri_tmr)) return 1;
+    buff[r] = TURxGetByte(irid.port, true);
     if (buff[r]==0x0A)
       break;
   }
@@ -419,27 +419,27 @@ int iridLandResp(char *buff) {
   if (!strstr(buff, "cmds") && !strstr(buff, "done"))
     return 2;
   return 0;
-} // iridLandResp
+} // iriLandResp
 
 ///
 // read and format land cmds
 // rets: *buff\0 0=success 1=@TO 2=0@ 3=hdrTO 4=hdr!C11 
-int iridLandCmds(char *buff) {
+int iriLandCmds(char *buff) {
   int i, hdr=7;
   unsigned char c;
   short msgSz;
-  static char *self="iridLandCmds";
+  static char *self="iriLandCmds";
   DBG();
-  tmrStart(gps_tmr, gps.rudResp);
+  tmrStart(iri_tmr, iri.rudResp);
   // skip @@@ @@ or @ - protocol is sloppy, first CS byte could = @
   for (i=0; i<3; i++) {
     // wait for byte
-    while (TURxQueuedCount(gpsd.port)==0)
-      if (tmrExp(gps_tmr)) return 1;
-    c = TURxPeekByte(gpsd.port, 0);
+    while (TURxQueuedCount(irid.port)==0)
+      if (tmrExp(iri_tmr)) return 1;
+    c = TURxPeekByte(irid.port, 0);
     DBG3("%s", utlNonPrintBlock(&c,1));
     if (c=='@') 
-      TURxGetByte(gpsd.port, false);
+      TURxGetByte(irid.port, false);
     else 
       break;
   }
@@ -447,9 +447,9 @@ int iridLandCmds(char *buff) {
   // @@@ 2 CS bytes, 2 len bytes, 'C', 1, 1
   for (i=0; i<hdr; i++) {
     // wait for byte
-    while (TURxQueuedCount(gpsd.port)==0)
-      if (tmrExp(gps_tmr)) return 3;
-    buff[i]=TURxGetByte(gpsd.port, false);
+    while (TURxQueuedCount(irid.port)==0)
+      if (tmrExp(iri_tmr)) return 3;
+    buff[i]=TURxGetByte(irid.port, false);
   }
   // 2 CS bytes
   // 2 len bytes
@@ -465,45 +465,45 @@ int iridLandCmds(char *buff) {
   memset(buff, 0, msgSz+1);
   for (i=0; i<msgSz; i++) {
     // wait for byte
-    while (TURxQueuedCount(gpsd.port)==0)
-      if (tmrExp(gps_tmr)) return 5;
-    buff[i]=TURxGetByte(gpsd.port, false);
+    while (TURxQueuedCount(irid.port)==0)
+      if (tmrExp(iri_tmr)) return 5;
+    buff[i]=TURxGetByte(irid.port, false);
   }
   flogf("\nCMDS(%d)->", msgSz);
   flogf("''%s''", utlNonPrintBlock(buff, msgSz));
   return 0;
-} // iridLandCmds
+} // iriLandCmds
 
 ///
 // send "data" because blocks will follow
-void iridData(void) {
-  utlWrite(gpsd.port, "data", "");
+void iriData(void) {
+  utlWrite(irid.port, "data", "");
 }
 
 ///
 // call done
-void iridHup(void) {
+void iriHup(void) {
   int try=3;
-  utlWrite(gpsd.port, "done", "");
+  utlWrite(irid.port, "done", "");
   while (try--) {
-    utlDelay(gps.hupMs);
-    utlWrite(gpsd.port, "+++", "");
-    utlDelay(gps.hupMs);
-    if (utlExpect(gpsd.port, all.buf, "OK", 2)) break;
+    utlDelay(iri.hupMs);
+    utlWrite(irid.port, "+++", "");
+    utlDelay(iri.hupMs);
+    if (utlExpect(irid.port, all.buf, "OK", 2)) break;
   }
-  utlWrite(gpsd.port, "at+clcc", EOL);
-  if (utlExpect(gpsd.port, all.buf, "OK", 5))
+  utlWrite(irid.port, "at+clcc", EOL);
+  if (utlExpect(irid.port, all.buf, "OK", 5))
     flogf("\nclcc->%s", utlNonPrint(all.buf));
-  utlWrite(gpsd.port, "at+chup", EOL);
-  utlExpect(gpsd.port, all.buf, "OK", 5);
-} // iridHup
+  utlWrite(irid.port, "at+chup", EOL);
+  utlExpect(irid.port, all.buf, "OK", 5);
+} // iriHup
 
 ///
 // return: 0 success
-int iridPrompt() {
-  TURxFlush(gpsd.port);
-  utlWrite(gpsd.port, "at", EOL);
-  if (!utlExpect(gpsd.port, all.buf, "OK", 4)) return 1;
+int iriPrompt() {
+  TURxFlush(irid.port);
+  utlWrite(irid.port, "at", EOL);
+  if (!utlExpect(irid.port, all.buf, "OK", 4)) return 1;
   else return 0;
-} // iridPrompt
+} // iriPrompt
 

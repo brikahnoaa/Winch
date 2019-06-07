@@ -5,7 +5,7 @@
 enum {
   null_tmr=10,
   day_tmr, hour_tmr, minute_tmr, second_tmr, phase_tmr, data_tmr, 
-  gps_tmr, ngk_tmr, rudics_tmr, utl_tmr, wsp_tmr, s16_tmr, s39_tmr, 
+  iri_tmr, ngk_tmr, utl_tmr, wsp_tmr, s16_tmr, s39_tmr, 
   sizeof_tmr
   };
 typedef int TmrType;

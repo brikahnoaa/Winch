@@ -21,7 +21,7 @@ typedef TUPort * Serial;
 // sync with utlInit()
 typedef enum {
     ant_err, boy_err, cfg_err, s16_err, 
-    gps_err, ngk_err, rud_err, wsp_err, 
+    iri_err, ngk_err, wsp_err, 
     phase_err, log_err, 
     sizeof_err} ErrType;
 

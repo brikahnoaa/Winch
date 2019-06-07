@@ -2,8 +2,8 @@
 #ifndef H_BOY
 #define H_BOY
 
-#include <gps.h>
 #include <hps.h>
+#include <iri.h>
 
 typedef enum {
   deploy_pha=0, 

@@ -1,7 +1,8 @@
 // iridFile.c
 #include <main.h>
 
-extern GpsInfo gps;
+extern IriInfo iri;
+extern IriData irid;
 extern BoyInfo boy;
 extern SysInfo sys;
 
@@ -9,56 +10,55 @@ void main(void){
   // Serial port;
   // char c;
   char *buff;
-  int l, len, cnt;
+  int len, cnt;
   int i, r;
   i=0;
   sysInit();
   mpcInit();
   antInit();
-  gpsInit();
+  iriInit();
   //
   antStart();
-  gpsStart();
+  iriStart();
   //
-  len = tst.t2;
-  cnt = tst.t1;
-  cprintf("\nlength tst.t2=%d, count tst.t1=%d ", len, cnt);
-  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
+  len = dbg.t2;
+  cnt = dbg.t1;
+  cprintf("\nlength dbg.t2=%d, count dbg.t1=%d ", len, cnt);
+  cprintf("\nbaud iri.rudBaud=%d", iri.rudBaud);
   buff = malloc(len);
   // antSwitch(gps_ant);
-  // gpsStats();
+  // iriStats();
   antSwitch(irid_ant);
-  if (iridSig()) return;
-  if (iridDial()) return;
-  if (iridProjHdr()) return;
+  if (iriSig()) return;
+  if (iriDial()) return;
+  if (iriProjHello(all.buf)) return;
   /*
   for (i=1; i<=cnt; i++) {
     memset(buff, 0, len);
     sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, gps.rudBaud, gps.sendSz);
+      i, cnt, len, iri.rudBaud, iri.sendSz);
     buff[len-1] = 'Z';
-    r = iridSendBlock(buff, len, i, cnt);
+    r = iriSendBlock(buff, len, i, cnt);
     cprintf("(%d)\n", r);
     // utlDelay(500);
   }
    */
-  iridSendFile("test\\test.log");
-  iridLandResp(all.buf);
+  iriSendFile("test\\test.log");
+  iriLandResp(all.buf);
   if (strstr(all.buf, "cmds"))
-    r = iridLandCmds(all.buf, &l);
-  all.buf[l] = 0;
+    r = iriLandCmds(all.buf);
   strcpy(buff, all.buf);
   utlDelay(500);
-  utlWrite(gps.port, "done", "");
+  utlWrite(irid.port, "done", "");
   utlDelay(500);
-  iridHup();
-  iridSig();
+  iriHup();
+  iriSig();
   flogf("\n%s\n", utlTime());
   flogf("\nsetting '%s'", utlNonPrint(buff));
   cfgString(buff);
   flogf("\nsys.program = %s", sys.program);
   // antSwitch(gps_ant);
-  // gpsStats();
-  gpsStop();
+  // iriStats();
+  iriStop();
   antStop();
 }

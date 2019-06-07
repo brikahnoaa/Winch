@@ -1,6 +1,6 @@
-// gps.h
-#ifndef H_GPS
-#define H_GPS
+// iri.h
+#ifndef H_IRI
+#define H_IRI
 
 typedef struct GpsStats {
   char lat[32];             // 45:67.8900N
@@ -9,7 +9,7 @@ typedef struct GpsStats {
   char time[32];            // Time=21:25:10.000
 } GpsStats;
 
-typedef struct GpsInfo {
+typedef struct IriInfo {
   bool setTime;             // flag, reset time via gps, starts true
   char phoneNum[16];        // (0088160000519)
   char platform[16];        // (LR01)
@@ -25,11 +25,11 @@ typedef struct GpsInfo {
   int rudBaud;              // effective baud rate for rudics (2400)
   int rudResp;              // wait secs for respond to a block (30)
   int sendSz;               // send some chars, then wait rudUsec (64)
-  int signalMin;            // min irid signal level to try transmit (2)
+  int signalMin;            // min iri signal level to try transmit (2)
   int timeout;              // seconds for steps like signal, sats (60)
-} GpsInfo;
+} IriInfo;
 
-typedef struct GpsData {
+typedef struct IriData {
   GpsStats *stats1;          // we read stats, repeat
   GpsStats *stats2;          // ... until two match
   Serial port;
@@ -41,26 +41,26 @@ typedef struct GpsData {
   int rudUsec;              // microsec delay calculated from rudBaud
   int sats;
   int signal;
-} GpsData;
+} IriData;
 
-bool gpsSetTime(GpsStats *stats);
-int gpsDateTime(GpsStats *stats);
-int gpsLatLng(GpsStats *stats);
-int gpsStart(void);
-int iridDial(void);
-int iridLandCmds(char *buff);
-int iridLandResp(char *buff);
-int iridProcessCmds(char *buff);
-int iridProjHello(char *buff);
-int iridSendBlock(char *buff, int msgLen, int blockNum, int blockMany);
-int iridSendFile(char *fname);
-int iridSig(void);
-static int gpsSats(void);
-static int iridCRC(char *buf, int cnt);
-static int iridPrompt(void);
-void gpsInit(void);
-void gpsStop(void);
-void iridData(void);
-void iridHup(void);
+bool iriSetTime(GpsStats *stats);
+int iriDateTime(GpsStats *stats);
+int iriLatLng(GpsStats *stats);
+int iriStart(void);
+int iriDial(void);
+int iriLandCmds(char *buff);
+int iriLandResp(char *buff);
+int iriProcessCmds(char *buff);
+int iriProjHello(char *buff);
+int iriSendBlock(char *buff, int msgLen, int blockNum, int blockMany);
+int iriSendFile(char *fname);
+int iriSig(void);
+static int iriSats(void);
+static int iriCRC(char *buf, int cnt);
+static int iriPrompt(void);
+void iriInit(void);
+void iriStop(void);
+void iriData(void);
+void iriHup(void);
 
 #endif

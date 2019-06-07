@@ -9,9 +9,9 @@ void main(void) {
   pwrInit();
   antInit();
   boyInit();
-  s16Init();
-  gpsInit();
+  iriInit();
   ngkInit();
+  s16Init();
   wspInit();
 
   boyMain();
