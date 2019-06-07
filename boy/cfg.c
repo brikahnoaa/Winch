@@ -56,7 +56,6 @@ static CfgParam cfgP[] = {
   {'i',  "boy.depSettle", &boy.depSettle,   "bsT",  "60"},
   {'i',  "boy.depWait",   &boy.depWait,     "bdW",  "240"},
   {'i',  "boy.fallOpM",   &boy.fallOpM,     "bfO",  "30"},
-  {'i',  "boy.filePause", &boy.filePause,   "bfP",  "1"},
   {'i',  "boy.iridOpM",   &boy.iridOpM,     "biO",  "5"},
   {'i',  "boy.ngkDelay",  &boy.ngkDelay,    "bnD",  "8"},
   {'i',  "boy.riseOpM",   &boy.riseOpM,     "brO",  "20"},
@@ -64,13 +63,6 @@ static CfgParam cfgP[] = {
   {'i',  "boy.stayDown",  &boy.stayDown,    "bsD",  "0"},
 
   {'c',  "cfg.file",      &cfg.file,        "cfe",  "lara.cfg"},
-
-  {'b',  "s16.auton",     &s16.auton,       "can",  "false"},
-  {'b',  "s16.sampClear", &s16.sampClear,   "ccS",  "false"},
-  {'b',  "s16.sampStore", &s16.sampStore,   "csS",  "true"},
-  {'i',  "s16.pumpMode",  &s16.pumpMode,    "cpM",  "1"},
-  {'i',  "s16.sampInter", &s16.sampInter,   "csI",  "10"},
-  {'i',  "s16.timer",     &s16.timer,       "ctr",  "6"},
 
   {'b',  "dbg.noData",    &dbg.noData,      "dnD",  "false"},
   {'b',  "dbg.noDeploy",  &dbg.noDeploy,    "dne",  "false"},
@@ -87,6 +79,7 @@ static CfgParam cfgP[] = {
   {'c',  "gps.project",   &gps.project,     "gpr",  "QUEH"},
   {'i',  "gps.blockSz",   &gps.blockSz,     "gbS",  "1024"},
   {'i',  "gps.fileMaxKB", &gps.fileMaxKB,   "gfX",  "64"},
+  {'i',  "gps.filePause", &gps.filePause,   "gfP",  "1"},
   {'i',  "gps.hdrPause",  &gps.hdrPause,    "ghP",  "20"},
   {'i',  "gps.hdrTry",    &gps.hdrTry,      "ghT",  "3"},
   {'i',  "gps.hupMs",     &gps.hupMs,       "ghM",  "2000"},
@@ -104,6 +97,13 @@ static CfgParam cfgP[] = {
   {'f',  "pwr.charge",    &pwr.charge,      "pch",  "12000.0"},
   {'f',  "pwr.chargeMin", &pwr.chargeMin,   "pcM",  "200.0"},
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
+
+  {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
+  {'b',  "s16.sampClear", &s16.sampClear,   "6cS",  "false"},
+  {'b',  "s16.sampStore", &s16.sampStore,   "6sS",  "true"},
+  {'i',  "s16.pumpMode",  &s16.pumpMode,    "6pM",  "1"},
+  {'i',  "s16.sampInter", &s16.sampInter,   "6sI",  "10"},
+  {'i',  "s16.timer",     &s16.timer,       "6tr",  "6"},
 
   {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
   {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},

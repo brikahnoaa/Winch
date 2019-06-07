@@ -5,6 +5,9 @@
 //
 #define EOL "\r"
 #define CALL_DELAY 20
+// OFF is where checksum starts, HDR is total block header size
+#define IRID_OFF 5
+#define IRID_HDR 10
 
 GpsInfo gps;
 GpsData gpsd;
@@ -20,12 +23,15 @@ void gpsInit(void) {
   gpsd.port = antPort();
   if (!gpsd.port)
     utlErr(gps_err, "no gpsd.port, was gpsInit called before antInit?");
+  // we malloc GpsStats instead of static to make swapping them easier
+  gpsd.stats1 = malloc(sizeof(GpsStats));
+  gpsd.stats2 = malloc(sizeof(GpsStats));
   // sets projHdr to 13 char project header, 0 in byte 14
-  sprintf(gps.projHdr, "???cs%4s%4s", gps.project, gps.platform);
+  sprintf(gpsd.projHdr, "???cs%4s%4s", gps.project, gps.platform);
   // poke in cs high and low bytes
-  cs = iridCRC(gps.projHdr+5, 8);
-  gps.projHdr[3] = (char) (cs >> 8) & 0xFF;
-  gps.projHdr[4] = (char) (cs & 0xFF);
+  cs = iridCRC(gpsd.projHdr+5, 8);
+  gpsd.projHdr[3] = (char) (cs >> 8) & 0xFF;
+  gpsd.projHdr[4] = (char) (cs & 0xFF);
 } // gpsInit
 
 ///
@@ -218,7 +224,7 @@ int iridDial(void) {
   flogf(" %s", utlTime());
   // set up timing for data
   //  10^6 * 10bits / rudBaud
-  gps.rudUsec = (int) ((pow(10, 6)*10) / gps.rudBaud);
+  gpsd.rudUsec = (int) ((pow(10, 6)*10) / gps.rudBaud);
   utlWrite(gpsd.port, "at+cpas", EOL);
   if (!utlExpect(gpsd.port, all.str, "OK", 5)) return 2;
   utlWrite(gpsd.port, "at+clcc", EOL);
@@ -240,7 +246,7 @@ int iridDial(void) {
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
       flogf(" CONNECT 9600");
-      flogf("rudBaud@%d +%dus ", gps.rudBaud, gps.rudUsec);
+      flogf("rudBaud@%d +%dus ", gps.rudBaud, gpsd.rudUsec);
       return 0;
     }
     flogf(" (%d)", i);
@@ -250,34 +256,40 @@ int iridDial(void) {
 } // iridDial
 
 ///
-// send proj hdr
-int iridProjHdr(void) {
-  int try, hdr=13;
+// send proj hdr followed by "Hello", catch landResponse
+// rets: *buf<-landResp
+int iridProjHello(char *buf) {
+  static char *self="iridProjHello";
+  int r, try, hdr=13;
   char *s=NULL;
   try = gps.hdrTry;
   while (!s) {
-    if (try-- <= 0) return 1;
-    flogf(" proj");
-    utlWriteBlock(gpsd.port, gps.projHdr, hdr);
+    if (try-- <= 0) throw(1);
+    flogf(" projHdr");
+    utlWriteBlock(gpsd.port, gpsd.projHdr, hdr);
     s = utlExpect(gpsd.port, all.str, "ACK", gps.hdrPause);
   }
-  flogf("\n");
+  flogf(", Hello?");
+  iridSendBlock("hello", 5, 1, 1);
+  if ((r = iridLandResp(buf))) throw(10+r);
   return 0;
-} // iridProjHdr
+
+  catch: return all.x;
+} // iridProjHello
 
 ///
 // send block Num of Many
 // rets: 0=success 1=gps.hdrTry 2=block fail
 int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
-  int hdr=10;
+  static char *self="iridSendBlock";
   int cs, i, bufSz, blockSz, sendSz;
   long uDelay;
   char *buff;
   DBG0("iridSendBlock(%d,%d,%d)", msgSz, blockNum, blockMany);
-  bufSz = msgSz+hdr;
-  blockSz = msgSz+5;
-  buff = malloc(bufSz);
-  DBG2("projHdr:%s", utlNonPrint(gps.projHdr));
+  buff = gpsd.buf;
+  blockSz = msgSz+IRID_OFF;
+  bufSz = msgSz+IRID_HDR;
+  DBG2("projHdr:%s", utlNonPrint(gpsd.projHdr));
   // make data
   // 3 bytes of leader which will be @@@; (three bytes of 0x40); 
   // 2 bytes of crc checksum;
@@ -288,23 +300,23 @@ int iridSendBlock(char *msg, int msgSz, int blockNum, int blockMany) {
   sprintf(buff, "@@@CS%c%cT%c%c", 
     (char) (blockSz>>8 & 0xFF), (char) (blockSz & 0xFF), 
     (char) blockNum, (char) blockMany);
-  memcpy(buff+hdr, msg, msgSz);
+  memcpy(buff+IRID_HDR, msg, msgSz);
   // poke in cs high and low bytes
-  cs = iridCRC(buff+5, bufSz-5);
+  cs = iridCRC(buff+IRID_OFF, bufSz-IRID_OFF);
   buff[3] = (char) (cs>>8 & 0xFF);
   buff[4] = (char) (cs & 0xFF);
   flogf(" %d/%d", blockNum, blockMany);
   // send data
   // pause every sendSz# chars to slow down baud stream
   sendSz = gps.sendSz;
-  uDelay = (long) sendSz * gps.rudUsec;
-  DBG2(" {%d %d %ld}", sendSz, gps.rudUsec, uDelay);
+  uDelay = (long) sendSz * gpsd.rudUsec;
+  DBG2(" {%d %d %ld}", sendSz, gpsd.rudUsec, uDelay);
   for (i=0; i<bufSz; i+=sendSz) {
     // TUTxPutByte(gpsd.port, buff[i], false);
-    // RTCDelayMicroSeconds((long) gps.rudUsec);
+    // RTCDelayMicroSeconds((long) gpsd.rudUsec);
     if (i+sendSz>bufSz) {
       sendSz = bufSz-i;
-      uDelay = (long) sendSz * gps.rudUsec;
+      uDelay = (long) sendSz * gpsd.rudUsec;
     }
     TUTxPutBlock(gpsd.port, buff+i, (long) sendSz, 9999);
     // extra delay us per byte to emulate lower baud rate
@@ -331,37 +343,40 @@ int iridSendFile(char *fname) {
     flogf("\nERR\t| errno %d on %s", errno, fname);
     return 1;
   }
-  size = fileinfo.st_size;
-  if (size > (long)1024*gps.fileMaxKB)
-    size = (long)1024*gps.fileMaxKB;
+  size = (long)fileinfo.st_size;
+  if (size > 1024L*gps.fileMaxKB) {
+    size = 1024L*gps.fileMaxKB;
+    flogf("\n%s: ERR file too large, trunc to %ld", self, size);
+  }
   fh = open(fname, O_RDONLY);
   if (fh<0) {
     flogf("\nERR\t| %s cannot open %s", self, fname);
     return 1;
   }
-  /// read and send blocks
-  // block buffer, size could change during run
+  /// read and send 
+  // block & buf, size could change during run
   if (gpsd.blockSz != gps.blockSz) {
-    if (gpsd.block) free(gpsd.block);
-    gpsd.block = malloc(gps.blockSz);
+    flogf("\n%s: setting blockSize to %d", self, gps.blockSz);
     gpsd.blockSz = gps.blockSz;
+    if (gpsd.block) free(gpsd.block);
+    if (gpsd.buf) free(gpsd.buf);
+    gpsd.block = malloc(gps.blockSz);
+    gpsd.buf = malloc(gps.blockSz + IRID_HDR);
   }
   // send blocks
-  bcnt=(int)(size/gpsd.blockSz);
-  if (size%gpsd.blockSz) bcnt += 1; // add one if partial
-  DBG4("\n%s: size=%ld, bcnt=%d", size, bcnt);
-  for (bnum=1; bnum>bcnt; bnum++) {
+  bnum=(int)(size/gpsd.blockSz);
+  if (size%gpsd.blockSz) bnum += 1; // add one if partial
+  DBG2("\n%s: size=%ld, bnum=%d", self, size, bnum);
+  for (bcnt=1; bcnt<=bnum; bcnt++) {
     bytes = read(fh, gpsd.block, gpsd.blockSz);
-    iridSendBlock(gpsd.block, bytes, bnum, bcnt);
+    iridSendBlock(gpsd.block, bytes, bcnt, bnum);
   } 
   close(fh);
-  // ?? send multiple blocks
   if ((r = iridLandResp(all.str))) 
     return 10+r;
   if (strstr(all.str, "cmds"))
     r = iridLandCmds(all.buf);
   iridProcessCmds(all.buf);
-  utlWrite(gpsd.port, "data", "");
   return r;
 } // iridSendFile
 
@@ -460,9 +475,16 @@ int iridLandCmds(char *buff) {
 } // iridLandCmds
 
 ///
+// send "data" because blocks will follow
+void iridData(void) {
+  utlWrite(gpsd.port, "data", "");
+}
+
+///
 // call done
 void iridHup(void) {
   int try=3;
+  utlWrite(gpsd.port, "done", "");
   while (try--) {
     utlDelay(gps.hupMs);
     utlWrite(gpsd.port, "+++", "");

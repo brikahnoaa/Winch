@@ -175,8 +175,8 @@ int wspStorm(char *buf) {
   if (wspClose()) return 9;
   return 0;
 
-  catch
-    return(all.exc);
+  catch:
+    return(all.x);
 } // wspStorm
 
 ///
@@ -254,12 +254,12 @@ int wspDetectM(int *detectM, int minutes) {
   }
   // ?? add to daily log
   // stop
-  if (wspClose()) return 8;
+  if (wspClose()) throw(8);
   return 0;
 
-  catch
+  catch:
     wspStop();
-    return(all.exc);
+    return(all.x);
 } // wspDetectM
 
 ///

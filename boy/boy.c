@@ -272,13 +272,11 @@ PhaseType errorPhase(void) {
   return deploy_pha;
 } // errorPhase
 
-
-
 ///
 // main action of iridPhase, allows better error handling
 int iridDo(void) {
   int r=0;
-  bool helloB=false, engB=false, s16B=false;
+  bool dialB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOpM*60);
   gpsStart();
   flogf("\n%s ===\n", utlTime());
@@ -287,8 +285,11 @@ int iridDo(void) {
   gpsLatLng(&boyd.gpsBgn);
   antSwitch(irid_ant);
   while (!tmrExp(phase_tmr)) {
-    // 0=success
-    flogf("\n%s ====\n", utlTime());
+    flogf("\n%s Call Home ====\n", utlTime());
+    if (dialB) {
+      iridHup();
+      dialB = false;
+    }
     if ((r = iridSig())) {
       flogf("\nERR\t| iridSig()->%d", r);
       continue;
@@ -296,46 +297,29 @@ int iridDo(void) {
     if ((r = iridDial())) {
       flogf("\nERR\t| iridDial()->%d", r);
       continue;
-    } 
-    if ((r = iridProjHdr())) {
-      flogf("\nERR\t| iridProjHdr()->%d", r);
-      iridHup();
+    } else dialB = true;
+    if ((r = iridProjHello(all.buf))) {
+      flogf("\nERR\t| iridProjHello()->%d", r);
       continue;
     } 
-    if (!helloB) {
-      // sprintf(all.str, "hello.txt");
-      // if ((r = iridSendFile(all.str))) {
-      sprintf(all.str, "hello");
-      if ((r = iridSendBlock(all.str, 5, 1, 1))) {
-        flogf("\nERR\t| iridSendBlock(%s)->%d", all.str, r);
-        iridHup();
-        continue;
-      } else {
-        helloB=true;
-        flogf("\n\tHelloHelloHello");
-      }
-    }
-    utlNap(boy.filePause);
     if (!engB) {
+      iridData();
       utlLogPathName(all.str, "eng", all.cycle);
-      if ((r = iridSendFile(all.str))) {
+      if ((r = iridSendFile(all.str)))
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
-        iridHup();
-        continue;
-      } else engB=true;
-    }
-    utlNap(boy.filePause);
+      engB=true;
+    } // engB
     if (!s16B) {  
+      iridData();
       utlLogPathName(all.str, "s16", all.cycle);
-      if ((r = iridSendFile(all.str))) {
+      if ((r = iridSendFile(all.str))) 
         flogf("\nERR\t| iridSendFile(%s)->%d", all.str, r);
-        iridHup();
-        continue;
-      } else s16B=true;
-    }
-    // done?
-    if (helloB && engB && s16B) break;
-  } // while
+      s16B=true;
+    } // s16B
+    if (engB && s16B) break;
+  } // phase_tmr
+  iridHup();
+  // utlWrite(gpsd.port, "done", "");
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
   gpsDateTime(&boyd.gpsEnd);

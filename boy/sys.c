@@ -53,7 +53,6 @@ void preRun(int delay) {
   char c;
   utlPet();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
-  utlDelay(1000);
   ciflush();
   // start
   cprintf("You have %d seconds ", delay);
