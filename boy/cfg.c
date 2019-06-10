@@ -77,7 +77,6 @@ static CfgParam cfgP[] = {
   {'c',  "iri.phoneNum",  &iri.phoneNum,    "iph",  "0088160000519"},
   {'c',  "iri.platform",  &iri.platform,    "ipl",  "LR01"},
   {'c',  "iri.project",   &iri.project,     "ipr",  "QUEH"},
-  {'i',  "iri.blockSz",   &iri.blockSz,     "ibS",  "1024"},
   {'i',  "iri.fileMaxKB", &iri.fileMaxKB,   "ifX",  "64"},
   {'i',  "iri.filePause", &iri.filePause,   "ifP",  "1"},
   {'i',  "iri.hdrPause",  &iri.hdrPause,    "ihP",  "20"},
@@ -89,6 +88,7 @@ static CfgParam cfgP[] = {
   {'i',  "iri.sendSz",    &iri.sendSz,      "isS",  "64"},
   {'i',  "iri.signalMin", &iri.signalMin,   "isM",  "2"},
   {'i',  "iri.timeout",   &iri.timeout,     "ito",  "60"},
+  {'l',  "iri.blockSz",   &iri.blockSz,     "ibS",  "1024"},
 
   {'i',  "ngk.delay",     &ngk.delay,       "nde",  "8"},
   {'i',  "ngk.winchId",   &ngk.winchId,     "nwI",  "1"},
@@ -241,7 +241,7 @@ static void cfgSet( void *ptr, char type, char *val ) {
     *(int*)ptr=atoi(val);
     break;
   case 'l':
-    *(long*)ptr=(long)atoi(val);
+    *(long*)ptr=(long)atol(val);
     break;
   case 's':
     *(short*)ptr=(short)atoi(val);

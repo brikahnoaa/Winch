@@ -9,14 +9,32 @@ typedef struct GpsStats {
   char time[32];            // Time=21:25:10.000
 } GpsStats;
 
+/// This will be malloc'd as iri.blockSz+sizeof(IriBuff), irid.buf=pointer 
+typedef struct IriBuff {
+  char leader[3];           // @@@
+  int checksum;             // 2 bytes
+  int length;               // 2 bytes
+  char blockType;           // T=text B=binary Z=zip
+  short bnum;               // 1 char, this block number
+  short btot;               // 1 char, total blocks
+  char block[];             // array of bytes == iri.blockSz
+} IriBuff;
+
+typedef struct IriProjHdr {
+  char leader[3];           // ???
+  int checksum;             // two bytes
+  char project[4];          // QUEH
+  char platform[4];         // LR01
+  char terminator;          // 0
+} IriProjHdr;
+
 typedef struct IriInfo {
   bool setTime;             // flag, reset time via gps, starts true
   char phoneNum[16];        // (0088160000519)
   char platform[16];        // (LR01)
   char project[16];         // (QUEH)
-  int blockSz;              // how many bytes to upload in a file block (1024)
   int fileCnt;              // how many files to upload in a connection (2)
-  int fileMaxKB;            // how many kilobytes max in a file (64K)
+  int fileMaxKB;            // how many kilobytes max in a file (64)
   int filePause;            // wait sec between sending "data" and data (1)
   int hdrPause;             // wait sec for rudics header response (20)
   int hdrTry;               // header retry (3)
@@ -27,40 +45,41 @@ typedef struct IriInfo {
   int sendSz;               // send some chars, then wait rudUsec (64)
   int signalMin;            // min iri signal level to try transmit (2)
   int timeout;              // seconds for steps like signal, sats (60)
+  long blockSz;              // how many bytes to upload in a file block (1024)
 } IriInfo;
 
 typedef struct IriData {
-  GpsStats *stats1;          // we read stats, repeat
-  GpsStats *stats2;          // ... until two match
+  GpsStats *stats1;         // we read stats, repeat
+  GpsStats *stats2;         // ... until two match
   Serial port;
-  char *block;              // buffer for file transfer
-  char *buf;                // buffer for file transfer
-  char projHdr[16];         // rudicsland
-  int blockSz;              // size of *block - verify GspInfo.blockSz
+  IriBuff *buf;             // malloc( iri.blockSz+sizeof(IriBuff) )
+  IriProjHdr *projHdr;      // rudicsland
+  int blockSz;              // size of *block - verify GpsInfo.blockSz
   int log;
   int rudUsec;              // microsec delay calculated from rudBaud
   int sats;
   int signal;
 } IriData;
 
+static int iriCRC(char *buf, int cnt);
+int iriLandCmds(char *buff);
+static int iriProcessCmds(char *buff);
+static int iriPrompt(void);
+static int iriSats(void);
+int iriSendBlock(int bsiz, int bnum, int btot);
+
 bool iriSetTime(GpsStats *stats);
 int iriDateTime(GpsStats *stats);
-int iriLatLng(GpsStats *stats);
-int iriStart(void);
 int iriDial(void);
-int iriLandCmds(char *buff);
 int iriLandResp(char *buff);
-int iriProcessCmds(char *buff);
+int iriLatLng(GpsStats *stats);
 int iriProjHello(char *buff);
-int iriSendBlock(char *buff, int msgLen, int blockNum, int blockMany);
 int iriSendFile(char *fname);
 int iriSig(void);
-static int iriSats(void);
-static int iriCRC(char *buf, int cnt);
-static int iriPrompt(void);
-void iriInit(void);
-void iriStop(void);
+int iriStart(void);
 void iriData(void);
 void iriHup(void);
+void iriInit(void);
+void iriStop(void);
 
 #endif
