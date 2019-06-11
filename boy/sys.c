@@ -33,9 +33,9 @@ int sysInit(void) {
   time(&all.startProg);     // program start time, global
   time(&all.startCycle);    // cycle start time, global
   // need utlInit before logInit
-  dbgInit();                // common init: dbg0,1,2
   utlInit();                // malloc global all.str
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
+  dbgInit();                // common init: dbg0,1,2
   cfgInit();
   // make serial queues larger = 64K (rudics max block size)
   params = TUGetDefaultParams();

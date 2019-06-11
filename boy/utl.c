@@ -100,6 +100,7 @@ void utlWriteBlock(Serial port, char *out, int len) {
   delay = 2 * (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG2("[>>]=%d", sent);
+  DBG4("'%s'", utlNonPrintBlock(out, len));
   // DBG2(">>'%s'", utlNonPrintBlock(out, len));
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);

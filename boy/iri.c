@@ -5,10 +5,10 @@
 //
 #define EOL "\r"
 #define CALL_DELAY 20
-// checksum covers IRID_CS+2..IRID_HDR..blockSz
+// offset of checksum, subheader (included in checksum), msg block
 #define IRID_BUF_CS 3
-#define IRID_BUF_LEN 5
-#define IRID_BUF_HDR 10
+#define IRID_BUF_SUB 5
+#define IRID_BUF_BLK 10
 
 IriInfo iri;
 IriData irid;
@@ -45,8 +45,8 @@ int iriStart(void) {
   if (irid.blockSz != iri.blockSz) {
     irid.blockSz = iri.blockSz;
     if (irid.buf) free(irid.buf);
-    irid.buf = (char *) malloc(irid.blockSz+IRID_BUF_HDR);
-    irid.block = irid.buf+IRID_BUF_HDR;    // offset into buf
+    irid.buf = (char *) malloc(irid.blockSz+IRID_BUF_BLK);
+    irid.block = irid.buf+IRID_BUF_BLK;    // offset into buf
     DBG1("\n%s: alloc irid.buf=%d", self, irid.blockSz);
   }
   // set up timing for data //  10^6 * 10bits / rudBaud
@@ -280,7 +280,7 @@ int iriProjHello(char *buf) {
     s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
   }
   flogf(", Hello?");
-  sprintf(irid.buf, "hello");
+  sprintf(irid.block, "hello");
   iriSendBlock(5, 1, 1);
   if ((r = iriLandResp(buf))) throw(10+r);
   return 0;
@@ -295,24 +295,31 @@ int iriProjHello(char *buf) {
 // 1 byte of message type;  (‘T’ or ‘I’ =Text,‘B’= Binary, ‘Z’ = Zip 
 // 1 byte block number;
 // 1 byte number of blocks.
+// irid.block already contains msg
 // uses: irid.buf .block 
 // rets: 0=success 1=iri.hdrTry 2=block fail
 int iriSendBlock(int bsiz, int bnum, int btot) {
   static char *self="iriSendBlock";
-  int cs, i, send;
+  int cs, i, send, r, size;
   long uDelay;
   DBG0("%s(%d,%d,%d)", self, bsiz, bnum, btot);
-  // make data
-  sprintf(irid.buf, "@@@CS%c%cT%c%c", 
-    (char) (bsiz>>8 & 0xFF), (char) (bsiz & 0xFF), 
+  // junk in the trunk?
+  if ((r=utlRead(irid.port, all.str))) 
+    flogf("\n%s: junk='%s'", self, utlNonPrintBlock(all.str, r));
+  // make hdr - beware null terminated sprintf
+  size = bsiz+IRID_BUF_BLK-IRID_BUF_SUB;
+  sprintf(all.str, "@@@CS%c%cT%c%c", 
+    (char) (size>>8 & 0xFF), (char) (size & 0xFF), 
     (char) bnum, (char) btot);
+  memcpy(irid.buf, all.str, IRID_BUF_BLK);
   // poke in cs high and low bytes
-  cs = iriCRC(irid.buf+IRID_BUF_LEN, bsiz+IRID_BUF_HDR-IRID_BUF_LEN);
+  cs = iriCRC(irid.buf+IRID_BUF_SUB, size);
   irid.buf[IRID_BUF_CS] = (char) (cs>>8 & 0xFF);
   irid.buf[IRID_BUF_CS+1] = (char) (cs & 0xFF);
   flogf(" %d/%d", bnum, btot);
+  DBG4(">>>'%s'", utlNonPrintBlock(irid.buf, IRID_BUF_BLK));
   // send hdr
-  TUTxPutBlock(irid.port, irid.buf, (long) IRID_BUF_HDR, 9999);
+  TUTxPutBlock(irid.port, irid.buf, (long) IRID_BUF_BLK, 9999);
   // send data
   // pause every send# chars to slow down baud stream
   send = iri.sendSz;
@@ -365,7 +372,7 @@ int iriSendFile(char *fname) {
     if (irid.block) free(irid.block);
     if (irid.buf) free(irid.buf);
     irid.block = malloc(iri.blockSz);
-    irid.buf = malloc(iri.blockSz + IRID_BUF_HDR);
+    irid.buf = malloc(iri.blockSz + IRID_BUF_BLK);
   }
   // send blocks
   bnum=(int)(size/irid.blockSz);
