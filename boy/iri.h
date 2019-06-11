@@ -52,7 +52,7 @@ int iriLandCmds(char *buff);
 int iriLandResp(char *buff);
 int iriProcessCmds(char *buff);
 int iriProjHello(char *buff);
-int iriSendBlock(char *buff, int msgLen, int blockNum, int blockMany);
+int iriSendBlock(int bsiz, int bnum, int btot);
 int iriSendFile(char *fname);
 int iriSig(void);
 static int iriSats(void);
