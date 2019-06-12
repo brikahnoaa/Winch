@@ -325,7 +325,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   uDelay = (long) send * irid.rudUsec;
   DBG2(" {%d %d %ld}", send, irid.rudUsec, uDelay);
   for (i=0; i<bsiz; i+=send) {
-    if (TURxQueuedCount(irid.port)) throw 1; // junk in the trunk?
+    if (TURxQueuedCount(irid.port)) throw(1); // junk in the trunk?
     if (i+send>bsiz) send = bsiz-i; // last chunk
     TUTxPutBlock(irid.port, irid.block+i, (long) send, 9999);
     // extra delay us per byte to emulate lower baud rate
