@@ -257,8 +257,8 @@ int iriDial(void) {
     utlReadWait(irid.port, all.str, CALL_DELAY);
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
-      flogf(" CONNECT 9600");
-      flogf("rudBaud@%d +%dus ", iri.rudBaud, irid.rudUsec);
+      flogf("\nCONNECT rudBaud@%d +%dus/%dbytes ", 
+          iri.rudBaud, irid.rudUsec, iri.sendSz);
       return 0;
     }
     flogf(" (%d)", i);
@@ -316,8 +316,10 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   cs = iriCRC(irid.buf+IRID_BUF_SUB, size);
   irid.buf[IRID_BUF_CS] = (char) (cs>>8 & 0xFF);
   irid.buf[IRID_BUF_CS+1] = (char) (cs & 0xFF);
-  flogf(" %d/%d", bnum, btot);
+  flogf(" %dB %d/%d", bsiz, bnum, btot);
   // send hdr
+  if (irid.log) 
+    write(irid.log, utlNonPrintBlock(irid.buf, IRID_BUF_BLK), IRID_BUF_BLK);
   TUTxPutBlock(irid.port, irid.buf, (long) IRID_BUF_BLK, 9999);
   // send data
   // pause every send# chars to slow down baud stream
@@ -328,11 +330,12 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
     if (TURxQueuedCount(irid.port)) throw(1); // junk in the trunk?
     if (i+send>bsiz) send = bsiz-i; // last chunk
     TUTxPutBlock(irid.port, irid.block+i, (long) send, 9999);
+    if (irid.log) 
+      write(irid.log, irid.block+i, (long) send);
     // extra delay us per byte to emulate lower baud rate
     RTCDelayMicroSeconds(uDelay);
     utlX();
   }
-  if (irid.log) write(irid.log, irid.buf, (long) bsiz+IRID_BUF_BLK);
   return 0;
 
   catch:

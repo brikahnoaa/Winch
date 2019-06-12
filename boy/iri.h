@@ -35,12 +35,12 @@ typedef struct IriData {
   GpsStats *stats1;          // we read stats, repeat
   GpsStats *stats2;          // ... until two match
   Serial port;
-  char *block;              // buffer for file transfer
+  char *block;              // offset into buf for file transfer
   char *buf;                // buffer for file transfer
   char projHdr[16];         // rudicsland
   int blockSz;              // size of *block - verify GspInfo.blockSz
   int log;                  // log of file transfers
-  int rudUsec;              // microsec delay calculated from rudBaud
+  int rudUsec;              // microsec delay calculated from rudBaud/sendSz
   int sats;
   int signal;
 } IriData;
