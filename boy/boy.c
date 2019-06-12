@@ -303,14 +303,12 @@ int iridDo(void) {
       continue;
     } 
     if (!engB) {
-      iriData();
       utlLogPathName(all.str, "eng", all.cycle);
       if ((r = iriSendFile(all.str)))
         flogf("\nERR\t| iriSendFile(%s)->%d", all.str, r);
       engB=true;
     } // engB
     if (!s16B) {  
-      iriData();
       utlLogPathName(all.str, "s16", all.cycle);
       if ((r = iriSendFile(all.str))) 
         flogf("\nERR\t| iriSendFile(%s)->%d", all.str, r);

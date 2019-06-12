@@ -62,7 +62,6 @@ int iriProjHello(char *buff);
 int iriSendFile(char *fname);
 int iriSig(void);
 int iriStart(void);
-void iriData(void);
 void iriHup(void);
 void iriInit(void);
 void iriStop(void);

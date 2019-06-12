@@ -353,7 +353,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
 } // iriSendBlock
 
 ///
-// land ho! already did iriDial and iriProjHdr
+// land ho! already did iriDial and iriProjHello
 // send fname as separate files of max iri.fileMax
 // rets: 1:!file +10:!resp r:LandCmds
 // sets: irid.block all.buf
@@ -376,7 +376,7 @@ int iriSendFile(char *fname) {
   }
   fh = open(fname, O_RDONLY);
   if (fh<0) {
-    flogf("\nERR\t| %s cannot open %s", self, fname);
+    flogf("\n%s: ERR\t| cannot open %s", self, fname);
     return 1;
   }
   /// read and send 
@@ -389,6 +389,8 @@ int iriSendFile(char *fname) {
     irid.block = malloc(iri.blockSz);
     irid.buf = malloc(iri.blockSz + IRID_BUF_BLK);
   }
+  // tell land more data (else "done")
+  utlWrite(irid.port, "data", "");
   // send blocks
   bnum=(int)(size/irid.blockSz);
   if (size%irid.blockSz) bnum += 1; // add one if partial
@@ -502,13 +504,7 @@ int iriLandCmds(char *buff) {
 } // iriLandCmds
 
 ///
-// send "data" because blocks will follow
-void iriData(void) {
-  utlWrite(irid.port, "data", "");
-}
-
-///
-// call done
+// call is done
 void iriHup(void) {
   int try=3;
   utlWrite(irid.port, "done", "");

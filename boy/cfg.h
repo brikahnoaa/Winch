@@ -24,7 +24,7 @@ static void cfgDefault(void);
 static void cfgSet(void *ptr, char type, char *val );
 static void cfgVee(void);
 
-int cfgRead(char *file, int *lines);
+int cfgRead(char *file);
 int cfgString(char *str);
 void cfgDump(void);
 void cfgInit(void);

@@ -135,7 +135,7 @@ static CfgParam cfgP[] = {
 // read config from CONFIG_FILE
 void cfgInit(void) {
   static char *self="cfgInit";
-  int r=0, lines;
+  int r=0;
   char *cfgFileV;
   DBG();
   cfgDefault();
@@ -145,9 +145,8 @@ void cfgInit(void) {
     strcpy(cfg.file, cfgFileV);
     flogf(", VEE(CFGFILE) changes it to '%s'", self, cfg.file);
   }
-  r = cfgRead(cfg.file, &lines);
+  r = cfgRead(cfg.file);
   if (r) flogf("\n%s: %d errors in config file %s", self, r, cfg.file);
-  flogf("\n%s: read %d lines from %s", self, lines, cfg.file);
   cfgVee();
 } // configFile
 
@@ -257,7 +256,7 @@ static void cfgSet( void *ptr, char type, char *val ) {
 ///
 // read cfg strings from a file
 // rets: 0=success #=errCount
-int cfgRead(char *file, int *lines) {
+int cfgRead(char *file) {
   char *buf, *ptr;
   int r=0, fh;
   struct stat finfo;
@@ -273,13 +272,11 @@ int cfgRead(char *file, int *lines) {
   read(fh, buf, finfo.st_size);
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
   close(fh);
-  *lines=0;
   // parse cfg strings (dos or linux) and return count r
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
-    *lines++;
     flogf( "\n\t%s", ptr);
-    if (cfgString(ptr)) r++;
+    if (cfgString(ptr)) { flogf(" !! ERR"); r++;}
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
