@@ -282,11 +282,14 @@ int iriProjHello(char *buf) {
     utlWriteBlock(irid.port, irid.projHdr, hdr);
     s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
   }
-  flogf(", Hello?");
+  flogf(" hello");
   sprintf(irid.block, "hello");
   iriSendBlock(5, 1, 1);
   if ((r = iriLandResp(buf))) throw(10+r);
-  return 0;
+  if (strstr(buf, "done")) return 0;
+  r = iriLandCmds(buf);
+  iriProcessCmds(buf);
+  return r;
 
   catch: return all.x;
 } // iriProjHello
@@ -397,14 +400,16 @@ int iriSendFile(char *fname) {
   close(fh);
   if ((r = iriLandResp(all.str))) 
     return 10+r;
-  if (strstr(all.str, "cmds"))
-    r = iriLandCmds(all.buf);
+  if (strstr(all.str, "done")) return 0;
+  // cmds
+  r = iriLandCmds(all.buf);
   iriProcessCmds(all.buf);
   return r;
 } // iriSendFile
 
 ///
 // process cmds from Land. could be a.b=c;d.e=f
+// rets: 0=success #=number of fails
 int iriProcessCmds(char *buff) {
   static char *self="iriProcessCmds";
   char *p0;
@@ -413,8 +418,7 @@ int iriProcessCmds(char *buff) {
   while (p0) {
     if (strstr(p0, "=")) {
       flogf("\n%s: '%s'", self, utlNonPrint(p0));
-      if (cfgString(p0))
-        r++;
+      if (cfgString(p0)) r++;
     }
     p0 = strtok(NULL, ";");
   }

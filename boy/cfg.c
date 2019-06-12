@@ -135,7 +135,7 @@ static CfgParam cfgP[] = {
 // read config from CONFIG_FILE
 void cfgInit(void) {
   static char *self="cfgInit";
-  int r=0;
+  int r=0, lines;
   char *cfgFileV;
   DBG();
   cfgDefault();
@@ -145,8 +145,9 @@ void cfgInit(void) {
     strcpy(cfg.file, cfgFileV);
     flogf(", VEE(CFGFILE) changes it to '%s'", self, cfg.file);
   }
-  r = cfgRead(cfg.file);
-  if (r) flogf("\n%s: read %d lines from %s", self, r, cfg.file);
+  r = cfgRead(cfg.file, &lines);
+  if (r) flogf("\n%s: %d errors in config file %s", self, r, cfg.file);
+  flogf("\n%s: read %d lines from %s", self, lines, cfg.file);
   cfgVee();
 } // configFile
 
@@ -176,7 +177,8 @@ void cfgDefault(void) {
 // find setVar with id or name, call cfgSet()
 // OK to have leading space and #comments
 // uses: cfgP[] cfg.cnt
-bool cfgString(char *str){
+// rets: 0=success 1=noEqualSign 2=noMatchName
+int cfgString(char *str){
   char *p, *ptr, *ref, *val, *var, *id, type;
   char s[128];
   int i;
@@ -189,7 +191,7 @@ bool cfgString(char *str){
   ref = s + strspn(s, " \t");
   // break at '='
   p = strchr(s, '=');
-  if (p==NULL) return false;
+  if (p==NULL) return 1;
   *p = 0;
   val = p+1;
   // find matching name
@@ -202,12 +204,12 @@ bool cfgString(char *str){
     if (cfgCmp(ref, id) || cfgCmp(ref, var)) {
       cfgSet(ptr, type, val);
       DBG1("\n(%c) %s=%s", type, var, val);
-      return true;
+      return 0; // success
     }
   } // for cfg
   utlErr(cfg_err, "cfgString() no match on name/id");
   flogf( " %s=%s ??", ref, val);
-  return false;                 // name not found
+  return 2;                 // name not found
 } // cfgString
 
 ///
@@ -254,10 +256,10 @@ static void cfgSet( void *ptr, char type, char *val ) {
 
 ///
 // read cfg strings from a file
-// returns: number of cfg lines
-int cfgRead(char *file) {
+// rets: 0=success #=errCount
+int cfgRead(char *file, int *lines) {
   char *buf, *ptr;
-  int r, fh;
+  int r=0, fh;
   struct stat finfo;
   //
   DBG0("cfgRead(%s)", file);
@@ -271,19 +273,18 @@ int cfgRead(char *file) {
   read(fh, buf, finfo.st_size);
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
   close(fh);
+  *lines=0;
   // parse cfg strings (dos or linux) and return count r
-  r = 0;
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
-    if (cfgString(ptr)) {
-      r++;
-      flogf( "\n\t%s", ptr);
-    }
+    *lines++;
+    flogf( "\n\t%s", ptr);
+    if (cfgString(ptr)) r++;
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
   return r;
-}
+} // cfgRead
 
 ///
 // read all vee vars, look for *.*=*, try those as settings
