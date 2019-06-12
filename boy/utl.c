@@ -302,9 +302,9 @@ int utlLogOpen(int *log, char *base) {
   char path[64];
   static char *self="utlLogOpen";
   DBG();
+  if (*log) {close(*log); *log=0;}
   utlLogPathName(path, base, all.cycle);
   flags = O_APPEND | O_CREAT | O_WRONLY;
-  *log=0;
   fd = open(path, flags);
   if (fd<=0) {
     sprintf(utl.str, "open ERR %d (errno %d), path %s", fd, errno, path);
@@ -334,8 +334,8 @@ int utlLogClose(int *fd) {
   DBG();
   if (*fd<1) return 0;   // no fd
   f=*fd;
-  DBG2("\n%s():%d ", self, f);
   *fd=0;
+  DBG2("\n%s():%d ", self, f);
   if (close(f)<0) {
     flogf("\n%s(): ERR closing file (fd=%d)", self, f);
     return 1;

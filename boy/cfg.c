@@ -74,6 +74,7 @@ static CfgParam cfgP[] = {
   {'i',  "dbg.t3",        &dbg.t3,          "dt3",  "0"},
 
   {'b',  "iri.setTime",   &iri.setTime,     "isT",  "true"},
+  {'b',  "iri.logging",   &iri.logging,     "ilo",  "false"},
   {'c',  "iri.phoneNum",  &iri.phoneNum,    "iph",  "0088160000519"},
   {'c',  "iri.platform",  &iri.platform,    "ipl",  "LR01"},
   {'c',  "iri.project",   &iri.project,     "ipr",  "QUEH"},

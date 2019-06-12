@@ -51,6 +51,9 @@ int iriStart(void) {
   }
   // set up timing for data //  10^6 * 10bits / rudBaud
   irid.rudUsec = (int) ((pow(10, 6)*10) / iri.rudBaud);
+  // log?
+  if (iri.logging) 
+    utlLogOpen(&irid.log, "iri");
   // power up a3la
   antDevice(cf2_dev);
   TUTxPutByte(irid.port, 3, false);
@@ -303,9 +306,6 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   int cs, i, send, r, size;
   long uDelay;
   DBG0("%s(%d,%d,%d)", self, bsiz, bnum, btot);
-  // junk in the trunk?
-  if ((r=utlRead(irid.port, all.str))) 
-    flogf("\n%s: junk='%s'", self, utlNonPrintBlock(all.str, r));
   // make hdr - beware null terminated sprintf
   size = bsiz+IRID_BUF_BLK-IRID_BUF_SUB;
   sprintf(all.str, "@@@CS%c%cT%c%c", 
@@ -317,7 +317,6 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   irid.buf[IRID_BUF_CS] = (char) (cs>>8 & 0xFF);
   irid.buf[IRID_BUF_CS+1] = (char) (cs & 0xFF);
   flogf(" %d/%d", bnum, btot);
-  DBG4(">>>'%s'", utlNonPrintBlock(irid.buf, IRID_BUF_BLK));
   // send hdr
   TUTxPutBlock(irid.port, irid.buf, (long) IRID_BUF_BLK, 9999);
   // send data
@@ -326,15 +325,25 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   uDelay = (long) send * irid.rudUsec;
   DBG2(" {%d %d %ld}", send, irid.rudUsec, uDelay);
   for (i=0; i<bsiz; i+=send) {
-    if (i+send>bsiz)
-      send = bsiz-i;
+    if (TURxQueuedCount(irid.port)) throw 1; // junk in the trunk?
+    if (i+send>bsiz) send = bsiz-i; // last chunk
     TUTxPutBlock(irid.port, irid.block+i, (long) send, 9999);
     // extra delay us per byte to emulate lower baud rate
     RTCDelayMicroSeconds(uDelay);
     utlX();
   }
-  DBG4(">>>'%s'", utlNonPrintBlock(irid.block, bsiz));
+  if (irid.log) write(irid.log, irid.buf, (long) bsiz+IRID_BUF_BLK);
   return 0;
+
+  catch:
+    switch(all.x) {
+    case 1:
+      r=utlRead(irid.port, all.str);
+      flogf("\n%s: unexpected from rudics='%s'", 
+          self, utlNonPrintBlock(all.str, r));
+      break;
+    }
+    return all.x;
 } // iriSendBlock
 
 ///
@@ -518,3 +527,11 @@ int iriPrompt() {
   else return 0;
 } // iriPrompt
 
+///
+// includes logging in block writes
+// uses: irid.port .log
+int iriSend(char *buff, long len) {
+  TUTxPutBlock(irid.port, buff, len, 9999);
+  if (irid.log) write(irid.log, buff, len);
+  return len;
+}

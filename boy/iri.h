@@ -11,6 +11,8 @@ typedef struct GpsStats {
 
 typedef struct IriInfo {
   bool setTime;             // flag, reset time via gps, starts true
+  bool logging;             // make a log of comm
+  char me[4];
   char phoneNum[16];        // (0088160000519)
   char platform[16];        // (LR01)
   char project[16];         // (QUEH)
@@ -37,30 +39,32 @@ typedef struct IriData {
   char *buf;                // buffer for file transfer
   char projHdr[16];         // rudicsland
   int blockSz;              // size of *block - verify GspInfo.blockSz
-  int log;
+  int log;                  // log of file transfers
   int rudUsec;              // microsec delay calculated from rudBaud
   int sats;
   int signal;
 } IriData;
 
-bool iriSetTime(GpsStats *stats);
+static bool iriSetTime(GpsStats *stats);
+static int iriCRC(char *buf, int cnt);
+static int iriPrompt(void);
+static int iriSats(void);
+static int iriSend(char *buff, long len);
+int iriSendBlock(int bsiz, int bnum, int btot);
+
 int iriDateTime(GpsStats *stats);
-int iriLatLng(GpsStats *stats);
-int iriStart(void);
 int iriDial(void);
 int iriLandCmds(char *buff);
 int iriLandResp(char *buff);
+int iriLatLng(GpsStats *stats);
 int iriProcessCmds(char *buff);
 int iriProjHello(char *buff);
-int iriSendBlock(int bsiz, int bnum, int btot);
 int iriSendFile(char *fname);
 int iriSig(void);
-static int iriSats(void);
-static int iriCRC(char *buf, int cnt);
-static int iriPrompt(void);
-void iriInit(void);
-void iriStop(void);
+int iriStart(void);
 void iriData(void);
 void iriHup(void);
+void iriInit(void);
+void iriStop(void);
 
 #endif
