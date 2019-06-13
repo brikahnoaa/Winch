@@ -275,11 +275,11 @@ char *utlNonPrintBlock (char *in, int len) {
   while (i<len) {
     ch = in[i++];
     if (ch==0x0A) {
-      sprintf(out+o, "\\n");
-      o += 2;
+      sprintf(out+o, " \\n");
+      o += 3;
     } else if (ch==0x0D) {
-      sprintf(out+o, "\\r");
-      o += 2;
+      sprintf(out+o, " \\r");
+      o += 3;
     } else if ((ch<32)||(ch>126)) {
       // non printing char
       sprintf(out+o, " x%02X ", ch);
