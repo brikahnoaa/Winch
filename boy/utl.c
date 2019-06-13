@@ -97,7 +97,7 @@ char *utlExpect(Serial port, char *buf, char *expect, int wait) {
 // put block to serial; queue, don't block, it should all buffer
 void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
-  delay = 2 * (int)TUBlockDuration(port, (long)len);
+  delay = 2 + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG2("[>>]=%d", sent);
   DBG4("'%s'", utlNonPrintBlock(out, len));
@@ -115,10 +115,10 @@ void utlWrite(Serial port, char *out, char *eol) {
   if (eol!=NULL)
     strcat(utl.str, eol);
   len = strlen(utl.str);
-  delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
-  sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
-  DBG2(">>=%d", sent);
-  DBG3(">>'%s'", utlNonPrint(utl.str));
+  delay = 2 + (int)TUBlockDuration(port, (long)len);
+  sent = (int)TUTxPutBlock(port, utl.str, (long)len, delay);
+  DBG2(" >%d>", sent);
+  DBG3(" >'%s'>", utlNonPrint(utl.str));
   if (len!=sent) 
     flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
 } // utlWrite
@@ -128,16 +128,16 @@ void utlWrite(Serial port, char *out, char *eol) {
 // char *in should be BUFSZ
 // returns: len
 int utlRead(Serial port, char *in) {
-  int len = 0;
+  int len;
+  in[0]=0;
   if (TURxQueuedCount(port)<1) return 0;
-  // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
   for (len=0; len<BUFSZ; len++) {
     in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG2("<<=%d", len);
-  DBG3("<<'%s'", utlNonPrint(in));
+  DBG2(" <%d<", len);
+  DBG3(" <'%s'<", utlNonPrint(in));
   return len;
 } // utlRead
 
@@ -147,25 +147,27 @@ int utlRead(Serial port, char *in) {
 // return: length
 int utlReadWait(Serial port, char *in, int wait) {
   int len;
-  in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
-  utlPet(); // could have been a long wait
-  if (in[0]<=0) {
-    // timeout
-    in[0]=0;
-    return 0;
-  } 
+  char c;
+  in[0] = c = 0;
+  tmrStart(second_tmr, wait);
+  // wait for a char
+  while (c<=0) {
+    // delay is a short
+    c = TURxGetByteWithTimeout(port, 128);
+    utlPet(); // could be a long wait
+    if (tmrExp(second_tmr)) return 0;
+  }
+  in[0] = c;
   // rest of input, note utlRead exits if nothing queued
   for (len=1; len<BUFSZ; len++) {
     in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
     if (in[len]<0) break;
   }
   in[len]=0;            // string
-  DBG2("<<(%d)=%d", wait, len);
-  DBG2("<<'%s'", utlNonPrint(in));
+  DBG2(" <%d<", len);
+  DBG3(" <'%s'<", utlNonPrint(in));
   return len;
 }
-
-// ?? check out __DATE__, __TIME__
 
 ///
 // write time to log file
@@ -182,7 +184,7 @@ char *utlTime(void) {
   time(&secs);
   tim = gmtime(&secs);
   sprintf(utl.ret, "%02d:%02d:%02d",
-          tim->tm_hour, tim->tm_min, tim->tm_sec);
+      tim->tm_hour, tim->tm_min, tim->tm_sec);
   return utl.ret;
 } // utlTime
 

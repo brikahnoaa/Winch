@@ -30,6 +30,7 @@ void main(void){
   if (iriSig()) return;
   if (iriDial()) return;
   if (iriProjHello(all.buf)) return;
+  flogf("\n short size = %ld\n", sizeof(short));
   /*
   for (i=1; i<=cnt; i++) {
     memset(buff, 0, len);

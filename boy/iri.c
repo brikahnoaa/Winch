@@ -30,7 +30,7 @@ void iriInit(void) {
 ///
 // turn on, clean, set params, talk to a3la
 // assumes: antStart()
-// sets: irid.projHdr .blockSz .buf .block .rudBaud
+// sets: irid.projHdr .blockSz .buf .block .rudUsec
 int iriStart(void) {
   static char *self="iriStart";
   int cs;
@@ -257,7 +257,7 @@ int iriDial(void) {
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
       flogf("CONNECTED");
-      if (iri.rudBaud<2400)
+      if (irid.rudUsec)
         flogf(" rudBaud@%d +%dus/%dB", iri.rudBaud, irid.rudUsec, iri.sendSz);
       return 0;
     }
@@ -330,7 +330,6 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   // pause every send# chars to slow down baud stream
   send = iri.sendSz;
   uDelay = (long) send * irid.rudUsec;
-  DBG2(" {%d %d %ld}", send, irid.rudUsec, uDelay);
   for (i=0; i<bsiz; i+=send) {
     if (TURxQueuedCount(irid.port)) throw(1); // junk in the trunk?
     if (i+send>bsiz) send = bsiz-i; // last chunk
@@ -344,14 +343,14 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   return 0;
 
   catch:
-    switch(all.x) {
+  switch(all.x) {
     case 1:
       r=utlRead(irid.port, all.str);
       flogf("\n%s: unexpected from rudics='%s'", 
           self, utlNonPrintBlock(all.str, r));
       break;
-    }
-    return all.x;
+  }
+  return all.x;
 } // iriSendBlock
 
 ///
