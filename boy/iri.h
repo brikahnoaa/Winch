@@ -50,7 +50,6 @@ static int iriCRC(char *buf, int cnt);
 static int iriPrompt(void);
 static int iriSats(void);
 static int iriSend(char *buff, long len);
-int iriSendBlock(int bsiz, int bnum, int btot);
 
 int iriDateTime(GpsStats *stats);
 int iriDial(void);
@@ -59,6 +58,7 @@ int iriLandResp(char *buff);
 int iriLatLng(GpsStats *stats);
 int iriProcessCmds(char *buff);
 int iriProjHello(char *buff);
+int iriSendBlock(int bsiz, int bnum, int btot);
 int iriSendFile(char *fname);
 int iriSig(void);
 int iriStart(void);

@@ -4,7 +4,7 @@
 // gps and iridium routines have a lot of ways to fail; return 0=success
 //
 #define EOL "\r"
-#define CALL_DELAY 20
+#define CALL_DELAY 30
 // offset of checksum, subheader (included in checksum), msg block
 #define IRID_BUF_CS 3
 #define IRID_BUF_SUB 5
@@ -246,19 +246,19 @@ int iriDial(void) {
     utlWrite(irid.port, "at+chup", EOL);
     if (!utlExpect(irid.port, all.str, "OK", 5)) return 4;
   }
+  utlRead(irid.port, all.str); // flush
   sprintf(str, "atd%s", iri.phoneNum);
   // dial
   for (i=0; i<iri.redial; i++) {
     // fails "NO CONNECT" without this pause
-    utlNap(4);
-    // flush
-    utlRead(irid.port, all.str);
+    // utlNap(4);
     utlWrite(irid.port, str, EOL);
     utlReadWait(irid.port, all.str, CALL_DELAY);
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
-      flogf("\nCONNECT rudBaud@%d +%dus/%dbytes ", 
-          iri.rudBaud, irid.rudUsec, iri.sendSz);
+      flogf("CONNECTED");
+      if (iri.rudBaud<2400)
+        flogf(" rudBaud@%d +%dus/%dB", iri.rudBaud, irid.rudUsec, iri.sendSz);
       return 0;
     }
     flogf(" (%d)", i);
@@ -269,7 +269,7 @@ int iriDial(void) {
 
 ///
 // send proj hdr followed by "Hello", catch landResponse
-// rets: *buf<-landResp
+// rets: *buf<-landResp 1=retries 2=noCarrier +10=landResp +20=landCmds
 // sets: irid.buf
 int iriProjHello(char *buf) {
   static char *self="iriProjHello";
@@ -281,15 +281,17 @@ int iriProjHello(char *buf) {
     flogf(" projHdr");
     utlWriteBlock(irid.port, irid.projHdr, hdr);
     s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
+    if (strstr(all.str, "NO CARRIER")) throw(2);
   }
   flogf(" hello");
   sprintf(irid.block, "hello");
   iriSendBlock(5, 1, 1);
   if ((r = iriLandResp(buf))) throw(10+r);
-  if (strstr(buf, "done")) return 0;
-  r = iriLandCmds(buf);
-  iriProcessCmds(buf);
-  return r;
+  if (strstr(buf, "cmds")) {
+    if ((r = iriLandCmds(buf))) throw(20+r);
+    iriProcessCmds(buf);
+  }
+  return 0;
 
   catch: return all.x;
 } // iriProjHello
@@ -354,9 +356,8 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
 
 ///
 // land ho! already did iriDial and iriProjHello
-// send fname as separate files of max iri.fileMax
-// rets: 1:!file +10:!resp r:LandCmds
-// sets: irid.block all.buf
+// rets: 1,2:file +10:LandResp +20:LandCmds
+// sets: irid.block all.buf .str
 int iriSendFile(char *fname) {
   static char *self="iriSendFile";
   int r=0, fh, bytes, bcnt, bnum;
@@ -364,22 +365,6 @@ int iriSendFile(char *fname) {
   struct stat fileinfo;
   long size;
   flogf("\n%s(%s)", self, fname);
-  // 
-  if ( stat(fname, &fileinfo) ) {
-    flogf("\nERR\t| errno %d on %s", errno, fname);
-    return 1;
-  }
-  size = (long)fileinfo.st_size;
-  if (size > 1024L*iri.fileMaxKB) {
-    size = 1024L*iri.fileMaxKB;
-    flogf("\n%s: ERR file too large, trunc to %ld", self, size);
-  }
-  fh = open(fname, O_RDONLY);
-  if (fh<0) {
-    flogf("\n%s: ERR\t| cannot open %s", self, fname);
-    return 1;
-  }
-  /// read and send 
   // block & buf, size could change during run
   if (irid.blockSz != iri.blockSz) {
     flogf("\n%s: setting blockSize to %d", self, iri.blockSz);
@@ -389,24 +374,41 @@ int iriSendFile(char *fname) {
     irid.block = malloc(iri.blockSz);
     irid.buf = malloc(iri.blockSz + IRID_BUF_BLK);
   }
-  // tell land more data (else "done")
+  // size
+  if ( stat(fname, &fileinfo) ) throw(1);
+  size = (long)fileinfo.st_size;
+  flogf(" {%ldB}", size);
+  if (size > 1024L*iri.fileMaxKB) {
+    size = 1024L*iri.fileMaxKB;
+    flogf("\n%s: ERR file too large, trunc to %ld", self, size);
+  }
+  fh = open(fname, O_RDONLY);
+  if (fh<0) throw(2);
+  /// read and send 
   utlWrite(irid.port, "data", "");
   // send blocks
   bnum=(int)(size/irid.blockSz);
   if (size%irid.blockSz) bnum += 1; // add one if partial
-  DBG2("\n%s: size=%ld, bnum=%d", self, size, bnum);
   for (bcnt=1; bcnt<=bnum; bcnt++) {
     bytes = read(fh, irid.block, irid.blockSz);
     iriSendBlock(bytes, bcnt, bnum);
   } 
   close(fh);
-  if ((r = iriLandResp(all.str))) 
-    return 10+r;
-  if (strstr(all.str, "done")) return 0;
-  // cmds
-  r = iriLandCmds(all.buf);
-  iriProcessCmds(all.buf);
-  return r;
+  if ((r = iriLandResp(all.str))) throw(10+r);
+  if (strstr(all.str, "cmds")) {
+    if ((r = iriLandCmds(all.buf))) throw(20+r);
+    iriProcessCmds(all.buf);
+  }
+  return 0;
+
+  catch:
+  switch(all.x) {
+    case 1: flogf("\nERR\t| errno %d on %s", errno, fname); break;
+    case 2: flogf("\n%s: ERR\t| cannot open %s", self, fname); break;
+    case 11: flogf("\n%s: iriLandResp() timeout", self); break;
+    case 21: flogf("\n%s: iriLandCmds() bad cmd %s", self, all.buf); break;
+  }
+  return(all.x);
 } // iriSendFile
 
 ///
