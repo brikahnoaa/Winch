@@ -240,6 +240,10 @@ char *utlDateTimeS16(void) {
 // format non-printable string; null terminate
 // returns: global char *utl.ret
 char *utlNonPrint (char *in) {
+  return (utlNonPrintBlock(in, strlen(in)));
+} // utlNonPrint
+
+/*
   unsigned char ch;
   char *out = utl.ret;
   int i, o;
@@ -257,6 +261,7 @@ char *utlNonPrint (char *in) {
   out[o] = 0;
   return (out);
 } // utlNonPrint
+*/
 
 ///
 // format non-printable string; null terminate
@@ -265,16 +270,23 @@ char *utlNonPrintBlock (char *in, int len) {
   unsigned char ch;
   char *out = utl.ret;
   int i, o;
-  // copy len bytes
+  // copy len bytes - note, o grows faster than i
   i = o = 0;
-  while (len--) {
+  while (i<len) {
     ch = in[i++];
-    if ((ch<32)||(ch>126)) {
+    if (ch==0x0A) {
+      sprintf(out+o, "\\n");
+      o += 2;
+    } else if (ch==0x0D) {
+      sprintf(out+o, "\\r");
+      o += 2;
+    } else if ((ch<32)||(ch>126)) {
       // non printing char
       sprintf(out+o, " x%02X ", ch);
       o += 5;     // five char hex ' x1A '
-    } else 
+    } else {
       out[o++] = ch;
+    }
   }
   out[o] = 0;
   return (out);
