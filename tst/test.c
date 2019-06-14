@@ -9,8 +9,13 @@ extern SysInfo sys;
 void main(void){
   int r, try, i, hdr=13;
   char *s=NULL;
-  long times[32];
+  ulong sec0, sec;
+  ushort tick;
+  int times[32];
   static char *self="main";
+  // ulong RTCGetTime(ulong *seconds, ushort *ticks);
+  // ulong RTCGetTime(ulong *seconds, ushort *ticks);
+  //
   // Serial port;
   // char c;
   // char *buff;
@@ -47,17 +52,20 @@ void main(void){
   flogf("\npause 30 sec");
   tmrStart(iri_tmr, 30);
   memset(all.str, 0, 32);
+    // ulong RTCGetTime(ulong *seconds, ushort *ticks);
+  RTCGetTime(&sec0, null);
   r=0;
   while (true) {
-    while (TURxQueuedCount(irid.port)==0)
-      if (tmrExp(iri_tmr)) throw(1);
-    all.str[r++] = TURxGetByte(irid.port, true);
-    times[r] = time(0);
+    if ((all.str[r] = TURxGetByte(irid.port, true))) {
+      RTCGetTime(&sec, &tick);
+      times[r++] = (sec-sec0)*1000+(tick/40);
+    }
+    if (tmrExp(iri_tmr)) break;
   }
   catch:
   for (i=0; i<=r; i++)
-    printf("\n time=%ld char='%c' '%x'", 
-        times[r]-times[0], all.str[r], all.str[r]);
+    printf("\n time=%d char='%c' '%x'", 
+        times[i], all.str[i], all.str[i]);
   exit(0);
 
 
