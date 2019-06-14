@@ -250,8 +250,6 @@ int iriDial(void) {
   sprintf(str, "atd%s", iri.phoneNum);
   // dial
   for (i=0; i<iri.redial; i++) {
-    // fails "NO CONNECT" without this pause
-    // utlNap(4);
     utlWrite(irid.port, str, EOL);
     utlReadWait(irid.port, all.str, CALL_DELAY);
     DBG1("%s", all.str);
@@ -262,6 +260,7 @@ int iriDial(void) {
       return 0;
     }
     flogf(" (%d)", i);
+    utlNap(3);
   }
   utlErr(iri_err, "call retry exceeded");
   return 4;

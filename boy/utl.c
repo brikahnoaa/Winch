@@ -243,26 +243,6 @@ char *utlNonPrint (char *in) {
   return (utlNonPrintBlock(in, strlen(in)));
 } // utlNonPrint
 
-/*
-  unsigned char ch;
-  char *out = utl.ret;
-  int i, o;
-  // walk thru input until 0 or BUFSZ
-  i = o = 0;
-  while (in[i] && o<BUFSZ-6) {
-    ch = in[i++];
-    if ((ch<32)||(ch>126)) {
-      // non printing char
-      sprintf(out+o, " x%02X ", ch);
-      o += 5;     // five char hex ' x1A '
-    } else 
-      out[o++] = ch;
-  }
-  out[o] = 0;
-  return (out);
-} // utlNonPrint
-*/
-
 ///
 // format non-printable string; null terminate
 // returns: global char *utl.ret

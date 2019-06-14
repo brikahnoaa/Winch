@@ -1,0 +1,35 @@
+Fri, Jun 14, 2019  3:19:23 PM
+.1 char stream from land is slightly > 1ms/char
+.2 less than 3sec for cmds/done, 1 second later comes cmd
+.3  ... 2.1sec ... (cmds\n) ... 1sec ... (@@@msg)
+3B @@@, 2B checksum, 2B msg length, 1B type 'C', 1B bnum, 1B bcnt, 'send1'
+
+.. testing exact response in landCmds
+iriSig()  >'at+csq \r'>  <' \r\n +CSQ:5 \r\n  \r\n OK \r\n '< csq=5 23:02:59  >'at+cpas \r'>  <' \r\n +CPAS:000 \r\n  \r\n OK \r\n '<  >'at+clcc \r'>  <' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<  >'atd0088160000519 \r'>  <' \r\n NO CARRIER \r\n '< (0)  >'atd0088160000519 \r'>  <' \r\n CONNECT 9600 \r\n '<CONNECTED rudBaud@2000 +5000us/64B projHdr  <'ACK\n '<
+ hello
+ 1/1
+pause 10 sec
+<'cmds\n @@@[ x00 \n C x01  x01 send1'>
+ time=2.082 [0] x63 'c'
+ time=2.083 [1] x6D 'm'
+ time=2.084 [2] x64 'd'
+ time=2.085 [3] x73 's'
+ time=2.086 [4] x0A '\n '
+ time=3.162 [5] x40 '@'
+ time=3.163 [6] x40 '@'
+ time=3.164 [7] x40 '@'
+ time=3.165 [8] x5B '['
+ time=3.167 [9] x00 ' x00 '
+ time=3.168 [10] x0A '\n '
+ time=3.169 [11] x43 'C'
+ time=3.170 [12] x01 ' x01 '
+ time=3.171 [13] x01 ' x01 '
+ time=3.172 [14] x73 's'
+ time=3.173 [15] x65 'e'
+ time=3.174 [16] x6E 'n'
+ time=3.175 [17] x64 'd'
+ time=3.176 [18] x31 '1'
+  >'done'>  >'+++'>  <' \rcmds\n @@@k'<  <''<  >'+++'>  >'+++'>  >'at+clcc \r'>  <' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<
+clcc-> \r\n +CLCC:006 \r\n  \r\n OK \r\n   >'at+chup \r'>  <' \r\n OK \r\n '<
+iriSig()  >'at+csq \r'>  <' \r\n +CSQ:5 \r\n  \r\n OK \r\n '< csq=5  >'at*p \r'>  <' \r\n OK \r\n '<
+
