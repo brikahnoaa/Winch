@@ -275,7 +275,7 @@ char *utlNonPrintBlock (char *in, int len) {
   while (i<len) {
     ch = in[i++];
     if (ch==0x0A) {
-      sprintf(out+o, " \\n");
+      sprintf(out+o, "\\n ");
       o += 3;
     } else if (ch==0x0D) {
       sprintf(out+o, " \\r");

@@ -304,7 +304,7 @@ int iriProjHello(char *buf) {
 // 1 byte block number;
 // 1 byte number of blocks.
 // irid.block already contains msg
-// uses: irid.buf .block 
+// uses: irid.buf .block iri.
 // rets: 0=success 1=iri.hdrTry 2=block fail
 int iriSendBlock(int bsiz, int bnum, int btot) {
   static char *self="iriSendBlock";
@@ -321,7 +321,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   cs = iriCRC(irid.buf+IRID_BUF_SUB, size);
   irid.buf[IRID_BUF_CS] = (char) (cs>>8 & 0xFF);
   irid.buf[IRID_BUF_CS+1] = (char) (cs & 0xFF);
-  flogf(" %dB %d/%d", bsiz, bnum, btot);
+  flogf(" %d/%d", bnum, btot);
   // send hdr
   if (irid.log) 
     write(irid.log, utlNonPrintBlock(irid.buf, IRID_BUF_BLK), IRID_BUF_BLK);
@@ -366,7 +366,7 @@ int iriSendFile(char *fname) {
   flogf("\n%s(%s)", self, fname);
   // block & buf, size could change during run
   if (irid.blockSz != iri.blockSz) {
-    flogf("\n%s: setting blockSize to %d", self, iri.blockSz);
+    DBG1("\n%s: setting blockSize to %d", self, iri.blockSz);
     irid.blockSz = iri.blockSz;
     if (irid.block) free(irid.block);
     if (irid.buf) free(irid.buf);
@@ -387,11 +387,13 @@ int iriSendFile(char *fname) {
   utlWrite(irid.port, "data", "");
   // send blocks
   bnum=(int)(size/irid.blockSz);
+  DBG1("%dB/%dB", size, irid.blockSz);
   if (size%irid.blockSz) bnum += 1; // add one if partial
   for (bcnt=1; bcnt<=bnum; bcnt++) {
     bytes = read(fh, irid.block, irid.blockSz);
     iriSendBlock(bytes, bcnt, bnum);
   } 
+  if (bytes) DBG1(" %dB", bytes); // size of last block
   close(fh);
   if ((r = iriLandResp(all.str))) throw(10+r);
   if (strstr(all.str, "cmds")) {
