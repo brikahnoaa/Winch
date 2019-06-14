@@ -84,7 +84,7 @@ static CfgParam cfgP[] = {
   {'i',  "iri.hdrPause",  &iri.hdrPause,    "ihP",  "20"},
   {'i',  "iri.hdrTry",    &iri.hdrTry,      "ihT",  "3"},
   {'i',  "iri.hupMs",     &iri.hupMs,       "ihM",  "2000"},
-  {'i',  "iri.redial",    &iri.redial,      "ire",  "5"},
+  {'i',  "iri.redial",    &iri.redial,      "ire",  "25"},
   {'i',  "iri.rudBaud",   &iri.rudBaud,     "irB",  "1800"},
   {'i',  "iri.rudResp",   &iri.rudResp,     "irR",  "20"},
   {'i',  "iri.sendSz",    &iri.sendSz,      "isS",  "64"},

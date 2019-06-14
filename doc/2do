@@ -1,5 +1,8 @@
 Thu, Jun 13, 2019 12:15:44 PM
 .1 utlReadWait() wait is a short?
+.2 remove LandCmds
+..1 make char_delay big enough for 1200baud 
+..2 get all response - how is it terminated, what delays occur?
 
 Thu, May 23, 2019  5:08:20 PM
 .0 redo cycle from fall to transmit (deploy is like a fall)
