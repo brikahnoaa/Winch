@@ -272,6 +272,7 @@ int iriDial(void) {
 // sets: irid.buf
 int iriProjHello(char *buf) {
   static char *self="iriProjHello";
+  static char *rets="1=retries 2=noCarrier +10=landResp +20=landCmds";
   int r, try, hdr=13;
   char *s=NULL;
   try = iri.hdrTry;
@@ -292,7 +293,7 @@ int iriProjHello(char *buf) {
   }
   return 0;
 
-  catch: return all.x;
+  catch: {flogf(" %s", rets); return dbg.x;}
 } // iriProjHello
 
 ///
@@ -304,13 +305,13 @@ int iriProjHello(char *buf) {
 // 1 byte number of blocks.
 // irid.block already contains msg
 // uses: irid.buf .block iri.
-// rets: 0=success 1=iri.hdrTry 2=block fail
 int iriSendBlock(int bsiz, int bnum, int btot) {
   static char *self="iriSendBlock";
-  int cs, i, send, r, size;
+  static char *rets="1=inFromLand";
+  int cs, i, send, size;
   long uDelay;
   DBG0("%s(%d,%d,%d)", self, bsiz, bnum, btot);
-  // make hdr - beware null terminated sprintf
+  // make hdr - beware null terminated sprintf, use memcpy
   size = bsiz+IRID_BUF_BLK-IRID_BUF_SUB;
   sprintf(all.str, "@@@CS%c%cT%c%c", 
     (char) (size>>8 & 0xFF), (char) (size & 0xFF), 
@@ -341,23 +342,15 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   }
   return 0;
 
-  catch:
-  switch(all.x) {
-    case 1:
-      r=utlRead(irid.port, all.str);
-      flogf("\n%s: unexpected from rudics='%s'", 
-          self, utlNonPrintBlock(all.str, r));
-      break;
-  }
-  return all.x;
+  catch: {flogf(" %s", rets); return dbg.x;}
 } // iriSendBlock
 
 ///
 // land ho! already did iriDial and iriProjHello
-// rets: 1,2:file +10:LandResp +20:LandCmds
 // sets: irid.block all.buf .str
 int iriSendFile(char *fname) {
   static char *self="iriSendFile";
+  static char *rets="1=statFail 2=openFail +10=landResp +20=landCmds";
   int r=0, fh, bytes, bcnt, bnum;
   bool moreB=true;
   struct stat fileinfo;
@@ -401,14 +394,7 @@ int iriSendFile(char *fname) {
   }
   return 0;
 
-  catch:
-  switch(all.x) {
-    case 1: flogf("\nERR\t| errno %d on %s", errno, fname); break;
-    case 2: flogf("\n%s: ERR\t| cannot open %s", self, fname); break;
-    case 11: flogf("\n%s: iriLandResp() timeout", self); break;
-    case 21: flogf("\n%s: iriLandCmds() bad cmd %s", self, all.buf); break;
-  }
-  return(all.x);
+  catch: {flogf(" %s", rets); return dbg.x;}
 } // iriSendFile
 
 ///
@@ -431,78 +417,44 @@ int iriProcessCmds(char *buff) {
 
 ///
 // we just sent the last block, should get cmds or done
-// looks like a bug in how "cmds" is sent, sometimes 0x0d in front
-// 5 char the first time, six after; read until \n 0x0a
+// safe to use utlRead, 1sec pause between 'cmds' and landCmds
 // rets: 0=success 1=respTO
 int iriLandResp(char *buff) {
-  int r, len=6;
-  tmrStart(iri_tmr, iri.rudResp);
-  memset(buff, 0, len);
-  for (r=0; r<len; r++) {
-    while (TURxQueuedCount(irid.port)==0)
-      if (tmrExp(iri_tmr)) return 1;
-    buff[r] = TURxGetByte(irid.port, true);
-    if (buff[r]==0x0A)
-      break;
-  }
-  buff[r]=0;
-  flogf("\nLandResp(%s)", utlNonPrint(buff));
-  if (!strstr(buff, "cmds") && !strstr(buff, "done"))
-    return 2;
-  return 0;
+  static char *self="LandResp";
+  static int rsec=4;
+  int r;
+  r = utlReadWait(irid.port, buff, rsec);
+  flogf("\n%s(%s)", self, utlNonPrint(buff));
+  return !r;
 } // iriLandResp
 
 ///
-// read and format land cmds
-// rets: *buff\0 0=success 1=@TO 2=0@ 3=hdrTO 4=hdr!C11 
+// just got landResp(cmds), read and format land cmds
 int iriLandCmds(char *buff) {
-  int i, hdr=7;
-  unsigned char c;
-  short msgSz;
   static char *self="iriLandCmds";
+  static char *rets="0=success 1=@TO 2=badSize 3=badHdr";
+  static int rsec=4, sizeOff=5, hdr=10;
+  unsigned char *p, myBuf[256];
+  int r;
+  short msgSz;
   DBG();
-  tmrStart(iri_tmr, iri.rudResp);
-  // skip @@@ @@ or @ - protocol is sloppy, first CS byte could = @
-  for (i=0; i<3; i++) {
-    // wait for byte
-    while (TURxQueuedCount(irid.port)==0)
-      if (tmrExp(iri_tmr)) return 1;
-    c = TURxPeekByte(irid.port, 0);
-    DBG3("%s", utlNonPrintBlock(&c,1));
-    if (c=='@') 
-      TURxGetByte(irid.port, false);
-    else 
-      break;
-  }
-  if (i==0) return 2;
-  // @@@ 2 CS bytes, 2 len bytes, 'C', 1, 1
-  for (i=0; i<hdr; i++) {
-    // wait for byte
-    while (TURxQueuedCount(irid.port)==0)
-      if (tmrExp(iri_tmr)) return 3;
-    buff[i]=TURxGetByte(irid.port, false);
-  }
-  // 2 CS bytes
-  // 2 len bytes
-  msgSz = buff[2];
-  msgSz <<= 8;
-  msgSz += buff[3];
-  // block length = msgSz + hdr - CS
-  msgSz = msgSz - (hdr - 2);
-  // C 1 1
-  if (!(buff[4]=='C' && buff[5]==1 && buff[6]==1)) 
-    return 4;
+  r = utlReadWait(irid.port, myBuf, rsec);
+  p = myBuf+sizeOff;
+  // 2 len bytes // block length includes hdr from size on
+  msgSz = p[0]<<8;
+  msgSz += p[1]-(hdr-sizeOff);
+  // sanity check
+  if (r==0) throw(1);
+  if (msgSz>256 || msgSz!=(r-hdr)) throw(2);
+  if (!(p[2]=='C' && p[3]==1 && p[4]==1)) throw(3);
+  // msg into buff
+  memcpy(buff, myBuf+hdr, msgSz);
+  buff[msgSz]=0;
   // cmds
-  memset(buff, 0, msgSz+1);
-  for (i=0; i<msgSz; i++) {
-    // wait for byte
-    while (TURxQueuedCount(irid.port)==0)
-      if (tmrExp(iri_tmr)) return 5;
-    buff[i]=TURxGetByte(irid.port, false);
-  }
-  flogf("\nCMDS(%d)->", msgSz);
-  flogf("''%s''", utlNonPrintBlock(buff, msgSz));
+  flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
+
+  catch: {flogf(" %s", rets); return dbg.x;}
 } // iriLandCmds
 
 ///

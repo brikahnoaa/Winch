@@ -12,10 +12,6 @@
 // settle time for electronics power on
 #define SETTLE 200
 
-// faux exception processing: throw(10) ---> catch: {return all.x;}
-#define throw(X_VALUE) { all.x=X_VALUE; \
-  flogf("\nEXC %s->%d", self, all.x); goto catch; }
-
 typedef TUPort * Serial;
 
 // sync with utlInit()
@@ -38,7 +34,6 @@ typedef struct AllData {
   char *buf;                // 4K buffer (BUFSZ)
   char *str;                // 4K buffer (BUFSZ)
   int cycle;                // RiseCallFallData cycles
-  int x;                    // exception value for faux throw(#)/catch
   int starts;               // number of starts (VEEPROM)
   time_t startCycle;        // cycle start time
   time_t startProg;         // program start time

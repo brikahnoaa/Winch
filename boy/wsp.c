@@ -176,7 +176,7 @@ int wspStorm(char *buf) {
   return 0;
 
   catch:
-    return(all.x);
+    return(dbg.x);
 } // wspStorm
 
 ///
@@ -259,7 +259,7 @@ int wspDetectM(int *detectM, int minutes) {
 
   catch:
     wspStop();
-    return(all.x);
+    return(dbg.x);
 } // wspDetectM
 
 ///

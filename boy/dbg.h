@@ -17,10 +17,17 @@ typedef struct DbgInfo {
   int t1;                 // test param (0)
   int t2;                 // test param (0)
   int t3;                 // test param (0)
+  int x;                    // exception value for faux throw(#)/catch
   void (*funcPtr)(void);  // test program run by utlX 'd' 
 } DbgInfo;
 
 extern DbgInfo dbg;
+
+// faux exception processing: throw(10) ---> catch: {return dbg.x;}
+// catch: {flogf(" %s", rets); return dbg.x;}
+
+#define throw(X_VALUE) { dbg.x=X_VALUE; \
+  flogf("\nEXC %s->%d", self, dbg.x); goto catch; }
 
 ///
 // the DBG* global vars are used in macros
