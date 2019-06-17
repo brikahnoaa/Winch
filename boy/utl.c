@@ -137,7 +137,7 @@ int utlRead(Serial port, char *in) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  DBG3(" <'%s'<", utlNonPrint(in));
+  DBG3(" <'%s'<", utlNonPrintBlock(in, len));
   return len;
 } // utlRead
 
@@ -165,7 +165,7 @@ int utlReadWait(Serial port, char *in, int wait) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  DBG3(" <'%s'<", utlNonPrint(in));
+  DBG3(" <'%s'<", utlNonPrintBlock(in, len));
   return len;
 }
 
