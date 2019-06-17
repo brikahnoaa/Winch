@@ -9,7 +9,7 @@ extern SysInfo sys;
 void main(void){
   int r, try, i, hdr=13;
   char *s=NULL;
-  char c;
+  unsigned char c;
   uchar resp[32];
   ulong sec0, sec;
   ushort tick;
@@ -41,14 +41,15 @@ void main(void){
   memset(resp, 0, 32);
   RTCGetTime(&sec0, null);
   r=0;
-  while (true) {
-    c = TURxGetByteWithTimeout(irid.port, 50);
+  while (!tmrExp(iri_tmr)) {
+    c = TURxGetByteWithTimeout(irid.port, 200);
     if (c>=0) {
       resp[r] = c;
       RTCGetTime(&sec, &tick);
       times[r++] = (float)(sec-sec0)+(float)tick/40000.0;
+    } else {
+      printf(" %02X", c);
     }
-    if (tmrExp(iri_tmr)) break;
   }
   catch:
   printf("\n<'%s'>", utlNonPrintBlock(resp, r));

@@ -434,7 +434,7 @@ int iriLandResp(char *buff) {
 // 1ms delay at byte 5 (checksum)
 int iriLandCmds(char *buff) {
   static char *self="iriLandCmds";
-  static char *rets="0=success 1=@TO 2=badSize 3=badHdr";
+  static char *rets="0=good 1=TO 2=badSize 3=badHdr";
   static int rsec=4, sizeOff=5, hdr=10;
   unsigned char *p, myBuf[256];
   int r;
