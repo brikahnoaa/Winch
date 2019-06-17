@@ -8,7 +8,8 @@
 #define BUFSZ 4096
 #define FILESZ ((size_t)1024 * 32)
 
-#define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+// millisecond delay
+#define utlDelay(x) RTCDelayMicroSeconds((long)x*1000L);
 // settle time for electronics power on
 #define SETTLE 200
 

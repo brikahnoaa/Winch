@@ -430,6 +430,8 @@ int iriLandResp(char *buff) {
 
 ///
 // just got landResp(cmds), read and format land cmds
+// 1sec delay between "cmds" and cmd message
+// 1ms delay at byte 5 (checksum)
 int iriLandCmds(char *buff) {
   static char *self="iriLandCmds";
   static char *rets="0=success 1=@TO 2=badSize 3=badHdr";

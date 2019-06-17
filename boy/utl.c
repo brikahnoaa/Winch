@@ -137,35 +137,25 @@ int utlRead(Serial port, char *in) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  DBG3(" <'%s'<", utlNonPrintBlock(in, len));
+  DBG3(" <%d'%s'<", len, utlNonPrintBlock(in, len));
   return len;
 } // utlRead
 
 ///
 // delay up to wait seconds for first char, null terminate
 // assumes full string arrives promptly after a delay of several seconds
-// return: length
+// rets: length
 int utlReadWait(Serial port, char *in, int wait) {
   int len;
-  char c;
-  in[0] = c = 0;
+  unsigned char c=-1;
+  in[0] = 0;
   tmrStart(second_tmr, wait);
   // wait for a char
-  while (c<=0) {
-    // delay is a short
-    c = TURxGetByteWithTimeout(port, 128);
-    utlPet(); // could be a long wait
+  while (!TURxQueuedCount(port)) {
+    utlX(); // twiddle thumbs
     if (tmrExp(second_tmr)) return 0;
   }
-  in[0] = c;
-  // rest of input, note utlRead exits if nothing queued
-  for (len=1; len<BUFSZ; len++) {
-    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
-    if (in[len]<0) break;
-  }
-  in[len]=0;            // string
-  DBG2(" <%d<", len);
-  DBG3(" <'%s'<", utlNonPrintBlock(in, len));
+  len = utlRead(port, in);
   return len;
 }
 
@@ -388,7 +378,7 @@ void utlTestLoop(void) {
 void utlX(void) {
   char c;
   // ?? pwrChk();
-  // ?? utlPet();
+  utlPet();
   // console?
   if (cgetq()) {
     if (!utl.ignoreCon) {
