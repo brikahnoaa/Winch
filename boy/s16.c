@@ -325,7 +325,7 @@ void s16Test(void) {
       "\n");
   while (c != 'q') {
     if (cgetq()) {
-      c=cgetc();
+      c=(char)cgetc();
       cputc(c);
       cputc(' ');
       switch (c) {
@@ -374,7 +374,7 @@ void s16Test(void) {
             TUTxPutByte(s16.port,c,false);
           }
           if (TURxQueuedCount(s16.port)) {
-            c=TURxGetByte(s16.port,false);
+            c=(char)TURxGetByte(s16.port,false);
             cputc(c);
           }
         }

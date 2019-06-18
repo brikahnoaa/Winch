@@ -128,12 +128,14 @@ void utlWrite(Serial port, char *out, char *eol) {
 // char *in should be BUFSZ
 // returns: len
 int utlRead(Serial port, char *in) {
+  short ch;
   int len;
   in[0]=0;
   if (TURxQueuedCount(port)<1) return 0;
   for (len=0; len<BUFSZ; len++) {
-    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
-    if (in[len]<0) break;
+    ch = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
+    if (ch<0) break;
+    in[len] = (unsigned char) ch;
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
@@ -147,7 +149,6 @@ int utlRead(Serial port, char *in) {
 // rets: length
 int utlReadWait(Serial port, char *in, int wait) {
   int len;
-  unsigned char c=-1;
   in[0] = 0;
   tmrStart(second_tmr, wait);
   // wait for a char
