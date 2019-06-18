@@ -9,8 +9,8 @@ extern SysInfo sys;
 void main(void){
   int r, try, i, hdr=13;
   char *s=NULL;
-  unsigned char c;
-  uchar resp[32];
+  char c;
+  char resp[32];
   ulong sec0, sec;
   ushort tick;
   float times[32];
@@ -52,7 +52,7 @@ void main(void){
     }
   }
   catch:
-  printf("\n<'%s'>", utlNonPrintBlock(resp, r));
+  printf("\n<%d'%s'<", r, utlNonPrintBlock(resp, r));
   for (i=0; i<=r; i++)
     printf("\n time=%5.3f [%d] x%02X '%s'",
         times[i], i, resp[i], utlNonPrintBlock(resp+i,1));
