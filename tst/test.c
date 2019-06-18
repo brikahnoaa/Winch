@@ -1,4 +1,4 @@
-// iridFile.c
+// landResp.c
 #include <main.h>
 
 extern IriInfo iri;
@@ -7,10 +7,14 @@ extern BoyInfo boy;
 extern SysInfo sys;
 
 void main(void){
-  // Serial port;
-  // char c;
-  // char *buff;
-  // int len, cnt;
+  int r, try, i, hdr=13;
+  char *s=NULL;
+  short c;
+  uchar resp[32];
+  ulong sec0, sec;
+  ushort tick;
+  float times[32];
+  static char *self="main";
   sysInit();
   mpcInit();
   antInit();
@@ -18,34 +22,41 @@ void main(void){
   //
   antStart();
   iriStart();
-  //
-  // len = dbg.t2;
-  // cnt = dbg.t1;
-  // cprintf("\nlength dbg.t2=%d, count dbg.t1=%d ", len, cnt);
-  // cprintf("\nbaud iri.rudBaud=%d", iri.rudBaud);
-  // buff = malloc(len);
-  // antSwitch(gps_ant);
-  // iriStats();
   antSwitch(irid_ant);
   if (iriSig()) return;
   if (iriDial()) return;
-  if (iriProjHello(all.buf)) return;
-  flogf("\n short size = %ld\n", sizeof(short));
-  /*
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.rudBaud, iri.sendSz);
-    buff[len-1] = 'Z';
-    r = iriSendBlock(buff, len, i, cnt);
-    cprintf("(%d)\n", r);
-    // utlDelay(500);
+  try = iri.hdrTry;
+  while (!s) {
+    if (try-- <= 0) throw(1);
+    flogf(" projHdr");
+    utlWriteBlock(irid.port, irid.projHdr, hdr);
+    s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
+    if (strstr(all.str, "NO CARRIER")) throw(2);
   }
-   */
-  iriSendFile("test\\test.log");
-  iriSendFile("test\\test.log");
+  flogf("\n hello\n");
+  sprintf(irid.block, "hello");
+  iriSendBlock(5, 1, 1);
+  flogf("\npause 10 sec");
+  tmrStart(iri_tmr, 10);
+  memset(resp, 0, 32);
+  RTCGetTime(&sec0, null);
+  r=0;
+  while (!tmrExp(iri_tmr)) {
+    c = TURxGetByteWithTimeout(irid.port, 200);
+    if (c>=0) {
+      resp[r] = (uchar)c;
+      RTCGetTime(&sec, &tick);
+      times[r++] = (float)(sec-sec0)+(float)tick/40000.0;
+    } 
+  }
+  catch:
+  printf("\n<%d'%s'<", r, utlNonPrintBlock(resp, r));
+  for (i=0; i<=r; i++)
+    printf("\n time=%5.3f [%d] x%02X '%s'",
+        times[i], i, resp[i], utlNonPrintBlock(resp+i,1));
   iriHup();
   iriSig();
   iriStop();
   antStop();
+  exit(0);
 }
