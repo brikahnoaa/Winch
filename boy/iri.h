@@ -16,16 +16,18 @@ typedef struct IriInfo {
   char phoneNum[16];        // (0088160000519)
   char platform[16];        // (LR01)
   char project[16];         // (QUEH)
-  int blockSz;              // how many bytes to upload in a file block (1024)
+  int baud;                 // effective baud rate for rudics (1800)
+  int blkSz;                // how many bytes to upload in a file block (256)
+  int blkPause;             // pause msec after whole block (20)
   int fileCnt;              // how many files to upload in a connection (2)
   int fileMaxKB;            // how many kilobytes max in a file (64K)
-  int filePause;            // wait sec between sending "data" and data (1)
-  int hdrPause;             // wait sec for rudics header response (20)
+  int filePause;            // pause msec between sending "data" and data (20)
+  int hdrPause;             // pause msec after block hdr (20)
+  int hdrResp;              // wait secs for ACK response to proj hdr (20)
   int hdrTry;               // header retry (3)
+  int landResp;             // wait secs for cmds/data string from land (20)
   int hupMs;                // ms +++ ms for HUP (2000)
   int redial;               // how many calls to make (5)
-  int rudBaud;              // effective baud rate for rudics (2400)
-  int rudResp;              // wait secs for respond to a block (30)
   int sendSz;               // send some chars, then wait rudUsec (64)
   int signalMin;            // min iri signal level to try transmit (2)
   int timeout;              // seconds for steps like signal, sats (60)
@@ -38,7 +40,7 @@ typedef struct IriData {
   char *block;              // offset into buf for file transfer
   char *buf;                // buffer for file transfer
   char projHdr[16];         // rudicsland
-  int blockSz;              // size of *block - verify GspInfo.blockSz
+  int blkSz;                // size of *block - verify GspInfo.blockSz
   int log;                  // log of file transfers
   int rudUsec;              // microsec delay calculated from rudBaud/sendSz
   int sats;

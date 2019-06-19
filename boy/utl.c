@@ -99,9 +99,8 @@ void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
   delay = 2 + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
-  DBG2("[>>]=%d", sent);
-  DBG4("'%s'", utlNonPrintBlock(out, len));
-  // DBG2(">>'%s'", utlNonPrintBlock(out, len));
+  DBG2(" >%d>", sent);
+  DBG3(" >>'%s'>>", utlNonPrintBlock(out, len));
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock
@@ -110,17 +109,11 @@ void utlWriteBlock(Serial port, char *out, int len) {
 // put string to serial; queue, don't block, it should all buffer
 // uses: utl.str
 void utlWrite(Serial port, char *out, char *eol) {
-  int len, delay, sent;
+  int len;
   strcpy(utl.str, out);
-  if (eol!=NULL)
-    strcat(utl.str, eol);
+  if (eol!=NULL) strcat(utl.str, eol);
   len = strlen(utl.str);
-  delay = 2 + (int)TUBlockDuration(port, (long)len);
-  sent = (int)TUTxPutBlock(port, utl.str, (long)len, delay);
-  DBG2(" >%d>", sent);
-  DBG3(" >'%s'>", utlNonPrint(utl.str));
-  if (len!=sent) 
-    flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
+  utlWriteBlock(port, utl.str, len);
 } // utlWrite
 
 ///
@@ -139,7 +132,7 @@ int utlRead(Serial port, char *in) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  DBG3(" <%d'%s'<", len, utlNonPrintBlock(in, len));
+  DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
   return len;
 } // utlRead
 

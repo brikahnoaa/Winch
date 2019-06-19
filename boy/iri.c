@@ -30,7 +30,7 @@ void iriInit(void) {
 ///
 // turn on, clean, set params, talk to a3la
 // assumes: antStart()
-// sets: irid.projHdr .blockSz .buf .block .rudUsec
+// sets: irid.projHdr .blkSz .buf .block .rudUsec
 int iriStart(void) {
   static char *self="iriStart";
   int cs;
@@ -41,16 +41,18 @@ int iriStart(void) {
   cs = iriCRC(irid.projHdr+5, 8);
   irid.projHdr[3] = (char) (cs >> 8) & 0xFF;
   irid.projHdr[4] = (char) (cs & 0xFF);
-  // if blockSz has changed (or first use) then alloc irid.buf
-  if (irid.blockSz != iri.blockSz) {
-    irid.blockSz = iri.blockSz;
+  // if blkSz has changed (or first use) then alloc irid.buf
+  if (irid.blkSz != iri.blkSz) {
+    irid.blkSz = iri.blkSz;
     if (irid.buf) free(irid.buf);
-    irid.buf = (char *) malloc(irid.blockSz+IRID_BUF_BLK);
+    irid.buf = (char *) malloc(irid.blkSz+IRID_BUF_BLK);
     irid.block = irid.buf+IRID_BUF_BLK;    // offset into buf
-    DBG1("\n%s: alloc irid.buf=%d", self, irid.blockSz);
+    DBG1("\n%s: alloc irid.buf=%d", self, irid.blkSz);
   }
-  // set up timing for data //  10^6 * 10bits / rudBaud
-  irid.rudUsec = (int) ((pow(10, 6)*10) / iri.rudBaud);
+  // set up timing for data //  10^6 * 10bits / baud
+  if (iri.baud)
+    irid.rudUsec = (int) ((pow(10, 6)*10) / iri.baud);
+  else irid.rudUsec = 0;
   // log?
   if (iri.logging) 
     utlLogOpen(&irid.log, "iri");
@@ -254,9 +256,9 @@ int iriDial(void) {
     utlReadWait(irid.port, all.str, CALL_DELAY);
     DBG1("%s", all.str);
     if (strstr(all.str, "CONNECT 9600")) {
-      flogf("CONNECTED");
+      flogf("\nCONNECTED");
       if (irid.rudUsec)
-        flogf(" rudBaud@%d +%dus/%dB", iri.rudBaud, irid.rudUsec, iri.sendSz);
+        flogf(" baud@%d +%dus/%dB", iri.baud, irid.rudUsec, iri.sendSz);
       return 0;
     }
     flogf(" (%d)", i);
@@ -280,7 +282,7 @@ int iriProjHello(char *buf) {
     if (try-- <= 0) throw(1);
     flogf(" projHdr");
     utlWriteBlock(irid.port, irid.projHdr, hdr);
-    s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
+    s = utlExpect(irid.port, all.str, "ACK", iri.hdrResp);
     if (strstr(all.str, "NO CARRIER")) throw(2);
   }
   flogf(" hello");
@@ -326,6 +328,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   if (irid.log) 
     write(irid.log, utlNonPrintBlock(irid.buf, IRID_BUF_BLK), IRID_BUF_BLK);
   TUTxPutBlock(irid.port, irid.buf, (long) IRID_BUF_BLK, 9999);
+  utlDelay(iri.hdrPause);
   // send data
   // pause every send# chars to slow down baud stream
   send = iri.sendSz;
@@ -340,6 +343,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
     RTCDelayMicroSeconds(uDelay);
     utlX();
   }
+  RTCDelayMicroSeconds(iri.blkPause);
   return 0;
 
   catch: {flogf(" %s", rets); return dbg.x;}
@@ -357,13 +361,13 @@ int iriSendFile(char *fname) {
   long size;
   flogf("\n%s(%s)", self, fname);
   // block & buf, size could change during run
-  if (irid.blockSz != iri.blockSz) {
-    DBG1("\n%s: setting blockSize to %d", self, iri.blockSz);
-    irid.blockSz = iri.blockSz;
+  if (irid.blkSz != iri.blkSz) {
+    DBG1("\n%s: setting blkSize to %d", self, iri.blkSz);
+    irid.blkSz = iri.blkSz;
     if (irid.block) free(irid.block);
     if (irid.buf) free(irid.buf);
-    irid.block = malloc(iri.blockSz);
-    irid.buf = malloc(iri.blockSz + IRID_BUF_BLK);
+    irid.block = malloc(iri.blkSz);
+    irid.buf = malloc(iri.blkSz + IRID_BUF_BLK);
   }
   // size
   if ( stat(fname, &fileinfo) ) throw(1);
@@ -377,12 +381,13 @@ int iriSendFile(char *fname) {
   if (fh<0) throw(2);
   /// read and send 
   utlWrite(irid.port, "data", "");
+  utlDelay(iri.filePause);
   // send blocks
-  bnum=(int)(size/irid.blockSz);
-  DBG1("%dB/%dB", size, irid.blockSz);
-  if (size%irid.blockSz) bnum += 1; // add one if partial
+  bnum=(int)(size/irid.blkSz);
+  DBG1("%dB/%dB", size, irid.blkSz);
+  if (size%irid.blkSz) bnum += 1; // add one if partial
   for (bcnt=1; bcnt<=bnum; bcnt++) {
-    bytes = read(fh, irid.block, irid.blockSz);
+    bytes = read(fh, irid.block, irid.blkSz);
     iriSendBlock(bytes, bcnt, bnum);
   } 
   if (bytes) DBG1(" %dB", bytes); // size of last block
@@ -421,11 +426,13 @@ int iriProcessCmds(char *buff) {
 // rets: 0=success 1=respTO
 int iriLandResp(char *buff) {
   static char *self="LandResp";
-  static int rsec=4;
-  int r;
-  r = utlReadWait(irid.port, buff, rsec);
+  char *s;
+  s = utlExpect(irid.port, buff, "\n", iri.landResp);
   flogf("\n%s(%s)", self, utlNonPrint(buff));
-  return !r;
+  if (!s) {
+    flogf(" ERR timeout");
+    return 1;
+  } else return 0;
 } // iriLandResp
 
 ///
