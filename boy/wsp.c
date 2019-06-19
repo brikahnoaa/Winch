@@ -162,20 +162,20 @@ int wspStorm(char *buf) {
   if (wsp.spectLog)
     sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.spectLog, all.cycle );
   // start 
-  if (wspOpen()) throw(1);
+  if (wspOpen()) raise(1);
   flogf( "\nexec '%s'", b );
   utlWrite( wsp.port, b, EOL );
   // gather
-  if (!utlExpect(wsp.port, buf, "RDY", 200)) throw(2);
+  if (!utlExpect(wsp.port, buf, "RDY", 200)) raise(2);
   utlWrite(wsp.port, "$WS?*", EOL);
-  if (!utlReadWait(wsp.port, buf, 60)) throw(3);
+  if (!utlReadWait(wsp.port, buf, 60)) raise(3);
   flogf("\nwspStorm prediction: %s", buf);
   // ?? add to daily
   // stop
   if (wspClose()) return 9;
   return 0;
 
-  catch:
+  except:
     return(dbg.x);
 } // wspStorm
 
@@ -225,7 +225,7 @@ int wspDetectM(int *detectM, int minutes) {
   if (wsp.wisprLog)
     sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.wisprLog, all.cycle );
   // start
-  if (wspOpen()) throw(1);
+  if (wspOpen()) raise(1);
   flogf( "\nexec '%s'", b );
   utlWrite( wsp.port, b, EOL );
   // run for minutes; every .detInt, query and reset.
@@ -235,29 +235,29 @@ int wspDetectM(int *detectM, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&detQ)) throw(10);
+      if (wspQuery(&detQ)) raise(10);
       *detectM += detQ;
-      if (wspSpace(&free)) throw(20);
+      if (wspSpace(&free)) raise(20);
       flogf("\n%s: disk %3.0f%% free on wispr#%d", self, free, wsp.card);
       
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
-  if (wspQuery(&detQ)) throw(10);
+  if (wspQuery(&detQ)) raise(10);
   *detectM += detQ;
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
     flogf("\n%s(): expected FIN, got '%s'", self, all.buf);
-    throw(3);
+    raise(3);
   }
   // ?? add to daily log
   // stop
-  if (wspClose()) throw(8);
+  if (wspClose()) raise(8);
   return 0;
 
-  catch:
+  except:
     wspStop();
     return(dbg.x);
 } // wspDetectM

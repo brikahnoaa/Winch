@@ -279,23 +279,23 @@ int iriProjHello(char *buf) {
   char *s=NULL;
   try = iri.hdrTry;
   while (!s) {
-    if (try-- <= 0) throw(1);
+    if (try-- <= 0) raise(1);
     flogf(" projHdr");
     utlWriteBlock(irid.port, irid.projHdr, hdr);
     s = utlExpect(irid.port, all.str, "ACK", iri.hdrResp);
-    if (strstr(all.str, "NO CARRIER")) throw(2);
+    if (strstr(all.str, "NO CARRIER")) raise(2);
   }
   flogf(" hello");
   sprintf(irid.block, "hello");
   iriSendBlock(5, 1, 1);
-  if ((r = iriLandResp(buf))) throw(10+r);
+  if ((r = iriLandResp(buf))) raise(10+r);
   if (strstr(buf, "cmds")) {
-    if ((r = iriLandCmds(buf))) throw(20+r);
+    if ((r = iriLandCmds(buf))) raise(20+r);
     iriProcessCmds(buf);
   }
   return 0;
 
-  catch: {flogf(" %s", rets); return dbg.x;}
+  except: {flogf(" %s", rets); return dbg.x;}
 } // iriProjHello
 
 ///
@@ -334,7 +334,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   send = iri.sendSz;
   uDelay = (long) send * irid.rudUsec;
   for (i=0; i<bsiz; i+=send) {
-    if (TURxQueuedCount(irid.port)) throw(1); // junk in the trunk?
+    if (TURxQueuedCount(irid.port)) raise(1); // junk in the trunk?
     if (i+send>bsiz) send = bsiz-i; // last chunk
     TUTxPutBlock(irid.port, irid.block+i, (long) send, 9999);
     if (irid.log) 
@@ -346,7 +346,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   RTCDelayMicroSeconds(iri.blkPause);
   return 0;
 
-  catch: {flogf(" %s", rets); return dbg.x;}
+  except: {flogf(" %s", rets); return dbg.x;}
 } // iriSendBlock
 
 ///
@@ -370,7 +370,7 @@ int iriSendFile(char *fname) {
     irid.buf = malloc(iri.blkSz + IRID_BUF_BLK);
   }
   // size
-  if ( stat(fname, &fileinfo) ) throw(1);
+  if ( stat(fname, &fileinfo) ) raise(1);
   size = (long)fileinfo.st_size;
   flogf(" {%ldB}", size);
   if (size > 1024L*iri.fileMaxKB) {
@@ -378,7 +378,7 @@ int iriSendFile(char *fname) {
     flogf("\n%s: ERR file too large, trunc to %ld", self, size);
   }
   fh = open(fname, O_RDONLY);
-  if (fh<0) throw(2);
+  if (fh<0) raise(2);
   /// read and send 
   utlWrite(irid.port, "data", "");
   utlDelay(iri.filePause);
@@ -392,14 +392,14 @@ int iriSendFile(char *fname) {
   } 
   if (bytes) DBG1(" %dB", bytes); // size of last block
   close(fh);
-  if ((r = iriLandResp(all.str))) throw(10+r);
+  if ((r = iriLandResp(all.str))) raise(10+r);
   if (strstr(all.str, "cmds")) {
-    if ((r = iriLandCmds(all.buf))) throw(20+r);
+    if ((r = iriLandCmds(all.buf))) raise(20+r);
     iriProcessCmds(all.buf);
   }
   return 0;
 
-  catch: {flogf(" %s", rets); return dbg.x;}
+  except: {flogf(" %s", rets); return dbg.x;}
 } // iriSendFile
 
 ///
@@ -453,9 +453,9 @@ int iriLandCmds(char *buff) {
   msgSz = p[0]<<8;
   msgSz += p[1]-(hdr-sizeOff);
   // sanity check
-  if (r==0) throw(1);
-  if (msgSz>256 || msgSz!=(r-hdr)) throw(2);
-  if (!(p[2]=='C' && p[3]==1 && p[4]==1)) throw(3);
+  if (r==0) raise(1);
+  if (msgSz>256 || msgSz!=(r-hdr)) raise(2);
+  if (!(p[2]=='C' && p[3]==1 && p[4]==1)) raise(3);
   // msg into buff
   memcpy(buff, myBuf+hdr, msgSz);
   buff[msgSz]=0;
@@ -463,7 +463,7 @@ int iriLandCmds(char *buff) {
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
 
-  catch: {flogf(" %s", rets); return dbg.x;}
+  except: {flogf(" %s", rets); return dbg.x;}
 } // iriLandCmds
 
 ///
