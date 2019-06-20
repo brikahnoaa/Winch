@@ -47,10 +47,12 @@ char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeS16(void);
 char *utlDateTimeFmt(time_t secs);
-char *utlExpect(Serial port, char *buf, char *expect, int wait);
+char *utlReadExpect(Serial port, char *in, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
+int utlGetUntil(Serial port, char *in, char *lookFor);
+int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait);
 int utlLogOpen(int *log, char *base);
 int utlLogClose(int *fd);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);

@@ -30,18 +30,6 @@ void main(void){
   if (iriSig()) return;
   if (iriDial()) return;
   if (iriProjHello(all.buf)) return;
-  flogf("\n short size = %ld\n", sizeof(short));
-  /*
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.rudBaud, iri.sendSz);
-    buff[len-1] = 'Z';
-    r = iriSendBlock(buff, len, i, cnt);
-    cprintf("(%d)\n", r);
-    // utlDelay(500);
-  }
-   */
   iriSendFile("test\\test.log");
   iriSendFile("test\\test.log");
   iriHup();

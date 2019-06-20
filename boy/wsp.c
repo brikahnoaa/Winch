@@ -84,7 +84,7 @@ int wspOpen(void) {
   static char *self="wspOpen";
   DBG();
   if (!wsp.on) wspStart();
-  if (!utlExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
+  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
     utlErr(wsp_err, "wsp start fail");
     r=1;
   }
@@ -97,7 +97,7 @@ int wspClose(void) {
   int r=0;
   static char *self="wspClose";
   DBG();
-  if (!utlExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
     flogf("\n%s: did not get %s ", self, WSP_CLOSE);
     r=1;
   }
@@ -166,9 +166,9 @@ int wspStorm(char *buf) {
   flogf( "\nexec '%s'", b );
   utlWrite( wsp.port, b, EOL );
   // gather
-  if (!utlExpect(wsp.port, buf, "RDY", 200)) raise(2);
+  if (!utlReadExpect(wsp.port, buf, "RDY", 200)) raise(2);
   utlWrite(wsp.port, "$WS?*", EOL);
-  if (!utlReadWait(wsp.port, buf, 60)) raise(3);
+  if (utlReadWait(wsp.port, buf, 60)) raise(3);
   flogf("\nwspStorm prediction: %s", buf);
   // ?? add to daily
   // stop
@@ -248,7 +248,7 @@ int wspDetectM(int *detectM, int minutes) {
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
-  if (!utlExpect(wsp.port, all.buf, "FIN", 5)) {
+  if (!utlReadExpect(wsp.port, all.buf, "FIN", 5)) {
     flogf("\n%s(): expected FIN, got '%s'", self, all.buf);
     raise(3);
   }
@@ -371,7 +371,7 @@ int wspSpace(float *free) {
   char *s;
   *free = 0.0;
   utlWrite(wsp.port, "$DFP*", EOL);
-  if (!utlReadWait(wsp.port, all.buf, 2)) return 2;
+  if (utlReadWait(wsp.port, all.buf, 2)) return 2;
   DBG2("%s", all.buf);
   s = strstr(all.buf, "DFP");
   if (!s) return 1;

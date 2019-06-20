@@ -61,9 +61,9 @@ int iriStart(void) {
   TUTxPutByte(irid.port, 3, false);
   TUTxPutByte(irid.port, 'I', false);
   antDevice(a3la_dev);
-  if (!utlExpect(irid.port, all.buf, "COMMAND MODE", 12)) return 1;
+  if (!utlReadExpect(irid.port, all.buf, "COMMAND MODE", 12)) return 1;
   utlWrite(irid.port, "ate0", EOL);
-  if (!utlExpect(irid.port, all.str, "OK", 5)) return 2;
+  if (!utlReadExpect(irid.port, all.str, "OK", 5)) return 2;
   return 0;
 } // iriStart
 
@@ -76,7 +76,7 @@ void iriStop(void) {
     utlLogClose(&irid.log);
   antDevice(a3la_dev);
   utlWrite(irid.port, "at*p", EOL);
-  utlExpect(irid.port, all.buf, "OK", 2);
+  utlReadExpect(irid.port, all.buf, "OK", 2);
   antDevice(cf2_dev);
   TUTxPutByte(irid.port, 4, false);      // ^D powerdown
   TUTxPutByte(irid.port, 'I', false);      // S | I
@@ -92,13 +92,13 @@ int iriDateTime(GpsStats *stats){
   if (iriSats()) return 1;
   // date
   utlWrite(irid.port, "at+pd", EOL);
-  if (!utlExpect(irid.port, all.buf, "OK", 12)) return 2;
+  if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 2;
   utlMatchAfter(all.str, all.buf, "Date=", "-0123456789");
   flogf(" Date=%s", all.str);
   strcpy(stats->date, all.str);
   // time
   utlWrite(irid.port, "at+pt", EOL);
-  if (!utlExpect(irid.port, all.buf, "OK", 12)) return 3;
+  if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 3;
   utlMatchAfter(all.str, all.buf, "Time=", ".:0123456789");
   flogf(" Time=%s", all.str);
   strcpy(stats->time, all.str);
@@ -115,7 +115,7 @@ int iriLatLng(GpsStats *stats){
   DBG();
   if (iriSats()) return 1;
   utlWrite(irid.port, "at+pl", EOL);
-  if (!utlExpect(irid.port, all.buf, "OK", 12)) return 4;
+  if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 4;
   utlMatchAfter(all.str, all.buf, "Latitude=", ".:0123456789 NEWS");
   flogf(" Lat=%s", all.str);
   strcpy(stats->lat, all.str);
@@ -168,7 +168,7 @@ int iriSats(void){
   while (!tmrExp(iri_tmr)) {
     utlNap(2);
     utlWrite(irid.port, "at+pd", EOL);
-    if (!utlExpect(irid.port, all.buf, "OK", 12)) return 1;
+    if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 1;
     if (!strstr(all.buf, "Invalid Position") && strstr(all.buf, "Used=")) {
       tmrStop(iri_tmr);
       utlMatchAfter(all.str, all.buf, "Used=", "0123456789");
@@ -190,7 +190,7 @@ int iriSig(void) {
   tmrStart(iri_tmr, iri.timeout);
   while (!tmrExp(iri_tmr)) {
     utlWrite(irid.port, "at+csq", EOL);
-    if (!utlExpect(irid.port, all.buf, "OK", 12)) return 1;
+    if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 1;
     if (utlMatchAfter(all.str, all.buf, "CSQ:", "0123456789")) {
       irid.signal = atoi(all.str);
       flogf(" csq=%d", irid.signal);
@@ -240,13 +240,13 @@ int iriDial(void) {
   DBG();
   flogf(" %s", utlTime());
   utlWrite(irid.port, "at+cpas", EOL);
-  if (!utlExpect(irid.port, all.str, "OK", 5)) return 2;
+  if (!utlReadExpect(irid.port, all.str, "OK", 5)) return 2;
   utlWrite(irid.port, "at+clcc", EOL);
-  if (!utlExpect(irid.port, all.str, "OK", 5)) return 3;
+  if (!utlReadExpect(irid.port, all.str, "OK", 5)) return 3;
   utlMatchAfter(str, all.str, "+CLCC:", "0123456789");
   if (!strcmp(str, "006")==0) {
     utlWrite(irid.port, "at+chup", EOL);
-    if (!utlExpect(irid.port, all.str, "OK", 5)) return 4;
+    if (!utlReadExpect(irid.port, all.str, "OK", 5)) return 4;
   }
   utlRead(irid.port, all.str); // flush
   sprintf(str, "atd%s", iri.phoneNum);
@@ -282,7 +282,7 @@ int iriProjHello(char *buf) {
     if (try-- <= 0) raise(1);
     flogf(" projHdr");
     utlWriteBlock(irid.port, irid.projHdr, hdr);
-    s = utlExpect(irid.port, all.str, "ACK", iri.hdrResp);
+    s = utlReadExpect(irid.port, all.str, "ACK", iri.hdrResp);
     if (strstr(all.str, "NO CARRIER")) raise(2);
   }
   flogf(" hello");
@@ -427,7 +427,7 @@ int iriProcessCmds(char *buff) {
 int iriLandResp(char *buff) {
   static char *self="LandResp";
   char *s;
-  s = utlExpect(irid.port, buff, "\n", iri.landResp);
+  s = utlReadExpect(irid.port, buff, "\n", iri.landResp);
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   if (!s) {
     flogf(" ERR timeout");
@@ -447,7 +447,8 @@ int iriLandCmds(char *buff) {
   int r;
   short msgSz;
   DBG();
-  r = utlReadWait(irid.port, myBuf, rsec);
+  if (utlReadWait(irid.port, myBuf, rsec)) raise(1);
+  r = strlen(myBuf);
   p = myBuf+sizeOff;
   // 2 len bytes // block length includes hdr from size on
   msgSz = p[0]<<8;
@@ -475,13 +476,13 @@ void iriHup(void) {
     utlDelay(iri.hupMs);
     utlWrite(irid.port, "+++", "");
     utlDelay(iri.hupMs);
-    if (utlExpect(irid.port, all.buf, "OK", 2)) break;
+    if (utlReadExpect(irid.port, all.buf, "OK", 2)) break;
   }
   utlWrite(irid.port, "at+clcc", EOL);
-  if (utlExpect(irid.port, all.buf, "OK", 5))
+  if (utlReadExpect(irid.port, all.buf, "OK", 5))
     flogf("\nclcc->%s", utlNonPrint(all.buf));
   utlWrite(irid.port, "at+chup", EOL);
-  utlExpect(irid.port, all.buf, "OK", 5);
+  utlReadExpect(irid.port, all.buf, "OK", 5);
 } // iriHup
 
 ///
@@ -489,7 +490,7 @@ void iriHup(void) {
 int iriPrompt() {
   TURxFlush(irid.port);
   utlWrite(irid.port, "at", EOL);
-  if (!utlExpect(irid.port, all.buf, "OK", 4)) return 1;
+  if (!utlReadExpect(irid.port, all.buf, "OK", 4)) return 1;
   else return 0;
 } // iriPrompt
 
