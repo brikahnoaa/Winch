@@ -294,7 +294,7 @@ int iriProjHello(char *buf) {
     iriProcessCmds(buf);
   }
   return 0;
-
+  //
   except: {flogf(" %s", rets); return dbg.x;}
 } // iriProjHello
 
@@ -345,7 +345,7 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   }
   RTCDelayMicroSeconds(iri.blkPause);
   return 0;
-
+  //
   except: {flogf(" %s", rets); return dbg.x;}
 } // iriSendBlock
 
@@ -398,7 +398,7 @@ int iriSendFile(char *fname) {
     iriProcessCmds(all.buf);
   }
   return 0;
-
+  //
   except: {flogf(" %s", rets); return dbg.x;}
 } // iriSendFile
 
@@ -421,18 +421,17 @@ int iriProcessCmds(char *buff) {
 } // iriProcessCmds
 
 ///
-// we just sent the last block, should get cmds or done
-// safe to use utlRead, 1sec pause between 'cmds' and landCmds
+// we just sent the last block, should get 'cmds\n' or 'done\n'
+// not safe to use utlRead, inconsistent timing
 // rets: 0=success 1=respTO
 int iriLandResp(char *buff) {
   static char *self="LandResp";
-  char *s;
-  s = utlReadExpect(irid.port, buff, "\n", iri.landResp);
+  static char *rets="1=respTimeout";
+  if (utlGetUntilWait(irid.port, buff, "\n", iri.landResp)) raise(1);
   flogf("\n%s(%s)", self, utlNonPrint(buff));
-  if (!s) {
-    flogf(" ERR timeout");
-    return 1;
-  } else return 0;
+  return 0;
+  //
+  except: {flogf(" %s", rets); return dbg.x;}
 } // iriLandResp
 
 ///
@@ -463,7 +462,7 @@ int iriLandCmds(char *buff) {
   // cmds
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
-
+  //
   except: {flogf(" %s", rets); return dbg.x;}
 } // iriLandCmds
 
