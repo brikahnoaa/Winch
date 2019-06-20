@@ -129,26 +129,27 @@ int utlReadWait(Serial port, char *in, int wait) {
 // in: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf
 // rets: char* to expected str, or null
-char *utlReadExpect(Serial port, char *buf, char *expect, int wait) {
+char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
   char *r=NULL;
-  int sz=0;
+  int l, sz=0;
   DBG1("utlReadExpect(%s, %d)", expect, wait);
-  buf[0] = 0;
+  in[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
   while (true) {
+    utlRead(port, utl.buf);
+    l = strlen(utl.buf);
+    if (l) {
+      if (sz+l>=BUFSZ) return NULL;
+      strcat(in, utl.buf);
+      sz += l;
+    }
+    r = strstr(in, expect);
+    if (r) break;
     if (tmrExp(utl_tmr)) {
       DBG0("utlReadExpect(%s, %d) timeout", expect, wait);
-      DBG1("->'%s'", buf);
       return NULL;
     }
-    if (utlRead(port, utl.buf)) {
-      sz += strlen(utl.buf);
-      if (sz>=BUFSZ) return NULL;
-      strcat(buf, utl.buf);
-    }
-    r = strstr(buf, expect);
-    if (r) break;
     utlNap(1);
   }
   tmrStop(utl_tmr);
