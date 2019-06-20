@@ -184,9 +184,10 @@ int iriSats(void){
 
 ///
 // sets: irid.signal
-// rets: 0=success
+// rets: 0=success 2=lowSignal
 int iriSig(void) {
-  flogf("\niriSig()");
+  static char *self="iriSig";
+  DBG();
   tmrStart(iri_tmr, iri.timeout);
   while (!tmrExp(iri_tmr)) {
     utlWrite(irid.port, "at+csq", EOL);
@@ -454,7 +455,8 @@ int iriLandCmds(char *buff) {
   if (p[0]!='@') raise(2);
   while (p[0]=='@') p++; // skip @
   p += 2; // skip checksum - should we check it??
-  msgSz = p[0]<<8 + p[1] - nonMsg;
+  msgSz = p[0] << 8; // compiler is fussy about syntax here
+  msgSz += p[1] - nonMsg;
   if (!(p[2]=='C' && p[3]==1 && p[4]==1)) raise(3);
   if (msgSz>1024 || msgSz<1) raise(4);
   // msg into buff

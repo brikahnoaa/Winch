@@ -58,6 +58,6 @@ void main(void){
   iriHup();
   iriSig();
   flogf("\n%s\n", utlTime());
-  iriStop();
-  antStop();
+  // iriStop();
+  // antStop();
 }

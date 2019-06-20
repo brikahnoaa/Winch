@@ -190,6 +190,8 @@ int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
   while (!TURxQueuedCount(port)) {
     utlX(); // twiddle thumbs
     if (tmrExp(second_tmr)) return 1;
+    utlNap(1);
+    flogf("*");
   }
   utlGetUntil(port, in, lookFor);
   return 0;
