@@ -440,25 +440,24 @@ int iriLandResp(char *buff) {
 // 1ms delay at byte 5 (checksum)
 int iriLandCmds(char *buff) {
   static char *self="iriLandCmds";
-  static char *rets="0=good 1=TO 2=badSize 3=badHdr";
-  static int rsec=4, sizeOff=5, hdr=10;
-  unsigned char *p, myBuf[256];
-  int r;
-  short msgSz;
+  static char *rets="1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad";
+  static int nonMsg=5, hdr=10;
+  static short respms=4000;
+  unsigned char *p, myBuf[12];
+  int got, msgSz;
   DBG();
-  if (utlReadWait(irid.port, myBuf, rsec)) raise(1);
-  r = strlen(myBuf);
-  p = myBuf+sizeOff;
+  got = (int) TURxGetBlock(irid.port, myBuf, (long)hdr, (short)respms);
+  if (got<hdr) raise(1);
   // 2 len bytes // block length includes hdr from size on
-  msgSz = p[0]<<8;
-  msgSz += p[1]-(hdr-sizeOff);
-  // sanity check
-  if (r==0) raise(1);
-  if (msgSz>256 || msgSz!=(r-hdr)) raise(2);
+  p = myBuf;
+  if (p[0]!='@') raise(2);
+  while (p[0]=='@') p++; // skip @
+  p += 2; // skip checksum - should we check it??
+  msgSz = p[0]<<8 + p[1] - nonMsg;
   if (!(p[2]=='C' && p[3]==1 && p[4]==1)) raise(3);
+  if (msgSz>1024 || msgSz<1) raise(4);
   // msg into buff
-  memcpy(buff, myBuf+hdr, msgSz);
-  buff[msgSz]=0;
+  got = (int) TURxGetBlock(irid.port, buff, (long)msgSz, (short)respms);
   // cmds
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
