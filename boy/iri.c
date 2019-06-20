@@ -447,6 +447,7 @@ int iriLandCmds(char *buff) {
   int got, msgSz;
   DBG();
   got = (int) TURxGetBlock(irid.port, myBuf, (long)hdr, (short)respms);
+  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(myBuf, got));
   if (got<hdr) raise(1);
   // 2 len bytes // block length includes hdr from size on
   p = myBuf;
@@ -458,6 +459,7 @@ int iriLandCmds(char *buff) {
   if (msgSz>1024 || msgSz<1) raise(4);
   // msg into buff
   got = (int) TURxGetBlock(irid.port, buff, (long)msgSz, (short)respms);
+  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(buff, got));
   // cmds
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
