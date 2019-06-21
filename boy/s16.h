@@ -9,6 +9,8 @@ typedef struct S16Info {
   bool sampClear;             // clear stored samples after GetSamples()
   bool sampStore;             // store on device with TSSon - except auton
   char *me;                   // s16
+  char *initStr;              // init time setting for ctd
+  char *startStr;             // start time setting for ctd
   float depth;
   float temp;
   int log;                    // log fileid

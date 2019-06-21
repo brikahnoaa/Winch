@@ -10,9 +10,9 @@ typedef struct GpsStats {
 } GpsStats;
 
 typedef struct IriInfo {
-  bool setTime;             // flag, reset time via gps, starts true
-  bool logging;             // make a log of comm
-  char me[4];
+  bool setTime;             // flag, reset time via gps (true)
+  bool logging;             // make a log of comm via rudics (false)
+  char me[4];               // (iri)
   char phoneNum[16];        // (0088160000519)
   char platform[16];        // (LR01)
   char project[16];         // (QUEH)
@@ -24,7 +24,7 @@ typedef struct IriInfo {
   int filePause;            // pause msec between sending "data" and data (20)
   int hdrPause;             // pause msec after block hdr (20)
   int hdrResp;              // wait secs for ACK response to proj hdr (20)
-  int hdrTry;               // header retry (3)
+  int hdrTry;               // header transmit retry (3)
   int landResp;             // wait secs for cmds/data string from land (20)
   int hupMs;                // ms +++ ms for HUP (2000)
   int redial;               // how many calls to make (5)
@@ -34,8 +34,8 @@ typedef struct IriInfo {
 } IriInfo;
 
 typedef struct IriData {
-  GpsStats *stats1;          // we read stats, repeat
-  GpsStats *stats2;          // ... until two match
+  GpsStats *stats1;         // we read stats, repeat
+  GpsStats *stats2;         // ... until two match
   Serial port;
   char *block;              // offset into buf for file transfer
   char *buf;                // buffer for file transfer

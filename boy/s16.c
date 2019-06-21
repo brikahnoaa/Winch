@@ -27,6 +27,10 @@ void s16Init(void) {
   s16Start();
   utlWrite(s16.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
+  if (s16.initStr) {
+    utlWrite(s16.port, s16.initStr, EOL);
+    utlReadWait(s16.port, all.str, 1);   // echo
+  }
   utlWrite(s16.port, "stop", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
   s16Stop();
@@ -57,6 +61,10 @@ int s16Start(void) {
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
   utlWrite(s16.port, all.str, EOL);
   utlReadWait(s16.port, all.str, 2);   // echo
+  if (s16.startStr) {
+    utlWrite(s16.port, s16.startStr, EOL);
+    utlReadWait(s16.port, all.str, 2);   // echo
+  }
   s16Sample();
   return 0;
 } // s16Start

@@ -36,6 +36,10 @@ void antInit(void) {
   utlReadExpect(ant.port, all.str, EXEC, 2);
   utlWrite(ant.port, "txRealTime=n", EOL);
   utlReadExpect(ant.port, all.str, EXEC, 2);
+  if (ant.initStr) {
+    utlWrite(ant.port, ant.initStr, EOL);
+    utlReadExpect(ant.port, all.str, EXEC, 2);
+  }
   // just in case auton was left on
   utlWrite(ant.port, "stop", EOL);
   utlReadExpect(ant.port, all.str, EXEC, 2);
@@ -74,6 +78,10 @@ int antStart(void) {
   utlWrite(ant.port, all.str, EOL);
   if (!utlReadExpect(ant.port, all.str, EXEC, 5))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
+  if (ant.startStr) {
+    utlWrite(ant.port, ant.startStr, EOL);
+    utlReadExpect(ant.port, all.str, EXEC, 2);
+  }
   antSample();
   return 0;
 } // antStart

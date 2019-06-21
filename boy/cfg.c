@@ -34,6 +34,8 @@ static CfgParam cfgP[] = {
   {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
   {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
   {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
+  {'c',  "ant.initStr",   &ant.initStr,     "aiS",  ""},
+  {'c',  "ant.startStr",  &ant.startStr,    "aiS",  ""},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
   {'i',  "ant.delay",     &ant.delay,       "ade",  "3"},
@@ -86,7 +88,7 @@ static CfgParam cfgP[] = {
   {'i',  "iri.hdrResp",   &iri.hdrResp,     "ihR",  "20"},
   {'i',  "iri.hdrTry",    &iri.hdrTry,      "ihT",  "3"},
   {'i',  "iri.hupMs",     &iri.hupMs,       "ihM",  "2000"},
-  {'i',  "iri.landResp",  &iri.landResp,    "ilR",  "5"},
+  {'i',  "iri.landResp",  &iri.landResp,    "ilR",  "20"},
   {'i',  "iri.redial",    &iri.redial,      "ire",  "25"},
   {'i',  "iri.baud",      &iri.baud,        "iba",  "1800"},
   {'i',  "iri.sendSz",    &iri.sendSz,      "isS",  "64"},
@@ -104,6 +106,8 @@ static CfgParam cfgP[] = {
   {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
   {'b',  "s16.sampClear", &s16.sampClear,   "6cS",  "false"},
   {'b',  "s16.sampStore", &s16.sampStore,   "6sS",  "true"},
+  {'c',  "s16.initStr",   &s16.initStr,     "6iS",  ""},
+  {'c',  "s16.startStr",  &s16.startStr,    "6iS",  ""},
   {'i',  "s16.pumpMode",  &s16.pumpMode,    "6pM",  "1"},
   {'i',  "s16.sampInter", &s16.sampInter,   "6sI",  "10"},
   {'i',  "s16.timer",     &s16.timer,       "6tr",  "6"},
@@ -235,8 +239,10 @@ static void cfgSet( void *ptr, char type, char *val ) {
     else 
       *(bool*)ptr = true;
     break;
-  case 'c':
-    strcpy((char *)ptr, val);
+  case 'c':     // string needs a malloc and copy, and maybe free
+    if (ptr) free(ptr); // either null or previous malloc
+    ptr = malloc(strlen(val)+1);
+    strcpy((char *)ptr, (char *)val);
     break;
   case 'f':
     *(float*)ptr=atof(val);
