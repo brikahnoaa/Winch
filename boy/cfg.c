@@ -184,7 +184,8 @@ void cfgDefault(void) {
 // uses: cfgP[] cfg.cnt
 // rets: 0=success 1=noEqualSign 2=noMatchName
 int cfgString(char *str){
-  char *p, *ptr, *ref, *val, *var, *id, type;
+  CfgPtr ptr;
+  char *p, *ref, *val, *var, *id, type;
   char s[128];
   int i;
   strcpy(s, str);
@@ -231,30 +232,30 @@ bool cfgCmp(char *a, char*b) {
 
 ///
 // convert *val to type and poke into *ptr
-static void cfgSet( void *ptr, char type, char *val ) {
+static void cfgSet(CfgPtr ptr, char type, char *val ) {
   switch (type) {
   case 'b':     // bool is 0,1 or t,f or T,F or true,false
     if (val[0]=='f' || val[0]=='F' || val[0]=='0')
-      *(bool*)ptr = false;
+      *(bool*)ptr.b = false;
     else 
-      *(bool*)ptr = true;
+      *(bool*)ptr.b = true;
     break;
   case 'c':     // string needs a malloc and copy, and maybe free
-    if (ptr) free(ptr); // either null or previous malloc
-    ptr = malloc(strlen(val)+1);
-    strcpy((char *)ptr, (char *)val);
+    if ((char *)*ptr.c) free((char*)*ptr.c); // either null or previous malloc
+    (char*)*ptr.c = malloc(strlen(val)+1);
+    strcpy((char*)*ptr.c, val);
     break;
   case 'f':
-    *(float*)ptr=atof(val);
+    *(float*)ptr.f=atof(val);
     break;
   case 'i':
-    *(int*)ptr=atoi(val);
+    *(int*)ptr.i=atoi(val);
     break;
   case 'l':
-    *(long*)ptr=(long)atoi(val);
+    *(long*)ptr.l=(long)atoi(val);
     break;
   case 's':
-    *(short*)ptr=(short)atoi(val);
+    *(short*)ptr.s=(short)atoi(val);
     break;
   default:
     flogf("\nERR\t| cfgSet() bad type");
@@ -327,22 +328,22 @@ void cfgDump() {
   for (i=0; i<cfg.cnt; i++) {
     switch (cfgP[i].type) {
     case 'b':
-      sprintf(val, "=%d", *(bool *)cfgP[i].ptr);
+      sprintf(val, "=%d", *(bool *)cfgP[i].ptr.b);
       break;
     case 'c':
-      sprintf(val, "=%s", (char *)cfgP[i].ptr);
+      sprintf(val, "=%s", (char *)cfgP[i].ptr.c);
       break;
     case 'f':
-      sprintf(val, "=%f", *(float *)cfgP[i].ptr);
+      sprintf(val, "=%f", *(float *)cfgP[i].ptr.f);
       break;
     case 'i':
-      sprintf(val, "=%d", *(int *)cfgP[i].ptr);
+      sprintf(val, "=%d", *(int *)cfgP[i].ptr.i);
       break;
     case 'l':
-      sprintf(val, "=%ld", *(long *)cfgP[i].ptr);
+      sprintf(val, "=%ld", *(long *)cfgP[i].ptr.l);
       break;
     case 's':
-      sprintf(val, "=%d", *(short *)cfgP[i].ptr);
+      sprintf(val, "=%d", *(short *)cfgP[i].ptr.s);
       break;
     }
     // write varname=val onto buff
