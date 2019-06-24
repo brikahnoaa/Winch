@@ -51,6 +51,7 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
+int utlDateTimeToSec(time_t *ret, char *date, time_t *time);
 int utlGetUntil(Serial port, char *in, char *lookFor);
 int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait);
 int utlLogOpen(int *log, char *base);

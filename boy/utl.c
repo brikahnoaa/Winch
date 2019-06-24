@@ -266,6 +266,29 @@ char *utlDateTimeS16(void) {
 } // utlDateTimeS16
 
 ///
+// rets: time(gps)
+int utlDateTimeToSec(time_t *ret, char *date, time_t *time) {
+  struct tm t;
+  char *s;
+  strcpy(utl.str, date);
+  if (!(s = strtok(utl.str, " -:."))) return 1;
+  t.tm_mon = atoi(s) - 1;
+  if (!(s = strtok(NULL, " -:."))) return 2;
+  t.tm_mday = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return 3;
+  t.tm_year = atoi(s) - 1900;
+  strcpy(utl.str, time);
+  if (!(s = strtok(utl.str, " -:."))) return 4;
+  t.tm_hour = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return 5;
+  t.tm_min = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return 6;
+  t.tm_sec = atoi(s);
+  *ret = mktime(&t);
+  return 0;
+} // utlDateTimeToSec
+
+///
 // format non-printable string; null terminate
 // returns: global char *utl.ret
 char *utlNonPrint (char *in) {

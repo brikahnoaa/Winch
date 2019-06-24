@@ -47,11 +47,11 @@ typedef struct IriData {
   int signal;
 } IriData;
 
-static bool iriSetTime(GpsStats *stats);
 static int iriCRC(char *buf, int cnt);
 static int iriPrompt(void);
 static int iriSats(void);
 static int iriSend(char *buff, long len);
+static int iriSetTime(GpsStats *stats);
 
 int iriDateTime(GpsStats *stats);
 int iriDial(void);

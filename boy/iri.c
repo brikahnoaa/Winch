@@ -127,38 +127,22 @@ int iriLatLng(GpsStats *stats){
 
 ///
 // sets: system time
-bool iriSetTime(GpsStats *stats) {
-  struct tm t;
+int iriSetTime(GpsStats *stats) {
+  static char *self="iriSetTime";
+  static char *rets="1=nullInput +10=utlDateTimeToSec";
   time_t gpsSeconds, diff;
-  char *s;
-  DBG0("iriSetTime(%s %s)", stats->date, stats->time);
-  if (!stats->date || !stats->time) {
-    flogf("\niriSetTime()\t| called with null data");
-    return false;
-  }
-  strcpy(all.str, stats->date);
-  if (!(s = strtok(all.str, " -:."))) return false;
-  t.tm_mon = atoi(s) - 1;
-  if (!(s = strtok(NULL, " -:."))) return false;
-  t.tm_mday = atoi(s);
-  if (!(s = strtok(NULL, " -:."))) return false;
-  t.tm_year = atoi(s) - 1900;
-  strcpy(all.str, stats->time);
-  if (!(s = strtok(all.str, " -:."))) return false;
-  t.tm_hour = atoi(s);
-  if (!(s = strtok(NULL, " -:."))) return false;
-  t.tm_min = atoi(s);
-  if (!(s = strtok(NULL, " -:."))) return false;
-  t.tm_sec = atoi(s);
-  gpsSeconds = mktime(&t);
+  if (!stats->date || !stats->time) raise(1);
+  if (utlDateTimeToSec(&gpsSeconds, stats->date, stats->time)) raise(2);
   diff = time(0) - gpsSeconds;
   if (diff < -2L || diff > 2L) {
-    flogf("\niriSetTime()\t| off by %ld seconds", diff);
+    flogf("\n%s(%s %s)\t| off by %ld seconds", 
+        self, stats->date, stats->time, diff);
     RTCSetTime(gpsSeconds, NULL);
   }
-  return true;
+  return 0;
+  // 
+  except: {flogf(" %s", rets); return dbg.x;}
 } // iriSetTime
-  
 
 ///
 // sets: irid.sats
