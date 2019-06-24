@@ -83,20 +83,36 @@ void iriStop(void) {
 } // iriStop
 
 ///
-// get gps .date .time 
-// sets: .date .time 
-// return: 0=success
-int iriDateTime(GpsStats *stats){
+// get gps date time twice, err if not consistent
+// rets: stats->date,time 
+int iriDateTime(GpsStats *stats) {
   static char *self="iriDateTime";
+  static char *rets="1=iriSats 2=inconsistent 3=crazySmall";
+  GpsStats stats1;
+  time_t diff, secs1, secs;
   DBG();
-  if (iriSats()) return 1;
-  // date
+  if (iriSats()) raise(1);
+  iriDateTimeGet(&stats1);
+  iriDateTimeGet(stats);
+  utlDateTimeToSecs(&secs1, stats1.date, stats1.time);
+  utlDateTimeToSecs(&secs, stats->date, stats->time);
+  diff = secs1 - secs;
+  if (diff<5L || diff>5L) raise(2);
+  if (secs<pow(10, 9)) raise(3);
+  return 0;
+  //
+  except: {flogf(" %s", rets); return dbg.x;}
+} // iriDateTime
+
+///
+// get gps date time 
+// rets: stats->date,time
+int iriDateTimeGet(GpsStats *stats) {
   utlWrite(irid.port, "at+pd", EOL);
   if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 2;
   utlMatchAfter(all.str, all.buf, "Date=", "-0123456789");
   flogf(" Date=%s", all.str);
   strcpy(stats->date, all.str);
-  // time
   utlWrite(irid.port, "at+pt", EOL);
   if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 3;
   utlMatchAfter(all.str, all.buf, "Time=", ".:0123456789");
@@ -105,7 +121,7 @@ int iriDateTime(GpsStats *stats){
   if (iri.setTime) 
     iriSetTime(stats);
   return 0;
-} // iriDateTime
+} // iriDateTimeGet
 
 // get gps .lat .lng
 // sets: .lng .lat 
@@ -132,7 +148,7 @@ int iriSetTime(GpsStats *stats) {
   static char *rets="1=nullInput +10=utlDateTimeToSec";
   time_t gpsSeconds, diff;
   if (!stats->date || !stats->time) raise(1);
-  if (utlDateTimeToSec(&gpsSeconds, stats->date, stats->time)) raise(2);
+  if (utlDateTimeToSecs(&gpsSeconds, stats->date, stats->time)) raise(2);
   diff = time(0) - gpsSeconds;
   if (diff < -2L || diff > 2L) {
     flogf("\n%s(%s %s)\t| off by %ld seconds", 

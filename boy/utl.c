@@ -267,7 +267,7 @@ char *utlDateTimeS16(void) {
 
 ///
 // rets: time(gps)
-int utlDateTimeToSec(time_t *ret, char *date, time_t *time) {
+int utlDateTimeToSecs(time_t *ret, char *date, time_t *time) {
   struct tm t;
   char *s;
   strcpy(utl.str, date);

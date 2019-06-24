@@ -48,6 +48,7 @@ typedef struct IriData {
 } IriData;
 
 static int iriCRC(char *buf, int cnt);
+static int iriDateTimeGet(GpsStats *stats);
 static int iriPrompt(void);
 static int iriSats(void);
 static int iriSend(char *buff, long len);

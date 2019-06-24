@@ -275,13 +275,17 @@ PhaseType errorPhase(void) {
 ///
 // main action of iridPhase, allows better error handling
 int iridDo(void) {
-  int r=0;
+  static char *self="iridDo";
+  int try=0, r=0;
   bool dialB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOpM*60);
   iriStart();
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
-  iriDateTime(&boyd.gpsBgn);
+  while (true) { // try datetime 3x
+    if (try++ > 2) raise(1);
+    if (!iriDateTime(&boyd.gpsBgn)) break;
+  }
   iriLatLng(&boyd.gpsBgn);
   antSwitch(irid_ant);
   while (!tmrExp(phase_tmr)) {
@@ -325,6 +329,8 @@ int iridDo(void) {
   // turn off a3la
   iriStop();
   return r;
+  //
+  except: return dbg.x;
 } // iridDo
 
 ///
