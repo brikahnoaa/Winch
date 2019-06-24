@@ -87,18 +87,20 @@ void iriStop(void) {
 // rets: stats->date,time 
 int iriDateTime(GpsStats *stats) {
   static char *self="iriDateTime";
-  static char *rets="1=iriSats 2=inconsistent 3=crazySmall";
+  static char *rets="1=iriSats 2=small >5=differ";
   GpsStats stats1;
-  time_t diff, secs1, secs;
+  time_t secs1, secs;
+  int diff;
   DBG();
   if (iriSats()) raise(1);
   iriDateTimeGet(&stats1);
   iriDateTimeGet(stats);
   utlDateTimeToSecs(&secs1, stats1.date, stats1.time);
   utlDateTimeToSecs(&secs, stats->date, stats->time);
-  diff = secs1 - secs;
-  if (diff<5L || diff>5L) raise(2);
-  if (secs<pow(10, 9)) raise(3);
+  // now is about 1.5Msec
+  if (secs<pow(10, 9) || secs>pow(10, 9)*2) raise(2);
+  diff = (int) (secs1 - secs);
+  if (abs(diff)>5) raise(diff);
   return 0;
   //
   except: {flogf(" %s", rets); return dbg.x;}
