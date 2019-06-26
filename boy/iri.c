@@ -273,9 +273,9 @@ int iriDial(void) {
 
 ///
 // send proj hdr followed by "Hello", catch landResponse
-// rets: *buf<-landResp 1=retries 2=noCarrier +10=landResp +20=landCmds
+// rets: *resp<-landResp 1=retries 2=noCarrier +10=landResp +20=landCmds
 // sets: irid.buf
-int iriProjHello(char *buf) {
+int iriProjHello(char *resp) {
   static char *self="iriProjHello";
   static char *rets="1=retries 2=noCarrier +10=landResp +20=landCmds";
   int r, try, hdr=13;
@@ -291,10 +291,10 @@ int iriProjHello(char *buf) {
   flogf(" hello");
   sprintf(irid.block, "hello");
   iriSendBlock(5, 1, 1);
-  if ((r = iriLandResp(buf))) raise(10+r);
-  if (strstr(buf, "cmds")) {
-    if ((r = iriLandCmds(buf))) raise(20+r);
-    iriProcessCmds(buf);
+  if ((r = iriLandResp(resp))) raise(10+r);
+  if (strstr(resp, "cmds")) {
+    if ((r = iriLandCmds(resp))) raise(20+r);
+    iriProcessCmds(resp);
   }
   return 0;
   //
@@ -441,16 +441,15 @@ int iriLandResp(char *buff) {
 // just got landResp(cmds), read and format land cmds
 // 1sec delay between "cmds" and cmd message
 // 1ms delay at byte 5 (checksum)
+// rets: *buff (string)
 int iriLandCmds(char *buff) {
   static char *self="iriLandCmds";
   static char *rets="1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad";
-  static int nonMsg=5, hdr=10;
-  static short respms=4000;
+  static int nonMsg=5, hdr=10, respms=4000;
   unsigned char *p, myBuf[12];
   int got, msgSz;
   DBG();
-  got = (int) TURxGetBlock(irid.port, myBuf, (long)hdr, (short)respms);
-  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(myBuf, got));
+  got = utlGetBlock(irid.port, myBuf, hdr, respms);
   if (got<hdr) raise(1);
   // 2 len bytes // block length includes hdr from size on
   p = myBuf;
@@ -462,9 +461,8 @@ int iriLandCmds(char *buff) {
   if (!(p[2]=='C' && p[3]==1 && p[4]==1)) raise(3);
   if (msgSz>1024 || msgSz<1) raise(4);
   // msg into buff
-  got = (int) TURxGetBlock(irid.port, buff, (long)msgSz, (short)respms);
-  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(buff, got));
-  // cmds
+  got = utlGetBlock(irid.port, buff, msgSz, respms);
+  buff[got]=0;
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
   //
@@ -476,6 +474,8 @@ int iriLandCmds(char *buff) {
 void iriHup(void) {
   int try=3;
   utlWrite(irid.port, "done", "");
+  utlNap(2);
+  if (iriPrompt()==0) return;
   while (try--) {
     utlDelay(iri.hupMs);
     utlWrite(irid.port, "+++", "");

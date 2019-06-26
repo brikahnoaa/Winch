@@ -19,8 +19,8 @@ typedef struct AntInfo {
   bool sampStore;             // store on device with TSSon - except auton
   bool surf;                  // on surface
   char *me;
-  char *initStr;              // init time setting for ctd
-  char *startStr;             // start time setting for ctd
+  char initStr[256];          // init time setting for ctd
+  char startStr[256];         // start time setting for ctd
   float depth;
   float subD;                 // subsurfaceD; ant.surfD + boy.ant2tip
   float surfD;                // surfaceDepth of buoy when ant is floating

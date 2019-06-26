@@ -4,7 +4,7 @@
 
 typedef union CfgPtr { // ptr to data element in CfgParam
   bool *b;
-  char **c;
+  char *c;
   float *f;
   int *i;
   long *l;

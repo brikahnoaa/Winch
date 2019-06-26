@@ -191,11 +191,20 @@ int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
     utlX(); // twiddle thumbs
     if (tmrExp(second_tmr)) return 1;
     utlNap(1);
-    flogf("*");
+    DBG1(".");
   }
   utlGetUntil(port, in, lookFor);
   return 0;
 } // utlGetUntilWait
+
+///
+// wrapper for 
+int utlGetBlock(Serial port, char *buff, int msgSz, int respms) {
+  int got;
+  got = (int) TURxGetBlock(port, buff, (long)msgSz, (short)respms);
+  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(buff, got));
+  return got;
+}
 
 
 ///

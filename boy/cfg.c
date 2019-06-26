@@ -164,12 +164,12 @@ void cfgDefault(void) {
   CfgParam *param;
   int i;
   static char *self="cfgDefault";
-  DBG();
   cfg.cnt = sizeof(cfgP) / sizeof(CfgParam);
+  flogf("\n%s: %d config settings", self, cfg.cnt);
   i=cfg.cnt;
   param=cfgP;
   while (i--) { // note: post decrement
-    DBG1("\n%s=%s", param->var, param->def);
+    DBG1("%s=%s", param->var, param->def);
     // default value
     if (param->def[0])
       cfgSet(param->ptr, param->type, param->def);
@@ -240,10 +240,8 @@ static void cfgSet(CfgPtr ptr, char type, char *val ) {
     else 
       *(bool*)ptr.b = true;
     break;
-  case 'c':     // string needs a malloc and copy, and maybe free
-    if ((char *)*ptr.c) free((char*)*ptr.c); // either null or previous malloc
-    (char*)*ptr.c = malloc(strlen(val)+1);
-    strcpy((char*)*ptr.c, val);
+  case 'c':
+    strcpy((char*)ptr.c, val);
     break;
   case 'f':
     *(float*)ptr.f=atof(val);
