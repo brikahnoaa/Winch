@@ -26,7 +26,6 @@ void main(void){
   cprintf("\nbaud iri.rudBaud=%d", iri.rudBaud);
   buff = irid.buf->block;
   iriDateTime(irid.stats1);
-  antSwitch(irid_ant);
   if (iriSig()) return;
   if (iriDial()) return;
   if (iriProjHello(all.buf)) return;

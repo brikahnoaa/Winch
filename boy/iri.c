@@ -45,8 +45,7 @@ int iriStart(void) {
   antDevice(cf2_dev);
   // block+hdr=buf, size could change during run
   if (irid.blockSz != iri.blockSz) {
-    flogf("\n%s: resetting blockSize from %ld to %ld", self, 
-      irid.blockSz, iri.blockSz);
+    flogf("\n%s: setting blockSize to %d", self, iri.blockSz);
     irid.blockSz = iri.blockSz;
     if (irid.buf) free(irid.buf);
     irid.buf = malloc(iri.blockSz + sizeof(IriBuff));

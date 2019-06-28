@@ -54,11 +54,11 @@ typedef struct IriData {
   Serial port;
   IriBuff *buf;             // malloc( iri.blockSz+sizeof(IriBuff) )
   IriProjHdr *projHdr;      // rudicsland
+  int blockSz;              // size of *block - verify GpsInfo.blockSz
   int log;
   int rudUsec;              // microsec delay calculated from rudBaud
   int sats;
   int signal;
-  long blockSz;             // size of *block - verify GpsInfo.blockSz
 } IriData;
 
 static int iriCRC(char *buf, int cnt);
