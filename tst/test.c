@@ -1,49 +1,11 @@
-// irid.c
-#include <main.h>
+#include <stdio.h>
 
-extern BoyInfo boy;
-extern SysInfo sys;
-extern IriInfo iri;
-extern IriData irid;
-
-void main(void){
-  // Serial port;
-  // char c;
-  char *buff;
-  int len, cnt;
-  int i, r;
-  sysInit();
-  mpcInit();
-  antInit();
-  iriInit();
-  //
-  antStart();
-  iriStart();
-  //
-  len = dbg.t2;
-  cnt = dbg.t1;
-  cprintf("\nlength dbg.t2=%d, count dbg.t1=%d ", len, cnt);
-  cprintf("\nbaud iri.rudBaud=%d", iri.rudBaud);
-  buff = irid.buf->block;
-  iriDateTime(irid.stats1);
-  if (iriSig()) return;
-  if (iriDial()) return;
-  if (iriProjHello(all.buf)) return;
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.rudBaud, iri.sendSz);
-    buff[len-1] = 'Z';
-    r = iriSendBlock(len, i, cnt);
-    cprintf("(%d)\n", r);
-    // utlDelay(500);
-  }
-  iriLandResp(all.buf);
-  if (strstr(all.buf, "cmds"))
-    r = iriLandCmds(all.buf);
-  iriHup();
-  iriSig();
-  flogf("\n%s\n", utlTime());
-  iriStop();
-  antStop();
+void main(void) {
+  char a[16];
+  char c; short s; int i; long l; double d; void *p;
+  printf("\nsizes: array %d, char %d, short %d, "
+    "int %d, long %d, double %d, ptr %d \n",
+    sizeof(a), sizeof(c), sizeof(s), 
+    sizeof(i), sizeof(l), sizeof(d), sizeof(p));
+  return;
 }
