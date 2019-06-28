@@ -1,11 +1,64 @@
-#include <stdio.h>
+// iridFile.c
+#include <main.h>
 
-void main(void) {
-  char a[16];
-  char c; short s; int i; long l; double d; void *p;
-  printf("\nsizes: array %d, char %d, short %d, "
-    "int %d, long %d, double %d, ptr %d \n",
-    sizeof(a), sizeof(c), sizeof(s), 
-    sizeof(i), sizeof(l), sizeof(d), sizeof(p));
-  return;
+extern IriInfo iri;
+extern IriData irid;
+extern BoyInfo boy;
+extern SysInfo sys;
+
+void main(void){
+  // Serial port;
+  // char c;
+  char *buff;
+  int len, cnt;
+  int i, r;
+  i=0;
+  sysInit();
+  mpcInit();
+  antInit();
+  iriInit();
+  //
+  antStart();
+  iriStart();
+  //
+  len = dbg.t2;
+  cnt = dbg.t1;
+  cprintf("\nlength dbg.t2=%d, count dbg.t1=%d ", len, cnt);
+  cprintf("\nbaud iri.rudBaud=%d", iri.rudBaud);
+  buff = malloc(len);
+  // antSwitch(gps_ant);
+  // iriStats();
+  antSwitch(irid_ant);
+  if (iriSig()) return;
+  if (iriDial()) return;
+  if (iriProjHello(all.buf)) return;
+  /*
+  for (i=1; i<=cnt; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d [%d]", 
+      i, cnt, len, iri.rudBaud, iri.sendSz);
+    buff[len-1] = 'Z';
+    r = iriSendBlock(buff, len, i, cnt);
+    cprintf("(%d)\n", r);
+    // utlDelay(500);
+  }
+   */
+  iriSendFile("test\\test.log");
+  iriLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iriLandCmds(all.buf);
+  strcpy(buff, all.buf);
+  utlDelay(500);
+  utlWrite(irid.port, "done", "");
+  utlDelay(500);
+  iriHup();
+  iriSig();
+  flogf("\n%s\n", utlTime());
+  flogf("\nsetting '%s'", utlNonPrint(buff));
+  cfgString(buff);
+  flogf("\nsys.program = %s", sys.program);
+  // antSwitch(gps_ant);
+  // iriStats();
+  iriStop();
+  antStop();
 }
