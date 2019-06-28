@@ -27,6 +27,10 @@ void s16Init(void) {
   s16Start();
   utlWrite(s16.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
+  if (s16.initStr) {
+    utlWrite(s16.port, s16.initStr, EOL);
+    utlReadWait(s16.port, all.str, 1);   // echo
+  }
   utlWrite(s16.port, "stop", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
   s16Stop();
@@ -57,6 +61,10 @@ int s16Start(void) {
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
   utlWrite(s16.port, all.str, EOL);
   utlReadWait(s16.port, all.str, 2);   // echo
+  if (s16.startStr) {
+    utlWrite(s16.port, s16.startStr, EOL);
+    utlReadWait(s16.port, all.str, 2);   // echo
+  }
   s16Sample();
   return 0;
 } // s16Start
@@ -109,12 +117,12 @@ bool s16Prompt(void) {
   s16Flush();
   utlWrite(s16.port, "", EOL);
   // looking for S> at end
-  if (utlExpect(s16.port, all.str, EXEC, 5))
+  if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
   // try again after break
   s16Break();
   utlWrite(s16.port, "", EOL);
-  if (utlExpect(s16.port, all.str, EXEC, 5))
+  if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
   return false;
 } // s16Prompt
@@ -181,7 +189,7 @@ bool s16Read(void) {
   DBG();
   if (!s16Data()) return false;
   // utlRead(s16.port, all.str);
-  p0 = utlExpect(s16.port, all.str, EXEC, 2);
+  p0 = utlReadExpect(s16.port, all.str, EXEC, 2);
   if (!p0) {
     utlErr(s16_err, "s16Read: no S>");
     return false;
@@ -246,11 +254,11 @@ int s16Auton(bool auton) {
     s16Prompt();
     sprintf(all.str, "sampleInterval=%d", s16.sampInter);
     utlWrite(s16.port, all.str, EOL);
-    utlExpect(s16.port, all.str, EXEC, 2);
+    utlReadExpect(s16.port, all.str, EXEC, 2);
     utlWrite(s16.port, "txRealTime=n", EOL);
-    utlExpect(s16.port, all.str, EXEC, 2);
+    utlReadExpect(s16.port, all.str, EXEC, 2);
     utlWrite(s16.port, "startnow", EOL);
-    if (!utlExpect(s16.port, all.str, "start logging", 4)) {
+    if (!utlReadExpect(s16.port, all.str, "start logging", 4)) {
       r = 1;
       utlErr(s16_err, "s16Auton: expected 'start logging'");
     }
@@ -259,12 +267,12 @@ int s16Auton(bool auton) {
     // turn off
     s16Prompt();
     // utlWrite(s16.port, "stop", EOL);
-    // utlExpect(s16.port, all.str, EXEC, 2);
+    // utlReadExpect(s16.port, all.str, EXEC, 2);
     utlWrite(s16.port, "stop", EOL);
-    if (!utlExpect(s16.port, all.str, "logging stopped", 4)) {
+    if (!utlReadExpect(s16.port, all.str, "logging stopped", 4)) {
       flogf("\nERR\t| expected 'logging stopped', retry...");
       utlWrite(s16.port, "stop", EOL);
-      if (!utlExpect(s16.port, all.str, "logging stopped", 4)) {
+      if (!utlReadExpect(s16.port, all.str, "logging stopped", 4)) {
         r=2;
         flogf("\nERR\t| got '%s'", all.str);
         utlErr(s16_err, "expected 'logging stopped'");
@@ -297,9 +305,9 @@ void s16GetSamples(void) {
   s16LogClose();
   if (s16.sampClear) {
     utlWrite(s16.port, "initLogging", EOL);
-    utlExpect(s16.port, all.str, "verify", 2);
+    utlReadExpect(s16.port, all.str, "verify", 2);
     utlWrite(s16.port, "initLogging", EOL);
-    utlExpect(s16.port, all.str, EXEC, 2);
+    utlReadExpect(s16.port, all.str, EXEC, 2);
   }
   flogf(" = %d bytes to %s.log", total, s16.me);
 } // s16GetSamples
@@ -325,7 +333,7 @@ void s16Test(void) {
       "\n");
   while (c != 'q') {
     if (cgetq()) {
-      c=cgetc();
+      c=(char)cgetc();
       cputc(c);
       cputc(' ');
       switch (c) {
@@ -374,7 +382,7 @@ void s16Test(void) {
             TUTxPutByte(s16.port,c,false);
           }
           if (TURxQueuedCount(s16.port)) {
-            c=TURxGetByte(s16.port,false);
+            c=(char)TURxGetByte(s16.port,false);
             cputc(c);
           }
         }

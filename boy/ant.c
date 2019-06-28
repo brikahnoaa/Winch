@@ -31,14 +31,18 @@ void antInit(void) {
   }
   ant.ring[i].next = ant.ring;
   antStart();
-  utlExpect(ant.port, all.str, EXEC, 2);
+  utlReadExpect(ant.port, all.str, EXEC, 2);
   utlWrite(ant.port, "TxSampleNum=N", EOL);
-  utlExpect(ant.port, all.str, EXEC, 2);
+  utlReadExpect(ant.port, all.str, EXEC, 2);
   utlWrite(ant.port, "txRealTime=n", EOL);
-  utlExpect(ant.port, all.str, EXEC, 2);
+  utlReadExpect(ant.port, all.str, EXEC, 2);
+  if (ant.initStr) {
+    utlWrite(ant.port, ant.initStr, EOL);
+    utlReadExpect(ant.port, all.str, EXEC, 2);
+  }
   // just in case auton was left on
   utlWrite(ant.port, "stop", EOL);
-  utlExpect(ant.port, all.str, EXEC, 2);
+  utlReadExpect(ant.port, all.str, EXEC, 2);
   antStop();
 } // antInit
 
@@ -65,15 +69,19 @@ int antStart(void) {
   TUTxFlush(ant.port);
   PIOSet(ANT_PWR);
   // get cf2 startup message
-  if (!utlExpect(ant.port, all.str, "ok", 6))
+  if (!utlReadExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
   DBG1("%s", all.str);
   if (ant.auton)
     antAuton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
   utlWrite(ant.port, all.str, EOL);
-  if (!utlExpect(ant.port, all.str, EXEC, 5))
+  if (!utlReadExpect(ant.port, all.str, EXEC, 5))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
+  if (ant.startStr) {
+    utlWrite(ant.port, ant.startStr, EOL);
+    utlReadExpect(ant.port, all.str, EXEC, 2);
+  }
   antSample();
   return 0;
 } // antStart
@@ -127,17 +135,17 @@ bool antPrompt() {
   TURxFlush(ant.port);
   // if asleep, first EOL wakens but no response
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, all.str, EXEC, 1))
+  if (utlReadExpect(ant.port, all.str, EXEC, 1))
     return true;
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, all.str, EXEC, 1))
+  if (utlReadExpect(ant.port, all.str, EXEC, 1))
     return true;
   // try a third time after break
   antBreak();
   utlNap(2);
   TURxFlush(ant.port);
   utlWrite(ant.port, "", EOL);
-  if (utlExpect(ant.port, all.str, EXEC, 1))
+  if (utlReadExpect(ant.port, all.str, EXEC, 1))
     return true;
   utlErr(ant_err, "antPrompt() fail");
   return false;
@@ -211,9 +219,9 @@ bool antRead(void) {
   // data waiting
   // with auton there is no Executed, so look for #
   if (ant.auton)
-    p0 = utlExpect(ant.port, all.str, "# ", 2);
+    p0 = utlReadExpect(ant.port, all.str, "# ", 2);
   else
-    p0 = utlExpect(ant.port, all.str, EXEC, 2);
+    p0 = utlReadExpect(ant.port, all.str, EXEC, 2);
   if (!p0) {
     utlErr(ant_err, "antRead: no data");
     return false;
@@ -464,21 +472,21 @@ int antAuton(bool auton) {
   if (auton) {
     sprintf(all.str, "sampleInterval=%d", ant.sampInter);
     utlWrite(ant.port, all.str, EOL);
-    utlExpect(ant.port, all.str, EXEC, 2);
+    utlReadExpect(ant.port, all.str, EXEC, 2);
     utlWrite(ant.port, "startnow", EOL);
-    if (!utlExpect(ant.port, all.str, "-->", 2)) {
+    if (!utlReadExpect(ant.port, all.str, "-->", 2)) {
       flogf("\t| startnow fail, retry ...");
       utlWrite(ant.port, "startnow", EOL);
-      if (!utlExpect(ant.port, all.str, "-->", 2)) 
+      if (!utlReadExpect(ant.port, all.str, "-->", 2)) 
         flogf(" startnow failed");
     } // if -->
   } else {
     utlWrite(ant.port, "stop", EOL);
-    if (!utlExpect(ant.port, all.str, "-->", 2)) {
+    if (!utlReadExpect(ant.port, all.str, "-->", 2)) {
       r = 2;
       flogf("\t| stop fail, retry ...");
       utlWrite(ant.port, "stop", EOL);
-      if (!utlExpect(ant.port, all.str, "-->", 2)) 
+      if (!utlReadExpect(ant.port, all.str, "-->", 2)) 
         flogf(" stop failed");
     } // if -->
     utlNap(1);
@@ -519,9 +527,9 @@ void antGetSamples(void) {
   flogf(": %d bytes to %s", total, ant.me);
   if (ant.sampClear) {
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.str, "-->", 2);
+    utlReadExpect(ant.port, all.str, "-->", 2);
     utlWrite(ant.port, "initLogging", EOL);
-    utlExpect(ant.port, all.str, "-->", 2);
+    utlReadExpect(ant.port, all.str, "-->", 2);
   }
 } // antGetSamples
 

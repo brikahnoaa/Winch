@@ -8,13 +8,10 @@
 #define BUFSZ 4096
 #define FILESZ ((size_t)1024 * 32)
 
-#define utlDelay(x) RTCDelayMicroSeconds((long)(x)*1000L);
+// millisecond delay
+#define utlDelay(x) RTCDelayMicroSeconds((long)x*1000L);
 // settle time for electronics power on
 #define SETTLE 200
-
-// faux exception processing: throw(10) ---> catch: {return all.x;}
-#define throw(X_VALUE) { all.x=X_VALUE; \
-  flogf("\nEXC %s->%d", self, all.x); goto catch; }
 
 typedef TUPort * Serial;
 
@@ -38,7 +35,6 @@ typedef struct AllData {
   char *buf;                // 4K buffer (BUFSZ)
   char *str;                // 4K buffer (BUFSZ)
   int cycle;                // RiseCallFallData cycles
-  int x;                    // exception value for faux throw(#)/catch
   int starts;               // number of starts (VEEPROM)
   time_t startCycle;        // cycle start time
   time_t startProg;         // program start time
@@ -51,10 +47,14 @@ char *utlDate(void);
 char *utlDateTime(void);
 char *utlDateTimeS16(void);
 char *utlDateTimeFmt(time_t secs);
-char *utlExpect(Serial port, char *buf, char *expect, int wait);
+char *utlReadExpect(Serial port, char *in, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
+int utlDateTimeToSecs(time_t *ret, char *date, time_t *time);
+int utlGetBlock(Serial port, char *buff, int msgSz, int respms);
+int utlGetUntil(Serial port, char *in, char *lookFor);
+int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait);
 int utlLogOpen(int *log, char *base);
 int utlLogClose(int *fd);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);

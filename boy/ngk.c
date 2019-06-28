@@ -115,18 +115,21 @@ MsgType ngkRecv(MsgType *msg) {
 // look for %# if we get that, read 7 more bytes with timeout
 bool ngkRead(char *str) {
   int i;
-  char c;
+  short ch;
   str[0]=0;
   // look for message start in input queue
   while (true) {
     if (TURxQueuedCount(ngk.port)==0) return false;
-    c = TURxGetByte(ngk.port, false);
-    if (c=='%' || c=='#') break;
+    ch = TURxGetByte(ngk.port, false);
+    if (ch=='%' || ch=='#') break;
   }
-  str[0] = c;
-  for (i=1; i<8; i++) 
-    str[i] = TURxGetByteWithTimeout(ngk.port, (short) 200);
-  str[8]=0;
+  str[0] = (unsigned char)ch;
+  for (i=1; i<8; i++) {
+    ch = TURxGetByteWithTimeout(ngk.port, (short) 200);
+    if (ch<0) break;
+    str[i] = (unsigned char)ch;
+  }
+  str[i]=0;
   return true;
 } // ngkRead
 

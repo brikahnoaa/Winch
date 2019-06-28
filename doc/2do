@@ -1,3 +1,10 @@
+Thu, Jun 13, 2019 12:15:44 PM
+.1 utlReadWait() wait is a short?
+.2 test LandCmds
+..1 safe to use utlRead for landResponse?
+... yes, 1 sec between landResp and landCmds
+..2 get all response - how is it terminated, what delays occur?
+
 Thu, May 23, 2019  5:08:20 PM
 .0 redo cycle from fall to transmit (deploy is like a fall)
 .1 redo log file handling

@@ -7,6 +7,11 @@
 #define C_DRV ('C'-'A')
 
 SysInfo sys;
+///
+// program notes: short=int=signed-16bit sizeof()->long=4byte
+//  in gcc: char=1 short=2 int=4 long=8 sizeof=4   
+//  in cw:  char=1 short=2 int=2 long=4 sizeof=4
+///
 
 ///
 // Before deploying, set CF2 time and SM2 time, format SD cards,
@@ -33,9 +38,9 @@ int sysInit(void) {
   time(&all.startProg);     // program start time, global
   time(&all.startCycle);    // cycle start time, global
   // need utlInit before logInit
-  dbgInit();                // common init: dbg0,1,2
   utlInit();                // malloc global all.str
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
+  dbgInit();                // common init: dbg0,1,2
   cfgInit();
   // make serial queues larger = 64K (rudics max block size)
   params = TUGetDefaultParams();

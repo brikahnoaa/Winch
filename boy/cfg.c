@@ -34,6 +34,8 @@ static CfgParam cfgP[] = {
   {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
   {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
   {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
+  {'c',  "ant.initStr",   &ant.initStr,     "aiS",  ""},
+  {'c',  "ant.startStr",  &ant.startStr,    "aiS",  ""},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
   {'i',  "ant.delay",     &ant.delay,       "ade",  "3"},
@@ -74,18 +76,21 @@ static CfgParam cfgP[] = {
   {'i',  "dbg.t3",        &dbg.t3,          "dt3",  "0"},
 
   {'b',  "iri.setTime",   &iri.setTime,     "isT",  "true"},
+  {'b',  "iri.logging",   &iri.logging,     "ilo",  "false"},
   {'c',  "iri.phoneNum",  &iri.phoneNum,    "iph",  "0088160000519"},
   {'c',  "iri.platform",  &iri.platform,    "ipl",  "LR01"},
   {'c',  "iri.project",   &iri.project,     "ipr",  "QUEH"},
-  {'i',  "iri.blockSz",   &iri.blockSz,     "ibS",  "1024"},
+  {'i',  "iri.blkPause",  &iri.blkPause,    "ibP",  "20"},
+  {'i',  "iri.blkSz",     &iri.blkSz,       "ibS",  "256"},
   {'i',  "iri.fileMaxKB", &iri.fileMaxKB,   "ifX",  "64"},
-  {'i',  "iri.filePause", &iri.filePause,   "ifP",  "1"},
+  {'i',  "iri.filePause", &iri.filePause,   "ifP",  "20"},
   {'i',  "iri.hdrPause",  &iri.hdrPause,    "ihP",  "20"},
+  {'i',  "iri.hdrResp",   &iri.hdrResp,     "ihR",  "20"},
   {'i',  "iri.hdrTry",    &iri.hdrTry,      "ihT",  "3"},
   {'i',  "iri.hupMs",     &iri.hupMs,       "ihM",  "2000"},
-  {'i',  "iri.redial",    &iri.redial,      "ire",  "5"},
-  {'i',  "iri.rudBaud",   &iri.rudBaud,     "irB",  "1800"},
-  {'i',  "iri.rudResp",   &iri.rudResp,     "irR",  "20"},
+  {'i',  "iri.landResp",  &iri.landResp,    "ilR",  "20"},
+  {'i',  "iri.redial",    &iri.redial,      "ire",  "25"},
+  {'i',  "iri.baud",      &iri.baud,        "iba",  "1800"},
   {'i',  "iri.sendSz",    &iri.sendSz,      "isS",  "64"},
   {'i',  "iri.signalMin", &iri.signalMin,   "isM",  "2"},
   {'i',  "iri.timeout",   &iri.timeout,     "ito",  "60"},
@@ -101,6 +106,8 @@ static CfgParam cfgP[] = {
   {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
   {'b',  "s16.sampClear", &s16.sampClear,   "6cS",  "false"},
   {'b',  "s16.sampStore", &s16.sampStore,   "6sS",  "true"},
+  {'c',  "s16.initStr",   &s16.initStr,     "6iS",  ""},
+  {'c',  "s16.startStr",  &s16.startStr,    "6iS",  ""},
   {'i',  "s16.pumpMode",  &s16.pumpMode,    "6pM",  "1"},
   {'i',  "s16.sampInter", &s16.sampInter,   "6sI",  "10"},
   {'i',  "s16.timer",     &s16.timer,       "6tr",  "6"},
@@ -145,7 +152,7 @@ void cfgInit(void) {
     flogf(", VEE(CFGFILE) changes it to '%s'", self, cfg.file);
   }
   r = cfgRead(cfg.file);
-  if (r) flogf("\n%s: read %d lines from %s", self, r, cfg.file);
+  if (r) flogf("\n%s: %d errors in config file %s", self, r, cfg.file);
   cfgVee();
 } // configFile
 
@@ -157,12 +164,12 @@ void cfgDefault(void) {
   CfgParam *param;
   int i;
   static char *self="cfgDefault";
-  DBG();
   cfg.cnt = sizeof(cfgP) / sizeof(CfgParam);
+  flogf("\n%s: %d config settings", self, cfg.cnt);
   i=cfg.cnt;
   param=cfgP;
   while (i--) { // note: post decrement
-    DBG1("\n%s=%s", param->var, param->def);
+    DBG1("%s=%s", param->var, param->def);
     // default value
     if (param->def[0])
       cfgSet(param->ptr, param->type, param->def);
@@ -175,8 +182,10 @@ void cfgDefault(void) {
 // find setVar with id or name, call cfgSet()
 // OK to have leading space and #comments
 // uses: cfgP[] cfg.cnt
-bool cfgString(char *str){
-  char *p, *ptr, *ref, *val, *var, *id, type;
+// rets: 0=success 1=noEqualSign 2=noMatchName
+int cfgString(char *str){
+  CfgPtr ptr;
+  char *p, *ref, *val, *var, *id, type;
   char s[128];
   int i;
   strcpy(s, str);
@@ -188,7 +197,7 @@ bool cfgString(char *str){
   ref = s + strspn(s, " \t");
   // break at '='
   p = strchr(s, '=');
-  if (p==NULL) return false;
+  if (p==NULL) return 1;
   *p = 0;
   val = p+1;
   // find matching name
@@ -201,12 +210,12 @@ bool cfgString(char *str){
     if (cfgCmp(ref, id) || cfgCmp(ref, var)) {
       cfgSet(ptr, type, val);
       DBG1("\n(%c) %s=%s", type, var, val);
-      return true;
+      return 0; // success
     }
   } // for cfg
   utlErr(cfg_err, "cfgString() no match on name/id");
   flogf( " %s=%s ??", ref, val);
-  return false;                 // name not found
+  return 2;                 // name not found
 } // cfgString
 
 ///
@@ -223,28 +232,28 @@ bool cfgCmp(char *a, char*b) {
 
 ///
 // convert *val to type and poke into *ptr
-static void cfgSet( void *ptr, char type, char *val ) {
+static void cfgSet(CfgPtr ptr, char type, char *val ) {
   switch (type) {
   case 'b':     // bool is 0,1 or t,f or T,F or true,false
     if (val[0]=='f' || val[0]=='F' || val[0]=='0')
-      *(bool*)ptr = false;
+      *(bool*)ptr.b = false;
     else 
-      *(bool*)ptr = true;
+      *(bool*)ptr.b = true;
     break;
   case 'c':
-    strcpy((char *)ptr, val);
+    strcpy((char*)ptr.c, val);
     break;
   case 'f':
-    *(float*)ptr=atof(val);
+    *(float*)ptr.f=atof(val);
     break;
   case 'i':
-    *(int*)ptr=atoi(val);
+    *(int*)ptr.i=atoi(val);
     break;
   case 'l':
-    *(long*)ptr=(long)atoi(val);
+    *(long*)ptr.l=(long)atoi(val);
     break;
   case 's':
-    *(short*)ptr=(short)atoi(val);
+    *(short*)ptr.s=(short)atoi(val);
     break;
   default:
     flogf("\nERR\t| cfgSet() bad type");
@@ -253,10 +262,10 @@ static void cfgSet( void *ptr, char type, char *val ) {
 
 ///
 // read cfg strings from a file
-// returns: number of cfg lines
+// rets: 0=success #=errCount
 int cfgRead(char *file) {
   char *buf, *ptr;
-  int r, fh;
+  int r=0, fh;
   struct stat finfo;
   //
   DBG0("cfgRead(%s)", file);
@@ -271,18 +280,15 @@ int cfgRead(char *file) {
   buf[finfo.st_size] = 0;             // note, [x] is last char of malloc(x+1)
   close(fh);
   // parse cfg strings (dos or linux) and return count r
-  r = 0;
   ptr = strtok(buf, "\r\n");
   while (ptr!=NULL) {
-    if (cfgString(ptr)) {
-      r++;
-      flogf( "\n\t%s", ptr);
-    }
+    flogf( "\n\t%s", ptr);
+    if (cfgString(ptr)) { flogf(" !! ERR"); r++;}
     ptr = strtok(NULL, "\r\n");
   }
   free(buf);
   return r;
-}
+} // cfgRead
 
 ///
 // read all vee vars, look for *.*=*, try those as settings
@@ -320,22 +326,22 @@ void cfgDump() {
   for (i=0; i<cfg.cnt; i++) {
     switch (cfgP[i].type) {
     case 'b':
-      sprintf(val, "=%d", *(bool *)cfgP[i].ptr);
+      sprintf(val, "=%d", *(bool *)cfgP[i].ptr.b);
       break;
     case 'c':
-      sprintf(val, "=%s", (char *)cfgP[i].ptr);
+      sprintf(val, "=%s", (char *)cfgP[i].ptr.c);
       break;
     case 'f':
-      sprintf(val, "=%f", *(float *)cfgP[i].ptr);
+      sprintf(val, "=%f", *(float *)cfgP[i].ptr.f);
       break;
     case 'i':
-      sprintf(val, "=%d", *(int *)cfgP[i].ptr);
+      sprintf(val, "=%d", *(int *)cfgP[i].ptr.i);
       break;
     case 'l':
-      sprintf(val, "=%ld", *(long *)cfgP[i].ptr);
+      sprintf(val, "=%ld", *(long *)cfgP[i].ptr.l);
       break;
     case 's':
-      sprintf(val, "=%d", *(short *)cfgP[i].ptr);
+      sprintf(val, "=%d", *(short *)cfgP[i].ptr.s);
       break;
     }
     // write varname=val onto buff

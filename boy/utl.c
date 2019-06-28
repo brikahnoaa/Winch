@@ -60,47 +60,16 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
     strncpy(out, here, len);
   out[len] = 0;
   return len;
-} // all.strMatchAfter
-
-///
-// readWait(1) until we get the expected string (or timeout)
-// in: port, buf for content, expect to watch for, wait timeout
-// uses: utl.buf
-// rets: char* to expected str, or null
-char *utlExpect(Serial port, char *buf, char *expect, int wait) {
-  char *r=NULL;
-  int sz=0;
-  DBG1("utlExpect(%s, %d)", expect, wait);
-  buf[0] = 0;
-  tmrStart(utl_tmr, wait);
-  // loop until expected or timeout
-  while (true) {
-    if (tmrExp(utl_tmr)) {
-      DBG0("utlExpect(%s, %d) timeout", expect, wait);
-      DBG1("->'%s'", buf);
-      return NULL;
-    }
-    if (utlRead(port, utl.buf)) {
-      sz += strlen(utl.buf);
-      if (sz>=BUFSZ) return NULL;
-      strcat(buf, utl.buf);
-    }
-    r = strstr(buf, expect);
-    if (r) break;
-    utlNap(1);
-  }
-  tmrStop(utl_tmr);
-  return r;
-} // utlExpect
+} // utlMatchAfter
 
 ///
 // put block to serial; queue, don't block, it should all buffer
 void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
-  delay = 2 * (int)TUBlockDuration(port, (long)len);
+  delay = 2 + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
-  DBG2("[>>]=%d", sent);
-  // DBG2(">>'%s'", utlNonPrintBlock(out, len));
+  DBG2(" >%d>", sent);
+  DBG3(" >>%d'%s'>>", len, utlNonPrintBlock(out, len));
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock
@@ -109,62 +78,134 @@ void utlWriteBlock(Serial port, char *out, int len) {
 // put string to serial; queue, don't block, it should all buffer
 // uses: utl.str
 void utlWrite(Serial port, char *out, char *eol) {
-  int len, delay, sent;
+  int len;
   strcpy(utl.str, out);
-  if (eol!=NULL)
-    strcat(utl.str, eol);
+  if (eol!=NULL) strcat(utl.str, eol);
   len = strlen(utl.str);
-  delay = CHAR_DELAY + (int)TUBlockDuration(port, (long)len);
-  sent = (int)TUTxPutBlock(port, utl.str, (long)len, (short)delay);
-  DBG2(">>=%d", sent);
-  DBG3(">>'%s'", utlNonPrint(utl.str));
-  if (len!=sent) 
-    flogf("\nERR\t|utlWrite(%s) sent %d of %d", out, sent, len);
+  utlWriteBlock(port, utl.str, len);
 } // utlWrite
 
 ///
-// read all the chars on the port, with a normal char delay
-// char *in should be BUFSZ
-// returns: len
+// read all the chars on the port, with a normal char delay; discard nulls=0
+// char *in should be BUFSZ, null terminated string
+// returns: *in 1=overrun
 int utlRead(Serial port, char *in) {
-  int len = 0;
-  if (TURxQueuedCount(port)<1) return 0;
-  // len = (int) TURxGetBlock(port, in, (long)BUFSZ, (short)CHAR_DELAY);
+  short ch;
+  int len;
   for (len=0; len<BUFSZ; len++) {
-    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
-    if (in[len]<0) break;
+    ch = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
+    if (ch<0) break; // timeout
+    if (ch==0) len--; // discard null
+    else in[len] = (char) ch;
   }
   in[len]=0;            // string
-  DBG2("<<=%d", len);
-  DBG3("<<'%s'", utlNonPrint(in));
-  return len;
+  DBG2(" <%d<", len);
+  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
+  if (len>=BUFSZ) return 1;
+  return 0;
 } // utlRead
 
 ///
 // delay up to wait seconds for first char, null terminate
 // assumes full string arrives promptly after a delay of several seconds
-// return: length
+// rets: *in 1=TO
 int utlReadWait(Serial port, char *in, int wait) {
-  int len;
-  in[0] = TURxGetByteWithTimeout(port, (short) wait*1000);
-  utlPet(); // could have been a long wait
-  if (in[0]<=0) {
-    // timeout
-    in[0]=0;
-    return 0;
-  } 
-  // rest of input, note utlRead exits if nothing queued
-  for (len=1; len<BUFSZ; len++) {
-    in[len] = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
-    if (in[len]<0) break;
+  tmrStart(second_tmr, wait);
+  // wait for a char
+  while (!TURxQueuedCount(port)) {
+    utlX(); // twiddle thumbs
+    if (tmrExp(second_tmr)) {
+      in[0] = 0;
+      return 1;
+    }
   }
-  in[len]=0;            // string
-  DBG2("<<(%d)=%d", wait, len);
-  DBG2("<<'%s'", utlNonPrint(in));
-  return len;
+  utlRead(port, in);
+  return 0;
 }
 
-// ?? check out __DATE__, __TIME__
+///
+// utlRead until we get the expected string (or timeout)
+// note: reads past *expect if chars streaming, see utlGetUntil()
+// in: port, buf for content, expect to watch for, wait timeout
+// uses: utl.buf
+// rets: char* to expected str, or null
+char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
+  char *r=NULL;
+  int l, sz=0;
+  DBG1("utlReadExpect(%s, %d)", expect, wait);
+  in[0] = 0;
+  tmrStart(utl_tmr, wait);
+  // loop until expected or timeout
+  while (true) {
+    utlRead(port, utl.buf);
+    l = strlen(utl.buf);
+    if (l) {
+      if (sz+l>=BUFSZ) return NULL;
+      strcat(in, utl.buf);
+      sz += l;
+    }
+    r = strstr(in, expect);
+    if (r) break;
+    if (tmrExp(utl_tmr)) {
+      DBG0("utlReadExpect(%s, %d) timeout", expect, wait);
+      return NULL;
+    }
+    utlNap(1);
+  }
+  tmrStop(utl_tmr);
+  return r;
+} // utlReadExpect
+
+///
+// read all the chars on the port, with a normal char delay; discard nulls=0
+// like utlRead but stops reading on char match
+// char *in should be BUFSZ, returns null terminated string
+// rets: *in 1=overrun
+int utlGetUntil(Serial port, char *in, char *lookFor) {
+  short ch;
+  int len;
+  for (len=0; len<BUFSZ; len++) {
+    ch = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
+    if (strchr(lookFor, ch)) break; // target char
+    if (ch<0) break; // timeout
+    if (ch==0) len--; // discard null
+    else in[len] = (char) ch;
+  }
+  in[len]=0;            // string
+  DBG2(" <%d<", len);
+  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
+  if (len>=BUFSZ) return 1;
+  return 0;
+} // utlGetUntil
+
+///
+// wait then read chars until match in char *lookFor
+// delay up to wait seconds for first char, null terminate
+// like utlReadWait but stops reading on char match
+// rets: *in 1=TO
+int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
+  in[0] = 0;
+  tmrStart(second_tmr, wait);
+  // wait for a char
+  while (!TURxQueuedCount(port)) {
+    utlX(); // twiddle thumbs
+    if (tmrExp(second_tmr)) return 1;
+    utlNap(1);
+    DBG1(".");
+  }
+  utlGetUntil(port, in, lookFor);
+  return 0;
+} // utlGetUntilWait
+
+///
+// wrapper for 
+int utlGetBlock(Serial port, char *buff, int msgSz, int respms) {
+  int got;
+  got = (int) TURxGetBlock(port, buff, (long)msgSz, (short)respms);
+  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(buff, got));
+  return got;
+}
+
 
 ///
 // write time to log file
@@ -181,7 +222,7 @@ char *utlTime(void) {
   time(&secs);
   tim = gmtime(&secs);
   sprintf(utl.ret, "%02d:%02d:%02d",
-          tim->tm_hour, tim->tm_min, tim->tm_sec);
+      tim->tm_hour, tim->tm_min, tim->tm_sec);
   return utl.ret;
 } // utlTime
 
@@ -234,25 +275,33 @@ char *utlDateTimeS16(void) {
 } // utlDateTimeS16
 
 ///
+// rets: time(gps)
+int utlDateTimeToSecs(time_t *ret, char *date, time_t *time) {
+  struct tm t;
+  char *s;
+  strcpy(utl.str, date);
+  if (!(s = strtok(utl.str, " -:."))) return 1;
+  t.tm_mon = atoi(s) - 1;
+  if (!(s = strtok(NULL, " -:."))) return 2;
+  t.tm_mday = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return 3;
+  t.tm_year = atoi(s) - 1900;
+  strcpy(utl.str, time);
+  if (!(s = strtok(utl.str, " -:."))) return 4;
+  t.tm_hour = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return 5;
+  t.tm_min = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) return 6;
+  t.tm_sec = atoi(s);
+  *ret = mktime(&t);
+  return 0;
+} // utlDateTimeToSec
+
+///
 // format non-printable string; null terminate
 // returns: global char *utl.ret
 char *utlNonPrint (char *in) {
-  unsigned char ch;
-  char *out = utl.ret;
-  int i, o;
-  // walk thru input until 0 or BUFSZ
-  i = o = 0;
-  while (in[i] && o<BUFSZ-6) {
-    ch = in[i++];
-    if ((ch<32)||(ch>126)) {
-      // non printing char
-      sprintf(out+o, " x%02X ", ch);
-      o += 5;     // five char hex ' x1A '
-    } else 
-      out[o++] = ch;
-  }
-  out[o] = 0;
-  return (out);
+  return (utlNonPrintBlock(in, strlen(in)));
 } // utlNonPrint
 
 ///
@@ -262,16 +311,23 @@ char *utlNonPrintBlock (char *in, int len) {
   unsigned char ch;
   char *out = utl.ret;
   int i, o;
-  // copy len bytes
+  // copy len bytes - note, o grows faster than i
   i = o = 0;
-  while (len--) {
+  while (i<len) {
     ch = in[i++];
-    if ((ch<32)||(ch>126)) {
+    if (ch==0x0A) {
+      sprintf(out+o, "\\n ");
+      o += 3;
+    } else if (ch==0x0D) {
+      sprintf(out+o, " \\r");
+      o += 3;
+    } else if ((ch<32)||(ch>126)) {
       // non printing char
       sprintf(out+o, " x%02X ", ch);
       o += 5;     // five char hex ' x1A '
-    } else 
+    } else {
       out[o++] = ch;
+    }
   }
   out[o] = 0;
   return (out);
@@ -301,9 +357,9 @@ int utlLogOpen(int *log, char *base) {
   char path[64];
   static char *self="utlLogOpen";
   DBG();
+  if (*log) {close(*log); *log=0;}
   utlLogPathName(path, base, all.cycle);
   flags = O_APPEND | O_CREAT | O_WRONLY;
-  *log=0;
   fd = open(path, flags);
   if (fd<=0) {
     sprintf(utl.str, "open ERR %d (errno %d), path %s", fd, errno, path);
@@ -333,8 +389,8 @@ int utlLogClose(int *fd) {
   DBG();
   if (*fd<1) return 0;   // no fd
   f=*fd;
-  DBG2("\n%s():%d ", self, f);
   *fd=0;
+  DBG2("\n%s():%d ", self, f);
   if (close(f)<0) {
     flogf("\n%s(): ERR closing file (fd=%d)", self, f);
     return 1;
@@ -393,7 +449,7 @@ void utlTestLoop(void) {
 void utlX(void) {
   char c;
   // ?? pwrChk();
-  // ?? utlPet();
+  utlPet();
   // console?
   if (cgetq()) {
     if (!utl.ignoreCon) {
