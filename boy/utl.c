@@ -63,7 +63,7 @@ int utlMatchAfter(char *out, char *str, char *sub, char *set) {
 } // utlMatchAfter
 
 ///
-// put block to serial; queue, don't block, it should all buffer
+// put block to serial
 void utlWriteBlock(Serial port, char *out, int len) {
   int delay, sent;
   delay = 2 + (int)TUBlockDuration(port, (long)len);
@@ -88,7 +88,7 @@ void utlWrite(Serial port, char *out, char *eol) {
 ///
 // read all the chars on the port, with a normal char delay; discard nulls=0
 // char *in should be BUFSZ, null terminated string
-// returns: *in 1=overrun
+// returns: *in (string), 1=overrun
 int utlRead(Serial port, char *in) {
   short ch;
   int len;
@@ -126,8 +126,8 @@ int utlReadWait(Serial port, char *in, int wait) {
 ///
 // utlRead until we get the expected string (or timeout)
 // note: reads past *expect if chars streaming, see utlGetUntil()
-// in: port, buf for content, expect to watch for, wait timeout
-// uses: utl.buf
+// args: port, buf for content, expect to watch for, wait timeout
+// uses: utl.buf // sets: *in (string)
 // rets: char* to expected str, or null
 char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
   char *r=NULL;
@@ -136,7 +136,11 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
   in[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
-  while (true) {
+  while (!r) { // !strstr
+    if (tmrExp(utl_tmr)) {
+      DBG0("utlReadExpect(%s, %d) timeout", expect, wait);
+      return NULL;
+    }
     utlRead(port, utl.buf);
     l = strlen(utl.buf);
     if (l) {
@@ -145,14 +149,8 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
       sz += l;
     }
     r = strstr(in, expect);
-    if (r) break;
-    if (tmrExp(utl_tmr)) {
-      DBG0("utlReadExpect(%s, %d) timeout", expect, wait);
-      return NULL;
-    }
-    utlNap(1);
-  }
-  tmrStop(utl_tmr);
+    utlX();
+  } // !strstr
   return r;
 } // utlReadExpect
 
@@ -198,10 +196,11 @@ int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
 } // utlGetUntilWait
 
 ///
-// wrapper for 
-int utlGetBlock(Serial port, char *buff, int msgSz, int respms) {
+// wrapper for TURxGetBlock
+// rets: got bytes
+int utlGetBlock(Serial port, char *buff, int max, int respms) {
   int got;
-  got = (int) TURxGetBlock(port, buff, (long)msgSz, (short)respms);
+  got = (int) TURxGetBlock(port, buff, (long)max, (short)respms);
   DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(buff, got));
   return got;
 }
