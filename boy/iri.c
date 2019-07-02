@@ -22,12 +22,13 @@ void iriInit(void) {
   irid.port = antPort();
   if (!irid.port)
     utlErr(iri_err, "no irid.port, was iriInit called before antInit?");
-  // we malloc GpsStats instead of static to make swapping them easier
-  irid.stats1 = malloc(sizeof(GpsStats));
-  irid.stats2 = malloc(sizeof(GpsStats));
   iriBufMalloc();
 } // iriInit
 
+///
+// called by iriInit, also by iriStart if buf size changes
+// uses: iri.blkSz
+// sets: irid.blkSz .buf .block
 void iriBufMalloc(void) {
   static char *self="iriBufMalloc";
   DBG1("\n%s: setting blkSize to %d", self, iri.blkSz);
@@ -55,8 +56,8 @@ int iriStart(void) {
   if (irid.blkSz != iri.blkSz) iriBufMalloc();
   if (iri.baud>0 && iri.baud<9600) {
     RTCElapsedTimerSetup(&irid.timer);
-    // usec per byte //  10^6(usec) * 10(bits) / baud
-    irid.usec = (long)pow(10, 7) / iri.baud;
+    // usec per byte 
+    irid.usec = TUBlockDuration(irid.port, 1L) * 9600 / iri.baud;
   } else irid.usec = 0L;
   // log?
   if (iri.logging) 
@@ -89,23 +90,30 @@ void iriStop(void) {
 
 ///
 // get gps date time twice, err if not consistent
-// rets: stats->date,time 
+// sets: irid.stats
+// rets: *stats
 int iriDateTime(GpsStats *stats) {
   static char *self="iriDateTime";
-  static char *rets="1=iriSats 2=small >5=differ";
-  GpsStats stats1;
-  time_t secs1, secs;
-  int diff;
+  static char *rets="1=iriSats 2=getFail 3=badTime >5=differ";
+  time_t secs, secs2, diff;
   DBG();
   if (iriSats()) raise(1);
-  iriDateTimeGet(&stats1);
-  iriDateTimeGet(stats);
-  utlDateTimeToSecs(&secs1, stats1.date, stats1.time);
+  if (iriDateTimeGet(stats)) raise(2);
+  if (iriDateTimeGet(&irid.stats)) raise(2);
   utlDateTimeToSecs(&secs, stats->date, stats->time);
-  // now is about 1.5Msec
-  if (secs<pow(10, 9) || secs>pow(10, 9)*2) raise(2);
-  diff = (int) (secs1 - secs);
-  if (abs(diff)>5) raise(diff);
+  utlDateTimeToSecs(&secs2, irid.stats.date, irid.stats.time);
+  // now is about 1.5Msec, sanity check 1M<now<2M
+  if (secs<pow(10, 9) || secs>pow(10, 9)*2) raise(3);
+  // compare two readings
+  diff = secs - secs2;
+  if (abs((int)diff)>5) raise((int)diff);
+  diff = time(0) - secs2;
+  if (abs((int)diff)>1) {
+    flogf("\n%s(%s %s)\t| system time off by %ld seconds",
+        self, stats->date, stats->time, diff);
+    RTCSetTime(secs2, NULL);
+  }
+  flogf("\n%s: %s  %s", self, stats->date, stats->time);
   return 0;
   //
   except: {flogf(" %s", rets); return dbg.x;}
@@ -118,15 +126,11 @@ int iriDateTimeGet(GpsStats *stats) {
   utlWrite(irid.port, "at+pd", EOL);
   if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 2;
   utlMatchAfter(all.str, all.buf, "Date=", "-0123456789");
-  flogf(" Date=%s", all.str);
   strcpy(stats->date, all.str);
   utlWrite(irid.port, "at+pt", EOL);
   if (!utlReadExpect(irid.port, all.buf, "OK", 12)) return 3;
   utlMatchAfter(all.str, all.buf, "Time=", ".:0123456789");
-  flogf(" Time=%s", all.str);
   strcpy(stats->time, all.str);
-  if (iri.setTime) 
-    iriSetTime(stats);
   return 0;
 } // iriDateTimeGet
 
@@ -147,25 +151,6 @@ int iriLatLng(GpsStats *stats){
   strcpy(stats->lng, all.str);
   return 0;
 } // iriLatLng
-
-///
-// sets: system time
-int iriSetTime(GpsStats *stats) {
-  static char *self="iriSetTime";
-  static char *rets="1=nullInput +10=utlDateTimeToSec";
-  time_t gpsSeconds, diff;
-  if (!stats->date || !stats->time) raise(1);
-  if (utlDateTimeToSecs(&gpsSeconds, stats->date, stats->time)) raise(2);
-  diff = time(0) - gpsSeconds;
-  if (diff < -2L || diff > 2L) {
-    flogf("\n%s(%s %s)\t| off by %ld seconds", 
-        self, stats->date, stats->time, diff);
-    RTCSetTime(gpsSeconds, NULL);
-  }
-  return 0;
-  // 
-  except: {flogf(" %s", rets); return dbg.x;}
-} // iriSetTime
 
 ///
 // sets: irid.sats

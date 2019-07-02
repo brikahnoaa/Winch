@@ -30,8 +30,7 @@ typedef struct IriInfo {
 } IriInfo;
 
 typedef struct IriData {
-  GpsStats *stats1;         // we read stats, repeat
-  GpsStats *stats2;         // ... until two match
+  GpsStats stats;           // we read stats, repeat, compare
   RTCTimer timer;           // elapsed usec timer for slower baud
   Serial port;
   uchar *block;             // offset into buf for file transfer
@@ -48,7 +47,6 @@ static int iriCRC(uchar *buf, int cnt);
 static int iriDateTimeGet(GpsStats *stats);
 static int iriSats(void);
 static int iriSendSlow(uchar *c, int len);
-static int iriSetTime(GpsStats *stats);
 static void iriBufMalloc(void);
 
 int iriDateTime(GpsStats *stats);
