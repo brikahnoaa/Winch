@@ -44,6 +44,7 @@ void iriBufMalloc(void) {
 // sets: irid.projHdr .blkSz .buf .block .usec
 int iriStart(void) {
   static char *self="iriStart";
+  long usec;
   int cs;
   DBG0("iriStart() %s", utlTime());
   // set projHdr to 13 char project header, 0 in byte 14
@@ -57,7 +58,9 @@ int iriStart(void) {
   if (iri.baud>0 && iri.baud<9600) {
     RTCElapsedTimerSetup(&irid.timer);
     // usec per byte 
-    irid.usec = TUBlockDuration(irid.port, 1L) * 9600 / iri.baud;
+    usec = TUBlockDuration(irid.port, 1000L);
+    DBG4("%s: usec=%ld", self, usec);
+    irid.usec = usec * 9600 / iri.baud;
   } else irid.usec = 0L;
   // log?
   if (iri.logging) 
@@ -415,8 +418,10 @@ int iriProcessCmds(uchar *buff) {
 int iriLandResp(uchar *buff) {
   static char *self="LandResp";
   static char *rets="1=respTimeout";
-  if (utlGetUntilWait(irid.port, buff, "\n", iri.landResp)) raise(1);
+  int r;
+  r = utlGetUntilWait(irid.port, buff, "\n", iri.landResp);
   flogf("\n%s(%s)", self, utlNonPrint(buff));
+  if (r) raise(1);
   return 0;
   //
   except: {flogf(" %s", rets); return dbg.x;}

@@ -26,16 +26,16 @@ void main(void){
   //
   utlWrite(irid.port, "at", "\r");
   //
-  printf("\ndbg.t1=length=%d iri.baud=%d", dbg.t1, iri.baud);
+  cprintf("\ndbg.t1=length=%d iri.baud=%d", dbg.t1, iri.baud);
   antSwitch(irid_ant);
   iriSig();
-  help = "q=quit '=cmd g=gps i=iri p=prompt s=sig c=call b=blk h=hdr ?=hlp";
-  printf ("\n%s\n", help);
+  help = "q=quit '=cmd g=gps i=iri s=sig c=call b=blk h=hdr x=hup ?=hlp";
+  cprintf ("\n%s\n", help);
   while (run) {
     if ((cnt = utlGetBlock(port, all.buf, BUFSZ, 500)))
-      utlNonPrintBlock(all.buf, cnt);
+      cprintf("\n<%d'%s'<", cnt, utlNonPrintBlock(all.buf, cnt));
+    cprintf("\n");
     cnt = getstr(all.str, 999);
-    printf("\n");
     if (cnt==0) continue;
     if (all.str[0]=='\'') { // input, tick==cmdmode
       switch(all.str[1]) {
@@ -48,7 +48,7 @@ void main(void){
         case 'x': iriHup(); break;
         case 'b': x=dbg.t1; y=dbg.t2; block(x?x:128, y?y:1); break;
         case 'h': header(); break;
-        case '?': printf ("\n%s\n", help); break;
+        case '?': cprintf ("\n%s\n", help); break;
       } // case
     } else {
       utlWrite(port, all.str, "\r");

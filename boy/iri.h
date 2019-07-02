@@ -40,7 +40,7 @@ typedef struct IriData {
   int log;                  // log of file transfers
   int sats;
   int signal;
-  unsigned long usec;       // microsec delay calculated from rudBaud/sendSz
+  unsigned long usec;       // microsec delay per char, TUBlDu* 9600/iri.baud
 } IriData;
 
 static int iriCRC(uchar *buf, int cnt);
