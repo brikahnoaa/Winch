@@ -1,0 +1,17 @@
+#ifndef DEFS_OOP
+#define DEFS_OOP
+
+using namespace std;
+
+#include <string>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
+const _Ios_Fmtflags IOSFLAGS = (ios::skipws|ios::dec|ios::showpoint|ios::unitbuf);
+
+#include <defs.p>
+#include <swiftware.oop>
+#include <utils.oop>
+
+#endif // DEFS_OOP 

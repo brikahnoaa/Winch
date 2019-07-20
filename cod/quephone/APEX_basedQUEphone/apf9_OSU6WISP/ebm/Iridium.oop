@@ -1,0 +1,96 @@
+#ifndef IRIDIUM_OOP
+#define IRIDIUM_OOP
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: Iridium.oop,v 1.1 2006/11/18 17:42:37 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * RCS Log:
+ *
+ * $Log: Iridium.oop,v $
+ * Revision 1.1  2006/11/18 17:42:37  swift
+ * Energy model for iridium floats.
+ *
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+/*========================================================================*/
+/*                                                                        */
+/*========================================================================*/
+template <class BatteryPack>
+class Iridium
+{ 
+   // data members
+   private:
+
+      // define the power consumption for continuous STP measurements
+      const float power;
+
+      // define the transfer rate in bytes per second
+      const time_t bps;
+
+      // define the amount of time required to login to the remote computer
+      const time_t login_sec;
+
+      // define the energy consumed getting a GPS fix
+      const float gps_power;
+
+      // define the amount of time required to get a GPS fix
+      const time_t gps_fix_time;
+      
+   // function members
+   public:
+
+      // initializer constructor
+      Iridium(void);
+
+
+      /// Return the energy consumed by continuous STP sampling
+      double EnergyCost(size_t bytes) const;
+
+      /// return the login/logout overhead
+      time_t LoginTime(void) const {return login_sec;}
+      
+      /// function to write properties
+      void Properties(ostream &dest=cout) const;
+
+      /// return the transfer rate
+      double BytesPerSec(void) const {return bps;}
+};
+
+/*------------------------------------------------------------------------*/
+/*                                                                        */
+/*------------------------------------------------------------------------*/
+template <class BatteryPack>
+Iridium<BatteryPack>::Iridium(void):
+      power(4.2),          // power consumption by Iridium modem (Watts)
+      bps(160),            // data throughput (bytes per second)
+      login_sec(60),       // time required to establish and break login (sec)
+      gps_power(0.221),    // power consumption of the GPS module (Watts)
+      gps_fix_time(120)    // time required to acquire GPS fix (sec)
+{}
+
+/*------------------------------------------------------------------------*/
+/* return the                                                             */
+/*------------------------------------------------------------------------*/
+template <class BatteryPack>
+double Iridium<BatteryPack>::EnergyCost(size_t bytes) const
+{
+   return power*(bytes/bps + login_sec) + gps_power*gps_fix_time;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to write properties                                           */
+/*------------------------------------------------------------------------*/
+template <class BatteryPack>
+void Iridium<BatteryPack>::Properties(ostream &dest) const
+{
+   fprintf(dest,"$ Telemetry model:      %s\n"
+             "$    Power consumption during connect:            %0.1f Watts\n"
+             "$    Effective data transmission rate:            %d bytes per second\n"
+             "$    Time required to establish and break login:  %d sec\n"
+             "$    Power consumption by GPS module:             %g Watts\n"
+             "$    Typical time required to acquire GPS fix:    %d sec\n"
+             "$\n","Iridium (Daytona 9522A)",power,bps,login_sec,
+             gps_power,gps_fix_time);
+}
+
+#endif // IRIDIUM_OOP

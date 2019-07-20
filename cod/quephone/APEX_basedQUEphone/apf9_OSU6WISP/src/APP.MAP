@@ -1,0 +1,1083 @@
+Linker command line:
+
+-z -Mapp.map -H+app.sym -pvectors=00h,text,stack=2000h \
+  -prbit=0110h/022h,rdata/text,rbss/. \
+  -pdata=stack/rdata,const,strings,bss/. -pfarbss=010000h,fardata/strings \
+  -ga/10000h -pnvram=bss -pheap=nvram -ACODE=00h-0FFFFh,010000h-01FFFFhx255 \
+  -pfarnvram=fardata -oapp.o apf9main.obj cmds.obj control.obj telemetr.obj \
+  profile.obj descent.obj park.obj godeep.obj prelude.obj eeprom.obj \
+  engine.obj upload.obj download.obj clogin.obj config.obj lbt9522.obj \
+  pactivat.obj recovery.obj gps.obj quecom.obj ../lib/apex.lib \
+  ../apf9lib/apf9.lib ../lib/apex.lib ../apf9lib/apf9.lib \
+  c:/HT-XA/LIB/XA--LF.LIB c:/HT-XA/LIB/XA--LC.LIB 
+
+Object code version is 3.7
+
+Machine type is XA
+
+		Name         Link     Load   Length Selector Space Scale
+apf9main.obj    code        4455C    4455C       56       4     0
+		const        3416     1A8E        4       0     0
+		ltext       1FF3E    1FF3E       BC       1     0
+cmds.obj        const        341A     1A92        A       0     0
+		bss          64B8     64B8        2       0     1
+		data         2000      678        8       0     0
+		code        14ADC    14ADC     45BC       1     0
+		ltext        4B30     4B30     8E14       0     0
+		strings      3958     1FD0       40       0     0
+control.obj     bss          64BA     64BA        8       0     1
+		strings      3998     2010      1EC       0     0
+		code        39006    39006      7DE       3     0
+		ltext       21D72    21D72     1B4C       2     0
+		nvram        65FC     65FC       1A       0     1
+		farnvram    10200     4B30       44       0     1
+telemetr.obj    strings      3B84     21FC      278       0     0
+		code        41B84    41B84      262       4     0
+		ltext       33C1C    33C1C      BBA       3     0
+profile.obj     const        3424     1A9C      122       0     0
+		strings      3DFC     2474       86       0     0
+		nvram        6616     6616       38       0     1
+		farnvram    10244     4B74      362       0     1
+		code        409A6    409A6      2B2       4     0
+		ltext       2C960    2C960     1218       2     0
+descent.obj     strings      3E82     24FA       1A       0     0
+		nvram        664E     664E        4       0     1
+		code        44064    44064       A4       4     0
+		ltext       3EE74    3EE74      45E       3     0
+park.obj        bss          64C2     64C2        4       0     1
+		strings      3E9C     2514       3A       0     0
+		code        42EC0    42EC0      184       4     0
+		ltext       3656A    3656A      8D6       3     0
+godeep.obj      code        443FA    443FA       86       4     0
+		ltext       42B98    42B98      1A0       4     0
+prelude.obj     strings      3ED6     254E       16       0     0
+		code        441AC    441AC       A2       4     0
+		ltext       4265A    4265A      1CA       4     0
+eeprom.obj      bss          64C6     64C6       E0       0     1
+		code        42824    42824      1BC       4     0
+		ltext        F960     F960      62A       0     0
+engine.obj      strings      3EEC     2564       2A       0     0
+		code        44894    44894       1E       4     0
+		ltext       3AB7C    3AB7C      5DC       3     0
+upload.obj      const        3546     1BBE        6       0     0
+		bss          65A6     65A6        C       0     1
+		data         2008      680        A       0     0
+		strings      3F16     258E      158       0     0
+		nvram        6652     6652        2       0     1
+		code        3F2D2    3F2D2      3FA       3     0
+		ltext        D944     D944     201C       0     0
+download.obj    data         2012      68A        2       0     0
+		strings      406E     26E6       1E       0     0
+		code        4223A    4223A      216       4     0
+		ltext       3E0E4    3E0E4      4A0       3     0
+clogin.obj      code        43044    43044      15E       4     0
+		ltext       40000    40000      350       4     0
+config.obj      const        354C     1BC4       F8       0     0
+		strings      408C     2704      F74       0     0
+		nvram        6654     6654      104       0     1
+		code        3F6CC    3F6CC      3D8       3     0
+		ltext       1C124    1C124     2B90       1     0
+lbt9522.obj     strings      5000     3678      10C       0     0
+		code        3B724    3B724      58E       3     0
+		ltext       238BE    238BE     169C       2     0
+pactivat.obj    strings      510C     3784        E       0     0
+		code        43FBE    43FBE       A6       4     0
+		ltext       40C58    40C58      2A0       4     0
+recovery.obj    strings      511A     3792       20       0     0
+		nvram        6758     6758        2       0     1
+		ltext       41196    41196      280       4     0
+gps.obj         strings      513A     37B2       BE       0     0
+		nvram        675A     675A        4       0     1
+		code        40680    40680      326       4     0
+		ltext       347D6    347D6      A34       3     0
+quecom.obj      data         2014      68C        2       0     0
+		strings      51F8     3870       4E       0     0
+		nvram        675E     675E       16       0     1
+		code        4201E    4201E      21C       4     0
+		ltext       376F6    376F6      89C       3     0
+
+../lib/apex.lib
+chat.obj        strings      5246     38BE       1C       0     0
+		code        3FAA4    3FAA4      35C       3     0
+		ltext       3201E    3201E      F5E       3     0
+crc16bit.obj    ltext       442E4    442E4       8E       4     0
+expect.obj      strings      5262     38DA       14       0     0
+		code        43792    43792      116       4     0
+		ltext       3C226    3C226      552       3     0
+extract.obj     data         2016      68E     1002       0     0
+		ltext       43556    43556      124       4     0
+garmin.obj      strings      5276     38EE       8C       0     0
+		code        3B158    3B158      5CC       3     0
+		ltext       2DB78    2DB78     10B8       2     0
+logger.obj      data         3018     1690        C       0     0
+		strings      5302     397A      148       0     0
+		nvram        6774     6774        A       0     1
+		code        43BB0    43BB0       EA       4     0
+		ltext       3520A    3520A      A2C       3     0
+login.obj       strings      544A     3AC2       38       0     0
+		code        429E0    429E0      1B8       4     0
+		ltext       3BCB2    3BCB2      574       3     0
+modem.obj       const        3644     1CBC        4       0     0
+		strings      5482     3AFA       8A       0     0
+		code        40EF8    40EF8      29E       4     0
+		ltext       397E4    397E4      6BE       3     0
+nan.obj         ltext       42D38    42D38      188       4     0
+nmea.obj        const        3648     1CC0       20       0     0
+		strings      550C     3B84      188       0     0
+		code        41910    41910      274       4     0
+		ltext       2EC30    2EC30     108A       2     0
+regcomp.obj     bss          65B2     65B2        A       0     1
+		data         3024     169C      1CE       0     0
+		strings      5694     3D0C      4B4       0     0
+		ltext       19098    19098     308C       1     0
+regerror.obj    data         31F2     186A       6C       0     0
+		strings      5B48     41C0      2A4       0     0
+		ltext       431A2    431A2      146       4     0
+regexec.obj     ltext       10000    10000     4ADC       1     0
+regfree.obj     ltext       43F12    43F12       AC       4     0
+rx.obj          data         325E     18D6        4       0     0
+		strings      5DEC     4464       10       0     0
+		code        3A55C    3A55C      620       3     0
+		ltext       2A398    2A398     13A2       2     0
+seascan.obj     const        3668     1CE0        A       0     0
+		bss          65BC     65BC        2       0     1
+		strings      5DFC     4474       4A       0     0
+		code        43E4A    43E4A       C8       4     0
+		ltext       35C36    35C36      934       3     0
+serial.obj      strings      5E46     44BE        4       0     0
+		code        3C778    3C778      53A       3     0
+		ltext       1ECB4    1ECB4     128A       1     0
+snprintf.obj    bss          65BE     65BE        6       0     1
+		strings      5E4A     44C2       22       0     0
+		code        1FFFA    1FFFA        6       1     0
+		ltext       42450    42450      20A       4     0
+stdio.obj       data         3262     18DA       18       0     0
+		strings      5E6C     44E4       BC       0     0
+		nvram        677E     677E       1E       0     1
+		ltext       20000    20000     1D72       2     0
+stdlib.obj      ltext       444F2    444F2       6A       4     0
+strtoul.obj     const        3672     1CEA       4A       0     0
+		ltext       3EA0A    3EA0A      46A       3     0
+time.obj        const        36BC     1D34       30       0     0
+		bss          65C4     65C4       16       0     1
+		data         327A     18F2       66       0     0
+		strings      5F28     45A0      226       0     0
+		ltext       27B88    27B88     1434       2     0
+tmparse.obj     strings      614E     47C6       9C       0     0
+		code        43AB2    43AB2       FE       4     0
+		ltext       41416    41416      280       4     0
+xmodem.obj      const        36EC     1D64        8       0     0
+		bss          65DA     65DA        4       0     1
+		strings      61EA     4862       20       0     0
+		code        43424    43424      132       4     0
+		ltext       3DBF4    3DBF4      4F0       3     0
+
+../apf9lib/apf9.lib
+apf9.obj        const        36F4     1D6C        E       0     0
+		bss          65DE     65DE        8       0     1
+		data         32E0     1958        4       0     0
+		strings      620A     4882       5C       0     0
+		farnvram    105A6     4ED6        4       0     1
+		code        2FCBA    2FCBA      330       2     0
+		rbit          110       22        2       0     1    8
+		text           AC       AC        8       0     0
+		ltext       30000    30000     1088       3     0
+		vectors         0        0       88       0     0
+apf9com.obj     const        3702     1D7A       58       0     0
+		data         32E4     195C       24       0     0
+		strings      6266     48DE       3C       0     0
+		farnvram    105AA     4EDA     5000       0     1
+		text           B4       B4        4       0     0
+		vectors         0        0       8C       0     0
+		code         FF8A     FF8A       72       0     0
+		ltext       387F0    387F0      816       3     0
+apf9icom.obj    const        375A     1DD2       58       0     0
+		data         3308     1980       26       0     0
+		strings      62A2     491A       3C       0     0
+		farnvram    155AA     9EDA      C00       0     1
+		text           B8       B8        4       0     0
+		vectors         0        0       84       0     0
+		code        44480    44480       72       4     0
+		ltext       37F92    37F92      85E       3     0
+assert.obj      strings      62DE     4956       26       0     0
+		ltext       4474C    4474C       34       4     0
+conio.obj       bss          65E6     65E6        2       0     1
+		data         332E     19A6       3E       0     0
+		strings      6304     497C       38       0     0
+		farnvram    161AA     AADA       50       0     1
+		rbit          112       23        2       0     1    8
+		text           BC       BC        4       0     0
+		vectors         0        0       AC       0     0
+		code        4482C    4482C       24       4     0
+		ltext       3D6F6    3D6F6      4FE       3     0
+cstring.obj     ltext       438A8    438A8      108       4     0
+ctdio.obj       data         336C     19E4       3E       0     0
+		strings      633C     49B4       38       0     0
+		farnvram    161FA     AB2A     C800       0     1
+		text           C0       C0        4       0     0
+		vectors         0        0       A4       0     0
+		code        43C9A    43C9A       E6       4     0
+		ltext       32F7C    32F7C      CA0       3     0
+doprnt.obj      code        44960    44960        6       4     0
+		ltext       4465C    4465C       42       4     0
+ds2404.obj      const        37B2     1E2A        2       0     0
+		strings      6374     49EC       1C       0     0
+		code        36E40    36E40      8B6       3     0
+		ltext       31088    31088      F96       3     0
+errno.obj       bss          65E8     65E8        2       0     1
+flashio.obj     farnvram    229FA    1732A    4F75E       0     1
+		code        3D1E6    3D1E6      510       3     0
+		ltext       2B73A    2B73A     1226       2     0
+		farbss      10000    10000      200       1     1
+fstring.obj     ltext       40350    40350      330       4     0
+lt1598ad.obj    code        44806    44806       26       4     0
+		ltext       39EA2    39EA2      6BA       3     0
+psd835.obj      rbss           24       24        6       0     1
+		ltext       43D80    43D80       CA       4     0
+tc58v64.obj     strings      6390     4A08       38       0     0
+		farnvram    72158    66A88      33A       0     1
+		code        3FE00    3FE00      1D8       3     0
+		ltext       26594    26594     15F4       2     0
+unistd.obj      ltext       44108    44108       A4       4     0
+vfprintf.obj    const        37B4     1E2C       78       0     0
+		data         33AA     1A22       38       0     0
+		strings      63C8     4A40       2A       0     0
+		ltext       24F5A    24F5A     163A       2     0
+x24c16.obj      strings      63F2     4A6A       9C       0     0
+		ltext       3E584    3E584      486       3     0
+powerup.obj     text           C4       C4       1A       0     0
+rtxa--l.obj     text           DE       DE      108       0     0
+		vectors         0        0        4       0     0
+
+../lib/apex.lib
+fifo.obj        code        432E8    432E8      13C       4     0
+		ltext       3CCB2    3CCB2      534       3     0
+
+../apf9lib/apf9.lib
+
+c:/HT-XA/LIB/XA--LF.LIB
+sprintf.obj     ltext       44716    44716       36       4     0
+fltprnt.obj     const        382C     1EA4       78       0     0
+		data         33E2     1A5A       34       0     0
+		strings      648E     4B06       2A       0     0
+		ltext       28FBC    28FBC     13DC       2     0
+
+c:/HT-XA/LIB/XA--LC.LIB
+abs.obj         ltext       44944    44944        E       4     0
+atof.obj        ltext       41696    41696      27A       4     0
+ctype_.obj      code        439B0    439B0      102       4     0
+evalpoly.obj    ltext       445B2    445B2       56       4     0
+exp.obj         const        38A4     1F1C       28       0     0
+		ltext       4367A    4367A      118       4     0
+fabs.obj        ltext       44850    44850       22       4     0
+floor.obj       ltext       44372    44372       88       4     0
+frexp.obj       ltext       44608    44608       54       4     0
+log.obj         const        38CC     1F44       24       0     0
+		ltext       4424E    4424E       96       4     0
+malloc.obj      bss          65EA     65EA       10       0     1
+		ltext       41DE6    41DE6      238       4     0
+memchr.obj      ltext       448B2    448B2       1C       4     0
+memcmp.obj      ltext       44780    44780       2E       4     0
+memcpy.obj      ltext       448CE    448CE       1C       4     0
+memmove.obj     ltext       446DC    446DC       3A       4     0
+memset.obj      ltext       2FFEA    2FFEA       14       2     0
+strchr.obj      ltext       448FE    448FE       12       4     0
+strcmp.obj      ltext       448EA    448EA       14       4     0
+strcpy.obj      ltext       44952    44952        E       4     0
+strcspn.obj     ltext       447DA    447DA       2C       4     0
+strlen.obj      ltext       44934    44934       10       4     0
+strncmp.obj     ltext       3FFD8    3FFD8       28       3     0
+strncpy.obj     ltext       44872    44872       22       4     0
+strspn.obj      ltext       447AE    447AE       2C       4     0
+strstr.obj      ltext       4469E    4469E       3E       4     0
+tolower.obj     ltext       44910    44910       12       4     0
+toupper.obj     ltext       44922    44922       12       4     0
+ldiv.obj        text          1E6      1E6       FC       0     0
+lmul.obj        text          2E2      2E2       1A       0     0
+asldiv.obj      text          2FC      2FC       24       0     0
+aslmod.obj      text          320      320       24       0     0
+lcmp.obj        text          344      344       12       0     0
+float.obj       text          356      356      310       0     0
+powers.obj      const        38F0     1F68       68       0     0
+fpunder.obj     bss          65FA     65FA        2       0     1
+indir0.obj      text          666      666        6       0     0
+indir1.obj      text          66C      66C        6       0     0
+indir2.obj      text          672      672        6       0     0
+
+TOTAL		Name         Link     Load   Length
+	CLASS	CODE    
+		code        4455C    4455C       56
+		ltext       1FF3E    1FF3E       BC
+		code        14ADC    14ADC     45BC
+		ltext        4B30     4B30     8E14
+		code        39006    39006      7DE
+		ltext       21D72    21D72     1B4C
+		code        41B84    41B84      262
+		ltext       33C1C    33C1C      BBA
+		code        409A6    409A6      2B2
+		ltext       2C960    2C960     1218
+		code        44064    44064       A4
+		ltext       3EE74    3EE74      45E
+		code        42EC0    42EC0      184
+		ltext       3656A    3656A      8D6
+		code        443FA    443FA       86
+		ltext       42B98    42B98      1A0
+		code        441AC    441AC       A2
+		ltext       4265A    4265A      1CA
+		code        42824    42824      1BC
+		ltext        F960     F960      62A
+		code        44894    44894       1E
+		ltext       3AB7C    3AB7C      5DC
+		code        3F2D2    3F2D2      3FA
+		ltext        D944     D944     201C
+		code        4223A    4223A      216
+		ltext       3E0E4    3E0E4      4A0
+		code        43044    43044      15E
+		ltext       40000    40000      350
+		code        3F6CC    3F6CC      3D8
+		ltext       1C124    1C124     2B90
+		code        3B724    3B724      58E
+		ltext       238BE    238BE     169C
+		code        43FBE    43FBE       A6
+		ltext       40C58    40C58      2A0
+		ltext       41196    41196      280
+		code        40680    40680      326
+		ltext       347D6    347D6      A34
+		code        4201E    4201E      21C
+		ltext       376F6    376F6      89C
+		code        3FAA4    3FAA4      35C
+		ltext       3201E    3201E      F5E
+		ltext       442E4    442E4       8E
+		code        43792    43792      116
+		ltext       3C226    3C226      552
+		ltext       43556    43556      124
+		code        3B158    3B158      5CC
+		ltext       2DB78    2DB78     10B8
+		code        43BB0    43BB0       EA
+		ltext       3520A    3520A      A2C
+		code        429E0    429E0      1B8
+		ltext       3BCB2    3BCB2      574
+		code        40EF8    40EF8      29E
+		ltext       397E4    397E4      6BE
+		ltext       42D38    42D38      188
+		code        41910    41910      274
+		ltext       2EC30    2EC30     108A
+		ltext       19098    19098     308C
+		ltext       431A2    431A2      146
+		ltext       10000    10000     4ADC
+		ltext       43F12    43F12       AC
+		code        3A55C    3A55C      620
+		ltext       2A398    2A398     13A2
+		code        43E4A    43E4A       C8
+		ltext       35C36    35C36      934
+		code        3C778    3C778      53A
+		ltext       1ECB4    1ECB4     128A
+		code        1FFFA    1FFFA        6
+		ltext       42450    42450      20A
+		ltext       20000    20000     1D72
+		ltext       444F2    444F2       6A
+		ltext       3EA0A    3EA0A      46A
+		ltext       27B88    27B88     1434
+		code        43AB2    43AB2       FE
+		ltext       41416    41416      280
+		code        43424    43424      132
+		ltext       3DBF4    3DBF4      4F0
+		code        2FCBA    2FCBA      330
+		text           AC       AC      5CC
+		ltext       30000    30000     1088
+		vectors         0        0       AC
+		code         FF8A     FF8A       72
+		ltext       387F0    387F0      816
+		code        44480    44480       72
+		ltext       37F92    37F92      85E
+		ltext       4474C    4474C       34
+		code        4482C    4482C       24
+		ltext       3D6F6    3D6F6      4FE
+		ltext       438A8    438A8      108
+		code        43C9A    43C9A       E6
+		ltext       32F7C    32F7C      CA0
+		code        44960    44960        6
+		ltext       4465C    4465C       42
+		code        36E40    36E40      8B6
+		ltext       31088    31088      F96
+		code        3D1E6    3D1E6      510
+		ltext       2B73A    2B73A     1226
+		ltext       40350    40350      330
+		code        44806    44806       26
+		ltext       39EA2    39EA2      6BA
+		ltext       43D80    43D80       CA
+		code        3FE00    3FE00      1D8
+		ltext       26594    26594     15F4
+		ltext       44108    44108       A4
+		ltext       24F5A    24F5A     163A
+		ltext       3E584    3E584      486
+		code        432E8    432E8      13C
+		ltext       3CCB2    3CCB2      534
+		ltext       44716    44716       36
+		ltext       28FBC    28FBC     13DC
+		ltext       44944    44944        E
+		ltext       41696    41696      27A
+		code        439B0    439B0      102
+		ltext       445B2    445B2       56
+		ltext       4367A    4367A      118
+		ltext       44850    44850       22
+		ltext       44372    44372       88
+		ltext       44608    44608       54
+		ltext       4424E    4424E       96
+		ltext       41DE6    41DE6      238
+		ltext       448B2    448B2       1C
+		ltext       44780    44780       2E
+		ltext       448CE    448CE       1C
+		ltext       446DC    446DC       3A
+		ltext       2FFEA    2FFEA       14
+		ltext       448FE    448FE       12
+		ltext       448EA    448EA       14
+		ltext       44952    44952        E
+		ltext       447DA    447DA       2C
+		ltext       44934    44934       10
+		ltext       3FFD8    3FFD8       28
+		ltext       44872    44872       22
+		ltext       447AE    447AE       2C
+		ltext       4469E    4469E       3E
+		ltext       44910    44910       12
+		ltext       44922    44922       12
+
+	CLASS	DATA    
+		const        3416     1A8E      542
+		bss          64B8     64B8      144
+		data         2000      678     1416
+		strings      3958     1FD0     2B60
+		nvram        65FC     65FC      1A0
+		rbss           24       24        6
+
+	CLASS	FARDATA 
+		farnvram    10200     4B30    62292
+		farbss      10000    10000      200
+
+	CLASS	BITSEG  
+		rbit          110       22        4
+
+
+
+SEGMENTS	Name		Load	Length	 Top	Selector    Space Class
+
+		vectors         000000	000678	000678	       0       0  CODE  
+		rbit            000022	000001	000023	       0       1  BITSEG
+		rbss            000024	000006	00002A	       0       1  DATA  
+		data            000678	00F984	00FFFC	       0       0  DATA  
+		farnvram        004B30	062292	066DC2	       0       1  FARDAT
+		bss             0064B8	000144	0065FC	       0       1  DATA  
+		nvram           0065FC	0001A0	00679C	       0       1  DATA  
+		ltext           010000	010000	020000	       1       0  CODE  
+		farbss          010000	000200	010200	       1       1  FARDAT
+		ltext           020000	00FFFE	02FFFE	       2       0  CODE  
+		ltext           030000	010000	040000	       3       0  CODE  
+		ltext           040000	004966	044966	       4       0  CODE  
+
+
+UNUSED ADDRESS RANGES
+
+	CODE             0FFFC-0FFFF
+	                 2FFFE-2FFFF
+	                 44966-FFFFFF
+
+                                  Symbol Table
+
+_AT                              const    0341A
+_AirPumpRun                      ltext    30040
+_AirSystem                       ltext    33C1C
+_AirValveClose                   ltext    30104
+_AirValveOpen                    ltext    300B0
+_AlmanacTimeStamp                nvram    0675A
+_Amps                            ltext    39EA2
+_Apf9FarRamHi                    const    036FA
+_Apf9FarRamLo                    const    036FE
+_Apf9HeapBase                    bss      065DE
+_Apf9HeapHi                      const    036F4
+_Apf9Init                        ltext    30158
+_Apf9PowerOff                    ltext    30452
+_Apf9StackBase                   bss      065E0
+_Apf9StackLen                    ltext    3058A
+_Apf9StackPeek                   ltext    305CA
+_Apf9StackReserve                const    036F6
+_Apf9StackSize                   const    036F8
+_Apf9Tp1                         ltext    3060C
+_Apf9WakeTime                    ltext    307EE
+_Apf9WakeUpByRtc                 ltext    3078E
+_AscentRate                      data     02000
+_BLOCK_SIZE                      const    03546
+_BadBlock                        farnvram 7215A
+_BadBlockCrc                     farnvram 72158
+_Barometer                       ltext    39ED2
+_BarometerAd8                    ltext    39F46
+_BatAmps                         ltext    39F58
+_BatAmpsAd8                      ltext    39F98
+_BatVolts                        ltext    39FAA
+_BatVoltsAd8                     ltext    39FF6
+_BinMode                         data     03260
+_BufSize                         ltext    3DCF2
+_ByteTimeout                     const    036EC
+_CLogin                          ltext    40000
+_Calc_Crc                        ltext    3C170
+_CheckCanPkt                     ltext    3E04C
+_ChkResendReq                    ltext    0F404
+_CmdMode                         ltext    06168
+_CmdModeRequest                  ltext    06F84
+_Com1Amps                        ltext    3A008
+_Com1AmpsAd8                     ltext    3A048
+_Com1Cts                         ltext    3887E
+_Com1Disable                     ltext    388A8
+_Com1Enable                      ltext    38934
+_Com1RtsAssert                   ltext    38B64
+_Com1RtsClear                    ltext    38B78
+_Com2Amps                        ltext    3A05A
+_Com2AmpsAd8                     ltext    3A09A
+_Com2Cts                         ltext    38BE8
+_Com2Disable                     ltext    38C12
+_Com2Enable                      ltext    38C9E
+_Com2RtsAssert                   ltext    38F06
+_Com2RtsClear                    ltext    38F1A
+_ComIntr                         ltext    387F0
+_Command_exist                   nvram    065FC
+_ConfigGarmin15                  ltext    2DB78
+_ConioActive                     ltext    3D75E
+_ConioDisable                    ltext    3D6F6
+_ConioEnable                     ltext    3D70A
+_ConsoleFifo                     data     0332E
+_ConsoleRxInterrupt              ltext    3D7A4
+_Crc16Bit                        ltext    442E4
+_CrcMode                         data     0325E
+_CtdActiveIo                     ltext    33126
+_CtdAssertModePin                ltext    32F7C
+_CtdAssertTxPin                  ltext    3303C
+_CtdAssertWakePin                ltext    32FDC
+_CtdClearModePin                 ltext    33074
+_CtdClearTxPin                   ltext    33058
+_CtdClearWakePin                 ltext    330D4
+_CtdDisableIo                    ltext    331E8
+_CtdEnableIo                     ltext    3323E
+_CtdFifo                         data     0336C
+_CtdPower                        ltext    33294
+_CtdRxInterrupt                  ltext    33A02
+_DeepProfile                     ltext    21D72
+_DefaultMission                  const    0354C
+_Descent                         ltext    3EE74
+_DescentInit                     ltext    3F036
+_DescentRate                     data     02004
+_DescentTerminate                ltext    3F286
+_DisableNmeaSentence             ltext    2DE4E
+_DownLoadMissionCfg              ltext    3E0E4
+_Ds2404Init                      ltext    31088
+_Ds2404ItfMask                   const    037B2
+_Ds2404RamTest                   ltext    311BA
+_Ds2404Read                      ltext    30802
+_Ds2404Reset                     ltext    31110
+_Ds2404RtfMask                   const    037B3
+_Ds2404StatusByte                ltext    3141E
+_Ds2404Write                     ltext    30A24
+_DspOff                          ltext    23738
+_DspOn                           ltext    236D0
+_DspPwrDpt                       nvram    0675E
+_DspPwrStatus                    nvram    065FE
+_DspStart                        ltext    23788
+_EERead                          ltext    3E584
+_EEReadFloat                     ltext    3E628
+_EEReadLong                      ltext    3E5E0
+_EEReadWord                      ltext    3E670
+_EETest                          ltext    3E79E
+_EEWrite                         ltext    3E6A0
+_EEWriteFloat                    ltext    3E732
+_EEWriteLong                     ltext    3E6F4
+_EEWriteWord                     ltext    3E770
+_EnableNmeaSentence              ltext    2DE6E
+_EngineState                     nvram    06600
+_EotTimeout                      const    036EE
+_FwRev                           const    03416
+_FwStartUp                       ltext    1FF6E
+_GPSlat                          nvram    06768
+_GPSlon                          nvram    0676C
+_Gain                            nvram    06760
+_GetGpsFix                       ltext    2EC30
+_GetGpsTime                      ltext    2F0D4
+_GetP                            ltext    2CD78
+_GetPt                           ltext    3656A
+_GoDeep                          ltext    42B98
+_GoDeepInit                      ltext    42C10
+_GoDeepTerminate                 ltext    42CA0
+_GoProfile                       nvram    06762
+_GpsDisable                      ltext    3804C
+_GpsEnable                       ltext    380C8
+_GpsFifoLen                      ltext    38028
+_GpsFifoSize                     ltext    3803A
+_GpsPin7Assert                   ltext    38298
+_GpsPin7Clear                    ltext    382B4
+_GpsServices                     ltext    347D6
+_HDrive                          ltext    30BFE
+_HMdebug                         nvram    06764
+_InitDUart1                      ltext    3833C
+_InitDUart2                      ltext    38FC4
+_InitVitals                      ltext    21DF2
+_IntervalAlarmCheck              ltext    3147E
+_IntervalAlarmDisable            ltext    314B8
+_IntervalAlarmEnable             ltext    3153E
+_IntervalAlarmGet                ltext    315C4
+_IntervalAlarmSet                ltext    31690
+_IntervalTimerGet                ltext    31716
+_IntervalTimerSet                ltext    317E2
+_IrModemAttention                ltext    238BE
+_IrModemConfigure                ltext    239D0
+_IrModemFwRev                    ltext    23C54
+_IrModemIccid                    ltext    23E52
+_IrModemIccidSet                 ltext    242FA
+_IrModemImei                     ltext    246A2
+_IrModemModel                    ltext    2488C
+_IrModemRegister                 ltext    24A74
+_IrSignalStrength                ltext    24D02
+_IrSkySearch                     ltext    24F06
+_LastTXstatus                    nvram    06652
+_LogAdd                          ltext    3520A
+_LogAttach                       ltext    353A2
+_LogClose                        ltext    35430
+_LogConfiguration                ltext    1E308
+_LogEntry                        ltext    35548
+_LogNmeaSentences                ltext    2DE8E
+_LogOpen                         ltext    3584A
+_LogOpenAuto                     ltext    35922
+_LogPacket                       ltext    3DEEE
+_LogSize                         ltext    359CA
+_LogStream                       ltext    35BE6
+_MAX_UPLOAD_RETRIES              const    03548
+_MagSwitchReset                  ltext    30C5A
+_MagSwitchToggled                ltext    30C94
+_MaxLogSize                      nvram    0677A
+_MaxSessionTime                  bss      065DA
+_MaxTXSize                       data     0200C
+_Max_Detect_Prof                 nvram    06770
+_MinN2ParkPressure               const    0363C
+_MissionControlAgent             ltext    21E2C
+_MissionKill                     ltext    22A6A
+_MissionLaunch                   ltext    229A2
+_MissionParametersRead           ltext    0F960
+_MissionParametersWrite          ltext    0F9F6
+_MissionValidate                 ltext    22A9A
+_ModemCd                         ltext    38362
+_ModemDisable                    ltext    3838C
+_ModemDsr                        ltext    38418
+_ModemDtrAssert                  ltext    38442
+_ModemDtrClear                   ltext    3845C
+_ModemEnable                     ltext    38476
+_ModemFifoLen                    ltext    3855A
+_ModemFifoSize                   ltext    3856C
+_NRetry                          const    036F0
+_No_Response                     nvram    06766
+_PActivate                       ltext    40C58
+_PActivateInit                   ltext    40D34
+_PacketTimeout                   const    036F2
+_Park                            ltext    366D2
+_ParkInit                        ltext    36B42
+_ParkTerminate                   ltext    36BC0
+_ParseTime                       ltext    41416
+_PistonMoveAbs                   ltext    3AB7C
+_PistonMoveAbsWTO                ltext    3ABA2
+_PistonMoveRel                   ltext    3B106
+_PistonPosition                  ltext    3A51A
+_PowerOff                        ltext    22B16
+_Prelude                         ltext    4265A
+_PreludeInit                     ltext    426CA
+_PreludeTerminate                ltext    427EA
+_PrfIdGet                        ltext    0FA7C
+_PrfIdIncrement                  ltext    0FAC2
+_PrfIdSet                        ltext    0FAA2
+_Profile                         ltext    2D2C0
+_ProfileInit                     ltext    2D530
+_ProfileTerminate                ltext    2D9B0
+_Psd835A                         rbss     00024
+_Psd835B                         rbss     00025
+_Psd835C                         rbss     00026
+_Psd835D                         rbss     00027
+_Psd835E                         rbss     00028
+_Psd835G                         rbss     00029
+_Psd835Init                      ltext    43D80
+_QuecomDspExit                   ltext    37E2E
+_QuecomGetDTX                    ltext    37964
+_QuecomInqDisk                   ltext    37E8A
+_QuecomRead                      ltext    37770
+_QuecomSetGPS                    ltext    3785E
+_QuecomSetGain                   ltext    37DCC
+_QuecomSetNCM                    ltext    37D64
+_QuecomSetPMA                    ltext    378DE
+_QuecomWrite                     ltext    376F6
+_REC_BUF_SIZE                    const    0354A
+_RMsg                            ltext    38FEE
+_ReactivatedByE                  nvram    06654
+_Reboot_OK                       data     02014
+_Recovery                        ltext    41196
+_RecoveryInit                    ltext    41396
+_RecoveryMode                    nvram    06656
+_RecoveryTerminate               ltext    4136A
+_RemoveFile                      ltext    0F862
+_ResetGoProfile                  ltext    37956
+_RfSwitchPin2Assert              ltext    3871E
+_RfSwitchPin2Clear               ltext    3873A
+_RfSwitchPin3Assert              ltext    38756
+_RfSwitchPin3Clear               ltext    38772
+_RtcAlarmCheck                   ltext    3189C
+_RtcAlarmDisable                 ltext    318D6
+_RtcAlarmEnable                  ltext    3195C
+_RtcAlarmGet                     ltext    319E2
+_RtcAlarmSet                     ltext    31AAE
+_RtcGet                          ltext    31B34
+_RtcSet                          ltext    31C00
+_Rx                              ltext    2A398
+_SeascanChatFail                 const    03668
+_SeascanEnterCmdMode             ltext    36136
+_SeascanExitCmdMode              ltext    36370
+_SeascanFail                     bss      065BC
+_SeascanGetP                     ltext    363DA
+_SeascanGetPt                    ltext    3640A
+_SeascanNoResponse               const    03669
+_SeascanNullArg                  const    0366A
+_SeascanOk                       const    0366B
+_SeascanParsePT                  ltext    35EC2
+_SeascanParseSerP                ltext    35CFE
+_SeascanPedanticExceptn          const    0366C
+_SeascanPedanticFail             const    0366D
+_SeascanRegExceptn               const    0366E
+_SeascanRegexFail                const    0366F
+_SeascanSerialNumber             ltext    3653A
+_SeascanTooFew                   const    03670
+_SeimacXmit                      ltext    30DBA
+_SelfTest                        ltext    22B32
+_SequencePointsDisplay           ltext    23170
+_SequencePointsValidate          ltext    23334
+_SetAlarm                        ltext    31C86
+_SetBaud                         ltext    30FA2
+_StateGet                        ltext    0FAEE
+_StateSet                        ltext    0FB76
+_Strftime                        ltext    28590
+_TQuantum                        const    03640
+_Tc58v64BadBlockCrc              ltext    265FE
+_Tc58v64BadBlockListGet          ltext    0FC24
+_Tc58v64BadBlockListInit         ltext    26638
+_Tc58v64BadBlockListPut          ltext    0FD94
+_Tc58v64Busy                     ltext    26706
+_Tc58v64Erase                    ltext    2672C
+_Tc58v64ErrorsCorrectable        ltext    0FEEC
+_Tc58v64ErrorsInit               ltext    0FF08
+_Tc58v64ErrorsNoncorrectable     ltext    0FF2A
+_Tc58v64GenEccTbl                ltext    27596
+_Tc58v64Id                       ltext    2692E
+_Tc58v64IncrementErrorsCorrectab ltext    0FF46
+_Tc58v64IncrementErrorsNoncorrec ltext    0FF68
+_Tc58v64Init                     ltext    269F8
+_Tc58v64IsBadBlock               ltext    26594
+_Tc58v64PageGet                  ltext    26C66
+_Tc58v64PageGetNoEcc             ltext    26E94
+_Tc58v64PagePut                  ltext    27094
+_Tc58v64Reset                    ltext    27308
+_Tc58v64WriteConstant            ltext    27376
+_TelIntr                         ltext    3878E
+_Telemetry                       ltext    33EC6
+_TelemetryInit                   ltext    34046
+_TelemetryTerminate              ltext    34168
+_Tm                              ltext    28D02
+_ToD                             ltext    235A4
+_UnixTime                        ltext    3503C
+_UpLoad                          ltext    0D944
+_UpLoadFile                      ltext    0EE3E
+_UpLoadGpsAlmanac                ltext    2EA04
+_Volts                           ltext    3A52C
+_Wait                            ltext    31044
+_WaitTicks                       ltext    31010
+__Bcode                          code     66DC2
+__Bconst                         const    01A8E
+__Bdata                          data     00678
+__Bfardata                       fardata  04B30
+__Bfarnvram                      farnvram 04B30
+__Bltext                         ltext    66DC2
+__Brbit                          rbit     00022
+__Brdata                         rdata    00678
+__Bstrings                       strings  01FD0
+__Hbss                           bss      065FC
+__Hcode                          code     72492
+__Hconst                         const    03958
+__Hdata                          data     03416
+__Hfarbss                        farbss   10200
+__Hfardata                       fardata  10200
+__Hfarnvram                      farnvram 72492
+__Hheap                          heap     0679C
+__Hltext                         ltext    72492
+__Hnvram                         nvram    0679C
+__Hrbit                          rbit     00114
+__Hrbss                          rbss     0002A
+__Hrdata                         rdata    00024
+__Hstack                         stack    02000
+__Hstrings                       strings  064B8
+__Htext                          text     00678
+__Hvectors                       vectors  000AC
+__Lbss                           bss      064B8
+__Lcode                          code     72492
+__Lconst                         const    03416
+__Ldata                          data     02000
+__Lfarbss                        farbss   10000
+__Lfardata                       fardata  10200
+__Lfarnvram                      farnvram 10200
+__Lheap                          heap     0679C
+__Lltext                         ltext    72492
+__Lnvram                         nvram    065FC
+__Lrbit                          rbit     00110
+__Lrbss                          rbss     00024
+__Lrdata                         rdata    00024
+__Lstack                         stack    02000
+__Lstrings                       strings  03958
+__Ltext                          text     000AC
+__Lvectors                       vectors  00000
+__S0                             (abs)    44966
+__ctype_                         code     439B0
+__div_to_l_                      text     00580
+__doprnt                         ltext    290B4
+__fassert                        ltext    4474C
+__fpover                         bss      065FB
+__fpunder                        bss      065FA
+__npowers_                       const    03924
+__powers_                        const    038F0
+_abort                           ltext    444F2
+_abort_transfer                  ltext    3DBF4
+_abs                             ltext    44944
+_accum_dtx                       nvram    0664E
+_alarmDTX                        bss      064BA
+_asctime                         ltext    27B88
+_atof                            ltext    41900
+_atoi                            ltext    3EA0A
+_atol                            ltext    3EA2A
+_blk_end                         data     0200A
+_block_num                       data     02008
+_chat                            ltext    3201E
+_checksum                        ltext    3DD8A
+_clearerr                        ltext    20000
+_clock                           ltext    27BB4
+_com1                            const    03702
+_com2                            const    0372E
+_config_path                     const    0362C
+_configure                       ltext    1C124
+_conio                           data     03340
+_connect                         ltext    397E4
+_convertSeascanP                 ltext    35C36
+_convertSeascanT                 ltext    35C9A
+_cr                              const    03420
+_crc16bit                        ltext    3DE38
+_csnprintf                       ltext    4395A
+_cstrncpy                        ltext    438A8
+_ctdio                           data     0337E
+_ctime                           ltext    27BC8
+_dPdt                            const    03638
+_debugbits                       nvram    06776
+_del                             ltext    3CCB2
+_difftime                        ltext    27CD4
+_divzero_intr                    ltext    3000C
+_doprnt                          ltext    4465C
+_dzero                           farnvram 105A6
+_ecnt1                           bss      065E6
+_errno                           bss      065E8
+_eval_poly                       ltext    445B2
+_exit                            text     001A6
+_exp                             ltext    4367A
+_expect                          ltext    3C226
+_extract                         ltext    43556
+_fabs                            ltext    44850
+_fclose                          ltext    200EC
+_fcloseall                       ltext    20082
+_fcpy                            ltext    4046C
+_fdes                            ltext    201E4
+_fdump                           ltext    20220
+_feof                            ltext    2047A
+_ferror                          ltext    20504
+_fflush                          ltext    20916
+_fformat                         ltext    2058A
+_fgetc                           ltext    205C2
+_fgetpos                         ltext    20730
+_fgets                           ltext    207BE
+_fidnext                         ltext    2B73A
+_fileno                          ltext    208BA
+_finite                          ltext    42D38
+_fioFind                         ltext    2B7D2
+_fioFormat                       ltext    2B886
+_fioGet                          ltext    2B8C6
+_fioInit                         ltext    2BCE0
+_fioLen                          ltext    2BDBA
+_fioName                         ltext    2BFD8
+_fioPut                          ltext    2C192
+_fioRename                       ltext    2C5EA
+_fioUnlink                       ltext    2C8B0
+_fioWipe                         ltext    2C8C8
+_fioblk_                         farnvram 229FA
+_floor                           ltext    44372
+_flush                           ltext    3CE36
+_fnameok                         ltext    20F52
+_fncpy                           ltext    404C4
+_fopen                           ltext    20B60
+_fprintf                         ltext    210A8
+_fputc                           ltext    210D8
+_fputc_CRLF                      ltext    21234
+_fputs                           ltext    21390
+_fread                           ltext    21430
+_free                            ltext    41F5E
+_frexp                           ltext    44608
+_fround                          ltext    28FBC
+_fseek                           ltext    2152C
+_fsetpos                         ltext    216E4
+_fstrcmp                         ltext    40350
+_fstrcpy                         ltext    4057C
+_fstreamok                       ltext    21790
+_fstrncmp                        ltext    403DC
+_fstrncpy                        ltext    405BE
+_ftell                           ltext    21862
+_fwrite                          ltext    219E6
+_getb                            ltext    3DA68
+_getb20ma                        ltext    3D996
+_getch                           ltext    3DA9C
+_gmtime                          ltext    27D56
+_gps                             const    03786
+_hangup                          ltext    398F2
+_ialarm                          ltext    3144A
+_inCRange                        ltext    1E22E
+_inHg                            ltext    3A0AC
+_inRange                         ltext    1E288
+_init_nmea_struct                ltext    2F64A
+_isinf                           ltext    42D74
+_isnan                           ltext    42E12
+_itimer                          ltext    31868
+_itoa                            ltext    3BFD0
+_kbdhit                          ltext    3D840
+_kbdhit_CRLF                     ltext    3D910
+_labs                            ltext    44510
+_last_blk                        bss      065A6
+_ldexp                           ltext    4463A
+_localtime                       ltext    27D8E
+_log                             ltext    4424E
+_log10                           ltext    442CA
+_log_path                        nvram    06738
+_login                           ltext    3BCB2
+_logout                          ltext    3BFEA
+_logstream                       nvram    06778
+_main                            ltext    1FF3E
+_malloc                          ltext    41DE6
+_max_commands                    data     02010
+_max_detect_per_read             bss      064BE
+_memchr                          ltext    448B2
+_memcmp                          ltext    44780
+_memcpy                          ltext    448CE
+_memmove                         ltext    446DC
+_memset                          ltext    2FFEA
+_mission                         nvram    06658
+_mktime                          ltext    27DD0
+_modem                           const    0375A
+_modem_initialize                ltext    39B72
+_nan                             ltext    42E8A
+_nmea0183                        ltext    2F664
+_nmea_checksum                   ltext    2F89E
+_ns                              const    03422
+_num_blocks                      bss      065A8
+_num_commands                    bss      065AA
+_num_files                       bss      065AC
+_obs                             farnvram 10246
+_pTable                          const    03424
+_pTableIndex                     farnvram 10244
+_pTableSize                      const    03544
+_perror                          ltext    21ADE
+_pflushio                        ltext    1ECB4
+_pflushrx                        ltext    1EDD0
+_pflushtx                        ltext    1EE42
+_pgetb                           ltext    1EEB4
+_pgetbuf                         ltext    1F04E
+_pgets                           ltext    1F248
+_pop                             ltext    3D034
+_pow                             ltext    43732
+_pputb                           ltext    1F4C0
+_pputbuf                         ltext    1F7C2
+_pputs                           ltext    1FB30
+_prf_path                        nvram    0662E
+_printf                          ltext    21B38
+_push                            ltext    3CE84
+_putb                            ltext    3DACC
+_putb20ma                        ltext    3DB48
+_putch                           ltext    3DB10
+_putch_CRLF                      ltext    3DB34
+_puts                            ltext    21B68
+_realloc                         ltext    41F6E
+_regcomp                         ltext    19098
+_regerror                        ltext    431A2
+_regexec                         ltext    149F8
+_regfree                         ltext    43F12
+_remove                          ltext    21B8C
+_rename                          ltext    21C34
+_rewind                          ltext    21D52
+_sbrk                            ltext    30CAC
+_sector                          bss      065AE
+_sleep                           ltext    44108
+_snprintf                        ltext    42450
+_sprintf                         ltext    44716
+_stderr                          data     03278
+_stdin                           data     03274
+_stdout                          data     03276
+_strchr                          ltext    448FE
+_strcmp                          ltext    448EA
+_strcpy                          ltext    44952
+_strcspn                         ltext    447DA
+_strftime                        ltext    28564
+_strlen                          ltext    44934
+_strncmp                         ltext    3FFD8
+_strncpy                         ltext    44872
+_strspn                          ltext    447AE
+_strstr                          ltext    4469E
+_strtod                          ltext    41696
+_strtol                          ltext    3EA48
+_strtoul                         ltext    3EB40
+_t0_intr                         ltext    30000
+_time                            ltext    31FB4
+_timeout                         const    03644
+_timer0                          rbit     00110
+_tolower                         ltext    44910
+_total_files_uploaded            bss      065B0
+_toupper                         ltext    44922
+_trm                             const    0341D
+_uchat                           ltext    327F4
+_usleep                          ltext    44130
+_vfprintf                        ltext    25080
+_vitals                          farnvram 10200
+_vsnprintf                       ltext    425A2
+_zeros                           const    03648
+abtof                            text     00616
+aldiv                            text     00284
+almod                            text     002B2
+almul                            text     002E2
+altof                            text     00622
+asaldiv                          text     002FC
+asalmod                          text     00320
+asfladd                          text     00446
+asfldiv                          text     00410
+asflmul                          text     00422
+asflsub                          text     00434
+aslldiv                          text     0030E
+asllmod                          text     00332
+awtof                            text     0061C
+dtof                             text     005E2
+fladd                            text     00458
+flcmp                            text     004AE
+fldiv                            text     00528
+flmul                            text     004DC
+flsub                            text     004A8
+fneg                             text     00650
+ftol                             text     005AA
+indir_lr0                        text     00666
+indir_lr1                        text     0066C
+indir_lr2                        text     00672
+lbtof                            text     00646
+lcmp                             text     00344
+lldiv                            text     00236
+llmod                            text     00248
+llmul                            text     002E2
+lltof                            text     0064A
+lwtof                            text     00648
+powerup                          text     000C4
+start                            text     0015E

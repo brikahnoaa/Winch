@@ -48,8 +48,7 @@ char *utlDateTime(void);
 char *utlDateTimeS16(void);
 char *utlDateTimeFmt(time_t secs);
 char *utlReadExpect(Serial port, char *in, char *expect, int wait);
-char *utlNonPrint (char *in);        // format unprintable string
-char *utlNonPrintBlock (char *in, int len);
+char *utlNonPrint (char *in, int len);
 char *utlTime(void);
 int utlDateTimeToSecs(time_t *ret, char *date, time_t *time);
 int utlGetBlock(Serial port, char *buff, int msgSz, int respms);

@@ -1,0 +1,197 @@
+C:\>
+###MX Load: CRC E40000 E6FFFF = 5BBCA677
+G
+ -->"??" @ E40000 
+
+Program: QUEContMain3.c: Apr 20 2006 14:07:26 
+Program start time: 04/21/2006  20:33:50.230 [ctime: 1145651630]
+
+The program will start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you have about
+### seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+PAST # OF STARTUPS                  = 0
+PAST # OF DIVES                     = 0
+PROVOR STATUS                       = 0
+MAXIMUM # OF PROVOR DIVES           = 1
+MAXIMUM # OF DRIFT POSITION REPORTS = 0
+BLOCK LENGTH FOR DATA TRANSMISSION  = 1024
+WARNING! THIS FLOAT DOES NOT REPORT POSITION AFTER MISSION
+CHECK QUE.MAXDRFTCL OR QUE.NUMDRFTCL
+You have 120 seconds to launch
+120..119..118..117..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 02371    PicoDOS V4.02r1      PBM V2.27 
+  (C) 1998-2005 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>boot aspp
+Will boot Application at 0xE40000
+Resetting...  
+
+Program: QUEContMain3.c: Apr 20 2006 14:07:26 
+Program start time: 04/21/2006  20:34:02.813 [ctime: 1145651642]
+
+The program will start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you have about
+### seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+PAST # OF STARTUPS                  = 0
+PAST # OF DIVES                     = 0
+PROVOR STATUS                       = 0
+MAXIMUM # OF PROVOR DIVES           = 1
+MAXIMUM # OF DRIFT POSITION REPORTS = 0
+BLOCK LENGTH FOR DATA TRANSMISSION  = 1024
+WARNING! THIS FLOAT DOES NOT REPORT POSITION AFTER MISSION
+CHECK QUE.MAXDRFTCL OR QUE.NUMDRFTCL
+You have 120 seconds to launch
+120..119..118..
+Starting...
+BATHYMETRY FILE LOADED
+
+-------------------------------------------------------------------
+Program: QUEContMain3.c,  Version: 1.0,  Build: Apr 20 2006 14:07:26
+System Parameters: CF2 SN 02371, PicoDOS 4.02, BIOS 4.02
+8000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:253
+Diagonostics
+ 		CPU state =1, Int Vac= 0700, Vac State  =1 
+ 		Rserev Lvl=0000, Tank St= 1, Bat Volt   =14700
+ 		Bat State =1, Ext Pres=00000, pSens State=1
+PROVOR STATUS 0,0,00000,00000,0,0000
+106 111:20:34:20:136 INIT(0)
+
+**************  READY TO DEPLOY ****************
+MAKING SURE RESERVOIR IS EMPTY
+RESERVOR LEVEL = 0cc
+RESERVOIR IS EMPTY
+MAKING SURE FLOAT IS AT SURFACE
+PROVAR STATUS 0,0,00000,00000,0,0000
+PROVAR STATUS 0,0,00000,00000,0,0000
+GPS ANTENNA ON
+WARMING UP GPS/IRID UNIT FOR 60 SEC
+NUM OF SAT 5
+CF1 TIME 106 111:20:37:37:238
+GPS TIME 106 111:20:37:36:721 07
+CFX TIME SET
+CLOCK ERROR = GPS - RTC = -1sec 483msec
+CLOCK ERROR = GPS - RTC = 0sec -517msec
+44:37.2551N 124:02.6185W
+44:37.2552N 124:02.6188W
+44:37.2551N 124:02.6194W
+AVE GPS COORD N44:37.256W124: 2.618
+Q001N44:37.256W124: 2.618 106 111:20:37:37:238 106 111:20:37:36:721 07
+GPS FIX SUCCESS 106 111:20:37:37
+DRIFT (IN SECOND)     0.00     0.00
+DRIFT (IN METER )      0.0      0.0
+ESTIMATED DEPTH = -1
+IRIDIUM ANTENNA ON
+WRITING HEADER TO  C:00000003.DAT
+SETTING PMEL IRIDIUM
+SQ = 5
+IRIDIUM READY 106 111:20:38:24:298
+CALLING LAND 0012065264495
+CONNECTED 106 111:20:38:35:716
+ACKNOWLEDGED
+FILE SIZE 190
+# OF BLKS = 1
+SENDING BLK #1 195BYTES
+CHECKING IF ANY BAD BLKS
+TX COMPLETED
+*******POWER OFF IRIDIUM/GPS UNIT********
+
+PROVAR STATUS 0,0,00000,00000,0,0000
+Q001N44:37.256W124: 2.618
+DIVE TO 1549 dBars W/ +/-50 dBars CHECKING EVERY 30 MIN
+106 111:20:39:28:450 INIT(0)
+DIVE # 0
+106 111:20:41:31:386 STATUS 0,1,00000,00600,2,0000
+106 111:20:41:31:534 SURFACE_DIVE(2)
+AT SURFACE ACCUMULATED VALVE ACTION     = 60 SEC
+106 111:20:44:07:403 TIME EXPIRED. INQUIRING PROVOR STATUS
+
+Program: QUEContMain3.c: Apr 20 2006 14:07:26 
+Program start time: 04/21/2006  20:51:35.877 [ctime: 1145652695]
+
+The program will start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you have about
+### seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+PAST # OF STARTUPS                  = 1
+PAST # OF DIVES                     = 0
+PROVOR STATUS                       = 2
+MAXIMUM # OF PROVOR DIVES           = 1
+MAXIMUM # OF DRIFT POSITION REPORTS = 0
+BLOCK LENGTH FOR DATA TRANSMISSION  = 1024
+WARNING! THIS FLOAT DOES NOT REPORT POSITION AFTER MISSION
+CHECK QUE.MAXDRFTCL OR QUE.NUMDRFTCL
+You have 120 seconds to launch
+120..119..118..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 02371    PicoDOS V4.02r1      PBM V2.27 
+  (C) 1998-2005 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+###MX Load: CRC 010000 030769 = 79C3EE12
+G
+Program: QUEContMain3.c: Apr 20 2006 14:07:26 
+Program start time: 04/21/2006  20:52:01.801 [ctime: 1145652721]
+
+The program will start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you have about
+### seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+PAST # OF STARTUPS                  = 1
+PAST # OF DIVES                     = 0
+PROVOR STATUS                       = 2
+MAXIMUM # OF PROVOR DIVES           = 1
+MAXIMUM # OF DRIFT POSITION REPORTS = 0
+BLOCK LENGTH FOR DATA TRANSMISSION  = 1024
+WARNING! THIS FLOAT DOES NOT REPORT POSITION AFTER MISSION
+CHECK QUE.MAXDRFTCL OR QUE.NUMDRFTCL
+You have 120 seconds to launch
+120..
+Starting...
+BATHYMETRY FILE LOADED
+
+-------------------------------------------------------------------
+Program: QUEContMain3.c,  Version: 1.0,  Build: Apr 20 2006 14:07:26
+System Parameters: CF2 SN 02371, PicoDOS 4.02, BIOS 4.02
+8000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+106 111:20:53:55:501 STATUS 0,1,00000,00513,3,0015
+106 111:20:53:55:658 DIVE(3)
+MAKING SURE RESERVOIR IS EMPTY
+RESERVOR LEVEL = 0cc
+RESERVOIR IS EMPTY
+106 111:20:56:48:104 STATUS 0,1,00000,00050,3,0016
+106 111:20:58:55:191 STATUS 0,0,00000,00000,3,0010
+106 111:21:00:57:335 STATUS 0,1,00000,00101,3,0011
+106 111:21:03:09:451 STATUS 0,1,00000,00568,3,0012
+106 111:21:06:07:458 STATUS 0,1,00000,00589,3,0011
+106 111:21:09:07:532 STATUS 0,1,00000,00057,3,0012
+106 111:21:11:15:313 STATUS 0,1,00000,00055,3,0013
+106 111:21:13:22:898 STATUS 0,1,00000,00111,3,0013
+106 111:21:15:35:989 STATUS 0,0,00000,00000,3,0009
+106 111:21:17:38:128 STATUS 0,0,00000,00000,3,0012
+106 111:21:19:40:264 STATUS 0,1,00000,00223,3,0013
+106 111:21:22:04:360 STATUS 0,1,00000,00447,3,0013
+106 111:21:24:50:477 STATUS 0,1,00000,00568,3,0012
+106 111:21:27:48:477 STATUS 0,1,00000,00568,3,0012
+106 111:21:30:46:485 STATUS 0,1,00000,00568,3,0012
+106 111:21:33:44:486 STATUS 0,0,00000,00000,5,0012
+106 111:21:33:44:632 GROUNDING(5)
+IN_DIVE ACCUMULATED VALVE ACTION         = 441 SEC
+REACHED BOTTOM AT 11M 12dBars
+106 111:21:33:46:607 GROUNDING(5)
+OPENING A FILE FOR A/D LOGGING C:00000003.DAT
+START LOGGING 106 111:21:33:47:454
+END LOGGING   106 111:21:33:57:719
+ASCEND COMMAND 106 111:21:34:04:486

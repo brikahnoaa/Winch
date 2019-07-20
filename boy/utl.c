@@ -69,7 +69,7 @@ void utlWriteBlock(Serial port, char *out, int len) {
   delay = 2 + (int)TUBlockDuration(port, (long)len);
   sent = (int)TUTxPutBlock(port, out, (long)len, (short)delay);
   DBG2(" >%d>", sent);
-  DBG3(" >>%d'%s'>>", len, utlNonPrintBlock(out, len));
+  DBG3(" >>%d'%s'>>", len, utlNonPrint(out, len));
   if (len!=sent)
     flogf("\nERR\t|utlWriteBlock(%s) sent %d of %d", out, sent, len);
 } // utlWriteBlock
@@ -100,7 +100,7 @@ int utlRead(Serial port, char *in) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
+  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrint(in, len));
   if (len>=BUFSZ) return 1;
   return 0;
 } // utlRead
@@ -171,7 +171,7 @@ int utlGetUntil(Serial port, char *in, char *lookFor) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
+  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrint(in, len));
   if (len>=BUFSZ) return 1;
   return 0;
 } // utlGetUntil
@@ -201,7 +201,7 @@ int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
 int utlGetBlock(Serial port, char *buff, int max, int respms) {
   int got;
   got = (int) TURxGetBlock(port, buff, (long)max, (short)respms);
-  DBG3(" <[%d'%s'<[", got, utlNonPrintBlock(buff, got));
+  DBG3(" <[%d'%s'<[", got, utlNonPrint(buff, got));
   return got;
 }
 
@@ -298,18 +298,13 @@ int utlDateTimeToSecs(time_t *ret, char *date, time_t *time) {
 
 ///
 // format non-printable string; null terminate
-// returns: global char *utl.ret
-char *utlNonPrint (char *in) {
-  return (utlNonPrintBlock(in, strlen(in)));
-} // utlNonPrint
-
-///
-// format non-printable string; null terminate
-// returns: global char *utl.ret
-char *utlNonPrintBlock (char *in, int len) {
-  unsigned char ch;
+// use strlen when len==0
+// rets: global char *utl.ret
+char *utlNonPrint (char *in, int len) {
   char *out = utl.ret;
+  unsigned char ch;
   int i, o;
+  if (len==0) len = strlen(in);
   // copy len bytes - note, o grows faster than i
   i = o = 0;
   while (i<len) {
@@ -330,7 +325,7 @@ char *utlNonPrintBlock (char *in, int len) {
   }
   out[o] = 0;
   return (out);
-} // utlNonPrintBlock
+} // utlNonPrint
 
 void utlPet() { TickleSWSR(); }              // pet the watchdog
 

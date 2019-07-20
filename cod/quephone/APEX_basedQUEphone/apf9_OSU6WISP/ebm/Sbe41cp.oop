@@ -1,0 +1,108 @@
+#ifndef SBE41CP_OOP
+#define SBE41CP_OOP
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: Sbe41cp.oop,v 1.1 2006/11/18 17:42:37 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * RCS Log:
+ *
+ * $Log: Sbe41cp.oop,v $
+ * Revision 1.1  2006/11/18 17:42:37  swift
+ * Energy model for iridium floats.
+ *
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+#include <lsprf.oop>
+
+/*========================================================================*/
+/*                                                                        */
+/*========================================================================*/
+template <class BatteryPack>
+class Sbe41cp
+{
+   // data members
+   private:
+
+      // define the power consumption for continuous STP measurements
+      const float stp_power;
+
+      // define linear splines to evaluate energy consumption 
+      LSplineProfile p,pt,ctd;
+      
+   // function members
+   public:
+
+      // initializer constructor
+      Sbe41cp(void): stp_power(0.285 /* Watts */)
+      {
+         //         Volts Joules    //        Volts Joules     //       Volts  Joules
+         ctd.Append(  4.0, 5.10);  pt.Append(  4.0, 0.450);   p.Append(  4.0,  0.090);
+         ctd.Append(  8.0, 5.10);  pt.Append(  8.0, 0.450);   p.Append(  8.0,  0.090);         
+         ctd.Append( 10.0, 5.20);  pt.Append( 10.0, 0.450);   p.Append( 10.0,  0.090);
+         ctd.Append( 11.0, 5.20);  pt.Append( 11.0, 0.450);   p.Append( 11.0,  0.090);
+         ctd.Append( 12.0, 5.30);  pt.Append( 12.0, 0.450);   p.Append( 12.0,  0.090);
+         ctd.Append( 13.0, 5.30);  pt.Append( 13.0, 0.450);   p.Append( 13.0,  0.090);
+         ctd.Append( 14.0, 5.30);  pt.Append( 14.0, 0.450);   p.Append( 14.0,  0.090);
+         ctd.Append( 15.0, 5.60);  pt.Append( 15.0, 0.450);   p.Append( 15.0,  0.090);
+         ctd.Append( 16.0, 5.60);  pt.Append( 16.0, 0.450);   p.Append( 16.0,  0.090);         
+      }
+
+      /// Return the energy consumed by a STP sample
+      double CtdEnergyCost(BatteryPack &bat) {return CtdEnergyCost(bat.Volts());}
+
+      /// Return the energy consumed by continuous STP sampling
+      double CtdEnergyCost(time_t sec) {return stp_power*sec;}
+
+      /// Return the energy consumed by a STP sample
+      double CtdEnergyCost(double volts) {return ctd(volts);}
+      
+      /// Return the energy consumed by a PT sample
+      double PtEnergyCost(BatteryPack &bat) {return PtEnergyCost(bat.Volts());}
+
+      /// Return the energy consumed by a PT sample
+      double PtEnergyCost(double volts) {return pt(volts);}
+
+      /// Return the energy consumed by a P-only sample
+      double PEnergyCost(BatteryPack &bat) {return PEnergyCost(bat.Volts());}
+
+      /// Return the energy consumed by a P-only sample
+      double PEnergyCost(double volts) {return p(volts);}
+
+      /// function to write properties
+      void Properties(ostream &dest=cout);
+};
+
+/*------------------------------------------------------------------------*/
+/* function to write properties                                           */
+/*------------------------------------------------------------------------*/
+template <class BatteryPack>
+void Sbe41cp<BatteryPack>::Properties(ostream &dest)
+{
+   fprintf(dest,"$ Sensor Model:       %s\n"
+             "$    Power consumption during continuous STP measurement: %0.2f Watts\n"
+             "$    Energy consumed for STP sample (Volts, Joules):",
+             "Sbe41cp",stp_power);
+
+   for (unsigned int i=0; i<ctd.NPnt(); i++)
+   {
+      if (!(i%5)) fprintf(dest,"\n$      ");
+      fprintf(dest,"  (%4.1f, %5.2f)",ctd.x[i],ctd.y[i]);
+   }
+   fprintf(dest,"\n$    Energy consumed for PT sample (Volts, Joules):");
+
+   for (unsigned int i=0; i<pt.NPnt(); i++)
+   {
+      if (!(i%5)) fprintf(dest,"\n$      ");
+      fprintf(dest,"  (%4.1f, %5.3f)",pt.x[i],pt.y[i]);
+   }
+   fprintf(dest,"\n$    Energy consumed for P-only sample (Volts, Joules):");
+
+   for (unsigned int i=0; i<ctd.NPnt(); i++)
+   {
+      if (!(i%5)) fprintf(dest,"\n$      ");
+      fprintf(dest,"  (%4.1f, %5.3f)",p.x[i],p.y[i]);
+   }
+   fprintf(dest,"\n$\n");
+}
+
+#endif // SBE41CP_OOP

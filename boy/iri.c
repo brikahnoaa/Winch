@@ -400,7 +400,7 @@ int iriProcessCmds(uchar *buff) {
   p0 = strtok(buff, ";");
   while (p0) {
     if (strstr(p0, "=")) {
-      flogf("\n%s: '%s'", self, utlNonPrint(p0));
+      flogf("\n%s: '%s'", self, utlNonPrint(p0, 0));
       if (cfgString(p0)) r++;
     }
     p0 = strtok(NULL, ";");
@@ -416,7 +416,7 @@ int iriLandResp(uchar *buff) {
   static char *self="LandResp";
   static char *rets="1=respTimeout";
   if (utlGetUntilWait(irid.port, buff, "\n", iri.landResp)) raise(1);
-  flogf("\n%s(%s)", self, utlNonPrint(buff));
+  flogf("\n%s(%s)", self, utlNonPrint(buff, 0));
   return 0;
   //
   except: {flogf(" %s", rets); return dbg.x;}
@@ -448,7 +448,7 @@ int iriLandCmds(uchar *buff) {
   // msg into buff
   got = utlGetBlock(irid.port, buff, msgSz, respms);
   buff[got]=0;
-  flogf("\n%s(%s)", self, utlNonPrint(buff));
+  flogf("\n%s(%s)", self, utlNonPrint(buff, 0));
   return 0;
   //
   except: {flogf(" %s", rets); return dbg.x;}
@@ -473,7 +473,7 @@ void iriHup(void) {
   }
   utlWrite(port, "at+clcc", EOL);
   if (utlReadExpect(port, all.buf, "OK", 5))
-    flogf("\nclcc->%s", utlNonPrint(all.buf));
+    flogf("\nclcc->%s", utlNonPrint(all.buf, 0));
   utlWrite(port, "at+chup", EOL);
   utlReadExpect(port, all.buf, "OK", 5);
 } // iriHup

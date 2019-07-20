@@ -1,0 +1,9 @@
+../bin/swh.exe D=LOGIN_H if=login.c of=../include/login.h
+Done making ...
+/cygdrive/c/HT-XA/bin/libr < apex.cmd
+/cygdrive/c/HT-XA/bin/libr r apex.lib chat.obj crc.obj crc16bit.obj expect.obj extract.obj fifo.obj garmin.obj logger.obj login.obj 
+/cygdrive/c/HT-XA/bin/libr r apex.lib modem.obj nan.obj nmea.obj pkt.obj regcomp.obj regerror.obj regexec.obj regfree.obj rx.obj 
+/cygdrive/c/HT-XA/bin/libr r apex.lib seascan.obj serial.obj snprintf.obj stdio.obj stdlib.obj strtime.obj strtoul.obj time.obj 
+/cygdrive/c/HT-XA/bin/libr r apex.lib tmparse.obj tx.obj xmodem.obj	
+Done making ...
+Done making all ...

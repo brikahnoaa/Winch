@@ -1,0 +1,90 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# $Id: makefile,v 1.7.2.1 2008/09/11 19:40:29 dbliudnikas Exp $
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RCS Log:
+#
+# $Log: makefile,v $
+# Revision 1.7.2.1  2008/09/11 19:40:29  dbliudnikas
+# Update for Webb development system: line length issue.
+#
+# Revision 1.7  2006/01/16 18:35:16  swift
+# Fixed a minor problem with the samba fix.
+#
+# Revision 1.6  2006/01/06 23:07:08  swift
+# rm -fete files to be built as a workaround for samba configuration problem.
+#
+# Revision 1.5  2004/12/29 23:04:36  swift
+# Modified LogEntry() to use strings stored in the CODE segment.  This saves
+# lots of space in the DATA segment and significantly speeds code start-up.
+#
+# Revision 1.4  2004/07/14 22:50:59  swift
+# Changes to reflect the transition to the new stdio library.
+#
+# Revision 1.3  2004/04/30 00:21:49  swift
+# Modifications to account for changes in the installation directores for
+# HiTech and PsdExpress.
+#
+# Revision 1.2  2003/11/13 19:47:26  swift
+# Modifications to account for refactored directory structure.
+#
+# Revision 1.1  2003/11/12 18:15:59  swift
+# Initial revision
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.DEFAULT:
+.SUFFIXES:
+.PRECIOUS: %.obj %.hex %.h
+.PHONY: headers include force lib
+SHELL=/bin/bash
+
+HiTech = /cygdrive/c/HT-XA#
+
+binDir = ../bin#
+srcDir = .#
+incDir = ../include#
+
+# construct a list of all source files in source directory
+srcFiles  = $(wildcard *.c) 
+
+objFiles := $(subst .c,.obj, $(srcFiles)) powerup.obj rtxa--l.obj
+
+hFiles :=  $(addprefix $(incDir)/, \
+           $(filter-out vfprintf.h regexec.h regfree.h, \
+           $(subst .c,.h, $(srcFiles))))
+
+all: include lib
+	@echo Done making all ...
+
+clean: force
+	-rm -f $(objFiles) $(hFiles) apf9.lib apf9lib.cmd
+
+test:
+	@echo srcDir = $(srcDir)
+	@echo srcFiles = $(srcFiles)
+	@echo objFiles = $(objFiles)
+	@echo hFiles = $(hFiles)
+
+$(incDir)/%.h: %.c 
+	$(binDir)/swh.exe D=$(shell echo $*.h|tr a-z.- A-Z__) if=$< of=$@
+
+%.obj: %.c
+#	@rm -f $@
+	$(HiTech)/bin/xac -q -E -Bl -LF -Zg -I$(incDir) -C $<
+
+headers include: $(hFiles)
+	@echo Done making $* ... 
+
+powerup.obj: powerup.as
+	$(HiTech)/bin/asxa -x powerup.as
+
+rtxa--l.obj: rtxa--l.as
+	$(HiTech)/bin/asxa -x rtxa--l.as
+
+lib: $(objFiles)
+#	@rm -f apf9.lib
+	@echo r apf9.lib $^ | (perl -ne 's/([^ ]+[ ]+)/\1\\\n/g;print' > apf9lib.cmd)
+	$(HiTech)/bin/libr < apf9lib.cmd
+	$(HiTech)/bin/libr r apf9.lib apf9.obj apf9com.obj apf9icom.obj assert.obj conio.obj cstring.obj ctdio.obj doprnt.obj 
+	$(HiTech)/bin/libr r apf9.lib ds2404.obj errno.obj flashio.obj fstring.obj lt1598ad.obj psd835.obj sermux.obj 
+	$(HiTech)/bin/libr r apf9.lib tc58v64.obj trace.obj unistd.obj vfprintf.obj x24c16.obj powerup.obj rtxa--l.obj
+	@echo Done making $* ...

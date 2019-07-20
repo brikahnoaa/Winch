@@ -1,0 +1,139 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% $Id: IridiumProcDataSample.tex,v 1.2 2006/11/24 23:58:15 swift Exp $
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% RCS Log:
+%
+% $Log: IridiumProcDataSample.tex,v $
+% Revision 1.2  2006/11/24 23:58:15  swift
+% Updated format descriptions to account for changes in Sbe41cp firmware.
+%
+% Revision 1.1  2006/11/03 19:08:57  swift
+% Added user manual to CVS control.
+%
+% Revision 1.2  2006/07/10 22:24:49  swift
+% Modifications to bring the manual up to date with
+% changes to the SeaBird CTD firmware (v1.1c).
+%
+% Revision 1.1  2006/04/11 15:37:21  swift
+% Initial revision
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Sample: Decoded and processed data.}
+\label{sec:IridiumProcDataSample}
+\renewcommand{\theequation}{\Alph{section}.\arabic{equation}}
+
+The following is an example of decoded and processed data for profile~9 of
+UW float~5135.  The blocks with park-phase PT data and PTS data have been
+snipped to save space.
+
+{\small
+\begin{verbatim}
+$  APEX-Seabird (051906) Iridium Message Parser & Calibration Applicator [SwiftWare]
+$  $Revision: 1.2 $  $Date: 2006/11/24 23:58:15 $
+$  Cmd Line: /www/argo/bin/ApexSbeIr051906-parser if=5135.009.msg of=5135.009.edf 
+$
+$ E    lat     lon       date   time  zbot  zmax sh co           stnid      n
+$ H -19.10  106.74 11/05/2006 23.794     *  1996  *  *        5135.009    515
+$
+$  Processed engineering data:
+$  BatteryVoltage=15.7V  VoltCount=198
+$  AirBladderPressure=7.0"Hg  AirBladderPressureCount=124
+$  Vacuum=-7.0"Hg  VacuumCount=77
+$  BottomPistonPosition=16
+$  IAirPump=266mA  AmpCount=69
+$  IHighPressurePump=858mA  AmpCount=216
+$  IQuiescent=12.4mA  AmpCount=6
+$  ISbe41cp=37mA  AmpCount=12
+$  VAirPump=15.2V  VoltCount=191
+$  VHighPressurePump=13.7V  VoltCount=172
+$  VLoad=13.7V  VoltCount=172
+$  VQuiescent=15.7V  VoltCount=198
+$  VSbe41cp=15.1V  VoltCount=190
+$  PumpMotorSeconds=1899 sec
+$  DeepProfilePistonPosition=16
+$  ParkPistonPosition=71
+$  SurfacePistonPosition=177
+$  SurfacePressure=0 dbar
+$  ProfileTermination=0x0001 : Deep profile.
+$  Sbe41cpStatus=0x0000
+$
+$  Raw engineering meta data:
+$  ActiveBallastAdjustments=0
+$  AirBladderPressure=124
+$  AirPumpAmps=69
+$  AirPumpVolts=191
+$  Apf9iFwRev=051906
+$  BuoyancyPumpAmps=216
+$  BuoyancyPumpOnTime=1899
+$  BuoyancyPumpVolts=172
+$  CurrentPistonPosition=199
+$  DeepProfilePistonPosition=16
+$  FloatId=5135
+$  GpsFixTime=65
+$  ObsIndex=21
+$  ParkDescentPCnt=7
+$  ParkDescentP[0]=5
+$  ParkDescentP[1]=45
+$  ParkDescentP[2]=78
+$  ParkDescentP[3]=95
+$  ParkDescentP[4]=98
+$  ParkDescentP[5]=99
+$  ParkDescentP[6]=99
+$  ParkObs={ 999.8dbar,    5.139C,  34.6385PSU }
+$  ParkPistonPosition=71
+$  ProfileId=009
+$  QuiescentAmps=6
+$  QuiescentVolts=198
+$  RtcSkew=8
+$  Sbe41cpAmps=12
+$  Sbe41cpStatus=0x0000
+$  Sbe41cpVolts=190
+$  SurfacePistonPosition=177
+$  SurfacePressure=0.01
+$  Vacuum=77
+$  status=0x0001
+$
+$  NFix=1  //      lon     lat Julian-sec       date   hour nsat FixTime
+$  Fix(First): 106.738 -19.100 1162799260 11-05-2006 23.794    7      65
+$ F %7.2f %7.4f %7.4f %7.4f %7.4f %5.1f %4u
+$ T     p        t        s    theta    sigma  speed    n
+     4.30  23.7760  34.8970  23.7751  23.6314    9.5   21
+     6.00  23.7770  34.8970  23.7757  23.6313    6.5   31
+     8.00  23.7760  34.8970  23.7743  23.6317    6.7   30
+    10.00  23.7760  34.8970  23.7739  23.6318    6.9   29
+    12.00  23.7750  34.8980  23.7725  23.6330    7.1   28
+    14.00  23.7750  34.8980  23.7721  23.6331    7.4   27
+    16.00  23.7750  34.8970  23.7717  23.6325    7.7   26
+    18.00  23.7720  34.8970  23.7682  23.6335    7.7   26
+    20.00  23.7250  34.9060  23.7208  23.6542    7.7   26
+[snippage...]
+   986.00   5.1970  34.6320   5.1133  27.3705   10.0   20
+   988.00   5.2120  34.6370   5.1280  27.3727   10.0   20
+   997.88   5.1765  34.6345   5.0919  27.3749      *    1
+   999.76   5.1389  34.6385   5.0544  27.3825      *    1
+  1047.72   4.9210  34.6328   4.8338  27.4034      *    1
+  1098.41   4.7406  34.6413   4.6502  27.4308      *    1
+[snippage...]
+  1898.18   2.5933  34.7124   2.4563  27.7037      *    1
+  1947.22   2.5096  34.7160   2.3696  27.7140      *    1
+  1995.95   2.4262  34.7183   2.2832  27.7230      *    1
+$
+$  Park-phase PT time-series: 222 samples
+$                  UnixEpoch  MTime       p       t  |-------- Date --------|
+$  ParkPt [001]:  1161940341  21614   991.1  5.0624  Fri Oct 27 02:12:21 2006
+$  ParkPt [002]:  1161943938  25211   997.1  5.0385  Fri Oct 27 03:12:18 2006
+$  ParkPt [003]:  1161947538  28811   994.9  5.0252  Fri Oct 27 04:12:18 2006
+$  ParkPt [004]:  1161951138  32411   997.3  5.1130  Fri Oct 27 05:12:18 2006
+$  ParkPt [005]:  1161954738  36011   988.9  5.0522  Fri Oct 27 06:12:18 2006
+  [snippage...]
+$  ParkPt [219]:  1162725138 806411  1001.6  5.1068  Sun Nov  5 03:12:18 2006
+$  ParkPt [220]:  1162728738 810011   999.9  5.0748  Sun Nov  5 04:12:18 2006
+$  ParkPt [221]:  1162732338 813611   999.9  5.0815  Sun Nov  5 05:12:18 2006
+$  ParkPt [222]:  1162735938 817211  1001.3  5.1691  Sun Nov  5 06:12:18 2006
+\end{verbatim}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "IridiumApex"
+%%% End: 

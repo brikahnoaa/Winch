@@ -1,0 +1,2515 @@
+----------------------------------------------------------------  Persistor CF21M   SN 02371    PicoDOS V3.00c4      PBM V2.27   (C) 1998-2004 Persistor Instruments Inc. - www.persistor.com----------------------------------------------------------------C:\>dir Volume in drive C has no label Volume Serial Number is 1D26-7FFD Directory of C:\TEST.LOG              6,410  10-31-05  2:07pQUECONT.PXE         119,454  11-22-05 12:15pPROVTERM.PXE         31,482  11-02-05 12:26pIRIDTERM.PXE         47,272  09-24-05 12:05aINITPROV.PXE         23,816  09-24-05 12:39aQ002.LOG              7,483  10-24-05 10:14aACTIVITY.LOG         11,856  01-01-98 12:01a00000001.DAT            335  01-01-98 12:00aREADQUE.PXE          52,564  11-22-05 12:25pATOD.PXE             25,894  11-22-05 12:13pAXIBATHY.DAT          4,864  11-23-05 10:36a00000000.DAT        131,330  11-23-05 12:08p        12 file(s)         462,760 bytes         0 dir(s)       20,822,016 bytes freeC:\>type activity.logProgram: QUEContMain3.c: Nov 23 2005 10:44:38 Program start time: 11/23/2005  10:50:19.260 [ctime: 1132743019]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..9..8..7..6..5..4..3..2..1..Starting...You have 0 seconds to launchBathy file could not be opened-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 10:44:38System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13Diagonostics 		CPU state =1, Int Vac= 0690, Vac State  =1  		Rserev Lvl=1905, Tank St= 0, Bat Volt   =14600 		Bat State =1, Ext Pres=00012, pSens State=1Reservoir Level 1905 cm3Reservoir Level 1905 cm3Reservoir Level 1905 cm3Reservoir Level 1905 cm3Reservoir Level 0 cm3Reservoir Level 0 cm3Program: QUEContMain3.c: Nov 23 2005 10:44:38 Program start time: 11/23/2005  11:18:22.742 [ctime: 1132744702]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..9..8..7..6..5..4..3..2..1..Starting...You have 0 seconds to launchBathy file could not be opened-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 10:44:38System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13Diagonostics 		CPU state =1, Int Vac= 0690, Vac State  =1  		Rserev Lvl=0000, Tank St= 1, Bat Volt   =14600 		Bat State =1, Ext Pres=00061, pSens State=1PROVOR STATUS 0,0,00000,00000,0,0006105 327:11:18:42:404 INIT(0)**************  READY TO DEPLOY ****************MAKING SURE RESERVOIR IS EMPTYReservoir Level 0 cm3Reservoir Level 0 cm3Program: QUEContMain3.c: Nov 23 2005 11:23:23 Program start time: 11/23/2005  11:27:50.440 [ctime: 1132745270]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 11:23:23System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13Diagonostics 		CPU state =1, Int Vac= 0690, Vac State  =1  		Rserev Lvl=0000, Tank St= 1, Bat Volt   =14600 		Bat State =1, Ext Pres=00075, pSens State=1Reservoir level 0PROVOR STATUS 0,0,00000,00000,0,0007105 327:11:28:01:325 INIT(0)**************  READY TO DEPLOY ****************MAKING SURE RESERVOIR IS EMPTYReservoir Level 0 cm3Program: QUEContMain3.c: Nov 23 2005 11:42:41 Program start time: 11/23/2005  11:44:24.194 [ctime: 1132746264]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..9..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 11:42:41System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13Diagonostics 		CPU state =1, Int Vac= 0690, Vac State  =1  		Rserev Lvl=0000, Tank St= 1, Bat Volt   =14700 		Bat State =1, Ext Pres=00098, pSens State=1PROVOR STATUS 0,0,00000,00000,0,0009105 327:11:44:37:935 INIT(0)**************  READY TO DEPLOY ****************MAKING SURE RESERVOIR IS EMPTYRESERVOIR IS EMPTYPROVAR STATUS 0,0,00000,00000,0,0009Q001 105 327:11:44:40:629, DIVE TO 2000 dBars W/ +/-50 dBars EVERY 30 MIN105 327:11:44:40:756 INIT(0)DIVE # 0]?STATUS 0,1,00000,00600,2,0000105 327:11:45:18:563 STATUS 0,1,00000,00600,2,0000105 327:11:45:18:714 SURFACE_DIVE(2)TOTAL VALVE ACTION = 60 sec]?STATUS 0,1,00000,00600,2,0000105 327:11:47:19:682 STATUS 0,1,00000,00600,2,0000]?STATUS 0,0,00000,00000,3,0011105 327:11:49:21:811 STATUS 0,0,00000,00000,3,0011105 327:11:49:21:957 DIVE(3)TOTAL VALVE ACTION = 120 sec]?STATUS 0,1,00000,00057,3,0012105 327:11:51:23:955 STATUS 0,1,00000,00057,3,0012]?STATUS 0,0,00000,00000,3,0015105 327:11:53:31:730 STATUS 0,0,00000,00000,3,0015]?STATUS 0,1,00000,00513,3,0015105 327:11:55:33:876 STATUS 0,1,00000,00513,3,0015]?STATUS 0,1,00000,00513,3,0015105 327:11:58:26:478 STATUS 0,1,00000,00513,3,0015]?STATUS 0,1,00000,00513,3,0015105 327:12:01:19:080 STATUS 0,1,00000,00513,3,0015]?STATUS 0,1,00000,00513,3,0015105 327:12:04:11:683 STATUS 0,1,00000,00513,3,0015]?STATUS 0,0,00000,00000,5,0015105 327:12:07:04:293 STATUS 0,0,00000,00000,5,0015105 327:12:07:04:437 GROUNDING(5)TOTAL VALVE ACTION = 330SECGROUNDED AT 14M 15dBarsSTART LOGGING 105 327:12:07:06:155C:00000000.DAT is createdSampled 65536END OF LOGGING 105 327:12:08:30:133ASCENT COMMAND ISSUED AT 105 327:12:08:30:383]?STATUS 1,0,03000,00000,8,0015105 327:12:18:33:875 STATUS 1,0,03000,00000,8,0015105 327:12:18:34:030 ASCENT(8)]?STATUS 1,0,00600,00000,8,0015105 327:12:23:28:781 STATUS 1,0,00600,00000,8,0015]?STATUS 0,0,00000,00000,1,0001]105 327:12:24:47:617 STATUS 0,0,00000,00000,1,0001105 327:12:24:47:918 SURFACE(1)TOTAL PUMP ACTION = 360 SEC105 327:12:24:50:479 STATUS 0,0,00000,00000,1,0001105 327:12:24:50:623 SURFACE(1)DIVE # 1 IS DONEDONE!Program: QUEContMain3.c: Nov 23 2005 11:42:41 Program start time: 11/23/2005  13:04:13.709 [ctime: 1132751053]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 1PROVOR STATUS = 010..9..8..7..6..5..4..3..2..1..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 11:42:41System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13**************  READY TO DEPLOY *****************************ALL DIVES DONE.  DRIFTING.**********************************TX #0**************105 327:13:04:26:912 GPS ANTENNA ONWARMING UP GPS IRIDIUM FOR 240 SECProgram: QUEContMain3.c: Nov 23 2005 11:42:41 Program start time: 11/23/2005  13:05:58.066 [ctime: 1132751158]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 1PROVOR STATUS = 010..9..8..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 11:42:41System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13**************  READY TO DEPLOY *****************************ALL DIVES DONE.  DRIFTING.**********************************TX #0**************105 327:13:06:02:921 GPS ANTENNA ONWARMING UP GPS IRIDIUM FOR 240 SECProgram: QUEContMain3.c: Nov 23 2005 11:42:41 Program start time: 11/23/2005  13:07:39.498 [ctime: 1132751259]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..9..8..7..6..5..4..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 11:42:41System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13**************  READY TO DEPLOY ****************MAKING SURE RESERVOIR IS EMPTYRESERVOIR IS EMPTYMAKING SURE FLOAT IS AT SURFACEProgram: QUEContMain3.c: Nov 23 2005 13:17:50 Program start time: 11/23/2005  13:16:46.264 [ctime: 1132751806]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 13:17:50System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13**************  READY TO DEPLOY ****************MAKING SURE RESERVOIR IS EMPTYRESERVOIR IS EMPTYMAKING SURE FLOAT IS AT SURFACEProgram: QUEContMain3.c: Nov 23 2005 13:20:38 Program start time: 11/23/2005  13:19:30.265 [ctime: 1132751970]The program will start in ten seconds unless an operator keys in aperiod '.' character. If a period is received, you have about### seconds to respond to access other software functions on thissystem before a watchdog reset occurs.PAST STARTUPS = 0PAST DIVES    = 0PROVOR STATUS = 010..Starting...You have 0 seconds to launch-------------------------------------------------------------------Program: QUEContMain3.c,  Version: 1.0,  Build: Nov 23 2005 13:20:38System Parameters: CF2 SN 02371, PicoDOS 3.00, BIOS 3.008000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13**************  READY TO DEPLOY ****************MAKING SURE RESERVOIR IS EMPTYRESERVOIR IS EMPTYMAKING SURE FLOAT IS AT SURFACE105 327:13:19:33:101 GPS ANTENNA ONWARMING UP GPS IRIDIUM FOR 240 SECNUM OF SAT 5RTC SET AT 3 0 1 21:23:33.936 05AVE GPS COORD N44:37.257W124: 2.621GPS FIX SUCCESSDRIFT (IN SECOND) WAS    0.000    0.000070 001:00:00:06:830 IRIDIUM ANTENNA ONCREATING FILE C:00000001.DATSQ = 5IRIDIUM READY 070 001:00:00:35:135CALLING LAND 0012065264495CONNECTED 070 001:00:00:46:743ACKNOWLEDGEDFILE SIZE 164# OF BLKS = 1SENDING BLK #1 164 1CHECKING IF ANY BAD BLKS
+TX COMPLETED
+*******POWER OFF IRIDIUM/GPS UNIT********
+
+DIVE # 1 IS DONE
+MAKING SURE RESERVOIR IS EMPTY
+RESERVOIR IS EMPTY
+MAKING SURE FLOAT IS AT SURFACE
+070 001:00:01:41:833 GPS ANTENNA ON
+WARMING UP GPS IRIDIUM FOR 240 SEC
+NUM OF SAT 5
+RTC SET AT 3 0 1 21:29:25.627 05
+AVE GPS COORD N44:37.257W124: 2.621
+GPS FIX SUCCESS
+DRIFT (IN SECOND) WAS    0.000    0.000
+070 001:00:00:06:560 IRIDIUM ANTENNA ON
+APPENDING A NEW DET FILE TO THE OLD FILE C:00000001.DAT
+SQ = 5
+IRIDIUM READY 070 001:00:00:38:719
+CALLING LAND 0012065264495
+CONNECTED 070 001:00:00:51:735
+ACKNOWLEDGED
+FILE SIZE 335
+# OF BLKS = 1
+SENDING BLK #1 335 1
+CHECKING IF ANY BAD BLKS
+TX COMPLETED
+*******POWER OFF IRIDIUM/GPS UNIT********
+
+DIVE # 2 IS DONE
+*************ALL DIVES DONE.  DRIFTING.**************
+********************TX #0**************
+070 001:00:01:47:945 GPS ANTENNA ON
+WARMING UP GPS IRIDIUM FOR 240 SEC
+
+
+C:\>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          1.2406  1.2447  1.2429 
+ 1.2467  1.2507  1.2496  1.2538  1.2506  1.2509  1.2513  1.2485 
+ 1.2508  1.2525  1.2484  1.2499  1.2457  1.2452  1.2484  1.2468 
+ 1.2475  1.2518  1.2479  1.2513  1.2502  1.2491  1.2537  1.2478 
+ 1.2408  1.2433  1.2378  1.2390  1.2399  1.2401  1.2409  1.2467 
+ 1.2409  1.2494  1.2464  1.2544  1.2529  1.2551  1.2564  1.2553 
+ 1.2547  1.2491  1.2559  1.2456  1.2508  1.2454  1.2453  1.2449 
+ 1.2473  1.2400  1.2468  1.2430  1.2407  1.2452  1.2397  1.2464 
+ 1.2467  1.2411  1.2448  1.2453  1.2434  1.2513  1.2470  1.2514 
+ 1.2531  1.2507  1.2498  1.2567  1.2521  1.2589  1.2528  1.2556 
+ 1.2494  1.2528  1.2435  1.2540  1.2431  1.2447  1.2380  1.2370 
+ 1.2398  1.2363  1.2427  1.2415  1.2454  1.2434  1.2475  1.2460 
+ 1.2565  1.2527  1.2554  1.2548  1.2544  1.2487  1.2465  1.2451 
+Average= 1.24717V
+Standard deviation=4.6436e-03V
+
+
+C:\>dir
+
+ Volume in drive C has no label
+ Volume Serial Number is 1D26-7FFD
+ Directory of C:\
+
+TEST.LOG              6,410  10-31-05  2:07p
+QUECONT.PXE         119,454  11-22-05 12:15p
+PROVTERM.PXE         31,482  11-02-05 12:26p
+IRIDTERM.PXE         47,272  09-24-05 12:05a
+INITPROV.PXE         23,816  09-24-05 12:39a
+Q002.LOG              7,483  10-24-05 10:14a
+ACTIVITY.LOG         11,856  01-01-98 12:01a
+00000001.DAT            335  01-01-98 12:00a
+READQUE.PXE          52,564  11-22-05 12:25p
+ATOD.PXE             25,894  11-22-05 12:13p
+AXIBATHY.DAT          4,864  11-23-05 10:36a
+00000000.DAT        131,330  11-23-05 12:08p
+
+        12 file(s)         462,760 bytes
+         0 dir(s)       20,822,016 bytes free
+
+C:\>readdattyep 00000001.dat
+Bad command or file name
+
+C:\>type 00000001.dat
+Q001N44:41.202W123:55.362 070 001:00:00:06:067
+PRV_DEPTH=%4dMDIVE #TARGET DEPTH =-0001MFLOAT DRIFTED OUT OF GRID GPS FIX SUCCESS DRIFT (IN SECOND) WAS 00000 00000 
+Q001N44:41.202W123:55.362 070 001:00:00:06:173
+PRV_DEPTH=%4dMDIVE #TA0001 TARGET DEPTH =-0001MFLOAT DRIFTED OUT OF GRID GPS FIX SUCCESS DRIFT (IN SECOND) WAS 00000 00000 
+
+
+C:\>
+C:\>  
+
+----------------------------------------------------------------
+  Persistor CF21M   SN 02371    PicoDOS V3.00c4      PBM V2.27 
+  (C) 1998-2004 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>set
+QUE.MAXSTRTS=255
+QUE.SAMPLES=3
+QUE.LOGFILE=C:ACTIVITY.LOG
+QUE.PLTFRMID=Q001
+QUE.GAIN=0
+QUE.EXPID=05
+QUE.PROJID=QUEH
+QUE.PROGNAME=QUELogger1
+QUE.BATHYF=C:AXIBATHY.DAT
+QUE.MAXDEPTH=2013
+QUE.PARKDEPTH=1500
+QUE.LANDPHNUM=0012065264495
+QUE.GPSWARM=240
+QUE.INGRID=0
+QUE.DIVEHOURS=720
+QUE.IRIDWARM=8
+QUE.MAXCALLS=5
+QUE.SECDRFTCL=3600
+QUE.NUMDRFTCL=24
+QUE.SURFSAMPL=30
+QUE.PARKSAMPL=30
+QUE.LASTTRNS=1
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.CURBIA=0
+BIR.BIADEVICE=1
+QUE.SRATEHZ=500
+QUE.PREPMIN=0
+QUE.MAXNUMDIV=1
+QUE.FILECOUNT=1
+QUE.PREVDEPTH=14
+QUE.GOMONITOR=0
+QUE.STATUS=0
+QUE.IRIDTERM=1
+QUE.PROVTERM=0
+BIR.CFPPBSZ=65792
+QUE.NUMDIVE=0
+QUE.STARTUPS=1
+QUE.LASTGPS=1
+QUE.DRIFTLAT=00000
+QUE.DRIFTLON=00000
+QUE.ESTMDEPTH=1500
+QUE.LATITUDE=N44:41.202
+QUE.LONGITUDE=W123:55.362
+QUE.GOTODIVE=0
+QUE.NUMOFDIVE=2
+
+C:\>set que./set que.prevdepth
+QUE.PREVDEPTH=14
+
+C:\>
+Program: FAT32_noaalogger3_5.c: Jul  1 2005 11:21:17 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..8..7..6..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF11M   SN 51886    PicoDOS V3.00c4      PBM V2.27
+  (C) 1998-2004 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>set
+ACQ.MAXSTRTS=999
+ACQ.NCHAN=1
+ACQ.SAMPLES=3
+ACQ.REFVOLT=25
+ACQ.LOGTOCON=1
+ACQ.LOGFILE=C:ACTIVITY.LOG
+ACQ.SYSTEM=H16
+ACQ.LOCATION=N60W140
+ACQ.GAIN=0
+ACQ.EXPID=NEWPORT2003
+ACQ.CF1SERNUM=51886
+ACQ.PRAMPNAME=H3PA3_001
+ACQ.TABLE=323
+ACQ.DAQNAME=H3DAQ2_001
+ACQ.CLK=H3CLK1_001
+ACQ.PWFILT=2
+ACQ.LOPASS=110
+ACQ.HYDROSENS=-192
+ACQ.FACT=100
+BIR.TRMCTLPIN=0
+BIR.CFPPBSZ=41943040
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.BIADEVICE=1
+SYS.F32TRUST=CD
+ACQ.PROGNAME=FAT32LOGGER3_5
+ACQ.NUMDISKS=1FAT32
+ACQ.SLEEP=0
+ACQ.STARTUP=0
+ACQ.WAKEUP=1120213267
+ACQ.SRATEHZ=2500
+ACQ.STARTUPS=27
+BIR.CURBIA=5
+
+C:\>ver
+CF11M   SN 51886
+PicoDOS 3.00c4  
+BIOS    3.00c4  
+PBM     2.27
+SPV     1.44
+
+C:\>
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..8..7..6..5..4..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+The clock needs setting if it's not September 06, 1931!
+
+C:\>set datedate /p
+Current date and time [09/06/1931 13:32:18] ? 11/28/2005 17:14:55
+Clock reads: Monday, November 28, 2005  05:14:55 pm
+C:\>set
+ACQ.STARTUPS=0
+ACQ.MAXSTRTS=999
+ACQ.NCHAN=1
+ACQ.SRATEHZ=250
+ACQ.SAMPLES=3
+ACQ.REFVOLT=25
+ACQ.LOGTOCON=1
+ACQ.LOGFILE=C:ACTIVITY.LOG
+ACQ.SLEEP=12
+ACQ.SYSTEM=H16
+ACQ.LOCATION=N60W140
+ACQ.GAIN=0
+ACQ.EXPID=NEWPORT2003
+ACQ.WAKEUP=0
+ACQ.PROGNAME=FAT32LOGGER3_4
+ACQ.CF1SERNUM=51241
+ACQ.PRAMPNAME=H3PA3_001
+ACQ.TABLE=323
+ACQ.DAQNAME=H3DAQ2_001
+ACQ.NUMDISKS=5FAT32
+ACQ.CLK=H3CLK1_001
+ACQ.PWFILT=2
+ACQ.LOPASS=110
+ACQ.HYDROSENS=-192
+ACQ.FACT=100
+BIR.TRMCTLPIN=0
+BIR.CFPPBSZ=41943040
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.CURBIA=0
+BIR.BIADEVICE=1
+SYS.F32TRUST=CD
+
+C:\>setmount bi25-0
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>d:
+
+D:\>dir
+
+ Volume in drive D has no label
+ Volume Serial Number is 5B60-4765
+ Directory of D:\
+
+00000000.DAT         17,920  09-21-05  5:01p
+00000001.DAT     20,971,520  09-22-05  4:44a
+00000002.DAT     18,616,320  09-22-05  3:05p
+00000003.DAT     20,971,520  10-01-05  1:35a
+00000004.DAT     20,971,520  10-01-05  1:15p
+00000005.DAT     20,971,520  10-02-05 12:54a
+00000006.DAT     20,971,520  10-02-05 12:33p
+00000007.DAT     20,971,520  10-03-05 12:12a
+00000008.DAT     20,971,520  10-03-05 11:51a
+00000009.DAT     20,971,520  10-03-05 11:30p
+00000010.DAT     18,604,544  10-04-05  9:50a
+00000011.DAT     20,971,520  10-04-05 11:03a
+00000012.DAT     20,971,520  10-04-05 12:13p
+00000013.DAT     20,971,520  10-04-05  1:23p
+00000014.DAT     20,971,520  10-04-05  2:32p
+00000015.DAT     20,971,520  10-04-05  3:42p
+00000016.DAT     20,971,520  10-04-05  4:52p
+00000017.DAT     20,971,520  10-04-05  6:02p
+00000018.DAT     20,971,520  10-04-05  7:12p
+00000019.DAT     20,971,520  10-04-05  8:22p
+00000020.DAT     20,971,520  10-04-05  9:32p
+00000021.DAT     20,971,520  10-04-05 10:42p
+00000022.DAT     20,971,520  10-04-05 11:52p
+00000023.DAT     20,971,520  10-05-05  1:02a
+00000024.DAT     20,971,520  10-05-05  2:12a
+00000025.DAT     20,971,520  10-05-05  3:21a
+00000026.DAT     20,971,520  10-05-05  4:31a
+00000027.DAT     20,971,520  10-05-05  5:41a
+00000028.DAT     20,971,520  10-05-05  6:51a
+00000029.DAT     20,971,520  10-05-05  8:01a
+00000030.DAT     20,971,520  10-05-05  9:11a
+00000031.DAT     20,971,520  10-05-05 10:21a
+00000032.DAT     20,971,520  10-05-05 11:31a
+00000033.DAT     20,971,520  10-05-05 12:41p
+00000034.DAT     20,971,520  10-05-05  1:51p
+00000035.DAT     20,971,520  10-05-05  3:00p
+00000036.DAT     20,971,520  10-05-05  4:10p
+00000037.DAT     20,971,520  10-05-05  5:20p
+00000038.DAT     20,971,520  10-05-05  6:30p
+00000039.DAT     20,971,520  10-05-05  7:40p
+00000040.DAT     20,971,520  10-05-05  8:50p
+00000041.DAT     20,971,520  10-05-05 10:00p
+00000042.DAT     20,971,520  10-05-05 11:10p
+00000043.DAT     20,971,520  10-06-05 12:20a
+00000044.DAT     20,971,520  10-06-05  1:30a
+00000045.DAT     20,971,520  10-06-05  2:40a
+00000046.DAT     20,971,520  10-06-05  3:49a
+00000047.DAT     20,971,520  10-06-05  4:59a
+00000048.DAT     20,971,520  10-06-05  6:09a
+00000049.DAT     20,971,520  10-06-05  7:19a
+00000050.DAT     20,971,520  10-06-05  8:29a
+00000051.DAT     20,971,520  10-06-05  9:39a
+00000052.DAT     20,971,520  10-06-05 10:49a
+00000053.DAT     20,971,520  10-06-05 11:59a
+00000054.DAT     20,971,520  10-06-05  1:09p
+00000055.DAT     20,971,520  10-06-05  2:19p
+00000056.DAT     20,971,520  10-06-05  3:28p
+00000057.DAT     20,971,520  10-06-05  4:38p
+00000058.DAT     20,971,520  10-06-05  5:48p
+00000059.DAT     20,971,520  10-06-05  6:58p
+00000060.DAT     20,971,520  10-06-05  8:08p
+00000061.DAT     20,971,520  10-06-05  9:18p
+00000062.DAT     20,971,520  10-06-05 10:28p
+00000063.DAT     20,971,520  10-06-05 11:38p
+00000064.DAT     20,971,520  10-07-05 12:48a
+00000065.DAT     20,971,520  10-07-05  1:58a
+00000066.DAT     20,971,520  10-07-05  3:08a
+00000067.DAT     20,971,520  10-07-05  4:17a
+00000068.DAT     20,971,520  10-07-05  5:27a
+00000069.DAT     20,971,520  10-07-05  6:37a
+00000070.DAT     20,971,520  10-07-05  7:47a
+00000071.DAT     20,971,520  10-07-05  8:57a
+00000072.DAT     20,971,520  10-07-05 10:07a
+00000073.DAT     20,971,520  10-07-05 11:17a
+00000074.DAT     20,971,520  10-07-05 12:27p
+00000075.DAT     20,971,520  10-07-05  1:37p
+00000076.DAT     20,971,520  10-07-05  2:47p
+00000077.DAT     20,971,520  10-07-05  3:56p
+00000078.DAT     20,971,520  10-07-05  5:06p
+00000079.DAT     20,971,520  10-07-05  6:16p
+00000080.DAT     20,971,520  10-07-05  7:26p
+00000081.DAT     20,971,520  10-07-05  8:36p
+00000082.DAT     20,971,520  10-07-05  9:46p
+00000083.DAT     20,971,520  10-07-05 10:56p
+00000084.DAT     20,971,520  10-08-05 12:06a
+00000085.DAT     20,971,520  10-08-05  1:16a
+00000086.DAT     20,971,520  10-08-05  2:26a
+00000087.DAT     20,971,520  10-08-05  3:36a
+00000088.DAT     20,971,520  10-08-05  4:45a
+00000089.DAT     20,971,520  10-08-05  5:55a
+00000090.DAT     20,971,520  10-08-05  7:05a
+00000091.DAT     20,971,520  10-08-05  8:15a
+00000092.DAT     20,971,520  10-08-05  9:25a
+00000093.DAT     20,971,520  10-08-05 10:35a
+00000094.DAT     20,971,520  10-08-05 11:45a
+00000095.DAT     20,971,520  10-08-05 12:55p
+00000096.DAT     20,971,520  10-08-05  2:05p
+00000097.DAT     20,971,520  10-08-05  3:15p
+00000098.DAT     20,971,520  10-08-05  4:24p
+00000099.DAT     20,971,520  10-08-05  5:34p
+00000100.DAT     20,971,520  10-08-05  6:44p
+00000101.DAT     20,971,520  10-08-05  7:54p
+00000102.DAT     20,971,520  10-08-05  9:04p
+00000103.DAT     20,971,520  10-08-05 10:14p
+00000104.DAT     20,971,520  10-08-05 11:24p
+00000105.DAT     20,971,520  10-09-05 12:34a
+00000106.DAT     20,971,520  10-09-05  1:44a
+00000107.DAT     20,971,520  10-09-05  2:54a
+00000108.DAT     20,971,520  10-09-05  4:04a
+00000109.DAT     20,971,520  10-09-05  5:13a
+00000110.DAT     20,971,520  10-09-05  6:23a
+00000111.DAT     20,971,520  10-09-05  7:33a
+00000112.DAT     20,971,520  10-09-05  8:43a
+00000113.DAT     20,971,520  10-09-05  9:53a
+00000114.DAT     20,971,520  10-09-05 11:03a
+00000115.DAT     20,971,520  10-09-05 12:13p
+00000116.DAT     20,971,520  10-09-05  1:23p
+00000117.DAT     20,971,520  10-09-05  2:33p
+00000118.DAT     20,971,520  10-09-05  3:43p
+00000119.DAT     20,971,520  10-09-05  4:52p
+00000120.DAT     20,971,520  10-09-05  6:02p
+00000121.DAT     20,971,520  10-09-05  7:12p
+00000122.DAT     20,971,520  10-09-05  8:22p
+00000123.DAT     20,971,520  10-09-05  9:32p
+00000124.DAT     20,971,520  10-09-05 10:42p
+00000125.DAT     20,971,520  10-09-05 11:52p
+00000126.DAT     20,971,520  10-10-05  1:02a
+00000127.DAT     20,971,520  10-10-05  2:12a
+00000128.DAT     20,971,520  10-10-05  3:22a
+00000129.DAT     20,971,520  10-10-05  4:32a
+00000130.DAT     20,971,520  10-10-05  5:41a
+00000131.DAT     20,971,520  10-10-05  6:51a
+00000132.DAT     20,971,520  10-10-05  8:01a
+00000133.DAT     20,971,520  10-10-05  9:11a
+00000134.DAT     20,971,520  10-10-05 10:21a
+00000135.DAT     20,971,520  10-10-05 11:31a
+00000136.DAT     20,971,520  10-10-05 12:41p
+00000137.DAT     20,971,520  10-10-05  1:51p
+00000138.DAT     20,971,520  10-10-05  3:01p
+00000139.DAT     20,971,520  10-10-05  4:11p
+00000140.DAT     20,971,520  10-10-05  5:20p
+00000141.DAT     20,971,520  10-10-05  6:30p
+00000142.DAT     20,971,520  10-10-05  7:40p
+00000143.DAT     20,971,520  10-10-05  8:50p
+00000144.DAT     20,971,520  10-10-05 10:00p
+00000145.DAT     20,971,520  10-10-05 11:10p
+00000146.DAT     20,971,520  10-11-05 12:20a
+00000147.DAT     20,971,520  10-11-05  1:30a
+00000148.DAT     20,971,520  10-11-05  2:40a
+00000149.DAT     20,971,520  10-11-05  3:50a
+00000150.DAT     20,971,520  10-11-05  5:00a
+00000151.DAT     20,971,520  10-11-05  6:09a
+00000152.DAT     20,971,520  10-11-05  7:19a
+00000153.DAT     20,971,520  10-11-05  8:29a
+00000154.DAT     20,971,520  10-11-05  9:39a
+00000155.DAT     20,971,520  10-11-05 10:49a
+00000156.DAT     20,971,520  10-11-05 11:59a
+00000157.DAT     20,971,520  10-11-05  1:09p
+00000158.DAT     20,971,520  10-11-05  2:19p
+00000159.DAT     20,971,520  10-11-05  3:29p
+00000160.DAT     20,971,520  10-11-05  4:39p
+00000161.DAT     20,971,520  10-11-05  5:48p
+00000162.DAT     20,971,520  10-11-05  6:58p
+00000163.DAT     20,971,520  10-11-05  8:08p
+00000164.DAT     20,971,520  10-11-05  9:18p
+00000165.DAT     20,971,520  10-11-05 10:28p
+00000166.DAT     20,971,520  10-11-05 11:38p
+00000167.DAT     20,971,520  10-12-05 12:48a
+00000168.DAT     20,971,520  10-12-05  1:58a
+00000169.DAT     20,971,520  10-12-05  3:08a
+00000170.DAT     20,971,520  10-12-05  4:18a
+00000171.DAT     20,971,520  10-12-05  5:28a
+00000172.DAT     20,971,520  10-12-05  6:37a
+00000173.DAT     20,971,520  10-12-05  7:47a
+00000174.DAT     20,971,520  10-12-05  8:57a
+00000175.DAT     20,971,520  10-12-05 10:07a
+00000176.DAT     20,971,520  10-12-05 11:17a
+00000177.DAT     20,971,520  10-12-05 12:27p
+00000178.DAT     20,971,520  10-12-05  1:37p
+00000179.DAT     20,971,520  10-12-05  2:47p
+00000180.DAT     20,971,520  10-12-05  3:57p
+00000181.DAT     20,971,520  10-12-05  5:07p
+00000182.DAT     20,971,520  10-12-05  6:16p
+00000183.DAT     20,971,520  10-12-05  7:26p
+00000184.DAT     20,971,520  10-12-05  8:36p
+00000185.DAT     20,971,520  10-12-05  9:46p
+00000186.DAT     20,971,520  10-12-05 10:56p
+00000187.DAT     20,971,520  10-13-05 12:06a
+00000188.DAT     20,971,520  10-13-05  1:16a
+00000189.DAT     20,971,520  10-13-05  2:26a
+00000190.DAT     20,971,520  10-13-05  3:36a
+00000191.DAT     20,971,520  10-13-05  4:46a
+00000192.DAT     20,971,520  10-13-05  5:56a
+00000193.DAT     20,971,520  10-13-05  7:05a
+00000194.DAT     20,971,520  10-13-05  8:15a
+00000195.DAT     20,971,520  10-13-05  9:25a
+00000196.DAT     20,971,520  10-13-05 10:35a
+00000197.DAT     20,971,520  10-13-05 11:45a
+00000198.DAT     20,971,520  10-13-05 12:55p
+00000199.DAT     20,971,520  10-13-05  2:05p
+00000200.DAT     20,971,520  10-13-05  3:15p
+00000201.DAT     20,971,520  10-13-05  4:25p
+00000202.DAT     20,971,520  10-13-05  5:35p
+00000203.DAT     20,971,520  10-13-05  6:44p
+00000204.DAT     20,971,520  10-13-05  7:54p
+00000205.DAT     20,971,520  10-13-05  9:04p
+00000206.DAT     20,971,520  10-13-05 10:14p
+00000207.DAT     20,971,520  10-13-05 11:24p
+00000208.DAT     20,971,520  10-14-05 12:34a
+00000209.DAT     20,971,520  10-14-05  1:44a
+00000210.DAT     20,971,520  10-14-05  2:54a
+00000211.DAT     20,971,520  10-14-05  4:04a
+00000212.DAT     20,971,520  10-14-05  5:14a
+00000213.DAT     20,971,520  10-14-05  6:24a
+00000214.DAT     20,971,520  10-14-05  7:33a
+00000215.DAT     20,971,520  10-14-05  8:43a
+00000216.DAT     20,971,520  10-14-05  9:53a
+00000217.DAT     20,971,520  10-14-05 11:03a
+00000218.DAT     20,971,520  10-14-05 12:13p
+00000219.DAT     20,971,520  10-14-05  1:23p
+00000220.DAT     20,971,520  10-14-05  2:33p
+00000221.DAT     20,971,520  10-14-05  3:43p
+00000222.DAT     20,971,520  10-14-05  4:53p
+00000223.DAT     20,971,520  10-14-05  6:03p
+00000224.DAT     20,971,520  10-14-05  7:12p
+00000225.DAT     20,971,520  10-14-05  8:22p
+00000226.DAT     20,971,520  10-14-05  9:32p
+00000227.DAT     20,971,520  10-14-05 10:42p
+00000228.DAT     20,971,520  10-14-05 11:52p
+00000229.DAT     20,971,520  10-15-05  1:02a
+00000230.DAT     20,971,520  10-15-05  2:12a
+00000231.DAT     20,971,520  10-15-05  3:22a
+00000232.DAT     20,971,520  10-15-05  4:32a
+00000233.DAT     20,971,520  10-15-05  5:42a
+00000234.DAT     20,971,520  10-15-05  6:51a
+00000235.DAT     20,971,520  10-15-05  8:01a
+00000236.DAT     20,971,520  10-15-05  9:11a
+00000237.DAT     20,971,520  10-15-05 10:21a
+00000238.DAT     20,971,520  10-15-05 11:31a
+00000239.DAT     20,971,520  10-15-05 12:41p
+00000240.DAT     20,971,520  10-15-05  1:51p
+00000241.DAT     20,971,520  10-15-05  3:01p
+00000242.DAT     20,971,520  10-15-05  4:11p
+00000243.DAT     20,971,520  10-15-05  5:21p
+00000244.DAT     20,971,520  10-15-05  6:31p
+00000245.DAT     20,971,520  10-15-05  7:40p
+00000246.DAT     20,971,520  10-15-05  8:50p
+00000247.DAT     20,971,520  10-15-05 10:00p
+00000248.DAT     20,971,520  10-15-05 11:10p
+00000249.DAT     20,971,520  10-16-05 12:20a
+00000250.DAT     20,971,520  10-16-05  1:30a
+00000251.DAT     20,971,520  10-16-05  2:40a
+00000252.DAT     20,971,520  10-16-05  3:50a
+00000253.DAT     20,971,520  10-16-05  5:00a
+00000254.DAT     20,971,520  10-16-05  6:10a
+00000255.DAT     20,971,520  10-16-05  7:19a
+00000256.DAT     20,971,520  10-16-05  8:29a
+00000257.DAT     20,971,520  10-16-05  9:39a
+00000258.DAT     20,971,520  10-16-05 10:49a
+00000259.DAT     20,971,520  10-16-05 11:59a
+00000260.DAT     20,971,520  10-16-05  1:09p
+00000261.DAT     20,971,520  10-16-05  2:19p
+00000262.DAT     20,971,520  10-16-05  3:29p
+00000263.DAT     20,971,520  10-16-05  4:39p
+00000264.DAT     20,971,520  10-16-05  5:49p
+00000265.DAT     20,971,520  10-16-05  6:59p
+00000266.DAT     20,971,520  10-16-05  8:08p
+00000267.DAT     20,971,520  10-16-05  9:18p
+00000268.DAT     20,971,520  10-16-05 10:28p
+00000269.DAT     20,971,520  10-16-05 11:38p
+00000270.DAT     20,971,520  10-17-05 12:48a
+00000271.DAT     20,971,520  10-17-05  1:58a
+00000272.DAT     20,971,520  10-17-05  3:08a
+00000273.DAT     20,971,520  10-17-05  4:18a
+00000274.DAT     20,971,520  10-17-05  5:28a
+00000275.DAT     20,971,520  10-17-05  6:38a
+00000276.DAT     20,971,520  10-17-05  7:47a
+00000277.DAT     20,971,520  10-17-05  8:57a
+00000278.DAT     20,971,520  10-17-05 10:07a
+00000279.DAT     20,971,520  10-17-05 11:17a
+00000280.DAT     20,971,520  10-17-05 12:27p
+00000281.DAT     20,971,520  10-17-05  1:37p
+00000282.DAT     20,971,520  10-17-05  2:47p
+00000283.DAT     20,971,520  10-17-05  3:57p
+00000284.DAT     20,971,520  10-17-05  5:07p
+00000285.DAT     20,971,520  10-17-05  6:17p
+00000286.DAT     20,971,520  10-17-05  7:27p
+00000287.DAT     20,971,520  10-17-05  8:36p
+00000288.DAT     20,971,520  10-17-05  9:46p
+00000289.DAT     20,971,520  10-17-05 10:56p
+00000290.DAT     20,971,520  10-18-05 12:06a
+00000291.DAT     20,971,520  10-18-05  1:16a
+00000292.DAT     20,971,520  10-18-05  2:26a
+00000293.DAT     20,971,520  10-18-05  3:36a
+00000294.DAT     20,971,520  10-18-05  4:46a
+00000295.DAT     20,971,520  10-18-05  5:56a
+00000296.DAT     20,971,520  10-18-05  7:06a
+00000297.DAT     20,971,520  10-18-05  8:15a
+00000298.DAT     20,971,520  10-18-05  9:25a
+00000299.DAT     20,971,520  10-18-05 10:35a
+00000300.DAT     20,971,520  10-18-05 11:45a
+00000301.DAT     20,971,520  10-18-05 12:55p
+00000302.DAT     20,971,520  10-18-05  2:05p
+00000303.DAT     20,971,520  10-18-05  3:15p
+00000304.DAT     20,971,520  10-18-05  4:25p
+00000305.DAT     20,971,520  10-18-05  5:35p
+00000306.DAT     20,971,520  10-18-05  6:45p
+00000307.DAT     20,971,520  10-18-05  7:55p
+00000308.DAT     20,971,520  10-18-05  9:04p
+00000309.DAT     20,971,520  10-18-05 10:14p
+00000310.DAT     20,971,520  10-18-05 11:24p
+00000311.DAT     20,971,520  10-19-05 12:34a
+00000312.DAT     20,971,520  10-19-05  1:44a
+00000313.DAT     20,971,520  10-19-05  2:54a
+00000314.DAT     20,971,520  10-19-05  4:04a
+00000315.DAT     20,971,520  10-19-05  5:14a
+00000316.DAT     20,971,520  10-19-05  6:24a
+00000317.DAT     20,971,520  10-19-05  7:34a
+00000318.DAT     20,971,520  10-19-05  8:43a
+00000319.DAT     20,971,520  10-19-05  9:53a
+00000320.DAT     20,971,520  10-19-05 11:03a
+00000321.DAT     20,971,520  10-19-05 12:13p
+00000322.DAT     20,971,520  10-19-05  1:23p
+00000323.DAT     20,971,520  10-19-05  2:33p
+00000324.DAT     20,971,520  10-19-05  3:43p
+00000325.DAT     20,971,520  10-19-05  4:53p
+00000326.DAT     20,971,520  10-19-05  6:03p
+00000327.DAT     20,971,520  10-19-05  7:13p
+00000328.DAT     20,971,520  10-19-05  8:23p
+00000329.DAT     20,971,520  10-19-05  9:32p
+00000330.DAT     20,971,520  10-19-05 10:42p
+00000331.DAT     20,971,520  10-19-05 11:52p
+00000332.DAT     20,971,520  10-20-05  1:02a
+00000333.DAT     20,971,520  10-20-05  2:12a
+00000334.DAT     20,971,520  10-20-05  3:22a
+00000335.DAT     20,971,520  10-20-05  4:32a
+00000336.DAT     20,971,520  10-20-05  5:42a
+00000337.DAT     20,971,520  10-20-05  6:52a
+00000338.DAT     20,971,520  10-20-05  8:02a
+00000339.DAT     20,971,520  10-20-05  9:11a
+00000340.DAT     20,971,520  10-20-05 10:21a
+00000341.DAT     20,971,520  10-20-05 11:31a
+00000342.DAT     20,971,520  10-20-05 12:41p
+00000343.DAT     20,971,520  10-20-05  1:51p
+00000344.DAT     20,971,520  10-20-05  3:01p
+00000345.DAT     20,971,520  10-20-05  4:11p
+00000346.DAT     20,971,520  10-20-05  5:21p
+00000347.DAT     20,971,520  10-20-05  6:31p
+00000348.DAT     20,971,520  10-20-05  7:41p
+00000349.DAT     20,971,520  10-20-05  8:51p
+00000350.DAT     20,971,520  10-20-05 10:00p
+00000351.DAT     20,971,520  10-20-05 11:10p
+00000352.DAT     20,971,520  10-21-05 12:20a
+00000353.DAT     20,971,520  10-21-05  1:30a
+00000354.DAT     20,971,520  10-21-05  2:40a
+00000355.DAT     20,971,520  10-21-05  3:50a
+00000356.DAT     20,971,520  10-21-05  5:00a
+00000357.DAT     20,971,520  10-21-05  6:10a
+00000358.DAT     20,971,520  10-21-05  7:20a
+00000359.DAT     20,971,520  10-21-05  8:30a
+00000360.DAT     20,971,520  10-21-05  9:39a
+00000361.DAT     20,971,520  10-21-05 10:49a
+00000362.DAT     20,971,520  10-21-05 11:59a
+00000363.DAT     20,971,520  10-21-05  1:09p
+00000364.DAT     20,971,520  10-21-05  2:19p
+00000365.DAT     20,971,520  10-21-05  3:29p
+00000366.DAT     20,971,520  10-21-05  4:39p
+00000367.DAT     20,971,520  10-21-05  5:49p
+00000368.DAT     20,971,520  10-21-05  6:59p
+00000369.DAT     20,971,520  10-21-05  8:09p
+00000370.DAT     20,971,520  10-21-05  9:19p
+00000371.DAT     20,971,520  10-21-05 10:28p
+00000372.DAT     20,971,520  10-21-05 11:38p
+00000373.DAT     20,971,520  10-22-05 12:48a
+00000374.DAT     20,971,520  10-22-05  1:58a
+00000375.DAT     20,971,520  10-22-05  3:08a
+00000376.DAT     20,971,520  10-22-05  4:18a
+00000377.DAT     20,971,520  10-22-05  5:28a
+00000378.DAT     20,971,520  10-22-05  6:38a
+00000379.DAT     20,971,520  10-22-05  7:48a
+00000380.DAT     20,971,520  10-22-05  8:58a
+00000381.DAT     20,971,520  10-22-05 10:07a
+00000382.DAT     20,971,520  10-22-05 11:17a
+00000383.DAT     20,971,520  10-22-05 12:27p
+00000384.DAT     20,971,520  10-22-05  1:37p
+00000385.DAT     20,971,520  10-22-05  2:47p
+00000386.DAT     20,971,520  10-22-05  3:57p
+00000387.DAT     20,971,520  10-22-05  5:07p
+00000388.DAT     20,971,520  10-22-05  6:17p
+00000389.DAT     20,971,520  10-22-05  7:27p
+00000390.DAT     20,971,520  10-22-05  8:37p
+00000391.DAT     20,971,520  10-22-05  9:47p
+00000392.DAT     20,971,520  10-22-05 10:56p
+00000393.DAT     20,971,520  10-23-05 12:06a
+00000394.DAT     20,971,520  10-23-05  1:16a
+00000395.DAT     20,971,520  10-23-05  2:26a
+00000396.DAT     20,971,520  10-23-05  3:36a
+00000397.DAT     20,971,520  10-23-05  4:46a
+00000398.DAT     20,971,520  10-23-05  5:56a
+00000399.DAT     20,971,520  10-23-05  7:06a
+00000400.DAT     20,971,520  10-23-05  8:16a
+00000401.DAT     20,971,520  10-23-05  9:26a
+00000402.DAT     20,971,520  10-23-05 10:35a
+00000403.DAT     20,971,520  10-23-05 11:45a
+00000404.DAT     20,971,520  10-23-05 12:55p
+00000405.DAT     20,971,520  10-23-05  2:05p
+00000406.DAT     20,971,520  10-23-05  3:15p
+00000407.DAT     20,971,520  10-23-05  4:25p
+00000408.DAT     20,971,520  10-23-05  5:35p
+00000409.DAT     20,971,520  10-23-05  6:45p
+00000410.DAT     20,971,520  10-23-05  7:55p
+00000411.DAT     20,971,520  10-23-05  9:05p
+00000412.DAT     20,971,520  10-23-05 10:15p
+00000413.DAT     20,971,520  10-23-05 11:24p
+00000414.DAT     20,971,520  10-24-05 12:34a
+00000415.DAT     20,971,520  10-24-05  1:44a
+00000416.DAT     20,971,520  10-24-05  2:54a
+00000417.DAT     20,971,520  10-24-05  4:04a
+00000418.DAT     20,971,520  10-24-05  5:14a
+00000419.DAT     20,971,520  10-24-05  6:24a
+00000420.DAT     20,971,520  10-24-05  7:34a
+00000421.DAT     20,971,520  10-24-05  8:44a
+00000422.DAT     20,971,520  10-24-05  9:54a
+00000423.DAT     20,971,520  10-24-05 11:03a
+00000424.DAT     20,971,520  10-24-05 12:13p
+00000425.DAT     20,971,520  10-24-05  1:23p
+00000426.DAT     20,971,520  10-24-05  2:33p
+00000427.DAT     20,971,520  10-24-05  3:43p
+00000428.DAT     20,971,520  10-24-05  4:53p
+00000429.DAT     20,971,520  10-24-05  6:03p
+00000430.DAT     20,971,520  10-24-05  7:13p
+00000431.DAT     20,971,520  10-24-05  8:23p
+00000432.DAT     20,971,520  10-24-05  9:33p
+00000433.DAT     20,971,520  10-24-05 10:43p
+00000434.DAT     20,971,520  10-24-05 11:52p
+00000435.DAT     20,971,520  10-25-05  1:02a
+00000436.DAT     20,971,520  10-25-05  2:12a
+00000437.DAT     20,971,520  10-25-05  3:22a
+00000438.DAT     20,971,520  10-25-05  4:32a
+00000439.DAT     20,971,520  10-25-05  5:42a
+00000440.DAT     20,971,520  10-25-05  6:52a
+00000441.DAT     20,971,520  10-25-05  8:02a
+00000442.DAT     20,971,520  10-25-05  9:12a
+00000443.DAT     20,971,520  10-25-05 10:22a
+00000444.DAT     20,971,520  10-25-05 11:31a
+00000445.DAT     20,971,520  10-25-05 12:41p
+00000446.DAT     20,971,520  10-25-05  1:51p
+00000447.DAT     20,971,520  10-25-05  3:01p
+00000448.DAT     20,971,520  10-25-05  4:11p
+00000449.DAT     20,971,520  10-25-05  5:21p
+00000450.DAT     20,971,520  10-25-05  6:31p
+00000451.DAT     20,971,520  10-25-05  7:41p
+00000452.DAT     20,971,520  10-25-05  8:51p
+00000453.DAT     20,971,520  10-25-05 10:01p
+00000454.DAT     20,971,520  10-25-05 11:11p
+00000455.DAT     20,971,520  10-26-05 12:20a
+00000456.DAT     20,971,520  10-26-05  1:30a
+00000457.DAT     20,971,520  10-26-05  2:40a
+00000458.DAT     20,971,520  10-26-05  3:50a
+00000459.DAT     20,971,520  10-26-05  5:00a
+00000460.DAT     20,971,520  10-26-05  6:10a
+00000461.DAT     20,971,520  10-26-05  7:20a
+00000462.DAT     20,971,520  10-26-05  8:30a
+00000463.DAT     20,971,520  10-26-05  9:40a
+00000464.DAT     20,971,520  10-26-05 10:50a
+00000465.DAT     20,971,520  10-26-05 11:59a
+00000466.DAT     20,971,520  10-26-05  1:09p
+00000467.DAT     20,971,520  10-26-05  2:19p
+00000468.DAT     20,971,520  10-26-05  3:29p
+00000469.DAT     20,971,520  10-26-05  4:39p
+00000470.DAT     20,971,520  10-26-05  5:49p
+00000471.DAT     20,971,520  10-26-05  6:59p
+00000472.DAT     20,971,520  10-26-05  8:09p
+00000473.DAT     20,971,520  10-26-05  9:19p
+00000474.DAT     20,971,520  10-26-05 10:29p
+00000475.DAT     20,971,520  10-26-05 11:39p
+00000476.DAT     20,971,520  10-27-05 12:48a
+00000477.DAT     20,971,520  10-27-05  1:58a
+00000478.DAT     20,971,520  10-27-05  3:08a
+00000479.DAT     20,971,520  10-27-05  4:18a
+
+       480 file(s)       9,805,326 KB
+         0 dir(s)            5,440 KB free
+
+D:\>format
+Formatting this drive will erase all of its data!
+Are you sure ? y
+Formatting D: ... 
+Complete
+
+D:\>c:
+
+C:\>mount bi25-0 /dd
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\>
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>set
+ACQ.STARTUPS=0
+ACQ.MAXSTRTS=999
+ACQ.NCHAN=1
+ACQ.SRATEHZ=250
+ACQ.SAMPLES=3
+ACQ.REFVOLT=25
+ACQ.LOGTOCON=1
+ACQ.LOGFILE=C:ACTIVITY.LOG
+ACQ.SLEEP=12
+ACQ.SYSTEM=H16
+ACQ.LOCATION=N60W140
+ACQ.GAIN=0
+ACQ.EXPID=NEWPORT2003
+ACQ.WAKEUP=0
+ACQ.PROGNAME=FAT32LOGGER3_4
+ACQ.CF1SERNUM=51241
+ACQ.PRAMPNAME=H3PA3_001
+ACQ.TABLE=323
+ACQ.DAQNAME=H3DAQ2_001
+ACQ.NUMDISKS=5FAT32
+ACQ.CLK=H3CLK1_001
+ACQ.PWFILT=2
+ACQ.LOPASS=110
+ACQ.HYDROSENS=-192
+ACQ.FACT=100
+BIR.TRMCTLPIN=0
+BIR.CFPPBSZ=41943040
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.CURBIA=0
+BIR.BIADEVICE=1
+SYS.F32TRUST=CD
+
+C:\>dir
+
+ Volume in drive C is NONAME     
+ Volume Serial Number is 4B4A-0568
+ Directory of C:\
+
+ACTIVITY.LOG        545,034  02-05-04  5:25p
+
+         1 file(s)         545,034 bytes
+         0 dir(s)        5,442,560 bytes free
+
+C:\>erase activity.log
+C:\>
+C:\>g
+Program: FAT32_noaalogger3_5.c: Sep  2 2005 14:36:12 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+Starting...
+Start Time: 11/28/2005  17:21:38 [ctime: 1133198498, 0x438B3CA2]
+
+
+
+-------------------------------------------------------------------
+Program: FAT32_noaalogger3_5.c,  Version: 2.2,  Build: Sep  2 2005 14:36:12
+System Parameters: CF1 SN 51241, PicoDOS 3.00, BIOS 3.00
+8000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+Setting pre-amp gain to 0
+ LOG FILE NAME             = C:ACTIVITY.LOG
+ SYSTEM NAME               = H16
+ LOCATION                  = N60W140
+ HOURS OF SLEEP            = 12
+ PRE-AMP GAIN SET [0,1,2,3]= 0
+ FIRST CHAN       [0]      = 0
+ NUMBER OF CHAN   [1]      = 1
+ SAMPLE RATE [HZ][250/500/1000/2000]= 250
+ LOW PASS FILT CUT-OFF [HZ]= 110
+ PRE-AMP PREWHITEN FILT SET= 2
+ NO. OF PAST START-UPS[0]  = 0
+ NO. OF MAX START-UPS [99] = 999
+ 1BYTE/2BYTE/16BIT[0,2,3]  = 3
+ REF VOLTAGE TO AD X 10    = 2.500000V
+ EXPEDITION ID             = NEWPORT2003
+ PROGRAM NAME              = FAT32LOGGER3_4
+ CF1 SERIAL NUMBER         = 51241
+ # OF DISKS AND FILE SYS   = 5FAT32
+ PR-AMP BOARD NAME & REV#  = H3PA3_001
+ PR-AMP FREQ RESP TABLE    = 323
+ DAQ BOARD NAME & REV#     = H3DAQ2_001
+ CLOCK BOARD NAME & REV#   = H3CLK1_001
+ HYDROPHONE SENSITIVY      = -192
+ DISK WRITE CONTROL        = 0
+
+Synchronize Q-Tech and RTC clocks to GPS now 
+Time now             105 332:17:21:41:173
+Did you synchronize Q-Tech clock with 1-pps [y/n]? 
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..8..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>set
+ACQ.MAXSTRTS=999
+ACQ.NCHAN=1
+ACQ.SRATEHZ=250
+ACQ.SAMPLES=3
+ACQ.REFVOLT=25
+ACQ.LOGTOCON=1
+ACQ.LOGFILE=C:ACTIVITY.LOG
+ACQ.SLEEP=12
+ACQ.SYSTEM=H16
+ACQ.LOCATION=N60W140
+ACQ.GAIN=0
+ACQ.EXPID=NEWPORT2003
+ACQ.WAKEUP=0
+ACQ.PROGNAME=FAT32LOGGER3_4
+ACQ.CF1SERNUM=51241
+ACQ.PRAMPNAME=H3PA3_001
+ACQ.TABLE=323
+ACQ.DAQNAME=H3DAQ2_001
+ACQ.NUMDISKS=5FAT32
+ACQ.CLK=H3CLK1_001
+ACQ.PWFILT=2
+ACQ.LOPASS=110
+ACQ.HYDROSENS=-192
+ACQ.FACT=100
+BIR.TRMCTLPIN=0
+BIR.CFPPBSZ=41943040
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.CURBIA=0
+BIR.BIADEVICE=1
+SYS.F32TRUST=CD
+ACQ.STARTUPS=1
+
+C:\>mount bi25-0
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>d:
+
+D:\>dir
+
+ Volume in drive D has no label
+ Volume Serial Number is 5B60-45AC
+ Directory of D:\
+
+
+         0 file(s)               0 KB
+         0 dir(s)        9,810,792 KB free
+
+D:\>c:
+
+C:\>mount bi25-0 /d
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\>
+C:\>g
+Program: FAT32_noaalogger3_5.c: Sep  2 2005 14:36:12 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+Starting...
+Start Time: 11/28/2005  17:22:39 [ctime: 1133198559, 0x438B3CDF]
+
+
+
+-------------------------------------------------------------------
+Program: FAT32_noaalogger3_5.c,  Version: 2.2,  Build: Sep  2 2005 14:36:12
+System Parameters: CF1 SN 51241, PicoDOS 3.00, BIOS 3.00
+8000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+Setting pre-amp gain to 0
+ LOG FILE NAME             = C:ACTIVITY.LOG
+ SYSTEM NAME               = H16
+ LOCATION                  = N60W140
+ HOURS OF SLEEP            = 12
+ PRE-AMP GAIN SET [0,1,2,3]= 0
+ FIRST CHAN       [0]      = 0
+ NUMBER OF CHAN   [1]      = 1
+ SAMPLE RATE [HZ][250/500/1000/2000]= 250
+ LOW PASS FILT CUT-OFF [HZ]= 110
+ PRE-AMP PREWHITEN FILT SET= 2
+ NO. OF PAST START-UPS[0]  = 1
+ NO. OF MAX START-UPS [99] = 999
+ 1BYTE/2BYTE/16BIT[0,2,3]  = 3
+ REF VOLTAGE TO AD X 10    = 2.500000V
+ EXPEDITION ID             = NEWPORT2003
+ PROGRAM NAME              = FAT32LOGGER3_4
+ CF1 SERIAL NUMBER         = 51241
+ # OF DISKS AND FILE SYS   = 5FAT32
+ PR-AMP BOARD NAME & REV#  = H3PA3_001
+ PR-AMP FREQ RESP TABLE    = 323
+ DAQ BOARD NAME & REV#     = H3DAQ2_001
+ CLOCK BOARD NAME & REV#   = H3CLK1_001
+ HYDROPHONE SENSITIVY      = -192
+ DISK WRITE CONTROL        = 0
+
+System reboot # 1 occured at 105 332:17:22:42:360105 332:17:22:42:0366
+Turning On the 1-st hard disk for testing ... 
+Program: FAT32_NOAABIRecorder3.c, Ver: 2.0, Build: Sep  2 2005 14:36:12
+ ## BIRS.CFPPBSZ=41943040
+ ## BIRS.RAMPPBSZ=65536
+ ## BIRS.RAMHDBFSZ=65536
+ ## BIRS.MINFREEKB=20480
+ ## BIRS.HDDOSDRV[4]=D:
+ ## BIRS.NODRVTEST=0
+ ## BIRS.UARTMONIT=0
+ ## BIRS.FLOGFLAG=1
+ ## BIRS.BIADEVICE=1
+ ## BIRS.CURBIA=0
+
+New volume: 11/28/2005  17:22:46:0467 [ctime: 1133198566]
+BigIDEA 0 (0:1066), Spin-up 0ms
+Drive D: 9810800KB total, 8KB used, 9810792KB free, index: D:00000000.DAT
+Acquisition Started at 105 332:17:22:42:360105 332:17:22:42:0465
+Concluding...
+Logging ended or interrupted at 105 332:17:22:42:360105 332:17:22:42:0892
+Finish request, abort=0, [ctime: 1133198613, 11/28/2005  17:23:33:0013]
+
+Writing disk 23040 bytes, 11/28/2005  17:23:33:0179
+Opening D:00000000.DAT after 2452 ms ... Closing file
+Finished after 2702 ms, W:22KB, F:9810768KB, CF:23:1, HD:80:1
+Number of past resets 1
+
+Sleeping until 'break' signal is sent from 'Transfer' window...
+Ohayo!  Time now 105 332:17:22:42:360105 332:17:22:42:0754
+
+Logging is over! Do not reset me nor turn off the power before
+you measure the clock errors.  First connect Event/Time-Tag plug.
+Time now 105 332:17:22:42:360105 332:17:22:42:0060
+
+How many seconds do you need to set up GPS time-tag? [0-154] ? 1
+CF1 will send a pulse from pin 29 to GPS at 05 332:17:23:43:0532
+105 332:17:22:42:360105 332:17:22:42:0532
+To repeat this measurement, hit ret>, or type period to end.
+End of logging!
+Application returned: 1
+
+C:\>res
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? 
+What next?(P=PicoDOS, S=Settings) ? s
+Program: FAT32_noaasettings3_2.c: Apr  7 2004 15:26:47 
+
+Type HELP from the SETUP> prompt for a list of the commands available
+in the program. Type QUIT from the SETUP> to exit the program.
+
+Type LIST /V from the SETUP> prompt for a complete description
+of each of the settings names, values, and purpose.
+
+Type QUIT from the SETUP> to exit the program.
+
+
+VARIABLE:           CURRENT:            DEFAULT:            DIFF:
+ACQ.STARTUPS        2                   0                   *!*
+ACQ.MAXSTRTS        999                 999                 
+ACQ.NCHAN           1                   1                   
+ACQ.SRATEHZ         250                 250                 
+ACQ.SAMPLES         3                   3                   
+ACQ.REFVOLT         25                  25                  
+ACQ.LOGTOCON        1                   1                   
+ACQ.LOGFILE         C:ACTIVITY.LOG      C:ACTIVITY.LOG      
+ACQ.SLEEP           12                  12                  
+ACQ.SYSTEM          H16                 H16                 
+ACQ.LOCATION        N60W140             N60W140             
+ACQ.GAIN            0                   0                   
+ACQ.EXPID           NEWPORT2003         NEWPORT2003         
+ACQ.WAKEUP          0                   0                   
+ACQ.PROGNAME        FAT32LOGGER3_4      FAT32LOGGER3_4      
+ACQ.CF1SERNUM       51241               51241               
+ACQ.PRAMPNAME       H3PA3_001           H3PA3_001           
+ACQ.TABLE           323                 323                 
+ACQ.DAQNAME         H3DAQ2_001          H3DAQ2_001          
+ACQ.NUMDISKS        5FAT32              5FAT32              
+ACQ.CLK             H3CLK1_001          H3CLK1_001          
+ACQ.PWFILT          2                   2                   
+ACQ.LOPASS          110                 110                 
+ACQ.HYDROSENS       -192                -192                
+ACQ.FACT            100                 100                 
+BIR.TRMCTLPIN       0                   0                   
+BIR.CFPPBSZ         41943040            41943040            
+BIR.RAMPPBSZ        65536               65536               
+BIR.RAMHDBFSZ       65536               65536               
+BIR.NODRVTEST       0                   0                   
+BIR.FLOGFLAG        1                   1                   
+BIR.UARTMONIT       0                   0                   
+BIR.HDDOSDRV        D:                  D:                  
+BIR.MINFREEKB       0                   0                   
+BIR.CURBIA          0                   0                   
+BIR.BIADEVICE       1                   1                   
+SYS.F32TRUST        CD                  CD                  
+
+SETUP>eit
+Bad command or file name
+SETUP>exit
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+Starting...
+Start Time: 11/28/2005  17:24:02 [ctime: 1133198642, 0x438B3D32]
+
+
+
+-------------------------------------------------------------------
+Program: FAT32_noaalogger3_4.c,  Version: 2.1,  Build: Apr 12 2004 17:07:22
+System Parameters: CF1 SN 51241, PicoDOS 3.00, BIOS 3.00
+8000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+Setting pre-amp gain to 0
+ LOG FILE NAME             = C:ACTIVITY.LOG
+ SYSTEM NAME               = H16
+ LOCATION                  = N60W140
+ HOURS OF SLEEP            = 12
+ PRE-AMP GAIN SET [0,1,2,3]= 0
+ FIRST CHAN       [0]      = 0
+ NUMBER OF CHAN   [1]      = 1
+ SAMPLE RATE [HZ][250/500/1000/2000]= 250
+ LOW PASS FILT CUT-OFF [HZ]= 110
+ PRE-AMP PREWHITEN FILT SET= 2
+ NO. OF PAST START-UPS[0]  = 2
+ NO. OF MAX START-UPS [99] = 999
+ 1BYTE/2BYTE/16BIT[0,2,3]  = 3
+ REF VOLTAGE TO AD X 10    = 2.500000V
+ EXPEDITION ID             = NEWPORT2003
+ PROGRAM NAME              = FAT32LOGGER3_4
+ CF1 SERIAL NUMBER         = 51241
+ # OF DISKS AND FILE SYS   = 5FAT32
+ PR-AMP BOARD NAME & REV#  = H3PA3_001
+ PR-AMP FREQ RESP TABLE    = 323
+ DAQ BOARD NAME & REV#     = H3DAQ2_001
+ CLOCK BOARD NAME & REV#   = H3CLK1_001
+ HYDROPHONE SENSITIVY      = -192
+ DISK WRITE CONTROL        = 0
+
+System reboot # 2 occured at 105 332:17:24:05:070105 332:17:24:05:0075
+Turning On the 1-st hard disk for testing ... 
+Program: FAT32_NOAABIRecorder3.c, Ver: 2.0, Build: Apr  7 2004 15:26:48
+ ## BIRS.CFPPBSZ=41943040
+ ## BIRS.RAMPPBSZ=65536
+ ## BIRS.RAMHDBFSZ=65536
+ ## BIRS.MINFREEKB=20480
+ ## BIRS.HDDOSDRV[4]=D:
+ ## BIRS.NODRVTEST=0
+ ## BIRS.UARTMONIT=0
+ ## BIRS.FLOGFLAG=1
+ ## BIRS.BIADEVICE=1
+ ## BIRS.CURBIA=0
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>mount bi25-0 
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>d:
+
+D:\>dir
+
+ Volume in drive D has no label
+ Volume Serial Number is 5B60-45AC
+ Directory of D:\
+
+00000000.DAT         23,040  11-28-05  5:23p
+
+         1 file(s)              23 KB
+         0 dir(s)        9,810,768 KB free
+
+D:\>c:
+
+C:\>mount bi25-0 /d
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\>
+C:\>g
+Program: FAT32_noaalogger3_4.c: Jul 21 2004 14:52:37 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+Starting...
+Start Time: 11/28/2005  17:24:47 [ctime: 1133198687, 0x438B3D5F]
+
+
+
+-------------------------------------------------------------------
+Program: FAT32_noaalogger3_4.c,  Version: 2.1,  Build: Jul 21 2004 14:52:37
+System Parameters: CF1 SN 51241, PicoDOS 3.00, BIOS 3.00
+8000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+Setting pre-amp gain to 0
+ LOG FILE NAME             = C:ACTIVITY.LOG
+ SYSTEM NAME               = H16
+ LOCATION                  = N60W140
+ HOURS OF SLEEP            = 12
+ PRE-AMP GAIN SET [0,1,2,3]= 0
+ FIRST CHAN       [0]      = 0
+ NUMBER OF CHAN   [1]      = 1
+ SAMPLE RATE [HZ][250/500/1000/2000]= 250
+ LOW PASS FILT CUT-OFF [HZ]= 110
+ PRE-AMP PREWHITEN FILT SET= 2
+ NO. OF PAST START-UPS[0]  = 3
+ NO. OF MAX START-UPS [99] = 999
+ 1BYTE/2BYTE/16BIT[0,2,3]  = 3
+ REF VOLTAGE TO AD X 10    = 2.500000V
+ EXPEDITION ID             = NEWPORT2003
+ PROGRAM NAME              = FAT32LOGGER3_4
+ CF1 SERIAL NUMBER         = 51241
+ # OF DISKS AND FILE SYS   = 5FAT32
+ PR-AMP BOARD NAME & REV#  = H3PA3_001
+ PR-AMP FREQ RESP TABLE    = 323
+ DAQ BOARD NAME & REV#     = H3DAQ2_001
+ CLOCK BOARD NAME & REV#   = H3CLK1_001
+ HYDROPHONE SENSITIVY      = -192
+ DISK WRITE CONTROL        = 0
+
+System reboot # 3 occured at 105 332:17:24:49:880105 332:17:24:49:0884
+Turning On the 1-st hard disk for testing ... 
+Program: FAT32_NOAABIRecorder3.c, Ver: 2.0, Build: Jul 21 2004 14:52:37
+ ## BIRS.CFPPBSZ=41943040
+ ## BIRS.RAMPPBSZ=65536
+ ## BIRS.RAMHDBFSZ=65536
+ ## BIRS.MINFREEKB=20480
+ ## BIRS.HDDOSDRV[4]=D:
+ ## BIRS.NODRVTEST=0
+ ## BIRS.UARTMONIT=0
+ ## BIRS.FLOGFLAG=1
+ ## BIRS.BIADEVICE=1
+ ## BIRS.CURBIA=0
+
+New volume: 11/28/2005  17:24:54:0450 [ctime: 1133198694]
+BigIDEA 0 (0:1066), Spin-up 0ms
+Drive D: 9810800KB total, 32KB used, 9810768KB free, index: D:00000001.DAT
+Acquisition Started at 105 332:17:24:49:880105 332:17:24:49:0405
+Concluding...
+Logging ended or interrupted at 105 332:17:24:49:880105 332:17:24:49:0381
+Finish request, abort=0, [ctime: 1133198780, 11/28/2005  17:26:20:0510]
+
+Writing disk 42752 bytes, 11/28/2005  17:26:20:0662
+Opening D:00000001.DAT after 2935 ms ... Closing file
+Finished after 3237 ms, W:41KB, F:9810720KB, CF:40:1, HD:114:1
+Number of past resets 3
+
+Sleeping until 'break' signal is sent from 'Transfer' window...
+Ohayo!  Time now 105 332:17:24:49:880105 332:17:24:49:0929
+
+Logging is over! Do not reset me nor turn off the power before
+you measure the clock errors.  First connect Event/Time-Tag plug.
+Time now 105 332:17:24:49:880105 332:17:24:49:0237
+
+How many seconds do you need to set up GPS time-tag? [0-154] ? .1
+CF1 will send a pulse from pin 29 to GPS at 05 332:17:26:33:0750
+105 332:17:24:49:880105 332:17:24:49:0750
+To repeat this measurement, hit ret>, or type period to end.
+End of logging!
+Application returned: 1
+
+C:\>dir
+
+ Volume in drive C is NONAME     
+ Volume Serial Number is 4B4A-0568
+ Directory of C:\
+
+ACTIVITY.LOG          8,386  11-28-05  5:26p
+
+         1 file(s)           8,386 bytes
+         0 dir(s)        5,979,136 bytes free
+
+C:\>mount bi25-0
+Turning on BI25-0 ... 
+Mounting 
+Mounting error 2206 trying partition 0 as drive D:
+
+C:\>res
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>mount bi25=-0-0
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>d:
+
+D:\>copy 00000000.dat c:
+00000000.DAT
+
+       1 file(s) copied
+
+D:\>c:
+
+C:\>mount bi25-0 /d
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\> 
+C:\>g]
+Bad command or file name
+
+C:\>g
+Program: cf1main.c: Nov 17 2004 13:09:18 
+Persistor CF1 SN:51241   BIOS:3.0   PicoDOS:3.0
+Name of the data file 00000000.dat
+
+Drive size = 9810800 bytes
+Drive free space = 9810792 bytes
+Ping Pong Buffer Size = 41943040 bytes
+Minimum Free Size Required in the Hard Disk = 20480 Kbytes
+System name = H16
+Location = N60W140
+GMT Time = 105 332:17:22:42:360105 332:17:22:42:0105
+Cruise ID = NEWPORT2003
+CF1 Serial number = 51241
+Pre-amp Table ID = 323
+Pre-Amp Board ID H3PA3_001
+DAQ Board ID H3DAQ2_0013
+Disk System ID 5FAT32
+Clock Board ID H3CLK1_0013
+Pre-whitening filter setting 2 
+Low pass filter setting 110 Hz
+Activity log file name = C:ACTIVITY.LOG
+Number of channel = 1
+Sampling rate = 250 Hz
+
+16-bit resolution
+Reference voltage = 2.500000 V
+Program name FAT32LOGGER3_4 :ACQ Version 22: BIR Version 20
+Sleep = 12 Hours
+Gain setting = 0
+Current multiplication factor = 100
+Hydrophone sensitivity = -192 dBV re uPa
+numData=256
+How many blocks to read ? 2
+Reading from 00000000.dat
+
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+Average= 0.00000V
+0.00000 
+Standard deviation=0.0000e+00V
+
+Reading from 00000000.dat
+
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+Average= 0.00000V
+0.00000 
+Standard deviation=0.0000e+00V
+
+Do you want to display the waveform ? (y/n) n
+
+C:\>mount bi25-0 
+Turning on BI25-0 ... 
+Mounting 
+Mounting error 2206 trying partition 0 as drive D:
+
+C:\>dres
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>mount bi25-0 
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>d:
+
+D:\>ver
+CF1I5   SN 51241
+PicoDOS 3.00b3  
+BIOS    3.00b3  
+PBM     2.27
+SPV     1.44
+
+D:\>dir
+
+ Volume in drive D has no label
+ Volume Serial Number is 5B60-45AC
+ Directory of D:\
+
+00000000.DAT         23,040  11-28-05  5:23p
+00000001.DAT         42,752  11-28-05  5:26p
+
+         2 file(s)              64 KB
+         0 dir(s)        9,810,720 KB free
+
+D:\>copy 0000001.dat c:
+error code -1
+
+D:\>copy 00000001.dat c:
+00000001.DAT
+
+       1 file(s) copied
+
+D:\>c:
+
+C:\>mount bi25-0 /d
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\>
+C:\>g
+Program: cf1main.c: Nov 17 2004 13:09:18 
+Persistor CF1 SN:51241   BIOS:3.0   PicoDOS:3.0
+Name of the data file 00000001.dat
+
+Drive size = 9810800 bytes
+Drive free space = 9810768 bytes
+Ping Pong Buffer Size = 41943040 bytes
+Minimum Free Size Required in the Hard Disk = 20480 Kbytes
+System name = H16
+Location = N60W140
+GMT Time = 105 332:17:24:49:880105 332:17:24:49:0043
+Cruise ID = NEWPORT2003
+CF1 Serial number = 51241
+Pre-amp Table ID = 323
+Pre-Amp Board ID H3PA3_001
+DAQ Board ID H3DAQ2_0013
+Disk System ID 5FAT32
+Clock Board ID H3CLK1_0013
+Pre-whitening filter setting 2 
+Low pass filter setting 110 Hz
+Activity log file name = C:ACTIVITY.LOG
+Number of channel = 1
+Sampling rate = 250 Hz
+
+16-bit resolution
+Reference voltage = 2.500000 V
+Program name FAT32LOGGER3_4 :ACQ Version 21: BIR Version 20
+Sleep = 12 Hours
+Gain setting = 0
+Current multiplication factor = 100
+Hydrophone sensitivity = -192 dBV re uPa
+numData=256
+How many blocks to read ? 1
+Reading from 00000001.dat
+
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 
+Average= 0.00000V
+0.00000 
+Standard deviation=0.0000e+00V
+
+Do you want to display the waveform ? (y/n) n
+
+C:\>dir
+
+ Volume in drive C is NONAME     
+ Volume Serial Number is 4B4A-0568
+ Directory of C:\
+
+ACTIVITY.LOG          8,386  11-28-05  5:26p
+00000000.DAT         23,040  11-28-05  5:27p
+00000001.DAT         42,752  11-28-05  5:31p
+
+         3 file(s)          74,178 bytes
+         0 dir(s)        5,912,576 bytes free
+
+C:\>
+C:\>G s atod
+Saving 45232 bytes to ATOD.PXE...
+
+C:\>atod
+
+Program: SimpleAD.c: Nov 17 2004 10:57:33 
+
+System clock speed ? 320, 640, 1280, 2000, 4000, 8000, 16000 16000
+Clock speed =16000
+ADTYPE= 2
+Texas Instrument 8-ch 16-bit AD ADS8345
+Ref Voltage = 2.500000
+Key 0-7 for a single channel, 8 for all eight, '.' to quit
+also Unipolar, Bipolar, Single-ended, Differential, Powerdown
+
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Program: FAT32_noaalogger3_5.c: Jul  1 2005 11:21:17 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF11M   SN 51886    PicoDOS V3.00c4      PBM V2.27
+  (C) 1998-2004 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>date
+Clock reads: Saturday, February 07, 2015  01:08:06 am
+C:\>dir
+
+ Volume in drive C is NONAME     
+ Volume Serial Number is 7534-250A
+ Directory of C:\
+
+ACTIVITY.LOG        135,444  11-11-05  4:15p
+00000479.DAT     20,971,520  11-11-05  4:20p
+READ.PXE             51,714  07-06-05  3:32p
+ATOD.PXE             45,232  01-29-11  4:48p
+PABORT.TXT              157  02-17-00 11:35a
+
+         5 file(s)      21,204,067 bytes
+         0 dir(s)        3,641,344 bytes free
+
+C:\>atod
+
+Program: SimpleAD.c: Nov 17 2004 10:57:33 
+
+System clock speed ? 320, 640, 1280, 2000, 4000, 8000, 16000 16000
+Clock speed =16000
+ADTYPE= 2
+Texas Instrument 8-ch 16-bit AD ADS8345
+Ref Voltage = 2.500000
+Key 0-7 for a single channel, 8 for all eight, '.' to quit
+also Unipolar, Bipolar, Single-ended, Differential, Powerdown
+
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+C:\>dir
+
+ Volume in drive C is NONAME     
+ Volume Serial Number is 7534-250A
+ Directory of C:\
+
+ACTIVITY.LOG        135,444  11-11-05  4:15p
+00000479.DAT     20,971,520  11-11-05  4:20p
+READ.PXE             51,714  07-06-05  3:32p
+ATOD.PXE             45,232  01-29-11  4:48p
+PABORT.TXT              157  02-17-00 11:35a
+
+         5 file(s)      21,204,067 bytes
+         0 dir(s)        3,641,344 bytes free
+
+C:\>aot\tod
+
+Program: SimpleAD.c: Nov 17 2004 10:57:33 
+
+System clock speed ? 320, 640, 1280, 2000, 4000, 8000, 16000 8000
+Clock speed =8000
+ADTYPE= 2
+Texas Instrument 8-ch 16-bit AD ADS8345
+Ref Voltage = 2.500000
+Key 0-7 for a single channel, 8 for all eight, '.' to quit
+also Unipolar, Bipolar, Single-ended, Differential, Powerdown
+
+US> 
+  Ch 0 = 0000,     0, 0.0000V
+  Ch 1 = 0000,     0, 0.0000V
+  Ch 2 = 0000,     0, 0.0000V
+  Ch 3 = 0000,     0, 0.0000V
+  Ch 4 = 0000,     0, 0.0000V
+  Ch 5 = 0000,     0, 0.0000V
+  Ch 6 = 0000,     0, 0.0000V
+  Ch 7 = 0000,     0, 0.0000V
+US> 
+  Ch 0 = 0000,     0, 0.0000V
+  Ch 1 = 0000,     0, 0.0000V
+  Ch 2 = 0000,     0, 0.0000V
+  Ch 3 = 0000,     0, 0.0000V
+  Ch 4 = 0000,     0, 0.0000V
+  Ch 5 = 0000,     0, 0.0000V
+  Ch 6 = 0000,     0, 0.0000V
+  Ch 7 = 0000,     0, 0.0000V
+US> 
+  Ch 0 = 0000,     0, 0.0000V
+  Ch 1 = 0000,     0, 0.0000V
+  Ch 2 = 0000,     0, 0.0000V
+  Ch 3 = 0000,     0, 0.0000V
+  Ch 4 = 0000,     0, 0.0000V
+  Ch 5 = 0000,     0, 0.0000V
+  Ch 6 = 0000,     0, 0.0000V
+  Ch 7 = 0000,     0, 0.0000V
+US> 
+  Ch 0 = 0000,     0, 0.0000V
+  Ch 1 = 0000,     0, 0.0000V
+  Ch 2 = 0000,     0, 0.0000V
+  Ch 3 = 0000,     0, 0.0000V
+  Ch 4 = 0000,     0, 0.0000V
+  Ch 5 = 0000,     0, 0.0000V
+  Ch 6 = 0000,     0, 0.0000V
+  Ch 7 = 0000,     0, 0.0000V
+US> 
+US> 
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+Ch 0 = 0000,     0, 0.00000V
+US> 
+C:\>
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+ÿ
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+The clock needs setting if it's not June 11, 2033!
+
+C:\>dteate /p
+Current date and time [06/11/2033 12:21:16] ? 11/29/2005 09:08?10:10
+Clock reads: Tuesday, November 29, 2005  09:08:10 am
+C:\>atod
+
+Program: SimpleAD.c: Nov 17 2004 10:57:33 
+
+System clock speed ? 320, 640, 1280, 2000, 4000, 8000, 16000 16000
+Clock speed =16000
+ADTYPE= 2
+Texas Instrument 8-ch 16-bit AD ADS8345
+Ref Voltage = 2.500000
+Key 0-7 for a single channel, 8 for all eight, '.' to quit
+also Unipolar, Bipolar, Single-ended, Differential, Powerdown
+
+US> 
+Ch 0 = 0030,    48, 0.00183V
+US> 
+Ch 0 = 6141, 24897, 0.94975V
+US> 
+Ch 0 = 616F, 24943, 0.95150V
+US> 
+Ch 0 = 61A3, 24995, 0.95348V
+US> 
+Ch 0 = 61DA, 25050, 0.95558V
+US> 
+Ch 0 = 6217, 25111, 0.95791V
+US> 
+Ch 0 = 6253, 25171, 0.96020V
+US> 
+Ch 0 = 629B, 25243, 0.96294V
+US> 
+Ch 0 = 62E1, 25313, 0.96561V
+US> 
+Ch 0 = 632B, 25387, 0.96844V
+US> 
+Ch 0 = 637E, 25470, 0.97160V
+US> 
+Ch 0 = 63D1, 25553, 0.97477V
+US> 
+Ch 0 = 642D, 25645, 0.97828V
+US> 
+Ch 0 = 6441, 25665, 0.97904V
+US> 
+Ch 0 = 645D, 25693, 0.98011V
+US> 
+Ch 0 = 97F2, -26638, 1.48384V
+US> 
+Ch 0 = 9852, -26542, 1.48750V
+US> 
+Ch 0 = 9817, -26601, 1.48525V
+US> 
+Ch 0 = 9811, -26607, 1.48502V
+US> 
+Ch 0 = 9811, -26607, 1.48502V
+US> 
+Ch 0 = 9810, -26608, 1.48499V
+US> 
+Ch 0 = 980F, -26609, 1.48495V
+US> 
+Ch 0 = 9813, -26605, 1.48510V
+US> 
+Ch 0 = 9811, -26607, 1.48502V
+US> 
+  Ch 0 = 9811, 38929, 1.4850V
+  Ch 1 = 0000,     0, 0.0000V
+  Ch 2 = 0007,     7, 0.0003V
+  Ch 3 = 0005,     5, 0.0002V
+  Ch 4 = 0000,     0, 0.0000V
+  Ch 5 = 0003,     3, 0.0001V
+  Ch 6 = 8ECD, 36557, 1.3945V
+  Ch 7 = 0039,    57, 0.0022V
+US> 
+  Ch 0 = 9772, 38770, 1.4790V
+  Ch 1 = 0009,     9, 0.0003V
+  Ch 2 = 0004,     4, 0.0002V
+  Ch 3 = 0000,     0, 0.0000V
+  Ch 4 = 0004,     4, 0.0002V
+  Ch 5 = 0000,     0, 0.0000V
+  Ch 6 = 8ECD, 36557, 1.3945V
+  Ch 7 = 0038,    56, 0.0021V
+US> 
+  Ch 0 = 9771, 38769, 1.4789V
+  Ch 1 = 000A,    10, 0.0004V
+  Ch 2 = 0004,     4, 0.0002V
+  Ch 3 = 0000,     0, 0.0000V
+  Ch 4 = 0006,     6, 0.0002V
+  Ch 5 = 0001,     1, 0.0000V
+  Ch 6 = 8ECF, 36559, 1.3946V
+  Ch 7 = 0039,    57, 0.0022V
+US> 
+  Ch 0 = 9771, 38769, 1.4789V
+  Ch 1 = 0007,     7, 0.0003V
+  Ch 2 = 0007,     7, 0.0003V
+  Ch 3 = 0005,     5, 0.0002V
+  Ch 4 = 0003,     3, 0.0001V
+  Ch 5 = 0005,     5, 0.0002V
+  Ch 6 = 8ECE, 36558, 1.3946V
+  Ch 7 = 0039,    57, 0.0022V
+US> 
+  Ch 0 = 9770, 38768, 1.4789V
+  Ch 1 = 0009,     9, 0.0003V
+  Ch 2 = 0000,     0, 0.0000V
+  Ch 3 = 0005,     5, 0.0002V
+  Ch 4 = 0004,     4, 0.0002V
+  Ch 5 = 0004,     4, 0.0002V
+  Ch 6 = 8ECD, 36557, 1.3945V
+  Ch 7 = 0039,    57, 0.0022V
+US> 
+  Ch 0 = 9771, 38769, 1.4789V
+  Ch 1 = 0000,     0, 0.0000V
+  Ch 2 = 0006,     6, 0.0002V
+  Ch 3 = 0005,     5, 0.0002V
+  Ch 4 = 0000,     0, 0.0000V
+  Ch 5 = 0001,     1, 0.0000V
+  Ch 6 = 8ECC, 36556, 1.3945V
+  Ch 7 = 0039,    57, 0.0022V
+US> 
+C:\>
+
+Program: SimpleAD.c: Nov 17 2004 10:57:33 
+
+System clock speed ? 320, 640, 1280, 2000, 4000, 8000, 16000 8000
+Clock speed =8000
+ADTYPE= 2
+Texas Instrument 8-ch 16-bit AD ADS8345
+Ref Voltage = 2.500000
+Key 0-7 for a single channel, 8 for all eight, '.' to quit
+also Unipolar, Bipolar, Single-ended, Differential, Powerdown
+
+US> 
+C:\>res
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>set
+ACQ.MAXSTRTS=999
+ACQ.NCHAN=1
+ACQ.SRATEHZ=250
+ACQ.SAMPLES=3
+ACQ.REFVOLT=25
+ACQ.LOGTOCON=1
+ACQ.LOGFILE=C:ACTIVITY.LOG
+ACQ.SLEEP=12
+ACQ.SYSTEM=H16
+ACQ.LOCATION=N60W140
+ACQ.GAIN=0
+ACQ.EXPID=NEWPORT2003
+ACQ.WAKEUP=0
+ACQ.PROGNAME=FAT32LOGGER3_4
+ACQ.CF1SERNUM=51241
+ACQ.PRAMPNAME=H3PA3_001
+ACQ.TABLE=323
+ACQ.DAQNAME=H3DAQ2_001
+ACQ.NUMDISKS=5FAT32
+ACQ.CLK=H3CLK1_001
+ACQ.PWFILT=2
+ACQ.LOPASS=110
+ACQ.HYDROSENS=-192
+ACQ.FACT=100
+BIR.TRMCTLPIN=0
+BIR.CFPPBSZ=41943040
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.CURBIA=0
+BIR.BIADEVICE=1
+SYS.F32TRUST=CD
+ACQ.STARTUPS=4
+
+C:\>
+C:\>set acq.numdisks=1fat32
+
+C:\>set acq.expid=antarc05
+
+C:\>set acq.progname=fat32logger3_5
+
+C:\>set
+ACQ.MAXSTRTS=999
+ACQ.NCHAN=1
+ACQ.SRATEHZ=250
+ACQ.SAMPLES=3
+ACQ.REFVOLT=25
+ACQ.LOGTOCON=1
+ACQ.LOGFILE=C:ACTIVITY.LOG
+ACQ.SLEEP=12
+ACQ.SYSTEM=H16
+ACQ.LOCATION=N60W140
+ACQ.GAIN=0
+ACQ.WAKEUP=0
+ACQ.CF1SERNUM=51241
+ACQ.PRAMPNAME=H3PA3_001
+ACQ.TABLE=323
+ACQ.DAQNAME=H3DAQ2_001
+ACQ.CLK=H3CLK1_001
+ACQ.PWFILT=2
+ACQ.LOPASS=110
+ACQ.HYDROSENS=-192
+ACQ.FACT=100
+BIR.TRMCTLPIN=0
+BIR.CFPPBSZ=41943040
+BIR.RAMPPBSZ=65536
+BIR.RAMHDBFSZ=65536
+BIR.NODRVTEST=0
+BIR.FLOGFLAG=1
+BIR.UARTMONIT=0
+BIR.HDDOSDRV=D:
+BIR.MINFREEKB=0
+BIR.CURBIA=0
+BIR.BIADEVICE=1
+SYS.F32TRUST=CD
+ACQ.STARTUPS=4
+ACQ.NUMDISKS=1FAT32
+ACQ.EXPID=ANTARC05
+ACQ.PROGNAME=FAT32LOGGER3_5
+
+C:\>mount bi25-0
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>d:
+
+D:\>dir
+
+ Volume in drive D has no label
+ Volume Serial Number is 5B60-45AC
+ Directory of D:\
+
+00000000.DAT         23,040  11-28-05  5:23p
+00000001.DAT         42,752  11-28-05  5:26p
+
+         2 file(s)              64 KB
+         0 dir(s)        9,810,720 KB free
+
+D:\>c:
+
+C:\>mount bi25-0 /d
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\>
+C:\>g
+Program: FAT32_noaalogger3_5.c: Sep  2 2005 14:36:12 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+C:\>g
+Program: FAT32_noaalogger3_5.c: Sep  2 2005 14:36:12 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+Starting...
+Start Time: 11/29/2005  09:25:17 [ctime: 1133256317, 0x438C1E7D]
+
+
+
+-------------------------------------------------------------------
+Program: FAT32_noaalogger3_5.c,  Version: 2.2,  Build: Sep  2 2005 14:36:12
+System Parameters: CF1 SN 51241, PicoDOS 3.00, BIOS 3.00
+8000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+Setting pre-amp gain to 0
+ LOG FILE NAME             = C:ACTIVITY.LOG
+ SYSTEM NAME               = H16
+ LOCATION                  = N60W140
+ HOURS OF SLEEP            = 12
+ PRE-AMP GAIN SET [0,1,2,3]= 0
+ FIRST CHAN       [0]      = 0
+ NUMBER OF CHAN   [1]      = 1
+ SAMPLE RATE [HZ][250/500/1000/2000]= 250
+ LOW PASS FILT CUT-OFF [HZ]= 110
+ PRE-AMP PREWHITEN FILT SET= 2
+ NO. OF PAST START-UPS[0]  = 4
+ NO. OF MAX START-UPS [99] = 999
+ 1BYTE/2BYTE/16BIT[0,2,3]  = 3
+ REF VOLTAGE TO AD X 10    = 2.500000V
+ EXPEDITION ID             = ANTARC05
+ PROGRAM NAME              = FAT32LOGGER3_5
+ CF1 SERIAL NUMBER         = 51241
+ # OF DISKS AND FILE SYS   = 1FAT32
+ PR-AMP BOARD NAME & REV#  = H3PA3_001
+ PR-AMP FREQ RESP TABLE    = 323
+ DAQ BOARD NAME & REV#     = H3DAQ2_001
+ CLOCK BOARD NAME & REV#   = H3CLK1_001
+ HYDROPHONE SENSITIVY      = -192
+ DISK WRITE CONTROL        = 0
+
+System reboot # 4 occured at 105 333:09:25:20:140105 333:09:25:20:0142
+Turning On the 1-st hard disk for testing ... 
+Program: FAT32_NOAABIRecorder3.c, Ver: 2.0, Build: Sep  2 2005 14:36:12
+ ## BIRS.CFPPBSZ=41943040
+ ## BIRS.RAMPPBSZ=65536
+ ## BIRS.RAMHDBFSZ=65536
+ ## BIRS.MINFREEKB=20480
+ ## BIRS.HDDOSDRV[4]=D:
+ ## BIRS.NODRVTEST=0
+ ## BIRS.UARTMONIT=0
+ ## BIRS.FLOGFLAG=1
+ ## BIRS.BIADEVICE=1
+ ## BIRS.CURBIA=0
+
+New volume: 11/29/2005  09:25:24:0451 [ctime: 1133256324]
+BigIDEA 0 (0:1066), Spin-up 0ms
+Drive D: 9810800KB total, 80KB used, 9810720KB free, index: D:00000002.DAT
+Acquisition Started at 105 333:09:25:20:140105 333:09:25:20:0377
+Concluding...
+Logging ended or interrupted at 105 333:09:25:20:140105 333:09:25:20:0321
+Finish request, abort=0, [ctime: 1133256486, 11/29/2005  09:28:06:0451]
+
+Writing disk 80640 bytes, 11/29/2005  09:28:06:0606
+Opening D:00000002.DAT after 2916 ms ... Closing file
+Finished after 3310 ms, W:78KB, F:9810640KB, CF:76:2, HD:170:2
+Number of past resets 4
+
+Sleeping until 'break' signal is sent from 'Transfer' window...
+Ohayo!  Time now 105 333:09:25:20:140105 333:09:25:20:0939
+
+Logging is over! Do not reset me nor turn off the power before
+you measure the clock errors.  First connect Event/Time-Tag plug.
+Time now 105 333:09:25:20:140105 333:09:25:20:0251
+
+How many seconds do you need to set up GPS time-tag? [0-154] ? 1
+CF1 will send a pulse from pin 29 to GPS at 05 333:09:28:17:0483
+105 333:09:25:20:140105 333:09:25:20:0483
+To repeat this measurement, hit ret>, or type period to end.
+End of logging!
+Application returned: 1
+
+C:\>res
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>ppp
+Bad command or file name
+
+C:\>ccc
+You have 30 seconds to remove the CompactFlash card...
+
+C:\>
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>
+C:\>g
+Program: FAT32_noaalogger3_5.c: Sep  2 2005 14:36:12 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..9..8..
+Starting...
+Start Time: 11/29/2005  09:34:13 [ctime: 1133256853, 0x438C2095]
+
+
+
+-------------------------------------------------------------------
+Program: FAT32_noaalogger3_5.c,  Version: 2.2,  Build: Sep  2 2005 14:36:12
+System Parameters: CF1 SN 51241, PicoDOS 3.00, BIOS 3.00
+8000kHz nsF:100 nsR:70 nsC:190 adj:-10 WF:-1 WR:-1 WC:0  SYPCR:13
+Setting pre-amp gain to 0
+ LOG FILE NAME             = C:ACTIVITY.LOG
+ SYSTEM NAME               = H16
+ LOCATION                  = N60W140
+ HOURS OF SLEEP            = 12
+ PRE-AMP GAIN SET [0,1,2,3]= 0
+ FIRST CHAN       [0]      = 0
+ NUMBER OF CHAN   [1]      = 1
+ SAMPLE RATE [HZ][250/500/1000/2000]= 250
+ LOW PASS FILT CUT-OFF [HZ]= 110
+ PRE-AMP PREWHITEN FILT SET= 2
+ NO. OF PAST START-UPS[0]  = 5
+ NO. OF MAX START-UPS [99] = 999
+ 1BYTE/2BYTE/16BIT[0,2,3]  = 3
+ REF VOLTAGE TO AD X 10    = 2.500000V
+ EXPEDITION ID             = ANTARC05
+ PROGRAM NAME              = FAT32LOGGER3_5
+ CF1 SERIAL NUMBER         = 51241
+ # OF DISKS AND FILE SYS   = 1FAT32
+ PR-AMP BOARD NAME & REV#  = H3PA3_001
+ PR-AMP FREQ RESP TABLE    = 323
+ DAQ BOARD NAME & REV#     = H3DAQ2_001
+ CLOCK BOARD NAME & REV#   = H3CLK1_001
+ HYDROPHONE SENSITIVY      = -192
+ DISK WRITE CONTROL        = 0
+
+System reboot # 5 occured at 105 333:09:34:16:040105 333:09:34:16:0044
+Turning On the 1-st hard disk for testing ... 
+Program: FAT32_NOAABIRecorder3.c, Ver: 2.0, Build: Sep  2 2005 14:36:12
+ ## BIRS.CFPPBSZ=41943040
+ ## BIRS.RAMPPBSZ=65536
+ ## BIRS.RAMHDBFSZ=65536
+ ## BIRS.MINFREEKB=20480
+ ## BIRS.HDDOSDRV[4]=D:
+ ## BIRS.NODRVTEST=0
+ ## BIRS.UARTMONIT=0
+ ## BIRS.FLOGFLAG=1
+ ## BIRS.BIADEVICE=1
+ ## BIRS.CURBIA=0
+
+New volume: 11/29/2005  09:34:20:0292 [ctime: 1133256860]
+BigIDEA 0 (0:1066), Spin-up 0ms
+Drive D: 9810800KB total, 160KB used, 9810640KB free, index: D:00000003.DAT
+Acquisition Started at 105 333:09:34:16:040105 333:09:34:16:0849
+Concluding...
+Logging ended or interrupted at 105 333:09:34:16:040105 333:09:34:16:0524
+Finish request, abort=0, [ctime: 1133256896, 11/29/2005  09:34:56:0657]
+
+Writing disk 17664 bytes, 11/29/2005  09:34:56:0811
+Opening D:00000003.DAT after 1998 ms ... Closing file
+Finished after 2233 ms, W:17KB, F:9810616KB, CF:16:1, HD:63:1
+Number of past resets 5
+
+Sleeping until 'break' signal is sent from 'Transfer' window...
+Ohayo!  Time now 105 333:09:34:16:040105 333:09:34:16:0781
+
+Logging is over! Do not reset me nor turn off the power before
+you measure the clock errors.  First connect Event/Time-Tag plug.
+Time now 105 333:09:34:16:040105 333:09:34:16:0102
+
+How many seconds do you need to set up GPS time-tag? [0-154] ? 1
+CF1 will send a pulse from pin 29 to GPS at 05 333:10:28:39:0433
+105 333:09:34:16:040105 333:09:34:16:0433
+To repeat this measurement, hit ret>, or type period to end.
+End of logging!
+Application returned: 1
+
+C:\>res
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>mount bi25-0
+
+Turning on BI25-0 ... 
+Mounting D: 
+C:\>did:
+
+D:\>dir
+
+ Volume in drive D has no label
+ Volume Serial Number is 5B60-45AC
+ Directory of D:\
+
+00000000.DAT         23,040  11-28-05  5:23p
+00000001.DAT         42,752  11-28-05  5:26p
+00000002.DAT         80,640  11-29-05  9:28a
+00000003.DAT         17,664  11-29-05  9:34a
+
+         4 file(s)             160 KB
+         0 dir(s)        9,810,616 KB free
+
+D:\>copy 00000002.dat c:
+00000002.DAT
+
+       1 file(s) copied
+
+D:\>copy 00000002.dat c:
+00000002.DAT
+
+       1 file(s) copied
+
+D:\>c:
+
+C:\>mount bi25-0 ./d/d
+Dismounting  D: 
+Turning off BI25-0 
+
+C:\>res
+Resetting...
+
+Program: FAT32_noaalogger3_4.c: Apr 12 2004 17:07:22 
+
+This program runs the CF1/BIA based hard drive logger which will
+automatically start in ten seconds unless an operator keys in a
+period '.' character. If a period is received, you will have about
+154 seconds to respond to access other software functions on this
+system before a watchdog reset occurs.
+
+10..
+What next?(P=PicoDOS, S=Settings) ? p
+
+----------------------------------------------------------------
+  Persistor CF1I5   SN 51241    PicoDOS V3.00b3      PBM V2.27
+  (C) 1998-2003 Persistor Instruments Inc. - www.persistor.com
+----------------------------------------------------------------
+
+C:\>dir
+
+ Volume in drive C is NONAME     
+ Volume Serial Number is 7534-250A
+ Directory of C:\
+
+ACTIVITY.LOG        138,144  11-29-05 10:28a
+00000479.DAT     20,971,520  11-11-05  4:20p
+READ.PXE             51,714  07-06-05  3:32p
+00000002.DAT         80,640  11-29-05 10:29a
+ATOD.PXE             45,232  01-29-11  4:48p
+PABORT.TXT              157  02-17-00 11:35a
+
+         6 file(s)      21,287,407 bytes
+         0 dir(s)        3,557,376 bytes free
+
+C:\>read
+
+Program: cf1main.c: Nov 17 2004 13:09:18 
+Persistor CF1 SN:51241   BIOS:3.0   PicoDOS:3.0
+Name of the data file 00000002.dat
+
+Drive size = 9810800 bytes
+Drive free space = 9810720 bytes
+Ping Pong Buffer Size = 41943040 bytes
+Minimum Free Size Required in the Hard Disk = 20480 Kbytes
+System name = H16
+Location = N60W140
+GMT Time = 105 333:09:25:20:140105 333:09:25:20:0041
+Cruise ID = ANTARC05
+CF1 Serial number = 51241
+Pre-amp Table ID = 323
+Pre-Amp Board ID H3PA3_001
+DAQ Board ID H3DAQ2_001
+Disk System ID 1FAT32
+Clock Board ID H3CLK1_001
+Pre-whitening filter setting 2 
+Low pass filter setting 110 Hz
+Activity log file name = C:ACTIVITY.LOG
+Number of channel = 1
+Sampling rate = 250 Hz
+
+16-bit resolution
+Reference voltage = 2.500000 V
+Program name FAT32LOGGER3_5 :ACQ Version 22: BIR Version 20
+Sleep = 12 Hours
+Gain setting = 0
+Current multiplication factor = 100
+Hydrophone sensitivity = -192 dBV re uPa
+numData=256
+How many blocks to read ? 2
+Reading from 00000002.dat
+
+1.47923 1.47907 1.47907 1.47915 1.47911 1.47907 1.47915 1.47915 
+1.47911 1.47915 1.47915 1.47911 1.47919 1.47903 1.47919 1.47919 
+1.47915 1.47915 1.47915 1.47919 1.47915 1.47915 1.47915 1.47919 
+1.47919 1.47915 1.47915 1.47915 1.47919 1.47919 1.47915 1.47911 
+1.47915 1.47911 1.47911 1.47915 1.47915 1.47915 1.47907 1.47915 
+1.47911 1.47915 1.47915 1.47915 1.47915 1.47919 1.47915 1.47915 
+1.47915 1.47919 1.47923 1.47911 1.47915 1.47911 1.47915 1.47915 
+1.47911 1.47915 1.47915 1.47915 1.47911 1.47915 1.47915 1.47915 
+1.47915 1.47911 1.47919 1.47915 1.47915 1.47915 1.47919 1.47915 
+1.47907 1.47907 1.47915 1.47911 1.47915 1.47915 1.47915 1.47907 
+1.47919 1.47915 1.47919 1.47915 1.47915 1.47923 1.47919 1.47915 
+1.47915 1.47907 1.47915 1.47923 1.47915 1.47923 1.47915 1.47907 
+1.47915 1.47915 1.47915 1.47915 1.47919 1.47915 1.47915 1.47915 
+1.47911 1.47911 1.47919 1.47911 1.47915 1.47915 1.47915 1.47915 
+1.47923 1.47907 1.47911 1.47911 1.47915 1.47915 1.47907 1.47919 
+1.47915 1.47919 1.47915 1.47911 1.47915 1.47915 1.47911 1.47915 
+1.47930 1.47930 1.47907 1.47915 1.47915 1.47919 1.47911 1.47915 
+1.47915 1.47915 1.47915 1.47915 1.47915 1.47915 1.47915 1.47919 
+1.47923 1.47907 1.47915 1.47915 1.47907 1.47915 1.47915 1.47915 
+1.47903 1.47911 1.47911 1.47911 1.47911 1.47919 1.47915 1.47911 
+1.47915 1.47919 1.47911 1.47911 1.47915 1.47919 1.47919 1.47907 
+1.47903 1.47915 1.47911 1.47911 1.47915 1.47915 1.47907 1.47911 
+1.47915 1.47919 1.47915 1.47919 1.47915 1.47907 1.47915 1.47911 
+1.47915 1.47915 1.47915 1.47919 1.47915 1.47919 1.47915 1.47915 
+1.47919 1.47911 1.47915 1.47915 1.47911 1.47915 1.47915 1.47907 
+1.47915 1.47915 1.47915 1.47915 1.47907 1.47915 1.47911 1.47911 
+1.47915 1.47911 1.47915 1.47919 1.47915 1.47911 1.47911 1.47915 
+1.47911 1.47919 1.47915 1.47923 1.47907 1.47907 1.47919 1.47919 
+1.47915 1.47915 1.47911 1.47915 1.47911 1.47919 1.47915 1.47919 
+1.47911 1.47915 1.47907 1.47915 1.47911 1.47915 1.47919 1.47915 
+1.47915 1.47907 1.47915 1.47915 1.47911 1.47915 1.47915 1.47915 
+1.47923 1.47915 1.47911 1.47915 1.47911 1.47915 1.47915 1.47919 
+Average= 1.47914V
+1.47914 
+Standard deviation=2.4388e-06V
+
+Reading from 00000002.dat
+
+1.47907 1.47923 1.47907 1.47911 1.47915 1.47919 1.47915 1.47915 
+1.47919 1.47907 1.47915 1.47911 1.47915 1.47915 1.47915 1.47915 
+1.47911 1.47911 1.47923 1.47915 1.47915 1.47911 1.47923 1.47915 
+1.47915 1.47915 1.47911 1.47919 1.47915 1.47923 1.47915 1.47915 
+1.47911 1.47915 1.47915 1.47919 1.47919 1.47919 1.47911 1.47903 
+1.47923 1.47915 1.47919 1.47919 1.47923 1.47915 1.47915 1.47915 
+1.47915 1.47915 1.47915 1.47915 1.47915 1.47911 1.47911 1.47915 
+1.47915 1.47919 1.47923 1.47919 1.47915 1.47923 1.47919 1.47911 
+1.47911 1.47919 1.47915 1.47915 1.47911 1.47911 1.47907 1.47915 
+1.47919 1.47907 1.47915 1.47911 1.47915 1.47919 1.47907 1.47907 
+1.47915 1.47919 1.47915 1.47911 1.47915 1.47915 1.47915 1.47907 
+1.47915 1.47915 1.47911 1.47915 1.47911 1.47907 1.47915 1.47911 
+1.47907 1.47915 1.47915 1.47919 1.47915 1.47919 1.47915 1.47923 
+1.47919 1.47915 1.47919 1.47915 1.47911 1.47919 1.47907 1.47915 
+1.47907 1.47915 1.47911 1.47915 1.47915 1.47915 1.47907 1.47915 
+1.47911 1.47907 1.47911 1.47915 1.47919 1.47911 1.47919 1.47907 
+1.47915 1.47915 1.47923 1.47911 1.47915 1.47915 1.47915 1.47911 
+1.47915 1.47911 1.47915 1.47915 1.47915 1.47915 1.47915 1.47911 
+1.47911 1.47915 1.47915 1.47915 1.47915 1.47926 1.47911 1.47911 
+1.47911 1.47911 1.47915 1.47911 1.47915 1.47907 1.47915 1.47915 
+1.47915 1.47911 1.47919 1.47907 1.47907 1.47915 1.47911 1.47915 
+1.47915 1.47915 1.47907 1.47911 1.47915 1.47915 1.47907 1.47911 
+1.47911 1.47907 1.47907 1.47911 1.47911 1.47915 1.47915 1.47915 
+1.47911 1.47915 1.47915 1.47915 1.47915 1.47915 1.47919 1.47911 
+1.47907 1.47915 1.47915 1.47915 1.47915 1.47915 1.47915 1.47911 
+1.47911 1.47915 1.47915 1.47915 1.47919 1.47919 1.47919 1.47915 
+1.47915 1.47919 1.47923 1.47915 1.47915 1.47915 1.47915 1.47911 
+1.47911 1.47915 1.47919 1.47919 1.47919 1.47919 1.47911 1.47923 
+1.47911 1.47915 1.47907 1.47919 1.47915 1.47923 1.47911 1.47915 
+1.47915 1.47915 1.47915 1.47915 1.47919 1.47911 1.47915 1.47919 
+1.47923 1.47915 1.47911 1.47907 1.47919 1.47911 1.47915 1.47911 
+1.47915 1.47915 1.47911 1.47911 1.47919 1.47907 1.47915 1.47919 
+Average= 1.47914V
+1.47914 
+Standard deviation=2.4331e-06V
+
+Do you want to display the waveform ? (y/n) n
+
+C:\>

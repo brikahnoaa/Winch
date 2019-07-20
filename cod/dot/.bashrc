@@ -10,6 +10,8 @@ export LC_COLLATE=C
 alias l='ls --color=auto'
 alias la='l -a'
 alias ll='ls -l'
+alias lk='ll --block-size=K'
+alias lm='ll --block-size=M'
 alias lr='ls -R'
 alias lf='ls -F'
 alias lt='ls -rt'
@@ -34,13 +36,19 @@ export PATH
 # Background: 40 Black 41 Red 42 Green 43 Yellow 44 Blue 45 Magenta 46 Cyan 47 White
 # 0 Reset all 1 Bold
 # prompt color pcolor 32=green (31=red for root)
-if [ `whoami` = "root" ]; then pcolor=31; else pcolor=32; fi
+pcolor=33
+if [ `whoami` = "kahn" ]; then pcolor=32;  fi
+if [ `whoami` = "root" ]; then pcolor=31;  fi
 
 export PS1="[\u@\h \T \w]\[\e[0m\]\n:; "
 ##export PS1="[\u@\h \T \w]\[\e[0m\]\n \\\$ "
 if [[ "$TERM" == xterm* ]]; then
-  export PS1="\e[${pcolor}m\\\$ \u@\h \T \w \\\$\e[0m\n "
-  #export PS1="\e[${pcolor}m\\\$[\u@\h \T \w]\\\$\e[0m\n "
-  #export PS1="\[\e[${pcolor}m\][\u@\h \T \w]\[\e[0m\]\n \\\$ "
+  if [ `hostname` = "BRUTE" ]; then
+    export PS1="\e[${pcolor}m: \u@\h \T \w :\e[0m\n "
+  else
+    export PS1="\e[${pcolor}m\\\$ \u@\h \T \w \\\$\e[0m\n "
+  fi
   export PROMPT_COMMAND='printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'
 fi
+
+export PRINTER="//hatfield/xerox-npt PCL 6"

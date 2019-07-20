@@ -1,0 +1,245 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% $Id: Data.tex,v 1.3.2.2 2008/10/01 14:48:57 dbliudnikas Exp $
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% RCS Log:
+%
+% $Log: Data.tex,v $
+% Revision 1.3.2.2  2008/10/01 14:48:57  dbliudnikas
+% Apf9i Seascan TD: update conversion sections.
+%
+% Revision 1.3.2.1  2008/10/01 13:07:23  dbliudnikas
+% Update for replacement of SBE41CP CTD with Seascan TD.
+%
+% Revision 1.3  2007/10/05 22:33:48  swift
+% Change telemetry retry interval and add definitions of bit-masks for status words.
+%
+% Revision 1.2  2006/11/24 23:58:15  swift
+% Updated format descriptions to account for changes in Sbe41cp firmware.
+%
+% Revision 1.1  2006/11/03 19:08:57  swift
+% Added user manual to CVS control.
+%
+% Revision 1.2  2006/07/10 22:24:49  swift
+% Modifications to bring the manual up to date with
+% changes to the SeaBird CTD firmware (v1.1c).
+%
+% Revision 1.1  2006/04/11 15:32:32  swift
+% Initial revision
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Telemetered data.}
+\label{sec:TelemeteredData}
+
+Iridium floats telemeter two kinds of data for each profile cycle and these
+data are transferred as separate files: message files and log files.
+Message files contain hydrographic data and follow a naming convention
+\emph{FloatId}.\emph{ProfileId}.msg where \emph{FloatId} is the 4-digit
+serial number of the float controller and \emph{ProfileId} is the 3-digit
+profile counter.  Log files contain detailed engineering data with
+time-stamped diagnostics of float operations.  Examples of message files and
+log files from actual floats can be found in
+Appendixes~\ref{sec:IridiumMsgSample} and \ref{sec:IridiumLogSample}.  It
+will be helpful to refer to these examples as you read this section.
+
+\subsection{Format specification for APF9i firmware.}
+
+This section summarizes the format specification for hydrographic data
+telemetered by Iridium floats.  The ``official'' format specification can be
+found in the ``src'' directory of your distribution.  Any discrepancy
+between \textbf{src/FormatNotes} and the information in this manual should
+be resolved in favor of the former.
+
+Iridium message files end with a ".msg" extension.  Each iridium message
+file consists of blocks of similar data presented in the order that they
+were collected during the profile cycle.  This firmware revision includes
+five blocks of data:
+
+\begin{enumerate}
+\item Park-phase PT samples: These are hourly low-power PT samples collected
+      during the park phase of the profile cycle.
+
+\item Low resolution PT samples: The deep parts of the profile can be
+      represented using low-resolution spot samples collected at
+      predetermined pressures.  Low resolution spot sampling in the deep
+      water was implemented as an energy savings measure.
+      
+\item GPS fixes: After the profile is executed and the float reaches the
+      surface, the location of the profile is determined via GPS.
+
+\item Biographical and engineering data: Various kinds of biographical and
+      engineering data are collected at various times during the profile
+      cycle.  
+\end{enumerate}
+
+Usually, only one telemetry cycle is required to upload the data to the
+remote host computer.  However, sometimes the iridium connection is broken
+or the quality of the connection is so poor that the float will abort the
+telemetry attempt, wait a few minutes, and then try again.  Data blocks 4
+and 5 will be repeated for each telemetry cycle of a given profile.
+
+A description of the format for each of these blocks of data follows.  A
+sample Iridium-message file is available in Appendix~\ref{sec:IridiumMsgSample}.
+
+
+\subsubsection{Format for park-phase PT samples.}
+\label{sec:PtSample}
+
+   Hourly low-power PT samples are collected during the park phase of the
+   profile cycle.  The park phase is also when active ballasting is done.
+   Each sample includes the date and time of the sample, the unix epoch (ie.,
+   the number of seconds since 00:00:00 on Jan 1, 1970), the mission time
+   (ie., the number of seconds since the start of the current profile
+   cycle), the pressure (decibars), and the temperature ($^\circ$C).  For example:
+
+   \begin{verbatim}
+              |------- date -----|   UnixEpoch   MTime       P       T
+   ParkPt:    Jul 03 2006 18:37:34  1151951854   14414  988.18  7.4971
+   ParkPt:    Jul 03 2006 19:37:31  1151955451   18011  992.15  7.3613
+   ParkPt:    Jul 03 2006 20:37:31  1151959051   21611  998.23  7.3428
+   ParkPt:    Jul 03 2006 21:37:31  1151962651   25211 1000.38  7.2806
+   ParkPt:    Jul 03 2006 22:37:31  1151966251   28811 1003.01  7.2844
+   \end{verbatim}
+
+
+\subsubsection{Format for low resolution PTS samples.}
+\label{sec:LowResPtsSample}
+   
+   The Seascan TD sensor that is used on iridium floats has features that enable
+   subsampling of the water column (similar to the SBE41) as well as the
+   ability to bin-average a continuous sampling of the water column.  For
+   subsampled data, the values of pressure, temperature, and salinity are not
+   encoded but are given in conventional units (decibars, $^\circ$C, PSU).  For
+   example:
+      
+   \begin{verbatim}
+   $ Discrete samples: 6
+   $       p        t  
+     1002.59    3.912  (Park Sample)
+     1000.11    3.929  
+      947.36    4.035  
+      897.56    4.163  
+      847.54    4.344  
+      798.09    4.478  
+    \end{verbatim}
+
+\subsubsection{Format for GPS fixes.}
+   
+   Each telemetry cycle begins with the float attempting to acquire a GPS
+   fix.  The fix includes the amount of time required to acquire the fix,
+   the longitude and latitude (degrees), the date and time of the fix, and the
+   number of satellites used to determine the fix.  For example:
+
+   \begin{verbatim}
+   # GPS fix obtained in 98 seconds.
+   #         lon     lat mm/dd/yyyy hhmmss nsat
+   Fix: -152.945  22.544 09/01/2005 104710    8
+   \end{verbatim}
+
+   Positive values of longitude, latitude represent east, north hemispheres,
+   respectively. Negative values of longitude, latitude represent west,
+   south hemispheres, respectively.  The date is given in month-day-year
+   format and the time is given in hours-minutes-seconds format.
+
+   If no fix was acquired then the following note is entered into the
+   iridium message:
+
+   \begin{verbatim}
+   # Attempt to get GPS fix failed after 600 seconds.
+   \end{verbatim}
+
+\subsubsection{Format for biographical and engineering data.}
+
+   These data have the format, "key"="value", as shown in the following
+   examples:
+
+   \begin{verbatim}
+   ActiveBallastAdjustments=5
+   AirBladderPressure=119
+   AirPumpAmps=91
+   AirPumpVolts=192
+   BuoyancyPumpOnTime=1539
+   \end{verbatim}
+    
+   Interpretation of these data requires detailed knowledge of firmware
+   implementations and is generally beyond the scope of this manual.
+   However, there are two 16-bit status-words (status, SeascanStatus) whose
+   asserted bits indicate special conditions as described below.
+
+   The definition of each bit mask for the 16-bit ``status'' word are given in
+   the table below:
+
+   \label{StatusBitMasks}
+   \begin{verbatim}
+   DeepPrf            0x0001  The current profile is a deep profile.
+   ShallowWaterTrap   0x0002  Shallow water trap detected
+   Obs25Min           0x0004  Sample time-out (25 min) expired.
+   PistonFullExt      0x0008  Piston fully extended before surface-detection algorithm terminated.
+   AscentTimeOut      0x0010  Ascent time-out expired.
+   DownLoadCfg        0x0020  The mission.cfg file has not been downloaded yet.
+   BadSeqPnt          0x0100  Invalid sequence point detected.
+   SeascanPFail       0x0200  Seascan(P) exception. 
+   SeascanPtFail      0x0400  Seascan(PT) exception. 
+   SeascanPtsFail     0x0800  Seascan(PTS) exception.
+   SeascanPUnreliable 0x1000  Seascan(P) unreliable.
+   AirSysLimit        0x2000  Pneumatic inflation limits imposed; excessive energy consumption.
+   WatchDogAlarm      0x4000  Wake-up by watchdog alarm.
+   PrfIdOverflow      0x8000  The 8-bit profile counter overflowed.
+   \end{verbatim} 
+
+
+The definition of each bit mask for the 16-bit ``SeascanStatus'' word
+(Pneumonic:~SEASCAN) are given in the table below:
+
+   \label{SbeStatusBitMasks}
+   \begin{verbatim}
+   SeascanPedanticExceptn 0x0001 An exception was detected while parsing the p-only pedantic regex.
+   SeascanPedanticFail    0x0002 The Seascan response to p-only measurement failed the pedantic regex.
+   SeascanRegexFail       0x0004 The Seascan response to p-only measurement failed the nonpedantic regex.
+   SeascanNullArg         0x0008 NULL argument detected during p-only measurement.
+   SeascanRegExceptn      0x0010 An exception was detected while parsing the p-only nonpedantic regex.
+   SeascanNoResponse      0x0020 No response detected from Seascan for p-only request.
+                          0x0040 Not used yet.
+                          0x0080 Not used yet.
+   SeascanPedanticExceptn 0x0100 An exception was detected while parsing the pts pedantic regex.
+   SeascanPedanticFail    0x0200 The Seascan response to pts measurement failed the pedantic regex.
+   SeascanRegexFail       0x0400 The Seascan response to pts measurement failed the nonpedantic regex.
+   SeascanNullArg         0x0800 NULL argument detected during  pts measurement.
+   SeascanRegExceptn      0x1000 An exception was detected while parsing the pts nonpedantic regex.
+   SeascanNoResponse      0x2000 No response detected from Seascan TD for pts request.
+                          0x4000 Not used yet.
+                          0x8000 Not used yet.
+   \end{verbatim} 
+
+\subsection{Engineering log files.}
+
+The engineering log files contain time-stamped entries of what the float was
+doing at any given time.  Every nook and cranny of the float firmware has
+self-monitoring features built in that are a synthesis of self-adaptive and
+user-controlled behaviors.  The self-adaptive nature stems from the fact
+that if the float firmware detects problems or difficulties then engineering
+log entries are automatically generated as an aid to on-shore diagnostics.
+The user-controlled nature stems from the fact that the user can remotely
+adjust the verbosity of the engineering logs using the 2-way
+\textbf{Verbosity} command.  Refer to Section~\ref{sec:RemoteControl} for
+information about 2-way (ie., remote) float configuration.
+
+\section{Processed data.}
+\label{sec:ProcessedData}
+
+Decoding and processing the message files from this \iridium\ implementation
+is relatively easy because the data are ASCII and mostly self-describing.
+
+General conversion equations for voltage, current and vacuum are provided below.
+
+Volts = (V * 0.077) + 0.486 volts
+
+Current = (I * 4.052) - 3.606 mA
+
+Vacuum = (V * 0.293) - 29.767 inHg
+  
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "IridiumApex"
+%%% End: 

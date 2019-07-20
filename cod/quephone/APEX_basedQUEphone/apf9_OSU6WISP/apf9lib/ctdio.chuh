@@ -1,0 +1,1066 @@
+#ifndef CTDIO_H
+#define CTDIO_H (0x0008U)
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: ctdio.c,v 1.26 2008/07/14 17:08:27 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* Copyright University of Washington.   Written by Dana Swift.
+ *
+ * This software was developed at the University of Washington using funds
+ * generously provided by the US Office of Naval Research, the National
+ * Science Foundation, and NOAA.
+ *  
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+/** RCS log of revisions to the C source code.
+ *
+ * \begin{verbatim}
+ * $Log: ctdio.c,v $
+ * Revision 1.26  2008/07/14 17:08:27  swift
+ * Modify state of ModeControl pin.
+ *
+ * Revision 1.25  2007/04/24 01:43:05  swift
+ * Added acknowledgement and funding attribution.
+ *
+ * Revision 1.24  2006/10/23 16:49:13  swift
+ * Modifications to code-sequencing in CtdPtSample() to avoid premature
+ * activation of sample.
+ *
+ * Revision 1.23  2006/10/11 21:07:18  swift
+ * Changed handling of the mode-pin signal during CP mode.
+ *
+ * Revision 1.22  2006/08/17 21:17:48  swift
+ * MOdifications to allow better logging control.
+ *
+ * Revision 1.21  2006/04/21 13:45:38  swift
+ * Changed copyright attribute.
+ *
+ * Revision 1.20  2005/10/25 17:01:01  swift
+ * Changes induced by SBE41CP-IDO.
+ *
+ * Revision 1.19  2005/08/17 21:53:57  swift
+ * Minor modification of Tx pin states during STP samples and power samples.
+ *
+ * Revision 1.18  2005/08/14 23:37:56  swift
+ * Changed timing for more robust P-only sampling.
+ *
+ * Revision 1.17  2005/08/12 19:49:39  swift
+ * Fixed more timing issues with P-only sampling.
+ *
+ * Revision 1.16  2005/08/11 16:32:25  swift
+ * Modifications to fix a timing-related bug when requesting a P-only
+ * measurement while the ctd is in CP mode.
+ *
+ * Revision 1.15  2005/06/22 19:23:50  swift
+ * Fixed bugs caused by reducing use of TXD0 manipulations.
+ *
+ * Revision 1.14  2005/06/21 14:35:18  swift
+ * Reduced manipulation of TXD0 and TXD1.
+ *
+ * Revision 1.13  2005/05/13 23:24:57  swift
+ * Modifications to increase the baud rate of the 20ma serial loop from
+ * 4800baud to 9600baud.
+ *
+ * Revision 1.12  2005/01/06 00:48:30  swift
+ * Alphabetized include directives and eliminated use of trace() functionality.
+ *
+ * Revision 1.11  2004/12/29 23:04:36  swift
+ * Modified LogEntry() to use strings stored in the CODE segment.  This saves
+ * lots of space in the DATA segment and significantly speeds code start-up.
+ *
+ * Revision 1.10  2004/04/26 21:40:15  swift
+ * Moved SetBaud() to apf9.c module.
+ *
+ * Revision 1.9  2004/04/23 23:42:49  swift
+ * Changes to work around deficiencies in the XA serial port implementation.
+ *
+ * Revision 1.8  2004/04/14 20:48:21  swift
+ * Revision E of the APF9 made some hardware changes to earlier versions.  The
+ * PSD935 was replaced by a PSD835 and the 20mA serial loop was changed to be a
+ * real serial IO port.
+ *
+ * Revision 1.7  2003/12/20 19:44:34  swift
+ * Increased the size of the CTD serial port fifo from 80 bytes to 32760 bytes
+ * to allow large blocks of data to be received.  Added the CtdActiveIo()
+ * function.
+ *
+ * Revision 1.6  2003/11/20 18:59:35  swift
+ * Added GNU Lesser General Public License to source file.
+ *
+ * Revision 1.5  2003/11/12 22:36:53  swift
+ * Added CtdPower() function.
+ *
+ * Revision 1.4  2003/07/19 22:38:26  swift
+ * Modifications that reflect the refactorization and remodeling of the Psd835 ports.
+ *
+ * Revision 1.3  2003/07/06 00:07:56  swift
+ * Changed 'SetBaud()' to have static linkage since this compilation unit is
+ * the only one that needs to use this function.
+ *
+ * Revision 1.2  2003/07/05 21:21:29  swift
+ * Added a function 'CtdInitiateSample()' to initiate a sample and receive the
+ * response from the CTD serial port.
+ *
+ * Revision 1.1  2003/07/03 22:41:57  swift
+ * Initial revision
+ * \end{verbatim}
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#define ctdioChangeLog "$RCSfile: ctdio.c,v $  $Revision: 1.26 $ $Date: 2008/07/14 17:08:27 $"
+
+#include <serial.h>
+
+/* function prototypes */
+int CtdAssertModePin(void);
+int CtdAssertWakePin(void);
+int CtdAssertTxPin(void);
+int CtdClearModePin(void);
+int CtdClearTxPin(void);
+int CtdClearWakePin(void);
+int CtdActiveIo(time_t timeout);
+int CtdEnableIo(void);
+int CtdDisableIo(void);
+int CtdPSample(char *buf, int size);
+int CtdPtSample(char *buf, int size);
+int CtdPtsSample(char *buf, int size, time_t timeout);
+int CtdPower(unsigned char *VoltCnt, unsigned char *AmpCnt, time_t timeout);
+
+/* declare the console serial port */
+extern struct SerialPort ctdio;
+
+#endif /* CTDIO_H */
+
+#include <apf9.h>
+#include <assert.h>
+#include <fifo.h>
+#include <intrpt.h>
+#include <logger.h>
+#include <lt1598ad.h>
+#include <math.h>
+#include <psd835.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <xa.h>
+
+#define ETX  0x03 /* ETX character */
+#define NUL  0x00 /* NULL character */
+
+/* function prototypes for functions with static linkage */
+static int CtdGetb(unsigned char *byte);
+static int CtdIflush(void);
+static int na(void);
+static int CtdPutb(unsigned char c);
+static int SeascanGateway_CtdPutb(unsigned char c); /* CtdPutb WITHOUT CR/LF translation */
+
+/* define a fifo buffer for the CTD serial port (XA serial port 0) */
+persistent static far unsigned char CtdFifoBuf[51200U];
+
+/* define a Fifo object for the CTD serial port (XA serial port 0) */
+struct Fifo CtdFifo = {CtdFifoBuf, sizeof(CtdFifoBuf), 0, 0, 0, 0};
+
+/* define a serial port for the CTD interface */
+/* Use the SeascanGateway CtdPutb which does not add the undesired CR to LF */
+struct SerialPort ctdio = {CtdGetb, SeascanGateway_CtdPutb, CtdIflush, CtdIflush, na, na, na};
+
+/* define some ascii characters special meaning */
+#define LF 0x0a /* line feed */
+#define CR 0x0d /* carriage return */
+
+/* initialize an interrupt vector for the CTD serial port (XA serial port 0) */
+ROM_VECTOR(IV_RI0, CtdRxInterrupt, IV_PSW);
+
+static bit RX_CTD @ 0x398; /* p3.0 */
+static bit TX_CTD @ 0x399; /* p3.1 */
+
+/*------------------------------------------------------------------------*/
+/* function to assert the APF9's CTD PTS/FP mode-select pin               */
+/*------------------------------------------------------------------------*/
+/**
+   This function asserts the APF9's CTD PTS/FP mode-select pin.  This
+   function returns a positive value which has no meaning at this time.
+*/
+int CtdAssertModePin(void)
+{
+   int status=1;
+      
+   /* stack-check assertion */
+   assert(StackOk());
+   
+   /* pet the watch dog */
+   WatchDog();
+
+   /* assert the mode-pin */
+   Psd835PortBSet(CTD_PTS_FP);
+   
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to assert the APF9's CTD power-control pin                    */
+/*------------------------------------------------------------------------*/
+/**
+   This function asserts the APF9's CTD power-control pin.  This function
+   returns a positive value which has no meaning at this time.
+*/
+int CtdAssertWakePin(void)
+{
+   int status=1;
+      
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watch dog */
+   WatchDog();
+
+   /* assert the wake-pin */
+   Psd835PortBSet(CTD_PWR_CTRL);
+
+   return status;
+}
+ 
+/*------------------------------------------------------------------------*/
+/* function to assert the APF9's Tx pin on the CTD serial port            */
+/*------------------------------------------------------------------------*/
+/**
+   This function asserts the APF9's Tx pin on the CTD serial port.  This
+   function returns a positive value which has no meaning at this time.
+*/
+int CtdAssertTxPin(void)
+{
+   int status=1;
+   
+   TXD0=1; Wait(2);
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to clear the APF9's Tx pin on the CTD serial port             */
+/*------------------------------------------------------------------------*/
+/**
+   This function asserts the APF9's Tx pin on the CTD serial port.  This
+   function returns a positive value which has no meaning at this time.
+*/
+int CtdClearTxPin(void)
+{
+   int status=1;
+   
+   TXD0=0; Wait(2);
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to clear the APF9's CTD PTS/FP mode-select pin                */
+/*------------------------------------------------------------------------*/
+/**
+   This function clears the APF9's CTD PTS/FP mode-select pin.  This
+   function returns a positive value which has no meaning at this time.
+*/
+int CtdClearModePin(void)
+{
+   int status=1;
+   
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watch dog */
+   WatchDog();
+
+   /* clear the mode-pin */
+   Psd835PortBClear(CTD_PTS_FP);
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to clear the APF9's CTD power-control pin                     */
+/*------------------------------------------------------------------------*/
+/**
+   This function clears the APF9's CTD power-control pin.  This function
+   returns a positive value which has no meaning at this time.
+*/
+int CtdClearWakePin(void)
+{
+   int status=1;
+
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* clear the wake-pin */
+   Psd835PortBClear(CTD_PWR_CTRL);
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to determine if CTD IO is active                              */
+/*------------------------------------------------------------------------*/
+/**
+   This function determines if the CTD serial port is active.  The serial
+   port is defined to be active if the length of the CtdFifo changes within
+   a user-specified time-out period.
+
+      \begin{verbatim}
+      input:
+         timeout ... The CTD serial port is determined to be active if the
+                     length of the CtdFifo changes within this length of
+                     time.
+
+      output:
+         This function returns a positive number if the CTD serial port is
+         determined to be active and zero otherwise.
+      \end{verbatim}
+   
+*/
+int CtdActiveIo(time_t timeout)
+{
+   int status=0;
+   const long int length=CtdFifo.length;
+   const long int boc=CtdFifo.BufOverflowCount;
+   const time_t To=time(NULL);
+      
+   while (difftime(time(NULL),To)<timeout) 
+   {
+      if (CtdFifo.length!=length || CtdFifo.BufOverflowCount!=boc) {status=1; break;}
+   }
+   
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to disable communications with CTD serial port                */
+/*------------------------------------------------------------------------*/
+/**
+   This function disables communications with the CTD serial port (at 9600
+   baud) and enables communications with the console serial port (at 9600
+   baud).  Unfortunately, the XA serial ports 0 and 1 are not independent of
+   each other.  They both use a common baud rate generator which means that
+   if the two serial ports must use different baud rates then the two serial
+   ports must be effectively multiplexed so that they aren't both receiving
+   data at the same time.
+*/
+int CtdDisableIo(void)
+{
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watch dog */
+   WatchDog();
+
+   /* disable interrupts for the CTD interface (XA serial port 0) */
+    ERI0=0; TXD0=0; RI0=0; 
+
+   /* enable interrupts for the 28ma interface (XA serial port 1) */
+   RI1=0; ERI1=1;
+   
+   return 1;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to enable communications with CTD serial port                 */
+/*------------------------------------------------------------------------*/
+/**
+   This function enables communications with the CTD serial port (at 9600
+   baud) and disables communications with the console serial port (at 9600
+   baud).  Unfortunately, the XA serial ports 0 and 1 are not independent of
+   each other.  They both use a common baud rate generator which means that
+   if the two serial ports must use different baud rates then the two serial
+   ports must be effectively multiplexed so that they aren't both receiving
+   data at the same time.
+*/
+int CtdEnableIo(void)
+{
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watch dog */
+   WatchDog();
+
+   /* disable interrupts for the 28ma interface (XA serial port 1) */
+   ERI1=0; RI1=0;
+   
+   /* enable interrupts for the CTD interface (XA serial port 0) */
+   TXD0=1; RI0=0; ERI0=1;
+   
+   return 1;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to initiate a P-only sample using hardware controls           */
+/*------------------------------------------------------------------------*/
+/**
+   This function initiates a p-only sample by the CTD.  The mode-select line is
+   used to inhibit output of the pressure stream for an SBE41CP.
+
+      \begin{verbatim}
+      output:
+         This function returns a positive value on success and zero on
+         failure.  A negative value indicates an exceptional error.
+      \end{verbatim}
+*/
+int CtdPSample(char *buf, int size)
+{
+   /* initialize the return value */
+   int status=-1;
+      
+   /* initialize the communications timeout period */
+   const time_t timeout=3;
+
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watchdog */
+   WatchDog();
+
+   /* assert that buffer-flushing services exist on ctdio and conio */
+   assert(ctdio.ioflush());
+
+   /* disable interrupts on 20mA loop and enable on CTD port */
+   ERI1=0; RI1=0; RI0=0; ERI0=1; 
+
+   /* Tx pin needs to be low to get a p-only sample */
+   CtdClearTxPin(); CtdAssertModePin(); Wait(100);
+   
+   /* assert the wake pin to initiate a wake-up cycle */   
+   Psd835PortBSet(CTD_PWR_CTRL); Wait(50); Psd835PortBClear(CTD_PWR_CTRL);
+
+   /* pause and flush Rx buffer */
+   Wait(50); ctdio.ioflush(); CtdClearModePin();
+   
+   /* read the string from the serial port */
+   status=pgets(&ctdio,buf,size,timeout,"\r\n");
+ 
+   /* disable interrupts for the CTD interface (XA serial port 0) */
+   ERI0=0; RI0=0; 
+
+   /* enable interrupts for the 28ma interface (XA serial port 1) */
+   RI1=0; ERI1=1;
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to initiate a low-power PT sample using hardware controls     */
+/*------------------------------------------------------------------------*/
+/**
+   This function initiates a low-power PT sample by the CTD.  
+
+      \begin{verbatim}
+      output:
+         This function returns a positive value on success and zero on
+         failure.  A negative value indicates an exceptional error.
+      \end{verbatim}
+*/
+int CtdPtSample(char *buf, int size)
+{
+   /* initialize the return value */
+   int status=-1;
+      
+   /* initialize the communications timeout period */
+   const time_t timeout=5;
+
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watchdog */
+   WatchDog();
+
+   /* assert that buffer-flushing services exist on ctdio and conio */
+   assert(ctdio.ioflush());
+
+   /* disable interrupts on 20mA interface and enable on CTD port */
+   ERI1=0; RI1=0; RI0=0; ERI0=1; 
+
+   /* Tx pin needs to be high to get a low-power PT sample */
+   CtdAssertModePin(); Wait(100); CtdAssertTxPin(); 
+   
+   /* assert the wake pin to initiate a wake-up cycle */   
+   Psd835PortBSet(CTD_PWR_CTRL); Wait(50); Psd835PortBClear(CTD_PWR_CTRL); 
+
+   /* pause and flush Rx buffer */
+   Wait(50); ctdio.ioflush(); CtdClearModePin();
+   
+   /* read the string from the serial port */
+   status=pgets(&ctdio,buf,size,timeout,"\r\n");
+
+   /* clear the Tx pin */
+   CtdClearTxPin();
+ 
+   /* disable interrupts for the CTD interface (XA serial port 0) */
+   ERI0=0; RI0=0; 
+
+   /* enable interrupts for the 28ma interface (XA serial port 1) */
+   RI1=0; ERI1=1;
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to initiate a full PTS sample using hardware controls         */
+/*------------------------------------------------------------------------*/
+/**
+   This function initiates a full PTS sample by the CTD.  
+
+      \begin{verbatim}
+      output:
+         This function returns a positive value on success and zero on
+         failure.  A negative value indicates an exceptional error.
+      \end{verbatim}
+*/
+int CtdPtsSample(char *buf, int size, time_t timeout)
+{
+   /* initialize the return value */
+   int status=-1;
+      
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watchdog */
+   WatchDog();
+
+   /* assert that buffer-flushing services exist on ctdio and conio */
+   assert(ctdio.ioflush());
+
+   /* disable interrupts on 20mA interface and enable on CTD port */
+   ERI1=0; RI1=0; RI0=0; ERI0=1;
+
+   /* set Tx pin low and mode pin high for PTS sample */
+   CtdClearTxPin(); CtdAssertModePin(); Wait(100);
+   
+   /* assert the wake pin to initiate a wake-up cycle */   
+   Psd835PortBSet(CTD_PWR_CTRL); Wait(50); Psd835PortBClear(CTD_PWR_CTRL);
+
+   /* enable IO on the CTD serial port and flush Rx buffer */
+   Wait(50); ctdio.ioflush(); Wait(500); CtdClearModePin();
+   
+   /* read the string from the serial port */
+   status=pgets(&ctdio,buf,size,timeout,"\r\n");
+ 
+   /* disable interrupts for the CTD interface (XA serial port 0) */
+   ERI0=0; RI0=0; 
+
+   /* enable interrupts for the 28ma interface (XA serial port 1) */
+   RI1=0; ERI1=1;
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* measure power consumption during a full PT sample                     */
+/*------------------------------------------------------------------------*/
+/**
+   This function measures the power consumption by the CTD during a full PT
+   sample.
+
+      \begin{verbatim}
+      output:
+         This function returns a positive value on success and zero on
+         failure.  A negative value indicates an exceptional error.
+      \end{verbatim}
+*/
+int CtdPower(unsigned char *VoltCnt, unsigned char *AmpCnt, time_t timeout)
+{
+   /* define the logging signature */
+   static cc FuncName[] = "CtdPower()";
+   unsigned char ibyte; int n;
+   char buf[80];
+   int i=0;
+   unsigned char *VoltCnt1, *AmpCnt1;
+   unsigned char *VoltCnt2, *AmpCnt2;
+   unsigned char *VoltCnt3, *AmpCnt3;
+   unsigned char *VoltCnt4, *AmpCnt4;
+   unsigned char *VoltCnt5, *AmpCnt5;
+   unsigned char *VoltCnt6, *AmpCnt6;
+   unsigned char *VoltCnt7, *AmpCnt7;
+   unsigned char *VoltCnt8, *AmpCnt8;
+   unsigned char *VoltCnt9, *AmpCnt9;
+   unsigned char *VoltCnt0, *AmpCnt0;
+            
+   /* initialize the return value */
+   int stat=1,status=-1;
+
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watchdog */
+   WatchDog();
+
+   /* validate the function arguments */
+   if (!VoltCnt || !AmpCnt)
+   {
+      /* create the message */
+      static cc msg[]="NULL function argument.\n";
+
+      /* log the message */
+      LogEntry(FuncName,msg);
+   }
+
+   else
+   {
+      /* assert that buffer-flushing services exist on ctdio and conio */
+      assert(ctdio.ioflush());
+
+      /* enable IO from Seascan TD serial port */
+      CtdEnableIo(); CtdAssertWakePin();  //CtdAssertTxPin();
+
+      /* pet the watch dog */
+      WatchDog();
+   
+      /* enable interrupts CTD and 28mA serial ports */
+      TXD0=1; RI0=0; ERI0=1; RI1=0; ERI1=1;
+
+      Wait (2000);         
+      /* Put the seabird in cmd mode */
+      ctdio.putb('#'); Wait(50); 
+      ctdio.putb('A'); Wait(50); 
+      ctdio.putb('\r'); Wait(50);       
+    
+      /* check for input from Seascan TD and echo back */
+      if (debuglevel >=4) SeascanGateway_putchar('[');
+      for (n=0; n<100; n++)
+      {
+         if ( (stat = ctdio.getb(&ibyte)) >0 )
+         {
+            /* echo the byte to the Seascan TD */
+            Wait(50);
+            ctdio.putb(ibyte); 
+            if (ibyte == ETX)  break;
+            if (debuglevel >=4) SeascanGateway_putchar(ibyte);
+            status = 1;
+         }
+         Wait(50);
+      }
+      if (debuglevel >=4) SeascanGateway_putchar(']');
+      
+      /* Put the seabird in cmd mode */
+      ctdio.putb('-'); Wait(5); 
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(0); (*VoltCnt)=BatVoltsAd8(); (*AmpCnt)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt1)=BatVoltsAd8(); (*AmpCnt1)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt2)=BatVoltsAd8(); (*AmpCnt2)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt3)=BatVoltsAd8(); (*AmpCnt3)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt4)=BatVoltsAd8(); (*AmpCnt4)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt5)=BatVoltsAd8(); (*AmpCnt5)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt6)=BatVoltsAd8(); (*AmpCnt6)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt7)=BatVoltsAd8(); (*AmpCnt7)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt8)=BatVoltsAd8(); (*AmpCnt8)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt9)=BatVoltsAd8(); (*AmpCnt9)=BatAmpsAd8();
+      /* make the volt and current measurements 1 second into the sample-cycle */
+      Wait(100); (*VoltCnt0)=BatVoltsAd8(); (*AmpCnt0)=BatAmpsAd8();
+      
+      /* check for input from Seascan TD and echo back */
+      if (debuglevel >=4) SeascanGateway_putchar('[');
+      for (n=0; n<100; n++)
+      {
+         if ( (stat = ctdio.getb(&ibyte)) >0 )
+         {
+           /* echo the byte to the Seascan TD */
+            Wait(50);ctdio.putb(ibyte); 
+            if (ibyte == ETX)  { buf[i]=NUL; break;}
+            buf[i] = ibyte; if (i<80) i++;
+            if (debuglevel >=4) SeascanGateway_putchar(ibyte);
+            Wait(50);
+          }
+      }
+      if (debuglevel >=4) SeascanGateway_putchar(']');
+      /* disable interrupts for the CTD interface (XA serial port 0) */
+      RI0=0; ERI0=0;
+   
+      /* flush the console's and Seascan IO buffers */
+      conio.ioflush(); ctdio.ioflush(); 
+      CtdClearWakePin(); 
+   }
+     
+
+      /* log the status */
+      if (status<=0)
+      {
+         /* create the message */
+         static cc msg[]="No response from CTD.\n";
+         
+         /* log the message */
+         LogEntry(FuncName,msg);
+      }
+      
+      else if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* create the message */
+         static cc format[]="Raw PT [%s]\n";
+         
+         /* log the message */
+         LogEntry(FuncName,format,buf);
+      }
+      
+      /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt), Volt=Volts(*VoltCnt);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt,*AmpCnt,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt), Volt=Volts(*VoltCnt);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt,*AmpCnt,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt1), Volt=Volts(*VoltCnt1);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt1,*AmpCnt1,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt2), Volt=Volts(*VoltCnt2);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt2,*AmpCnt2,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt3), Volt=Volts(*VoltCnt3);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt3,*AmpCnt3,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt4), Volt=Volts(*VoltCnt4);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt4,*AmpCnt4,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt5), Volt=Volts(*VoltCnt5);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt5,*AmpCnt5,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt6), Volt=Volts(*VoltCnt6);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt6,*AmpCnt6,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt7), Volt=Volts(*VoltCnt7);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt7,*AmpCnt7,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt8), Volt=Volts(*VoltCnt8);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt8,*AmpCnt8,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt9), Volt=Volts(*VoltCnt9);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt9,*AmpCnt9,Volt,Amp,Volt*Amp);
+      }
+
+            /* check if the power consumption is loggable */
+      if (debuglevel>=2 || (debugbits&CTDIO_H))
+      {
+         /* convert counts to engineering quantities */
+         float Amp=Amps(*AmpCnt0), Volt=Volts(*VoltCnt0);
+         
+         /* create the message */
+         static cc format[]="CTD Power consumption [%dVCnt %dACnt]: "
+            "%0.3fVolts * %0.3fAmps = %0.2fWatts.\n";
+         
+         /* log the power consumption */
+         LogEntry(FuncName,format,*VoltCnt0,*AmpCnt0,Volt,Amp,Volt*Amp);
+      }
+   
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* interrupt handler for input on the CTD serial interface                */
+/*------------------------------------------------------------------------*/
+/*
+   This is the interrupt handler for data received by the serial port
+   connected to the CTD interface.  The CTD serial port uses a nonblocking
+   unbuffered IO model.  This interrupt handler does nothing except push the
+   byte into the serial port's FIFO queue.
+*/
+interrupt void CtdRxInterrupt(void)    
+{
+   unsigned char byte, stat;
+
+   /* pet the watchdog */
+   WatchDog();
+
+   /* clear the rx-ready flag */
+   RI0 = 0;
+
+   /* read the byte from serial port 0 */
+   byte = S0BUF & 0x7f;
+ 
+   /* read and reset the status of serial port 0 */
+   stat = S0STAT & 0xe; S0STAT=0;
+   
+   /* add the byte to the fifo */
+   push(&CtdFifo,byte);
+} 
+
+/*------------------------------------------------------------------------*/
+/* function to read a byte from the CTD FIFO queue                        */
+/*------------------------------------------------------------------------*/
+/**
+   This function reads one byte from the FIFO queue of the CTD serial
+   port.  
+
+      \begin{verbatim}
+      output:
+         byte...The next byte from the CTD FIFO queue.
+
+         This function returns a positive number on success and zero on
+         failure.  A negative return value indicates an exceptional
+         condition such as a NULL function argument.
+      \end{verbatim}
+*/
+static int CtdGetb(unsigned char *byte)
+{
+   /* define the logging signature */
+   static cc FuncName[] = "CtdGetb()";
+
+   int status=-1;
+   
+   /* stack-check assertion */
+   assert(StackOk());
+   
+   /* pet the watch dog */
+   WatchDog();
+
+   /* validate the function parameter */
+   if (!byte) 
+   {
+      /* create the message */
+      static cc msg[]="NULL function argument.\n";
+
+      /* log the message */
+      LogEntry(FuncName,msg);
+   }
+
+   else
+   {
+      /* initialize the return value */
+      *byte=0;
+      
+      /* disable interrupts to prevent the fifo from changing state */
+      di();
+
+      /* pop the next byte out of the fifo queue */
+      status=pop(&CtdFifo,byte);
+      
+      /* enable interrupts */
+      ei();
+
+      /* protect against interrupts being turned off too much */
+      Wait(2);
+   }
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to flush the CTD's Rx FIFO queue                              */
+/*------------------------------------------------------------------------*/
+/**
+   This function flushes the Rx FIFO queue of the CTD serial port.  This
+   function returns a positive value on success and zero on failure.  A
+   negative return value indicates an invalid or corrupt Fifo object.
+*/
+static int CtdIflush(void)
+{
+   int status=0;
+   
+   /* stack-check assertion */
+   assert(StackOk());
+
+   /* pet the watch dog */
+   WatchDog();
+
+   /* flush the CTD serial port's fifo buffer */
+   di(); status=flush(&CtdFifo); ei();
+   
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function                                                               */
+/*------------------------------------------------------------------------*/
+/**
+   This function is used to fulfill the requirements of the serial port
+   abstraction, In the case where the serial port lacks the ability to
+   perform a given function, this function should be substituted in the
+   initialization of the SerialPort object.
+*/
+static int na(void)
+{
+   return -1;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to write a byte to the                                        */
+/*------------------------------------------------------------------------*/
+/**
+   This function writes a byte to the CTD serial port (XA serial port 0) and
+   also performs LF to CR/LF translation.  This function returns the number
+   of bytes written to the serial port.
+*/ 
+static int CtdPutb(unsigned char c)
+{
+   /* initialize the return value */
+   int status = 1;
+   
+   /* stack-check assertion */
+   assert(StackOk());
+      
+   /* pet the watch dog */
+   WatchDog();
+
+   /* translate LF to CR/LF */
+   if(c==LF) {S0BUF=CR; Wait(2); status++;}
+
+   /* write the byte to the serial port */
+   S0BUF=c; Wait(2);
+
+   return status;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to write a byte to the CTD serial port WITHOUT CR/LF translation */
+/*------------------------------------------------------------------------*/
+/**
+   This function writes a byte to the CTD serial port (XA serial port 0).
+   This function returns the number of bytes written to the serial port.  
+   The LF to CR/LF translation (in regular CtdPutb) has been removed for
+   Seascan TD so LF can be echoed back correctly.
+*/ 
+static int SeascanGateway_CtdPutb(unsigned char c)
+{
+   /* initialize the return value */
+   int status = 1;
+   
+   /* stack-check assertion */
+   assert(StackOk());
+      
+   /* pet the watch dog */
+   WatchDog();
+
+   /* write the byte to the serial port */
+   S0BUF=c; Wait(2);
+
+   return status;
+}

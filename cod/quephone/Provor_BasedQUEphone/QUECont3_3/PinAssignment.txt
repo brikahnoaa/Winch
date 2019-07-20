@@ -1,0 +1,162 @@
+/******************************************************************************\
+** FloatControl.c				Persistor and PicoDOS starter C file  
+**	
+*****************************************************************************
+**	PIN DESCRP
+**	39	IRQ2	OPEN
+**	50	IRQ3	OEPN (MAY BE FOR PROVOR COM INTERRUPUT)
+**	43	IRQ4	PC COM'S INTERRUPT	
+**	39	IRQ5 	Program Interrupt
+**	40	IRQ7	Open
+**
+**	37	OPEN					TPU15
+**	35	OPEN					TPU14
+**	34	TX1					TPU13
+**	33	RX1					TPU12
+**	32	TX2					TPU11
+**	31	RX2					TPU10
+**	30	/OFF					TPU9
+**	29	/EN					TPU8
+**	28	GAIN1					TPU7
+**	27	GAIN0					TPU6
+**	26	IRIDIUM/GPS PWR SW 			TPU5
+**	25	PROVOR COM SW				TPU4
+**	24	WATCH_ADRUPT (OPEN) 			TPU3 (debugging only)
+**	23	WATCH_ADTIMING(OPEN) 			TPU2 (debugging only)
+**	22	WATCH_ACQUIRE(OPEN)			TPU1 (debugging only)
+*****************************************************************************
+**	
+**	
+time_t GetGPSDateTime(bool set, char *time_chr)
+//get GPS time, set the real time clock if set is true
+{
+	short	i;
+	char	dbuf[3], mbuf[3], sbuf[3], ybuf[5];
+	char	minbuf[3], hbuf[3], secbuf[3], milbuf[4];
+	short	hour,min,sec,msec;
+	short	year,month,day;
+	ulong	offset;
+	RTCTimer timer;
+	time_t	UTCsec;
+	struct tm timex;
+	short	imax = 62;
+	char	r[62]={NULL};
+	static short	num_sat_d=0, num_sat_t=0;
+	short	loc, jmax;
+
+	// send AT Command
+	//RTCElapsedTimerSetup(&timer);
+	//TUTxFlush(tuport2);
+	TURxFlush(tuport2);      //Need this for the next TU serial command
+
+	while(num_sat_t<1)
+	{
+		RTCDelayMicroSeconds(500000L);
+	//Get date, month and year
+	//Need more than 1 satellites up
+		TUTxPrintf(tuport2,"AT+PD\r"); //Get ZDA format
+		TUTxWaitCompletion(tuport2);
+		RTCDelayMicroSeconds(GPSRxTIMEOUT);//Need this so that GPS rec can process
+	
+		// get the first response
+		for(i=0;i<imax;i++)
+		{
+			if((r[i] = TURxGetByteWithTimeout(tuport2,RxTIMEOUT)) == -1)
+			{
+				jmax=i;
+				exit;
+				//LogFailure(11);
+				//return -1;
+			}
+		}
+	
+		//flogf("%s\n",r);
+		strncpy(mbuf,r+23,2);
+		month = atoi(mbuf);
+		strncpy(dbuf,r+26,2);
+		day = atoi(dbuf);
+		strncpy(ybuf,r+29,4);
+		year  = atoi(ybuf);
+		//cprintf("year=%d month=%d day=%d\n",year, month, day);
+		loc=strcspn(r,"S");
+		//cprintf("%d\n",loc);
+		//strncpy(cbuf,r+loc,10);
+		//cprintf("%s\n",cbuf);
+		strncpy(sbuf,r+16+loc,2);
+		num_sat_d=atoi(sbuf);
+		RTCDelayMicroSeconds(500000L);
+		//cprintf("%d\n",num_sat_d);
+		//TUTxFlush(tuport2);
+		TURxFlush(tuport2);      //Need this for the next TU serial command
+
+		if(num_sat_d>0)
+		{
+			//Get time 
+			RTCElapsedTimerSetup(&timer);
+			TUTxPrintf(tuport2,"AT+PT\r"); 		//Get ZDA format
+			TUTxWaitCompletion(tuport2);
+			RTCDelayMicroSeconds(GPSRxTIMEOUT);	//Need this so that GPS rec can process
+	
+			for(i=0;i<imax;i++)
+			{//Skip Echo
+				if((r[i] = TURxGetByteWithTimeout(tuport2,RxTIMEOUT)) == -1)
+				{
+					//LogFailure(11);
+					//return -1;
+				}
+			}
+			//cprintf("%s", r[i]);
+			strncpy(hbuf,r+23,2);
+			hour = atoi(hbuf);
+			strncpy(minbuf,r+26,2);
+			min  = atoi(minbuf);
+			strncpy(secbuf,r+29,2);
+			sec  = atoi(secbuf);
+			strncpy(milbuf,r+32,3);
+			msec=atoi(milbuf);
+			loc=strcspn(r,"S"); 
+			//cprintf("Hour=%d,Min=%d,Sec=%d\n",hour,min,sec);	
+			//cprintf("%d\n",loc);
+			//strncpy(cbuf,r+loc+8,10);
+			//cprintf("%s\n",cbuf);
+			strncpy(sbuf,r+16+loc,2);
+			num_sat_t=atoi(sbuf);
+			if(hour ==23 && min==59 && sec>56) {num_sat_t=0;}//too close to the end of day
+		}
+	}
+	timex.tm_year = year - 1900;
+	timex.tm_mon  = month - 1;
+	timex.tm_mday = day;
+	timex.tm_hour = hour;
+	timex.tm_min  = min;
+	timex.tm_sec  = sec;
+	
+	UTCsec = mktime(&timex)+1L;
+	offset = RTCElapsedTime(&timer);//520msec
+	//cprintf("msec=%d\n",msec);
+	msec = msec + offset/1000L;
+	if(msec >1000) 
+		{
+		msec-=1000;
+		UTCsec +=1L;
+		}
+	//printf(ctime(&UTCsec));
+	RTCDelayMicroSeconds(999900L-msec*1000L);
+	if(set)
+		{
+			RTCSetTime(UTCsec, 0);
+			flogf("RTC time set at %d %d %d %d:%d:%d.%.3d %.2d\n",year,month,day,hour,min,sec,msec\
+			,num_sat_t);
+		}
+	//RTCDelayMicroSeconds(10000L);
+	cdrain();
+	coflush();
+	//DBG(cprintf("%d/%d/%d %.2d:%.2d:%.2d.%.3d %.2d\n",year,month,day,hour,min,sec,msec,num_sat_t));
+	TUTxFlush(tuport2);
+	TURxFlush(tuport2);      //Need this for the next TU serial command
+
+	DBG(cprintf("offset %ld\n",offset)); //RTC Timing error from GPS 
+	DBG(cprintf("msec %d\n",msec));
+	sprintf(time_chr,"%d/%d/%d %.2d:%.2d:%.2d.%.3d",year, month,day,hour,min,sec,msec);
+	return UTCsec;
+}

@@ -20,15 +20,16 @@ typedef struct S16Info {
   time_t sampT;
 } S16Info;
 
+static bool s16Pending(void);
 static void s16Break(void);
 static void s16Flush(void);
-static bool s16Pending(void);
 
 bool s16Data(void);
 bool s16DataWait(void);
 bool s16Prompt(void);
 bool s16Read(void);
 float s16Depth(void);
+float s16Temp(void);
 int s16Auton(bool auton);
 int s16LogClose(void);
 int s16LogOpen(void);
@@ -38,7 +39,5 @@ void s16GetSamples(void);
 void s16Init(void);
 void s16Sample(void);
 void s16Test(void);
-
-
 
 #endif

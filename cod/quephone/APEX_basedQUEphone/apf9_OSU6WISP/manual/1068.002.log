@@ -1,0 +1,292 @@
+(Sep 12 2008 15:02:03,   69860 sec) TelemetryInit()      Profile 1. (Apf9i FwRev: 091208)
+(Sep 12 2008 15:08:51,   70268 sec) AirSystem()          Battery [124cnt, 9.6V]  Current [65cnt, 26.2mA]  Barometer [130cnt, 7.7"Hg]  Run-Time [45s]
+(Sep 12 2008 15:09:05,   70282 sec) chat()               Expected string [IRIDIUM] not received.
+(Sep 12 2008 15:09:07,   70284 sec) GpsServices()        GPS almanac is current.
+(Sep 12 2008 15:09:07,   70284 sec) GpsServices()        Initiating GPS fix acquisition.
+(Sep 12 2008 15:09:23,   70300 sec) gga()                $GPGGA,172232,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*46
+(Sep 12 2008 15:09:33,   70310 sec) gga()                $GPGGA,172242,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:09:43,   70320 sec) gga()                $GPGGA,172252,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:09:53,   70330 sec) gga()                $GPGGA,172302,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*44
+(Sep 12 2008 15:10:03,   70340 sec) gga()                $GPGGA,172312,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*45
+(Sep 12 2008 15:10:13,   70350 sec) gga()                $GPGGA,172322,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*46
+(Sep 12 2008 15:10:23,   70360 sec) gga()                $GPGGA,172332,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*47
+(Sep 12 2008 15:10:33,   70370 sec) gga()                $GPGGA,172342,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:10:43,   70380 sec) gga()                $GPGGA,172352,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:10:53,   70390 sec) gga()                $GPGGA,172402,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*43
+(Sep 12 2008 15:11:03,   70400 sec) gga()                $GPGGA,172412,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*42
+(Sep 12 2008 15:11:23,   70420 sec) gga()                $GPGGA,172432,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:11:33,   70430 sec) gga()                $GPGGA,172442,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*47
+(Sep 12 2008 15:11:43,   70440 sec) gga()                $GPGGA,172452,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*46
+(Sep 12 2008 15:11:53,   70450 sec) gga()                $GPGGA,172502,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*42
+(Sep 12 2008 15:12:03,   70460 sec) gga()                $GPGGA,172512,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*43
+(Sep 12 2008 15:12:13,   70470 sec) gga()                $GPGGA,172522,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:12:23,   70480 sec) gga()                $GPGGA,172532,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:12:33,   70490 sec) gga()                $GPGGA,172542,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*46
+(Sep 12 2008 15:12:43,   70500 sec) gga()                $GPGGA,172552,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*47
+(Sep 12 2008 15:12:53,   70510 sec) gga()                $GPGGA,172602,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:13:03,   70520 sec) gga()                $GPGGA,172612,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:13:13,   70530 sec) gga()                $GPGGA,172622,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*43
+(Sep 12 2008 15:13:23,   70540 sec) gga()                $GPGGA,172632,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*42
+(Sep 12 2008 15:13:29,   70546 sec) gga()                $GPGGA,172638,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*48
+(Sep 12 2008 15:13:39,   70556 sec) gga()                $GPGGA,172648,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4F
+(Sep 12 2008 15:13:49,   70566 sec) gga()                $GPGGA,172658,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4E
+(Sep 12 2008 15:13:59,   70576 sec) gga()                $GPGGA,172708,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4A
+(Sep 12 2008 15:14:07,   70584 sec) GpsServices()        GPS fix not acquired after 300s; power-cycling the GPS.
+(Sep 12 2008 15:14:26,   70603 sec) gga()                $GPGGA,172736,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*47
+(Sep 12 2008 15:14:36,   70613 sec) gga()                $GPGGA,172746,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:14:46,   70623 sec) gga()                $GPGGA,172756,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:14:56,   70633 sec) gga()                $GPGGA,172806,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4B
+(Sep 12 2008 15:15:06,   70643 sec) gga()                $GPGGA,172816,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4A
+(Sep 12 2008 15:15:16,   70653 sec) gga()                $GPGGA,172826,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*49
+(Sep 12 2008 15:15:26,   70663 sec) gga()                $GPGGA,172836,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*48
+(Sep 12 2008 15:15:36,   70673 sec) gga()                $GPGGA,172846,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4F
+(Sep 12 2008 15:15:46,   70683 sec) gga()                $GPGGA,172856,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4E
+(Sep 12 2008 15:15:56,   70693 sec) gga()                $GPGGA,172906,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4A
+(Sep 12 2008 15:16:06,   70703 sec) gga()                $GPGGA,172916,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4B
+(Sep 12 2008 15:16:26,   70723 sec) gga()                $GPGGA,172936,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*49
+(Sep 12 2008 15:16:36,   70733 sec) gga()                $GPGGA,172946,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4E
+(Sep 12 2008 15:16:46,   70743 sec) gga()                $GPGGA,172956,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*4F
+(Sep 12 2008 15:16:56,   70753 sec) gga()                $GPGGA,173006,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*42
+(Sep 12 2008 15:17:06,   70763 sec) gga()                $GPGGA,173016,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*43
+(Sep 12 2008 15:17:16,   70773 sec) gga()                $GPGGA,173026,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:17:26,   70783 sec) gga()                $GPGGA,173036,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:17:36,   70793 sec) gga()                $GPGGA,173046,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*46
+(Sep 12 2008 15:17:46,   70803 sec) gga()                $GPGGA,173056,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*47
+(Sep 12 2008 15:17:56,   70813 sec) gga()                $GPGGA,173106,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*43
+(Sep 12 2008 15:18:06,   70823 sec) gga()                $GPGGA,173116,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*42
+(Sep 12 2008 15:18:16,   70833 sec) gga()                $GPGGA,173126,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:18:26,   70843 sec) gga()                $GPGGA,173136,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:18:33,   70850 sec) gga()                $GPGGA,173142,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*43
+(Sep 12 2008 15:18:42,   70859 sec) gga()                $GPGGA,173152,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*42
+(Sep 12 2008 15:18:52,   70869 sec) gga()                $GPGGA,173202,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*44
+(Sep 12 2008 15:19:02,   70879 sec) gga()                $GPGGA,173212,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*45
+(Sep 12 2008 15:19:11,   70888 sec) GpsServices()        GPS fix-acquisition failed after 300s.  Apf9 RTC skew check by-passed.
+(Sep 12 2008 15:19:16,   70893 sec) LogNmeaSentences()   $GPRMC,173232,V,4136.5861,N,07036.5571,W,,,120908,015.6,W*69
+(Sep 12 2008 15:19:17,   70894 sec) LogNmeaSentences()   $GPGGA,173232,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*47
+(Sep 12 2008 15:19:17,   70894 sec) LogNmeaSentences()   $GPGSA,A,1,,,,,,,,,,,,,,,*1E
+(Sep 12 2008 15:19:18,   70895 sec) LogNmeaSentences()   $GPGSV,3,1,11,02,00,314,00,12,00,114,00,14,00,139,00,15,00,002,00*70
+(Sep 12 2008 15:19:18,   70895 sec) LogNmeaSentences()   $PGRME,,M,,M,,M*00
+(Sep 12 2008 15:19:18,   70896 sec) LogNmeaSentences()   $PGRMB,0.0,200,,,,K,,N,N*31
+(Sep 12 2008 15:19:19,   70896 sec) LogNmeaSentences()   $PGRMM,WGS 84*06
+(Sep 12 2008 15:19:26,   70903 sec) LogNmeaSentences()   $GPRMC,173242,V,4136.5861,N,07036.5571,W,,,120908,015.6,W*6E
+(Sep 12 2008 15:19:27,   70904 sec) LogNmeaSentences()   $GPGGA,173242,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*40
+(Sep 12 2008 15:19:27,   70904 sec) LogNmeaSentences()   $GPGSA,A,1,,,,,,,,,,,,,,,*1E
+(Sep 12 2008 15:19:28,   70905 sec) LogNmeaSentences()   $GPGSV,3,2,11,16,33,063,00,17,00,226,00,18,00,066,00,19,56,181,00*70
+(Sep 12 2008 15:19:28,   70905 sec) LogNmeaSentences()   $PGRME,,M,,M,,M*00
+(Sep 12 2008 15:19:29,   70906 sec) LogNmeaSentences()   $PGRMT,GPS 15-L Ver. 3.30,P,P,R,R,P,,,R,P*7E
+(Sep 12 2008 15:19:29,   70906 sec) LogNmeaSentences()   $PGRMB,0.0,200,,,,K,,N,N*31
+(Sep 12 2008 15:19:29,   70906 sec) LogNmeaSentences()   $PGRMM,WGS 84*06
+(Sep 12 2008 15:19:36,   70913 sec) LogNmeaSentences()   $GPRMC,173252,V,4136.5861,N,07036.5571,W,,,120908,015.6,W*6F
+(Sep 12 2008 15:19:37,   70914 sec) LogNmeaSentences()   $GPGGA,173252,4136.5861,N,07036.5571,W,0,00,,,M,,M,,*41
+(Sep 12 2008 15:19:37,   70914 sec) LogNmeaSentences()   $GPGSA,A,1,,,,,,,,,,,,,,,*1E
+(Sep 12 2008 15:19:38,   70915 sec) LogNmeaSentences()   $GPGSV,3,3,11,20,00,201,00,21,10,046,00,22,00,100,00*49
+(Sep 12 2008 15:19:38,   70915 sec) LogNmeaSentences()   $PGRME,,M,,M,,M*00
+(Sep 12 2008 15:19:38,   70916 sec) LogNmeaSentences()   $PGRMB,0.0,200,,,,K,,N,N*31
+(Sep 12 2008 15:19:39,   70916 sec) LogNmeaSentences()   $PGRMM,WGS 84*06
+(Sep 12 2008 15:19:46,   70923 sec) LogNmeaSentences()   $GPRMC,173302,V,4136.5861,N,07036.5571,W,,,120908,015.6,W*6B
+(Sep 12 2008 15:19:47,   70924 sec) GpsServices()        GPS services complete.
+(Sep 12 2008 15:20:00,   70937 sec) chat()               Expected string [IRIDIUM] not received.
+(Sep 12 2008 15:20:00,   70937 sec) CLogin()             Connecting to primary host.
+(Sep 12 2008 15:20:07,   70944 sec) chat()               Expected string [IRIDIUM] not received.
+(Sep 12 2008 15:20:27,   70964 sec) CLogin()             Connection 1 established in 27 seconds.
+(Sep 12 2008 15:20:29,   70966 sec) login()              Login successful.
+(Sep 12 2008 15:20:30,   70968 sec) CLogin()             Logged in to host.  [Login required 3 seconds]
+(Sep 12 2008 15:20:37,   70974 sec) RxConfig()           Downloading "mission.cfg" from host.
+(Sep 12 2008 15:20:39,   70976 sec) Rx()                 Initiating transfer. [0x43]
+(Sep 12 2008 15:20:42,   70979 sec) Rx()                 Pad character [0x1a] found in ascii mode - truncating packet.
+(Sep 12 2008 15:20:45,   70982 sec) Rx()                 Received EOT - transfer complete. [1 packets, 1024 bytes, 6 sec, 170.7 bps]
+(Sep 12 2008 15:20:45,   70982 sec) RxConfig()           Download successful.
+(Sep 12 2008 15:20:58,   70995 sec) WriteVitals()        Writing vitals to "1068.001.msg".
+(Sep 12 2008 15:21:00,   70998 sec) UpLoadFile()         Uploading "1068.001.msg" to host as "1068.001.msg".
+(Sep 12 2008 15:21:01,   70998 sec) Tx()                 CRC negotiation successful. [16-bit CRC]
+(Sep 12 2008 15:21:04,   71002 sec) TxPacket()           Invalid response [0x43] - resending packet. [PktNum=0x01]
+(Sep 12 2008 15:21:05,   71002 sec) TxPacket()           Packet xmit history: [01110001] (0:ok, 1:fail).
+(Sep 12 2008 15:21:13,   71010 sec) Tx()                 Transmission completed successfully [4 packets, 2282 bytes, 11 sec, 290.9 bps]
+(Sep 12 2008 15:21:14,   71011 sec) UpLoadFile()         Upload successful.
+(Sep 12 2008 15:21:19,   71017 sec) UpLoadFile()         Uploading "1068.001.log" to host as "1068.001.log".
+(Sep 12 2008 15:21:20,   71017 sec) Tx()                 CRC negotiation successful. [16-bit CRC]
+(Sep 12 2008 15:21:23,   71021 sec) TxPacket()           Invalid response [0x43] - resending packet. [PktNum=0x01]
+(Sep 12 2008 15:21:24,   71021 sec) TxPacket()           Packet xmit history: [00100001] (0:ok, 1:fail).
+(Sep 12 2008 15:22:46,   71103 sec) Tx()                 Transmission completed successfully [40 packets, 40822 bytes, 85 sec, 481.9 bps]
+(Sep 12 2008 15:22:47,   71104 sec) UpLoadFile()         Upload successful.
+(Sep 12 2008 15:22:53,   71110 sec) UpLoad()             Files successfully uploaded: 2
+(Sep 12 2008 15:22:53,   71110 sec) UpLoad()             Upload complete.
+(Sep 12 2008 15:22:53,   71110 sec) logout()             Log-out successful.
+(Sep 12 2008 15:22:55,   71112 sec) Telemetry()          Telemetry cycle complete: PrfId=1 ConnectionAttempts=1  Connections=1
+(Sep 12 2008 15:22:55,   71112 sec) TelemetryTerminate() Parsing new mission configuration.
+(Sep 12 2008 15:22:57,   71114 sec) configure()          Parsing configurators in "mission.cfg".
+(Sep 12 2008 15:22:59,   71116 sec) configure()             AscentTimeOut(500) [CRC=0x4506] [AscentTimeOut(500)].
+(Sep 12 2008 15:23:01,   71118 sec) configure()             AirBladderMaxP(127) [CRC=0x82CF] [AirBladderMaxP(127)].
+(Sep 12 2008 15:23:03,   71120 sec) configure()             AtDialCmd(ATDT0012066859312) [CRC=0x1212] [AtDialCmd(ATDT0012066859312)].
+(Sep 12 2008 15:23:05,   71123 sec) configure()             AltDialCmd(ATDT201) [CRC=0x2078] [AltDialCmd(ATDT201)].
+(Sep 12 2008 15:23:06,   71123 sec) configure()          Configuration CRCs and syntax OK.
+(Sep 12 2008 15:23:06,   71123 sec) ConfigSupervisor()   Configuration accepted.
+(Sep 12 2008 15:23:06,   71124 sec) TelemetryTerminate() Reconditioning the file system.
+(Sep 12 2008 15:23:16,       5 sec) DescentInit()        Deep profile 2 initiated at mission-time 71127sec.
+(Sep 12 2008 15:23:18,       8 sec) DescentInit()        Surface pressure: 0.0dbars.
+(Sep 12 2008 15:23:23,      12 sec) PistonMoveAbsWTO()    190->066 189 188 187 186 185 184 183 182 181 180 179 178 177 176 175 174 173 172 171 170 169 168 167 166 165 164 163 162 161 160 159 158 157 156 155 154 153 152 151 150 149 148 147 146 145 144 143 142 141 140 139 138 137 136 135 134 133 132 131 130 129 128 127 126 125 124 123 122 121 120 119 118 117 116 115 114 113 112 111 110 109 108 107 106 105 104 103 102 101 100 099 098 097 096 095 094 093 092 091 090 089 088 087 086 085 084 083 082 081 080 079 078 077 076 075 074 073 072 071 070 069 068 067 066 [1310sec, 8.8Volts, 0.181Amps, CPT:1310sec]
+(Sep 12 2008 15:45:21,    1331 sec) Descent()            Pressure: 191.8
+(Sep 12 2008 16:23:13,    3603 sec) Descent()            Pressure: 476.7
+(Sep 12 2008 17:23:13,    7203 sec) Descent()            Pressure: 810.5
+(Sep 12 2008 18:23:13,   10803 sec) Descent()            Pressure: 925.0
+(Sep 12 2008 19:23:13,   14403 sec) Descent()            Pressure: 954.5
+(Sep 12 2008 20:23:13,   18003 sec) Descent()            Pressure: 962.7
+(Sep 12 2008 21:23:13,   21603 sec) Descent()            Pressure: 965.3
+(Sep 12 2008 21:23:14,   21603 sec) ParkInit()           
+(Sep 12 2008 23:23:16,   28806 sec) Park()               ParkPOutOfBand[-3, 966.2 dbars]: retract piston.
+(Sep 12 2008 23:23:17,   28807 sec) PistonMoveAbsWTO()    066->065 065 [10sec, 9.0Volts, 0.193Amps, CPT:1320sec]
+(Sep 13 2008 02:23:16,   39606 sec) Park()               ParkPOutOfBand[-3, 984.5 dbars]: retract piston.
+(Sep 13 2008 02:23:17,   39607 sec) PistonMoveAbsWTO()    065->064 064 [12sec, 9.0Volts, 0.193Amps, CPT:1332sec]
+(Sep 13 2008 03:23:23,   43213 sec) ParkTerminate()      Piston Position:64 Vacuum:104 Vq:131 Aq:5 Vseascan:129 Aseascan:5
+(Sep 13 2008 03:23:25,   43215 sec) ParkTerminate()      PT: 997.7dbars 3.9370C
+(Sep 13 2008 03:23:26,   43215 sec) GoDeepInit()         Moving piston.
+(Sep 13 2008 03:23:26,   43216 sec) PistonMoveAbsWTO()    064->015 063 062 061 060 059 058 057 056 055 054 053 052 051 050 049 048 047 046 045 044 043 042 041 040 039 038 037 036 035 034 033 032 031 030 029 028 027 026 025 024 023 022 021 020 019 018 017 016 015 [522sec, 8.8Volts, 0.185Amps, CPT:1854sec]
+(Sep 13 2008 09:23:14,   64803 sec) ProfileInit()        PrfId:002  Pressure:1975.5dbar  pTable[1]:1950dbar
+(Sep 13 2008 09:23:16,   64806 sec) PistonMoveAbsWTO()    015->037 016 017 018 [30sec, 9.0Volts, 0.185Amps, CPT:1884sec]
+(Sep 13 2008 09:23:57,   64846 sec) PistonMoveAbsWTO()    018->037 019 020 021 [30sec, 8.9Volts, 0.185Amps, CPT:1914sec]
+(Sep 13 2008 09:24:36,   64885 sec) PistonMoveAbsWTO()    021->037 022 023 024 [30sec, 8.9Volts, 0.185Amps, CPT:1944sec]
+(Sep 13 2008 09:25:15,   64924 sec) PistonMoveAbsWTO()    024->037 025 026 027 [30sec, 8.9Volts, 0.185Amps, CPT:1974sec]
+(Sep 13 2008 09:25:54,   64963 sec) PistonMoveAbsWTO()    027->037 028 029 030 [30sec, 8.9Volts, 0.185Amps, CPT:2004sec]
+(Sep 13 2008 09:26:33,   65002 sec) PistonMoveAbsWTO()    030->037 031 032 033 [30sec, 8.9Volts, 0.185Amps, CPT:2034sec]
+(Sep 13 2008 09:27:12,   65041 sec) PistonMoveAbsWTO()    033->037 034 035 036 [30sec, 8.9Volts, 0.185Amps, CPT:2064sec]
+(Sep 13 2008 09:27:51,   65080 sec) PistonMoveAbsWTO()    036->037 037 [2sec, 9.5Volts, 0.181Amps, CPT:2066sec]
+(Sep 13 2008 09:32:57,   65387 sec) Profile()            Sample 0 initiated at 1944.7dbars for bin 1 [1950dbars].  PT: 1944.6dbars 2.1320C
+(Sep 13 2008 09:43:06,   65996 sec) AscentControlAgent() Bouyancy nudge to 47 (v=0.058dbar/sec).
+(Sep 13 2008 09:43:07,   65997 sec) PistonMoveAbsWTO()    037->047 038 039 [30sec, 9.0Volts, 0.185Amps, CPT:2096sec]
+(Sep 13 2008 09:43:46,   66035 sec) PistonMoveAbsWTO()    039->047 040 041 042 [30sec, 8.9Volts, 0.189Amps, CPT:2126sec]
+(Sep 13 2008 09:44:26,   66076 sec) Profile()            Sample 1 initiated at 1900.6dbars for bin 2 [1900dbars].  PT: 1900.5dbars 2.1790C
+(Sep 13 2008 09:44:27,   66077 sec) PistonMoveAbsWTO()    043->047 044 045 [30sec, 8.9Volts, 0.185Amps, CPT:2156sec]
+(Sep 13 2008 09:45:07,   66116 sec) PistonMoveAbsWTO()    046->047 047 [11sec, 8.9Volts, 0.185Amps, CPT:2167sec]
+(Sep 13 2008 09:55:27,   66737 sec) Profile()            Sample 2 initiated at 1844.2dbars for bin 3 [1850dbars].  PT: 1844.0dbars 2.2700C
+(Sep 13 2008 10:05:39,   67349 sec) Profile()            Sample 3 initiated at 1795.9dbars for bin 4 [1800dbars].  PT: 1795.8dbars 2.3330C
+(Sep 13 2008 10:05:42,   67351 sec) AscentControlAgent() Bouyancy nudge to 57 (v=0.077dbar/sec).
+(Sep 13 2008 10:05:42,   67352 sec) PistonMoveAbsWTO()    047->057 048 049 050 [30sec, 8.9Volts, 0.185Amps, CPT:2197sec]
+(Sep 13 2008 10:06:22,   67391 sec) PistonMoveAbsWTO()    050->057 051 052 053 [30sec, 8.9Volts, 0.185Amps, CPT:2227sec]
+(Sep 13 2008 10:07:01,   67430 sec) PistonMoveAbsWTO()    053->057 054 055 056 [30sec, 8.9Volts, 0.185Amps, CPT:2257sec]
+(Sep 13 2008 10:07:40,   67469 sec) PistonMoveAbsWTO()    056->057 057 [9sec, 8.9Volts, 0.181Amps, CPT:2266sec]
+(Sep 13 2008 10:17:59,   68089 sec) Profile()            Sample 4 initiated at 1725.0dbars for bin 5 [1750dbars].  PT: 1724.8dbars 2.4360C
+(Sep 13 2008 10:23:06,   68396 sec) Profile()            Sample 5 initiated at 1696.6dbars for bin 6 [1700dbars].  PT: 1696.4dbars 2.4850C
+(Sep 13 2008 10:33:18,   69008 sec) Profile()            Sample 6 initiated at 1643.1dbars for bin 7 [1650dbars].  PT: 1642.9dbars 2.5550C
+(Sep 13 2008 10:43:30,   69620 sec) Profile()            Sample 7 initiated at 1593.6dbars for bin 8 [1600dbars].  PT: 1593.4dbars 2.6360C
+(Sep 13 2008 10:43:33,   69622 sec) AscentControlAgent() Bouyancy nudge to 67 (v=0.079dbar/sec).
+(Sep 13 2008 10:43:33,   69623 sec) PistonMoveAbsWTO()    057->067 058 059 060 [30sec, 9.0Volts, 0.185Amps, CPT:2296sec]
+(Sep 13 2008 10:44:13,   69662 sec) PistonMoveAbsWTO()    060->067 061 062 [30sec, 8.9Volts, 0.181Amps, CPT:2326sec]
+(Sep 13 2008 10:44:52,   69701 sec) PistonMoveAbsWTO()    062->067 063 064 065 [30sec, 8.9Volts, 0.185Amps, CPT:2356sec]
+(Sep 13 2008 10:45:31,   69740 sec) PistonMoveAbsWTO()    065->067 066 067 [11sec, 8.9Volts, 0.181Amps, CPT:2367sec]
+(Sep 13 2008 10:55:51,   70361 sec) Profile()            Sample 8 initiated at 1522.9dbars for bin 9 [1550dbars].  PT: 1522.7dbars 2.7430C
+(Sep 13 2008 11:00:58,   70668 sec) Profile()            Sample 9 initiated at 1494.7dbars for bin 10 [1500dbars].  PT: 1494.6dbars 2.7810C
+(Sep 13 2008 11:11:10,   71280 sec) Profile()            Sample 10 initiated at 1441.7dbars for bin 11 [1450dbars].  PT: 1441.6dbars 2.8750C
+(Sep 13 2008 11:21:22,   71892 sec) Profile()            Sample 11 initiated at 1392.6dbars for bin 12 [1400dbars].  PT: 1392.5dbars 2.9670C
+(Sep 13 2008 11:21:24,   71894 sec) AscentControlAgent() Bouyancy nudge to 77 (v=0.079dbar/sec).
+(Sep 13 2008 11:21:25,   71895 sec) PistonMoveAbsWTO()    067->077 068 069 070 [30sec, 8.9Volts, 0.185Amps, CPT:2397sec]
+(Sep 13 2008 11:22:05,   71934 sec) PistonMoveAbsWTO()    070->077 071 072 073 [30sec, 8.9Volts, 0.181Amps, CPT:2427sec]
+(Sep 13 2008 11:22:45,   71974 sec) PistonMoveAbsWTO()    073->077 074 075 076 [30sec, 8.9Volts, 0.181Amps, CPT:2457sec]
+(Sep 13 2008 11:23:25,   72014 sec) PistonMoveAbsWTO()    076->077 077 [11sec, 8.9Volts, 0.181Amps, CPT:2468sec]
+(Sep 13 2008 11:28:40,   72330 sec) Profile()            Sample 12 initiated at 1350.1dbars for bin 13 [1350dbars].  PT: 1349.9dbars 3.0350C
+(Sep 13 2008 11:38:52,   72942 sec) Profile()            Sample 13 initiated at 1292.3dbars for bin 14 [1300dbars].  PT: 1292.2dbars 3.2020C
+(Sep 13 2008 11:49:04,   73554 sec) Profile()            Sample 14 initiated at 1238.9dbars for bin 15 [1250dbars].  PT: 1238.7dbars 3.3220C
+(Sep 13 2008 11:59:16,   74166 sec) Profile()            Sample 15 initiated at 1189.6dbars for bin 16 [1200dbars].  PT: 1189.5dbars 3.4110C
+(Sep 13 2008 11:59:18,   74168 sec) AscentControlAgent() Bouyancy nudge to 87 (v=0.079dbar/sec).
+(Sep 13 2008 11:59:19,   74169 sec) PistonMoveAbsWTO()    077->087 078 079 080 [30sec, 8.9Volts, 0.185Amps, CPT:2498sec]
+(Sep 13 2008 11:59:59,   74208 sec) PistonMoveAbsWTO()    080->087 081 082 083 [30sec, 8.9Volts, 0.181Amps, CPT:2528sec]
+(Sep 13 2008 12:00:38,   74247 sec) PistonMoveAbsWTO()    083->087 084 085 086 [30sec, 8.9Volts, 0.185Amps, CPT:2558sec]
+(Sep 13 2008 12:01:18,   74287 sec) PistonMoveAbsWTO()    086->087 087 [9sec, 8.9Volts, 0.185Amps, CPT:2567sec]
+(Sep 13 2008 12:06:32,   74602 sec) Profile()            Sample 16 initiated at 1147.3dbars for bin 17 [1150dbars].  PT: 1147.2dbars 3.4950C
+(Sep 13 2008 12:16:44,   75214 sec) Profile()            Sample 17 initiated at 1089.4dbars for bin 18 [1100dbars].  PT: 1089.2dbars 3.6660C
+(Sep 13 2008 12:26:56,   75826 sec) Profile()            Sample 18 initiated at 1035.9dbars for bin 19 [1050dbars].  PT: 1035.7dbars 3.8210C
+(Sep 13 2008 12:37:08,   76438 sec) Profile()            Sample 19 initiated at 986.7dbars for bin 20 [1000dbars].  PT: 986.6dbars 3.9580C
+(Sep 13 2008 12:37:10,   76440 sec) AscentControlAgent() Bouyancy nudge to 97 (v=0.079dbar/sec).
+(Sep 13 2008 12:37:11,   76441 sec) PistonMoveAbsWTO()    087->097 088 089 090 [30sec, 8.9Volts, 0.181Amps, CPT:2597sec]
+(Sep 13 2008 12:37:51,   76480 sec) PistonMoveAbsWTO()    090->097 091 092 093 [30sec, 8.9Volts, 0.185Amps, CPT:2627sec]
+(Sep 13 2008 12:38:31,   76520 sec) PistonMoveAbsWTO()    093->097 094 095 096 [30sec, 8.9Volts, 0.185Amps, CPT:2657sec]
+(Sep 13 2008 12:39:11,   76560 sec) PistonMoveAbsWTO()    096->097 097 [11sec, 8.9Volts, 0.185Amps, CPT:2668sec]
+(Sep 13 2008 12:44:26,   76876 sec) Profile()            Sample 20 initiated at 945.3dbars for bin 21 [950dbars].  PT: 945.2dbars 4.0400C
+(Sep 13 2008 12:54:38,   77488 sec) Profile()            Sample 21 initiated at 889.2dbars for bin 22 [900dbars].  PT: 889.1dbars 4.1930C
+(Sep 13 2008 13:04:50,   78100 sec) Profile()            Sample 22 initiated at 837.8dbars for bin 23 [850dbars].  PT: 837.6dbars 4.3700C
+(Sep 13 2008 13:09:57,   78407 sec) AscentControlAgent() Bouyancy nudge to 107 (v=0.078dbar/sec).
+(Sep 13 2008 13:09:58,   78407 sec) PistonMoveAbsWTO()    097->107 098 099 [30sec, 9.0Volts, 0.185Amps, CPT:2698sec]
+(Sep 13 2008 13:10:37,   78446 sec) PistonMoveAbsWTO()    100->107 101 102 [30sec, 8.9Volts, 0.181Amps, CPT:2728sec]
+(Sep 13 2008 13:11:16,   78485 sec) PistonMoveAbsWTO()    102->107 103 104 105 [30sec, 8.9Volts, 0.185Amps, CPT:2758sec]
+(Sep 13 2008 13:11:56,   78525 sec) PistonMoveAbsWTO()    106->107 107 [11sec, 8.9Volts, 0.185Amps, CPT:2769sec]
+(Sep 13 2008 13:17:11,   78841 sec) Profile()            Sample 23 initiated at 771.9dbars for bin 24 [800dbars].  PT: 771.8dbars 4.5710C
+(Sep 13 2008 13:22:18,   79148 sec) Profile()            Sample 24 initiated at 742.7dbars for bin 25 [750dbars].  PT: 742.6dbars 4.6810C
+(Sep 13 2008 13:32:30,   79760 sec) Profile()            Sample 25 initiated at 688.3dbars for bin 26 [700dbars].  PT: 688.1dbars 4.9260C
+(Sep 13 2008 13:42:42,   80372 sec) Profile()            Sample 26 initiated at 639.2dbars for bin 27 [650dbars].  PT: 639.1dbars 5.1120C
+(Sep 13 2008 13:42:44,   80374 sec) AscentControlAgent() Bouyancy nudge to 117 (v=0.078dbar/sec).
+(Sep 13 2008 13:42:45,   80375 sec) PistonMoveAbsWTO()    107->117 108 109 110 [30sec, 8.9Volts, 0.185Amps, CPT:2799sec]
+(Sep 13 2008 13:43:25,   80414 sec) PistonMoveAbsWTO()    110->117 111 112 113 [30sec, 8.9Volts, 0.185Amps, CPT:2829sec]
+(Sep 13 2008 13:44:05,   80454 sec) PistonMoveAbsWTO()    113->117 114 115 116 [30sec, 8.9Volts, 0.185Amps, CPT:2859sec]
+(Sep 13 2008 13:44:45,   80494 sec) PistonMoveAbsWTO()    116->117 117 [10sec, 8.9Volts, 0.181Amps, CPT:2869sec]
+(Sep 13 2008 13:49:59,   80809 sec) Profile()            Sample 27 initiated at 598.2dbars for bin 28 [600dbars].  PT: 598.0dbars 5.2160C
+(Sep 13 2008 14:00:11,   81421 sec) Profile()            Sample 28 initiated at 543.1dbars for bin 29 [550dbars].  PT: 543.0dbars 5.4080C
+(Sep 13 2008 14:10:23,   82033 sec) Profile()            Sample 29 initiated at 493.0dbars for bin 30 [500dbars].  PT: 492.9dbars 5.5890C
+(Sep 13 2008 14:10:25,   82035 sec) AscentControlAgent() Bouyancy nudge to 127 (v=0.080dbar/sec).
+(Sep 13 2008 14:10:26,   82036 sec) PistonMoveAbsWTO()    117->127 118 119 120 [30sec, 8.9Volts, 0.181Amps, CPT:2899sec]
+(Sep 13 2008 14:11:06,   82075 sec) PistonMoveAbsWTO()    120->127 121 122 123 [30sec, 8.9Volts, 0.185Amps, CPT:2929sec]
+(Sep 13 2008 14:11:46,   82115 sec) PistonMoveAbsWTO()    123->127 124 125 126 [30sec, 8.9Volts, 0.185Amps, CPT:2959sec]
+(Sep 13 2008 14:12:26,   82155 sec) PistonMoveAbsWTO()    126->127 127 [9sec, 8.9Volts, 0.181Amps, CPT:2968sec]
+(Sep 13 2008 14:17:40,   82470 sec) Profile()            Sample 30 initiated at 450.6dbars for bin 31 [450dbars].  PT: 450.5dbars 5.7130C
+(Sep 13 2008 14:27:52,   83082 sec) Profile()            Sample 31 initiated at 393.8dbars for bin 32 [400dbars].  PT: 393.7dbars 5.9930C
+(Sep 13 2008 14:32:59,   83389 sec) Profile()            Sample 32 initiated at 367.4dbars for bin 33 [380dbars].  PT: 367.4dbars 6.2260C
+(Sep 13 2008 14:38:06,   83696 sec) Profile()            Sample 33 initiated at 342.7dbars for bin 34 [360dbars].  PT: 342.6dbars 6.6840C
+(Sep 13 2008 14:43:13,   84003 sec) Profile()            Sample 34 initiated at 319.4dbars for bin 35 [350dbars].  PT: 319.3dbars 6.8850C
+(Sep 13 2008 14:43:15,   84005 sec) AscentControlAgent() Bouyancy nudge to 137 (v=0.076dbar/sec).
+(Sep 13 2008 14:43:16,   84006 sec) PistonMoveAbsWTO()    127->137 128 129 130 [30sec, 8.9Volts, 0.185Amps, CPT:2998sec]
+(Sep 13 2008 14:43:57,   84047 sec) Profile()            Sample 35 initiated at 315.9dbars for bin 36 [340dbars].  PT: 315.9dbars 6.9620C
+(Sep 13 2008 14:43:58,   84048 sec) PistonMoveAbsWTO()    130->137 131 132 133 [30sec, 8.9Volts, 0.181Amps, CPT:3028sec]
+(Sep 13 2008 14:44:39,   84089 sec) Profile()            Sample 36 initiated at 312.2dbars for bin 37 [330dbars].  PT: 312.1dbars 7.0570C
+(Sep 13 2008 14:44:40,   84090 sec) PistonMoveAbsWTO()    133->137 134 135 136 [30sec, 8.9Volts, 0.185Amps, CPT:3058sec]
+(Sep 13 2008 14:45:21,   84131 sec) Profile()            Sample 37 initiated at 308.2dbars for bin 38 [320dbars].  PT: 308.2dbars 7.1430C
+(Sep 13 2008 14:45:22,   84132 sec) PistonMoveAbsWTO()    136->137 137 [9sec, 8.9Volts, 0.185Amps, CPT:3067sec]
+(Sep 13 2008 14:50:36,   84446 sec) Profile()            Sample 38 initiated at 277.8dbars for bin 39 [310dbars].  PT: 277.7dbars 7.3460C
+(Sep 13 2008 14:55:43,   84753 sec) Profile()            Sample 39 initiated at 249.5dbars for bin 40 [300dbars].  PT: 249.4dbars 7.5070C
+(Sep 13 2008 15:00:50,   85060 sec) Profile()            Sample 40 initiated at 222.4dbars for bin 41 [290dbars].  PT: 222.3dbars 7.6840C
+(Sep 13 2008 15:05:57,   85367 sec) Profile()            Sample 41 initiated at 197.0dbars for bin 42 [280dbars].  PT: 196.9dbars 7.9870C
+(Sep 13 2008 15:11:04,   85674 sec) Profile()            Sample 42 initiated at 173.3dbars for bin 43 [270dbars].  PT: 173.2dbars 8.2780C
+(Sep 13 2008 15:11:06,   85676 sec) AscentControlAgent() Bouyancy nudge to 147 (v=0.077dbar/sec).
+(Sep 13 2008 15:11:07,   85677 sec) PistonMoveAbsWTO()    137->147 138 139 140 [30sec, 8.9Volts, 0.185Amps, CPT:3097sec]
+(Sep 13 2008 15:11:48,   85718 sec) Profile()            Sample 43 initiated at 169.8dbars for bin 44 [260dbars].  PT: 169.7dbars 8.3010C
+(Sep 13 2008 15:11:49,   85719 sec) PistonMoveAbsWTO()    140->147 141 142 143 [30sec, 8.9Volts, 0.185Amps, CPT:3127sec]
+(Sep 13 2008 15:12:30,   85760 sec) Profile()            Sample 44 initiated at 166.2dbars for bin 45 [250dbars].  PT: 166.1dbars 8.3300C
+(Sep 13 2008 15:12:31,   85761 sec) PistonMoveAbsWTO()    143->147 144 145 146 [30sec, 8.9Volts, 0.181Amps, CPT:3157sec]
+(Sep 13 2008 15:13:12,   85802 sec) Profile()            Sample 45 initiated at 162.3dbars for bin 46 [240dbars].  PT: 162.2dbars 8.3620C
+(Sep 13 2008 15:13:13,   85803 sec) PistonMoveAbsWTO()    146->147 147 [9sec, 8.9Volts, 0.185Amps, CPT:3166sec]
+(Sep 13 2008 15:18:27,   86117 sec) Profile()            Sample 46 initiated at 132.7dbars for bin 47 [230dbars].  PT: 132.6dbars 8.7540C
+(Sep 13 2008 15:23:34,   86424 sec) Profile()            Sample 47 initiated at 106.0dbars for bin 48 [220dbars].  PT: 106.0dbars 9.0220C
+(Sep 13 2008 15:28:41,   86731 sec) Profile()            Sample 48 initiated at 81.7dbars for bin 49 [210dbars].  PT: 81.7dbars 9.2760C
+(Sep 13 2008 15:28:43,   86733 sec) AscentControlAgent() Bouyancy nudge to 157 (v=0.079dbar/sec).
+(Sep 13 2008 15:28:44,   86734 sec) PistonMoveAbsWTO()    147->157 148 149 150 [30sec, 8.9Volts, 0.185Amps, CPT:3196sec]
+(Sep 13 2008 15:29:25,   86775 sec) Profile()            Sample 49 initiated at 78.3dbars for bin 50 [200dbars].  PT: 78.3dbars 9.3540C
+(Sep 13 2008 15:29:26,   86776 sec) PistonMoveAbsWTO()    150->157 151 152 153 [30sec, 8.9Volts, 0.185Amps, CPT:3226sec]
+(Sep 13 2008 15:30:07,   86817 sec) Profile()            Sample 50 initiated at 74.8dbars for bin 51 [190dbars].  PT: 74.7dbars 9.4360C
+(Sep 13 2008 15:30:08,   86818 sec) PistonMoveAbsWTO()    153->157 154 155 156 [30sec, 8.9Volts, 0.185Amps, CPT:3256sec]
+(Sep 13 2008 15:30:49,   86859 sec) Profile()            Sample 51 initiated at 71.1dbars for bin 52 [180dbars].  PT: 71.0dbars 9.5240C
+(Sep 13 2008 15:30:50,   86860 sec) PistonMoveAbsWTO()    156->157 157 [9sec, 8.9Volts, 0.181Amps, CPT:3265sec]
+(Sep 13 2008 15:36:04,   87174 sec) Profile()            Sample 52 initiated at 42.6dbars for bin 53 [170dbars].  PT: 42.5dbars 10.0080C
+(Sep 13 2008 15:36:17,   87187 sec) Profile()            Sample 53 initiated at 41.6dbars for bin 54 [160dbars].  PT: 41.5dbars 10.0140C
+(Sep 13 2008 15:36:29,   87199 sec) Profile()            Sample 54 initiated at 40.7dbars for bin 55 [150dbars].  PT: 40.7dbars 10.0190C
+(Sep 13 2008 15:36:41,   87211 sec) Profile()            Sample 55 initiated at 39.9dbars for bin 56 [140dbars].  PT: 39.8dbars 10.0240C
+(Sep 13 2008 15:36:53,   87223 sec) Profile()            Sample 56 initiated at 39.0dbars for bin 57 [130dbars].  PT: 39.0dbars 10.0700C
+(Sep 13 2008 15:37:05,   87235 sec) Profile()            Sample 57 initiated at 38.2dbars for bin 58 [120dbars].  PT: 38.1dbars 10.2550C
+(Sep 13 2008 15:37:17,   87247 sec) Profile()            Sample 58 initiated at 37.4dbars for bin 59 [110dbars].  PT: 37.3dbars 10.4370C
+(Sep 13 2008 15:37:29,   87259 sec) Profile()            Sample 59 initiated at 36.5dbars for bin 60 [100dbars].  PT: 36.5dbars 10.6160C
+(Sep 13 2008 15:37:41,   87271 sec) Profile()            Sample 60 initiated at 35.7dbars for bin 61 [90dbars].  PT: 35.7dbars 10.7930C
+(Sep 13 2008 15:37:53,   87283 sec) Profile()            Sample 61 initiated at 34.9dbars for bin 62 [80dbars].  PT: 34.9dbars 10.9670C
+(Sep 13 2008 15:38:05,   87295 sec) Profile()            Sample 62 initiated at 34.1dbars for bin 63 [70dbars].  PT: 34.1dbars 11.1380C
+(Sep 13 2008 15:38:17,   87307 sec) Profile()            Sample 63 initiated at 33.4dbars for bin 64 [60dbars].  PT: 33.3dbars 11.3060C
+(Sep 13 2008 15:38:29,   87319 sec) Profile()            Sample 64 initiated at 32.6dbars for bin 65 [50dbars].  PT: 32.6dbars 11.4710C
+(Sep 13 2008 15:38:41,   87331 sec) Profile()            Sample 65 initiated at 31.9dbars for bin 66 [40dbars].  PT: 31.8dbars 11.6330C
+(Sep 13 2008 15:39:02,   87352 sec) Profile()            Sample 66 initiated at 30.6dbars for bin 67 [30dbars].  PT: 30.6dbars 11.9100C
+(Sep 13 2008 15:41:11,   87481 sec) AscentControlAgent() Bouyancy nudge to 167 (v=0.061dbar/sec).
+(Sep 13 2008 15:41:12,   87482 sec) PistonMoveAbsWTO()    157->167 158 159 [30sec, 8.9Volts, 0.181Amps, CPT:3295sec]
+(Sep 13 2008 15:41:51,   87520 sec) PistonMoveAbsWTO()    159->167 160 161 162 [30sec, 8.9Volts, 0.185Amps, CPT:3325sec]
+(Sep 13 2008 15:42:31,   87561 sec) Profile()            Sample 67 initiated at 18.9dbars for bin 68 [20dbars].  PT: 18.8dbars 13.8690C
+(Sep 13 2008 15:42:32,   87562 sec) PistonMoveAbsWTO()    162->167 163 164 [15sec, 8.9Volts, 0.181Amps, CPT:3340sec]
+(Sep 13 2008 15:42:57,   87586 sec) PistonMoveAbsWTO()    164->167 165 [15sec, 8.9Volts, 0.185Amps, CPT:3355sec]
+(Sep 13 2008 15:43:21,   87610 sec) PistonMoveAbsWTO()    165->167 166 167 [12sec, 8.9Volts, 0.181Amps, CPT:3367sec]
+(Sep 13 2008 15:44:29,   87679 sec) Profile()            Sample 68 initiated at 10.7dbars for bin 69 [10dbars].  PT: 10.6dbars 14.2440C
+(Sep 13 2008 15:45:26,   87736 sec) Profile()            Sample 69 initiated at 6.8dbars for bin 70 [6dbars].  PT: 6.7dbars 14.2960C
+(Sep 13 2008 15:46:15,   87785 sec) SurfaceDetect()      SurfacePressure:0.0dbars Pressure:3.4dbars PistonPosition:167
+(Sep 13 2008 15:46:16,   87786 sec) PistonMoveAbsWTO()    167->189 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 187 188 189 [219sec, 8.8Volts, 0.181Amps, CPT:3586sec]
+
+<EOT>

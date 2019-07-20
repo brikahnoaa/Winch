@@ -1,287 +1,292 @@
-// ant.c - for working with antenna module
+// s39.c - for working with s39 module
 #include <main.h>
 
 #define EOL "\r"
 #define BAUD 9600L
 #define EXEC "<Executed/>"
 
-AntInfo ant;
+AntInfo s39;
 
 ///
-// turn on antenna module, wait until ant responds
-// sets: ant.mode .port
-void antInit(void) {
+// turn on s39 module, wait until s39 responds
+// sets: s39.mode .port
+void s39Init(void) {
   short rx, tx, i;
-  static char *self="antInit";
+  static char *self="s39Init";
   DBG();
-  ant.me="ant";
-  // port
-  rx = TPUChanFromPin(ANT_RX);
-  tx = TPUChanFromPin(ANT_TX);
-  ant.port = TUOpen(rx, tx, BAUD, 0);
-  if (ant.port==NULL)
-    utlStop("antInit() com1 open fail");
-  antDevice(null_dev);
-  ant.on = false;
+  s39.me="s39";
+  s39Port(&s39.port);
+  s39.on = false;
   // alloc bloc to store depth values for moving/velo
-  ant.ring = (RingNode *) calloc(ant.ringSize, sizeof(RingNode));
+  s39.ring = (RingNode *) calloc(s39.ringSize, sizeof(RingNode));
   // to string the nodes into a ring, access like an array
-  for (i=0; i<ant.ringSize-1; i++) {
-    ant.ring[i].next = &ant.ring[i+1];
+  for (i=0; i<s39.ringSize-1; i++) {
+    s39.ring[i].next = &s39.ring[i+1];
   }
-  ant.ring[i].next = ant.ring;
-  antStart();
-  utlReadExpect(ant.port, all.str, EXEC, 2);
-  utlWrite(ant.port, "TxSampleNum=N", EOL);
-  utlReadExpect(ant.port, all.str, EXEC, 2);
-  utlWrite(ant.port, "txRealTime=n", EOL);
-  utlReadExpect(ant.port, all.str, EXEC, 2);
+  s39.ring[i].next = s39.ring;
+  s39Start();
+  utlReadExpect(s39.port, all.str, EXEC, 2);
+  utlWrite(s39.port, "TxSampleNum=N", EOL);
+  utlReadExpect(s39.port, all.str, EXEC, 2);
+  utlWrite(s39.port, "txRealTime=n", EOL);
+  utlReadExpect(s39.port, all.str, EXEC, 2);
+  if (s39.initStr) {
+    utlWrite(s39.port, s39.initStr, EOL);
+    utlReadExpect(s39.port, all.str, EXEC, 2);
+  }
   // just in case auton was left on
-  utlWrite(ant.port, "stop", EOL);
-  utlReadExpect(ant.port, all.str, EXEC, 2);
-  antStop();
-} // antInit
+  utlWrite(s39.port, "stop", EOL);
+  utlReadExpect(s39.port, all.str, EXEC, 2);
+  s39Stop();
+} // s39Init
 
 ///
 // turn on, clean, set params, talk to sbe39
-int antStart(void) {
-  static char *self="antStart";
-  antReset();           // ring buffer - do this even if on already
-  if (ant.on) // verify
-    if (antPrompt()) {
-      antSample();
+int s39Start(void) {
+  static char *self="s39Start";
+  s39Reset();           // ring buffer - do this even if on already
+  if (s39.on) // verify
+    if (s39Prompt()) {
+      s39Sample();
       return 0;
     } else {
       flogf("\n%s(): ERR sbe39, expected prompt", self);
       return 1;
     }
-  ant.on = true;
-  flogf("\n === ant module start %s", utlDateTime());
-  if (!ant.log)
-    utlLogOpen(&ant.log, ant.me);
+  s39.on = true;
+  flogf("\n === s39 module start %s", utlDateTime());
+  // s39LogOpen();
   antDevice(cf2_dev);
-  PIOClear(ANT_PWR);
   utlDelay(200);
-  TURxFlush(ant.port);
-  TUTxFlush(ant.port);
-  PIOSet(ANT_PWR);
+  TURxFlush(s39.port);
+  TUTxFlush(s39.port);
   // get cf2 startup message
-  if (!utlReadExpect(ant.port, all.str, "ok", 6))
+  if (!utlReadExpect(s39.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
   DBG1("%s", all.str);
-  if (ant.auton)
-    antAuton(false);
+  if (s39.auton)
+    s39Auton(false);
   sprintf(all.str, "datetime=%s", utlDateTimeS16());
-  utlWrite(ant.port, all.str, EOL);
-  if (!utlReadExpect(ant.port, all.str, EXEC, 5))
+  utlWrite(s39.port, all.str, EOL);
+  if (!utlReadExpect(s39.port, all.str, EXEC, 5))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
-  antSample();
+  if (s39.startStr) {
+    utlWrite(s39.port, s39.startStr, EOL);
+    utlReadExpect(s39.port, all.str, EXEC, 2);
+  }
+  s39Sample();
   return 0;
-} // antStart
+} // s39Start
 
 ///
-// turn off power to antmod 
-int antStop() {
-  ant.on = false;
-  flogf("\n === ant module stop %s", utlDateTime());
-  if (ant.log)
-    utlLogClose(&ant.log);
-  if (ant.auton)
-    antAuton(false);
-  antDevice(null_dev);
-  PIOClear(ANT_PWR);
+int s39Stop() {
+  s39.on = false;
+  flogf("\n === s39 module stop %s", utlDateTime());
+  if (s39.auton) s39Auton(false);
+  s39LogClose();
   return 0;
-} // antStop
+} // s39Stop
 
 ///
 // open or reopen log file
 int s39LogOpen(void) {
+  static char *self="s39LogOpen";
+  int r=0;
+  if (!s39.on)
+    s39Start();
   if (!s39.log)
-    return utlLogOpen(&s39.log, ant.me);
+    r = utlLogOpen(&s39.log, s39.me);
+  else
+    DBG2("%s: log already open", self);
+  return r;
 } // s39LogOpen
 
 ///
-///
 // open or reopen log file
 int s39LogClose(void) {
-  if (!s39.log)
-    return utlLogClose(&s39.log, ant.me);
+  static char *self="s39LogClose";
+  int r=0;
+  if (s39.log)
+    r = utlLogClose(&s39.log);
+  else
+    DBG2("%s: log already closed", self);
+  return r;
 } // s39LogClose
 
 ///
 // rets: true==success (returns early)
-bool antPrompt() {
+bool s39Prompt() {
   DBG1("aP");
-  if (antPending()) 
-    antDataWait();
-  antDevice(cf2_dev);
-  TURxFlush(ant.port);
+  if (s39Pending()) 
+    s39DataWait();
+  s39Device(cf2_dev);
+  TURxFlush(s39.port);
   // if asleep, first EOL wakens but no response
-  utlWrite(ant.port, "", EOL);
-  if (utlReadExpect(ant.port, all.str, EXEC, 1))
+  utlWrite(s39.port, "", EOL);
+  if (utlReadExpect(s39.port, all.str, EXEC, 1))
     return true;
-  utlWrite(ant.port, "", EOL);
-  if (utlReadExpect(ant.port, all.str, EXEC, 1))
+  utlWrite(s39.port, "", EOL);
+  if (utlReadExpect(s39.port, all.str, EXEC, 1))
     return true;
   // try a third time after break
-  antBreak();
+  s39Break();
   utlNap(2);
-  TURxFlush(ant.port);
-  utlWrite(ant.port, "", EOL);
-  if (utlReadExpect(ant.port, all.str, EXEC, 1))
+  TURxFlush(s39.port);
+  utlWrite(s39.port, "", EOL);
+  if (utlReadExpect(s39.port, all.str, EXEC, 1))
     return true;
-  utlErr(ant_err, "antPrompt() fail");
+  utlErr(s39_err, "s39Prompt() fail");
   return false;
-} // antPrompt
+} // s39Prompt
 
 ///
 // reset or exit sync mode
-void antBreak(void) {
-  static char *self="antBreak";
+void s39Break(void) {
+  static char *self="s39Break";
   DBG();
-  TUTxPutByte(ant.port, (ushort) 2,1);      // ^B  (blocking)
-} // antBreak
+  TUTxPutByte(s39.port, (ushort) 2,1);      // ^B  (blocking)
+} // s39Break
 
 ///
 // data waiting
-bool antData() {
+bool s39Data() {
   int r;
   DBG2("aD");
-  r=TURxQueuedCount(ant.port);
+  r=TURxQueuedCount(s39.port);
   if (r)
     tmrStop(s39_tmr);
   return r>0;
-} // antData
+} // s39Data
 
 ///
 // wait for data or not pending (timeout)
-bool antDataWait(void) {
+bool s39DataWait(void) {
   static char *self="aDW";
   DBG();
-  do if (antData()) 
+  do if (s39Data()) 
     return true;
-  while (antPending());
+  while (s39Pending());
   flogf(" %s:fail", self);
   return false;
-} // antDataWait
+} // s39DataWait
 
 ///
 // flush; if !tmrOn request sample
 // sets: s39_tmr
-void antSample(void) {
-  if (antPending()) return;
+void s39Sample(void) {
+  if (s39Pending()) return;
   DBG0("aSam");
   // flush old data, check for sleep message and prompt if needed
-  if (antData()) {
-    utlRead(ant.port, all.str);
+  if (s39Data()) {
+    utlRead(s39.port, all.str);
     if (strstr(all.str, "sleep"))
-      antPrompt();      // wakeup
-  } // antData()
-  if (!ant.auton && ant.sampStore)
-    utlWrite(ant.port, "TSSon", EOL);
+      s39Prompt();      // wakeup
+  } // s39Data()
+  if (!s39.auton && s39.sampStore)
+    utlWrite(s39.port, "TSSon", EOL);
   else
-    utlWrite(ant.port, "TS", EOL);
+    utlWrite(s39.port, "TS", EOL);
   // catch echo - none in auton
-  if (!ant.auton)
-    utlReadWait(ant.port, all.str, 1);
-  tmrStart(s39_tmr, ant.delay);
-  ant.sampT = time(0);
-} // antSample
+  if (!s39.auton)
+    utlReadWait(s39.port, all.str, 1);
+  tmrStart(s39_tmr, s39.delay);
+  s39.sampT = time(0);
+} // s39Sample
 
 ///
 // TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
 //  - note: now TS=TSSon due to TxSampleNum=N
-// sets: ant.temp .depth .ring->depth .ring->sampT
-// note: ant.sampT set in antSample()
-bool antRead(void) {
+// sets: s39.temp .depth .ring->depth .ring->sampT
+// note: s39.sampT set in s39Sample()
+bool s39Read(void) {
   char *p0, *p1, *p2;
-  static char *self="antRead";
+  static char *self="s39Read";
   DBG0("aRd");
-  if (!antData()) return false;
+  if (!s39Data()) return false;
   // data waiting
   // with auton there is no Executed, so look for #
-  if (ant.auton)
-    p0 = utlReadExpect(ant.port, all.str, "# ", 2);
+  if (s39.auton)
+    p0 = utlReadExpect(s39.port, all.str, "# ", 2);
   else
-    p0 = utlReadExpect(ant.port, all.str, EXEC, 2);
+    p0 = utlReadExpect(s39.port, all.str, EXEC, 2);
   if (!p0) {
-    utlErr(ant_err, "antRead: no data");
+    utlErr(s39_err, "s39Read: no data");
     return false;
   } // not data
-  if (ant.log)
-    write(ant.log, all.str, strlen(all.str));
+  if (s39.log)
+    write(s39.log, all.str, strlen(all.str));
   // read temp, depth // parse two numeric csv
   p1 = strtok(all.str, "\r\n#, ");
   p2 = strtok(NULL, ", ");
   if (!p1 || !p2) {
-    utlErr(ant_err, "antRead: garbage");
+    utlErr(s39_err, "s39Read: garbage");
     return false;
   }
-  // sampT was set in antSample
+  // sampT was set in s39Sample
   // new values
-  ant.temp = atof(p1);
-  ant.depth = atof(p2);
-  if (ant.temp==0.0 && ant.depth==0.0) {
-    utlErr(ant_err, "antRead: null values");
+  s39.temp = atof(p1);
+  s39.depth = atof(p2);
+  if (s39.temp==0.0 && s39.depth==0.0) {
+    utlErr(s39_err, "s39Read: null values");
     return false;
   }
   // save in ring
-  ringSamp(ant.depth, ant.sampT);
-  DBG2("= %4.2f, %4.2f", ant.temp, ant.depth);
-  antSample();
+  ringSamp(s39.depth, s39.sampT);
+  DBG2("= %4.2f, %4.2f", s39.temp, s39.depth);
+  s39Sample();
   return true;
-} // antRead
+} // s39Read
 
 ///
 // tmr not expired and on
-bool antPending(void) {
+bool s39Pending(void) {
   return (tmrOn(s39_tmr));
 }
     
 ///
 // if data then read
 // retn: .depth
-float antDepth(void) {
+float s39Depth(void) {
   DBG1("aDep");
-  if (antData())
-    antRead();
-  return ant.depth;
-} // antDepth
+  if (s39Data())
+    s39Read();
+  return s39.depth;
+} // s39Depth
 
-float antTemp(void) {
-  antDepth();
-  return ant.temp;
-} // antTemp
+float s39Temp(void) {
+  s39Depth();
+  return s39.temp;
+} // s39Temp
 
 ///
 // checks recent depth against previous, computes velocity m/s
 // checks ring for consistent direction v. waves
 // sets: *velo 
 // retn: 0=full success; -1=empty; -2=waves; #=how many ring samples
-int antVelo(float *velo) {
-  int r=0, samp=ant.ringSize;
+int s39Velo(float *velo) {
+  int r=0, samp=s39.ringSize;
   float v;
   RingNode *n;
-  DBG0("antVelo");
+  DBG0("s39Velo");
   // empty ring
-  if (!ant.ring->sampT) {
+  if (!s39.ring->sampT) {
     *velo=0.0;
     return -1;
   }
   // find oldest value in ring, skip empty nodes
-  n = ant.ring->next;
+  n = s39.ring->next;
   while (!n->sampT) {
     r = --samp;
     n = n->next;
   } // note: r==0 if ring is full, as first test falls
   // only one value
-  if (n==ant.ring) {
+  if (n==s39.ring) {
     *velo=0.0;
     return -1;
   }
   // velocity
-  v = (ant.ring->depth - n->depth) / (ant.ring->sampT - n->sampT);
+  v = (s39.ring->depth - n->depth) / (s39.ring->sampT - n->sampT);
   // ring consistent direction? v>0 means falling
   while (true) {
     if (  (v>0 && n->depth > n->next->depth)
@@ -290,27 +295,27 @@ int antVelo(float *velo) {
       return -2;
     } // waves
     n = n->next;
-    if (n==ant.ring) break;
+    if (n==s39.ring) break;
   } // walk ring
   *velo = v;
   DBG2("aV=%4.2f", *velo);
   return r;
-} // antVelo
+} // s39Velo
 
 ///
-// oops, doesn't include antRing->depth
-int antAvg(float *avg) {
-  int r=0, samp=ant.ringSize;
+// oops, doesn't include s39Ring->depth
+int s39Avg(float *avg) {
+  int r=0, samp=s39.ringSize;
   float a=0.0;
   RingNode *n;
-  DBG0("antVelo");
+  DBG0("s39Velo");
   // empty ring
-  if (!ant.ring->sampT) {
+  if (!s39.ring->sampT) {
     *avg=0.0;
     return -1;
   }
   // find oldest value in ring, skip empty nodes
-  n = ant.ring->next;
+  n = s39.ring->next;
   while (!n->sampT) {
     r = --samp;
     n = n->next;
@@ -319,213 +324,109 @@ int antAvg(float *avg) {
   while (true) {
     a += n->depth;
     n = n->next;
-    if (n==ant.ring->next) break;
+    if (n==s39.ring->next) break;
   } // walk ring
   *avg = a / samp;
   return r;
-} // antAvg
+} // s39Avg
 
 ///
-// ant.ring points to last good value
+// s39.ring points to last good value
 // sets: ring ring.depth ring.sampT
 void ringSamp(float depth, time_t sampT) {
-  ant.ring = ant.ring->next;
-  ant.ring->depth = depth;
-  ant.ring->sampT = sampT;
+  s39.ring = s39.ring->next;
+  s39.ring->depth = depth;
+  s39.ring->sampT = sampT;
 } // ringSamp
 
 ///
-// is this ring consistent increasing (1) or decreasing (-1)
-int ringDir(float v) {
+// clear sample times used by s39Velo, s39Avg. fresh sample
+// sets: s39.ring->sampT;
+void s39Reset(void) {
   RingNode *n;
-  int dir;
-  // direction - check all samples for consistent direction
-  dir = (v>0) ? 1 : -1;
-  for (n=ant.ring; n->next!=ant.ring; n=n->next) {
-    DBG2("rd:%3.1f", n->depth);
-    if (dir==1) // fall
-      if (n->depth > n->next->depth)
-        dir = 0;
-    if (dir==-1) // rise
-      if (n->depth < n->next->depth)
-        dir = 0;
-    if (dir==0) break;
-  }
-  return dir;
-} // ringDir
-
-/// debug
-// print out values of ring
-void ringPrint(void) {
-  RingNode *n = ant.ring;
-  time_t now = time(0);
-  int i;
-  for (i=0; i<ant.ringSize; i++) {
-    flogf("\n[%d]%3.1f,%ld", i, n->depth, n->sampT);
-    n = n->next;
-  }
-}
-
-///
-// clear sample times used by antVelo, antAvg. fresh sample
-// sets: ant.ring->sampT;
-void antReset(void) {
-  RingNode *n;
-  static char *self="antReset";
+  static char *self="s39Reset";
   DBG();
-  n = ant.ring; 
+  n = s39.ring; 
   while (true) {
     n->depth = 0.0;
     n->sampT = (time_t) 0;
     n = n->next;
-    if (n==ant.ring) break;
+    if (n==s39.ring) break;
   } // while
-} // antReset
+} // s39Reset
 
 ///
-// antmod uMPC cf2 and iridium A3LA
-// switch between devices on com1, clear pipe
-void antDevice(DevType dev) {
-  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la");
-  if (dev==ant.dev) return;
-  utlDelay(SETTLE);
-  if (dev==cf2_dev)
-    PIOSet(ANT_SEL);
-  else if (dev==a3la_dev)
-    PIOClear(ANT_SEL);
-  else
-    return;
-  utlDelay(SETTLE);
-  TUTxFlush(ant.port);
-  TURxFlush(ant.port);
-  ant.dev = dev;
-  return;
-} // antDevice
-
-///
-// gps.port = antPort()
-Serial antPort(void) {
-  return ant.port;
-} // antPort
-
-///
-// tell antmod to power dev on/off
-// should be in gps.c??
-void antDevPwr(char c, bool on) {
-  DevType currDev=ant.dev;
-  DBG0("antDevPwr(%c, %d)", c, on);
-  antDevice(cf2_dev);
-  if (on)
-    TUTxPutByte(ant.port, 3, false);
-  else
-    TUTxPutByte(ant.port, 4, false);
-  TUTxPutByte(ant.port, c, false);
-  antDevice(currDev);
-} // antDevPwr
-
-///
-// should be in gps.c??
-void antSwitch(AntType antenna) {
-  DevType dev;
-  if (antenna==ant.antenna) return;
-  DBG1("antSwitch(%s)", (antenna==gps_ant)?"gps":"irid");
-  dev = ant.dev;
-  antDevice(cf2_dev);
-  TUTxPutByte(ant.port, 1, false);        // ^A
-  if (antenna==gps_ant) 
-    TUTxPutByte(ant.port, 'G', false);
-  else
-    TUTxPutByte(ant.port, 'I', false);
-  antDevice(dev);
-  ant.antenna = antenna;
-} // antSwitch
-    
-///
-// turn autonomous on/off, with no output. Fetch with antGetSamples()
+// turn autonomous on/off, with no output. Fetch with s39GetSamples()
 // sets: .auton
 // rets: 0=good 1=off 2=badResponse
-int antAuton(bool auton) {
+int s39Auton(bool auton) {
   int r=0;
-  flogf("\nantAuton(%s)", auton?"true":"false");
-  if (!ant.on) {
+  flogf("\ns39Auton(%s)", auton?"true":"false");
+  if (!s39.on) {
     r = 1;
-    antStart();
+    s39Start();
   }
-  antPrompt();
+  s39Prompt();
   if (auton) {
-    sprintf(all.str, "sampleInterval=%d", ant.sampInt);
-    utlWrite(ant.port, all.str, EOL);
-    utlReadExpect(ant.port, all.str, EXEC, 2);
-    utlWrite(ant.port, "startnow", EOL);
-    if (!utlReadExpect(ant.port, all.str, "-->", 2)) {
+    sprintf(all.str, "sampleInterval=%d", s39.sampInter);
+    utlWrite(s39.port, all.str, EOL);
+    utlReadExpect(s39.port, all.str, EXEC, 2);
+    utlWrite(s39.port, "startnow", EOL);
+    if (!utlReadExpect(s39.port, all.str, "-->", 2)) {
       flogf("\t| startnow fail, retry ...");
-      utlWrite(ant.port, "startnow", EOL);
-      if (!utlReadExpect(ant.port, all.str, "-->", 2)) 
+      utlWrite(s39.port, "startnow", EOL);
+      if (!utlReadExpect(s39.port, all.str, "-->", 2)) 
         flogf(" startnow failed");
     } // if -->
   } else {
-    utlWrite(ant.port, "stop", EOL);
-    if (!utlReadExpect(ant.port, all.str, "-->", 2)) {
+    utlWrite(s39.port, "stop", EOL);
+    if (!utlReadExpect(s39.port, all.str, "-->", 2)) {
       r = 2;
       flogf("\t| stop fail, retry ...");
-      utlWrite(ant.port, "stop", EOL);
-      if (!utlReadExpect(ant.port, all.str, "-->", 2)) 
+      utlWrite(s39.port, "stop", EOL);
+      if (!utlReadExpect(s39.port, all.str, "-->", 2)) 
         flogf(" stop failed");
     } // if -->
     utlNap(1);
-    TURxFlush(ant.port);
+    TURxFlush(s39.port);
   } // if auton
-  ant.auton = auton;
+  s39.auton = auton;
   return r;
 }
 
 ///
 // write stored sample to a file
-void antGetSamples(void) {
-  char *self="antGetSamples";
+void s39GetSamples(void) {
+  static char *self="s39GetSamples";
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
   int log;
   DBG();
-  antAuton(false);
-  if (ant.log)
-    log = ant.log;
+  len1 = len2 = len3 = sizeof(all.buf);
+  s39Auton(false);
+  if (s39.log)
+    log = s39.log;
   else
-    if (utlLogOpen(&log, ant.me)) {
+    if (utlLogOpen(&log, s39.me)) {
       flogf("%s() failed", self);
       return;
     }
-  antPrompt();          // wakeup
-  utlWrite(ant.port, "GetSamples:", EOL);
+  s39Prompt();          // wakeup
+  utlWrite(s39.port, "GetSamples:", EOL);
   while (len1==len3) {
     // repeat until less than a full buf
-    len2 = (int) TURxGetBlock(ant.port, all.str, (long) len1, (short) 1000);
-    len3 = write(log, all.str, len2);
+    len2 = (int) TURxGetBlock(s39.port, all.buf, (long) len1, (short) 1000);
+    len3 = write(log, all.buf, len2);
     if (len2!=len3)
       flogf("\t| ERR fail write to log");
     total += len3;
   } // while ==
-  flogf(": %d bytes to %s", total, ant.me);
-  // close log file if local only
-  if (!ant.log)
-    utlLogClose(&log);
-  if (ant.sampClear) {
-    utlWrite(ant.port, "initLogging", EOL);
-    utlReadExpect(ant.port, all.str, "-->", 2);
-    utlWrite(ant.port, "initLogging", EOL);
-    utlReadExpect(ant.port, all.str, "-->", 2);
+  flogf(": %d bytes to %s", total, s39.me);
+  if (s39.sampClear) {
+    utlWrite(s39.port, "initLogging", EOL);
+    utlReadExpect(s39.port, all.str, "-->", 2);
+    utlWrite(s39.port, "initLogging", EOL);
+    utlReadExpect(s39.port, all.str, "-->", 2);
   }
-} // antGetSamples
-
-bool antSurf(void) {
-  return (ant.depth<(ant.surfD+2));
-}
-
-float antSurfD(void) {
-  return ant.surfD;
-}
-
-AntType antAntenna(void) {
-  return ant.antenna;
-}
+} // s39GetSamples

@@ -1,0 +1,28 @@
+config.c:            if (config->crc != cfg.crc)
+config.c:      LogEntry(FuncName,indent); LogAdd("AscentTimeOut(%ld) [min]\n",config->TimeOutAscent/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("AtDialCmd(%s) [primary]\n",config->at);
+config.c:      LogEntry(FuncName,indent); LogAdd("AtDialCmd(%s) [alternate]\n",config->alt);
+config.c:      LogEntry(FuncName,indent); LogAdd("BuoyancyNudge(%u) [count]\n",config->PistonBuoyancyNudge);
+config.c:      LogEntry(FuncName,indent); LogAdd("BuoyancyNudgeInitial(%u) [count]\n",config->PistonInitialBuoyancyNudge);
+config.c:      LogEntry(FuncName,indent); LogAdd("ConnectTimeOut(%ld) [sec]\n",config->ConnectTimeOut);
+config.c:      LogEntry(FuncName,indent); LogAdd("CpActivationP(%g) [dbar]\n",config->PressureCP);
+config.c:      LogEntry(FuncName,indent); LogAdd("DeepProfileDescentTime(%ld) [min]\n",config->TimeDeepProfileDescent/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("DeepProfilePistonPos(%d) [count]\n",config->PistonDeepProfilePosition);
+config.c:      LogEntry(FuncName,indent); LogAdd("DeepProfilePressure(%g) [dbar]\n",config->PressureProfile);
+config.c:      LogEntry(FuncName,indent); LogAdd("CompensatorHyperRetraction(%d) [count]\n",config->PistonParkHyperRetraction);
+config.c:      LogEntry(FuncName,indent); LogAdd("DownTime(%ld) [min]\n",config->TimeDown/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("FloatId(%04u)\n",config->FloatId);
+config.c:      LogEntry(FuncName,indent); LogAdd("FullExtension(%u) [count]\n",config->PistonFullExtension);
+config.c:      LogEntry(FuncName,indent); LogAdd("FullRetraction(%u) [count]\n",config->PistonFullRetraction);
+config.c:      LogEntry(FuncName,indent); LogAdd("MaxAirBladder(%u) [count]\n",config->MaxAirBladder);
+config.c:      LogEntry(FuncName,indent); LogAdd("MissionPrelude(%ld) [min]\n",config->TimePrelude/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("OkVacuum(%u) [count]\n",config->OkVacuumCount);
+config.c:      LogEntry(FuncName,indent); LogAdd("ParkDescentTime(%ld) [min]\n",config->TimeParkDescent/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("ParkPistonPos(%d) [count]\n",config->PistonParkPosition);
+config.c:      LogEntry(FuncName,indent); LogAdd("ParkPressure(%g) [dbar]\n",config->PressurePark);
+config.c:      LogEntry(FuncName,indent); LogAdd("PnPCycleLen(%d)\n",config->PnpCycleLength);
+config.c:                                        Crc16Bit((const unsigned char *)config->pwd,strlen(config->pwd)));
+config.c:      LogEntry(FuncName,indent); LogAdd("TelemetryRetry(%ld) [min]\n",config->TimeTelemetryRetry/Min);
+config.c:      LogEntry(FuncName,indent); if (inRange(0,config->ToD,Day)) LogAdd("TimeOfDay(%ld) [min]\n",config->ToD/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("UpTime(%ld) [min]\n",config->TimeUp/Min);
+config.c:      LogEntry(FuncName,indent); LogAdd("User(%s)\n",config->user);

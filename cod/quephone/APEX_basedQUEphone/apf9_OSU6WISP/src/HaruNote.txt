@@ -1,0 +1,79 @@
+Change these values before final burning of the program to Apf9i.  HM
+1. login.c
+	Changed SYSNAME to QUEHQ002, QUEHQ003 etc.  QUEH is hardwired in the login.c.
+	Platform ID Q002 can be changed by password command (I*PQ002, e.g.).
+2. 	Control.c
+	a. changes back the alarm (line 661 and 640) and remove 2700 seconds.
+	b. Chage max_detect_per_read = 0 to a reasonable number. (This is a number how many detections it 
+	reads from DSP per QuecomGetDTX call.)  QuecomGetDTX still provides how many events were 
+	detected.
+	c. Line ~550 GoProfile==1 condition was added to change the status when the number of
+	detection reaches Max_Detects so that it would stop PARK or GODEEP mode and change 
+	to PROFILE.
+	d. Max_Detects_Per_Profile is defined in config.c.  If the accumulated number of detects
+	exceeds this during the PARK/GODEEP state, float changes to PROFILE state in the next 
+	scan. Max_Detects_Per_Profile can be changed from the land by User(G2D032768P0400) command.
+3. Upload.c
+	a.UploadFile has been changed to add more delay between buffer transfers.   
+	It waits 6.3 seconds for 2kB block (minimum 300msec).  Wait is block size dependent.
+	b.After the last block it waits no delay.
+	c.MaxLogSize is maximum log file size (typically 40kB).  It stops logging if the file size
+	exceeds MaxLogKb(), but does not erase.  If it fails to transmit a file after 3 tries,
+	it erases the file.  
+	c. MaxTXSize =20000 for now.  If the file exceeds MaxTXSize, it is splitted into multiple 
+	smaller	files.  If it failes to TX after the MAX_UPLOAD_RETRIES (now =3), it is erased.
+	d. grace =40 seconds.  It waits for "done" message from Rudics for this period.
+Telemetry.c
+	Upload(modem, 3)- it tries the telemetry up to 3 times.
+	
+4.  Quecom.c
+	a. Redefine Max_Detects in quecom.c as a 6-digit number in order to cope with a huge 
+	detections.	This is the number to make the float to ascend when the detections exceeds 
+	the value. It can be also redefined in config.c during the telemetry using the User() cmds.
+	For example User(G2D023456P0200) [CRC] changes the Max_Detects = 023456.
+   b. i*u command (e.g., i*uG2D000020P0040) of User(G2D000020P0040)from land redefines 
+   these numbers. The 4-digit number followed by P is the depth threshold that DSP pwr is on/off.
+   c. Pre-amp gain can be changed from the console or land command. A one-digit number
+   followed by G sets the gain. For example G2D001000P0080 set the gain=2, max number of 
+   detection (Max_Detects=1000) and DspPwrDph is 80 dBar.
+   
+5. Upload.c Adjust MAX_RETRIES (now 3).  
+6. Gps.c Line 142 and 143.  Activate the GPS almanac routine before deployment.
+7. Remove LogAdd (line 244).  This prints out the response from the land Rudics.
+8. *Quecom.c QuecomGetDTX was changed so that it would not write a huge detection file.  It 
+	only writes the number of detections when inquired by setting max_detect_per_read=0 defined
+	in control.c. If max_detect_per_read =0, no detection file is written (*.dtg).
+	*In QuecomGetDTX, if the accumulated number of detections >	Max_Detects_Per_Profile, 
+	it sets GoProfile = 1 and changes the float status to PROFILE in control.c in the next scan.
+	*QuecomSetNCM sets a new gain and detection criterion for DSP.  It is called in config.c.
+	
+9.  MaxTXSize    = 20000L; in upload.c.  If file TX fails and the size is larger than this
+    it erases the file.
+10. Control.c
+	max_detect_per_read  = 0L; 0 makes no write to a detection file.
+11. Control.c - Change the DspPwrDepth to a reasonable depth so that DSP is ON at that depth.
+    Now DspPwrDepth=10.
+
+Changed made:
+upload.c -Extensive changes in Upload.c. 
+	Added Wait depending on the block size in UpLoadFile.  The last bloack of the last
+	does not wait to be ready to receive "done" signal from the land.
+gps.c - minor changes
+	Commented out LogEntry statement not important but taking space in the log file.
+park.c - No changes.
+conntrol.c - Extensive changes
+CLogin.c - No changes.
+telemetry.c - No changes by HM.  LogWil changed a few lines including downloading the 
+	message from the land and clogout statement.
+apf9main.c - Change the firmware rev number by date (Dana Swift original was 0129009.
+login.c - Cleaned up ACK acknowledgment section.  Now it ACK attemopt goes through at the
+	first login.
+cmds.c - changed the Pwd (password to system name, e.g., Q001)
+
+Procedure:
+Make sure that Airbag is not inflated before shipment.
+Make fure no files in the file system.  Erase them all.
+Run GPS almanac.
+Make sure the oil bag is inflated (move the piston position to neutral).
+Set hibernating mode.
+Swipe the magnet.  Make sure the air motor makes noise.

@@ -1,0 +1,188 @@
+#ifndef ENERGYBUDGET_OOP
+#define ENERGYBUDGET_OOP
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: EnergyBudget.oop,v 1.2 2006/11/22 03:59:55 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * RCS Log:
+ *
+ * $Log: EnergyBudget.oop,v $
+ * Revision 1.2  2006/11/22 03:59:55  swift
+ * Added TelemetryPayloadReport().
+ *
+ * Revision 1.1  2006/11/11 18:29:34  swift
+ * Added energy budget model to the project.
+ *
+*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+#include <HydroObs.oop>
+#include <SmplStat.oop>
+#include <map>
+
+typedef map<string,double,less<string> > EnergyBudgetMap;
+typedef map<string, SampleStatistic, less<string> > StatMap;
+
+void write_header(EnergyBudgetMap &budget,ostream &dest);
+void write_summary(StatMap &budget_stats,ostream &dest,unsigned int prf);
+void write_trailer(StatMap &budget_stats,ostream &dest,
+                   unsigned int prf,double grandtotal);
+
+/*------------------------------------------------------------------------*/
+/*                                                                        */
+/*------------------------------------------------------------------------*/
+template <class Float, class Battery> 
+void EnergyBudget(Float &profiler, Battery &bat, Hydrography &sea,
+                  ostream &dest=cout, bool verbose=true)
+{
+   EnergyBudgetMap budget;
+   StatMap budget_stats;
+   unsigned int prf;
+   double grandtotal=0;
+
+   // write the ocean profile
+   sea.Properties(dest);
+
+   // write the battery properties
+   bat.Properties(dest);
+
+   // write the profiler mission
+   profiler.Mission(dest);
+
+   // execute profiles one at a time and write energy budget for each subsytem
+   for (prf=0; profiler.ExecuteProfile(bat,sea,budget); prf++)
+   {
+      // write the header
+      if (verbose && !prf) write_header(budget,dest);
+
+      // write the profile number
+      if (verbose) fprintf(dest,"  %3d",prf+1);
+
+      // extract the total from the energy budget
+      float total=budget["Total"]/1000.0; grandtotal+=total;
+
+      // loop through each subsystem
+      for (EnergyBudgetMap::iterator i=budget.begin(); i!=budget.end(); i++)
+      {
+         // extract the energy consumed by the current subsystem
+         double energy = (!isnan((*i).second)) ? (*i).second/1000.0 : NaN;
+
+         // incorporate the current subsystem into the over-all statistics
+         if (!isnan(energy)) budget_stats[(*i).first]+=energy;
+
+         // write the energy budget for the current subsystem
+         if (verbose) fprintf(dest,"  %5.2f %5.1f",energy,100*energy/total);
+      }
+
+      // write the battery reserves
+      if (verbose) fprintf(dest," %8.1f %7.1f\n",bat.EnergyConsumed()/1000,
+                             bat.EnergyReserve()/1000);
+   } 
+   
+   // write trailer to the table
+   if (verbose) write_trailer(budget_stats,dest,prf,grandtotal);
+
+   // write a report of the telemetry payload
+   profiler.TelemetryPayloadReport(dest);
+   
+   // write a summary table
+   write_summary(budget_stats,dest,prf);
+}  
+
+/*------------------------------------------------------------------------*/
+/*                                                                        */
+/*------------------------------------------------------------------------*/
+void write_summary(StatMap &budget_stats,ostream &dest,unsigned int prf)
+{
+   // make a string with the number of profiles
+   sprintf(scrbuf,"(%d profiles)",prf);
+
+   // write titles to the summary
+   fprintf(dest,"$ %50s: %7s %7s %7s %7s %7s\n",
+             "Subsystem","percent","mean","stdDev","min","max");
+
+   // write units to the summary
+   fprintf(dest,"$ %50s  %7s %7s %7s %7s %7s\n",
+             scrbuf,"%","kJ","kJ","kJ","kJ");
+
+   // extract the total energy from that stats
+   float total=(*budget_stats.rbegin()).second.mean();
+
+   // write the summary table one subsystem at a time
+   for (StatMap::iterator i=budget_stats.begin(); i!=budget_stats.end(); i++)
+   {
+      const string &system = (*i).first;
+      SampleStatistic &stat = (*i).second;
+      double pcnt = 100*stat.mean()/total;
+
+      // write various statistics for the current subsystem
+      fprintf(dest,"  %50s: %7.1f %7.2f %7.3f %7.2f %7.2f\n",
+                system.c_str(),pcnt,stat.mean(),stat.stdDev(),stat.min(),stat.max());
+   }
+}
+
+/*------------------------------------------------------------------------*/
+/*                                                                        */
+/*------------------------------------------------------------------------*/
+void write_header(EnergyBudgetMap &budget,ostream &dest)
+{
+   // write the profile number as a title
+   fprintf(dest,"$ %3s","prf");
+
+   //write the names of each subsystem as titles
+   for (EnergyBudgetMap::iterator i=budget.begin(); i!=budget.end(); i++)
+   {
+      // truncate the titles to fit in the available space
+      strcpy(scrbuf,(*i).first.c_str()); scrbuf[12]=0;
+
+      // write the current title
+      fprintf(dest," %12s",scrbuf);
+   }
+
+   // write the battery titles
+   fprintf(dest," %8s %7s\n","Consumed","Reserve");
+
+   // write the units for each title
+   fprintf(dest,"$ %3s","");
+   for (EnergyBudgetMap::iterator i=budget.begin(); i!=budget.end(); i++)
+   {
+      fprintf(dest,"  %5s %5s","kJ","%");
+   }
+   fprintf(dest," %8s %7s\n","kJ","kJ");
+
+   // underscore the titles with a line
+   fprintf(dest,"$ ---");
+   for (EnergyBudgetMap::iterator i=budget.begin(); i!=budget.end(); i++)
+   {
+      for (int j=0; j<13; j++) fprintf(dest,"-");
+   }
+   fprintf(dest,"-----------------\n");
+}
+
+/*------------------------------------------------------------------------*/
+/*                                                                        */
+/*------------------------------------------------------------------------*/
+void write_trailer(StatMap &budget_stats,ostream &dest,
+                   unsigned int prf,double grandtotal)
+{
+   // underscore the table with a line
+   fprintf(dest,"$ ---");
+   for (StatMap::iterator i=budget_stats.begin(); i!=budget_stats.end(); i++)
+   {
+      for (int j=0; j<13; j++) fprintf(dest,"-");
+   }
+   fprintf(dest,"-----------------\n");
+
+   // write the mean
+   fprintf(dest,"$ %3d",prf);
+   for (StatMap::iterator i=budget_stats.begin(); i!=budget_stats.end(); i++)
+   {
+      SampleStatistic &stat = (*i).second;
+      double pcnt = 100*stat.mean()*stat.samples()/grandtotal;
+      
+      fprintf(dest,"  %5.2f %5.1f",stat.mean(),pcnt);
+   }
+   fprintf(dest," << Mean\n"
+             "$\n");
+}
+
+#endif // ENERGYBUDGET_OOP

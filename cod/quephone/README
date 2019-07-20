@@ -1,0 +1,19 @@
+Hi Brian,
+I put the two versions of QUEphone programs in \\BIOAC3\matsumot.
+1) Provor_BasedQUEphone is a CF2 based program developed for the 
+original Provor float QUEphone.  Alex's code is based on this. It is 
+very old written around 2006.
+2)The second one is under APEX_basedQUEphone. It is more recent one and 
+the original code was written by Dana Swift, Univ. of Washington. He 
+wrote it for the APEX float of WEBB Teledyne which was for CTD work. The 
+data are  sent over satellite modem (not Rudics) using the same A3LA. I 
+changed the data communication codes to adopt the PMEL Rudics login, 
+file upload, command procedures and to communicate with WISPR board. You 
+can find what I did in apf9main.c. Apex based code is more complicated. 
+Because Apex does not have data storage, it splits one large file in RAM 
+into 20 kB files, send them one by one. After successful file 
+transmission, it erases all files to save memory space.
+
+~/Winch/cod/quephone
+APEX_basedQUEphone  Provor_BasedQUEphone  README  upload
+where did code in upload come from?

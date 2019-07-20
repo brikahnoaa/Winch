@@ -1,0 +1,26 @@
+> i * 
+Menu of manufacturer's diagnostics.
+?  Print this menu.
+a  Fill flash with test files.
+c  Perform RTC ram test.
+d  Load mission configuration with defaults.
+e  EEPROM test (destructive to stored data).
+f  Set float id. [0-9999]
+l  List mission parameters.
+m  Mission programming agent.
+p  Specify password for remote host.
+r  Perform APF9 far RAM test.
+s  Display sequence points and timing info.
+t  Set the mission timer/alarm.
+u  Specify custom user name.
+v  Set default user name and password.
+1  1/2Hz air-solenoid test. (disconnect solenoid)
+2  1/2Hz buoyancy-pump test. (disconnect pump)
+3  Sweep of AD channels.
+4  400Hz timer test on TP1. (5s duration)
+5  Com1 serial port tests.
+6  Com2 serial port tests.
+7  Iridium serial port tests.
+8  GPS serial port tests.
+9  RF switch port tests.
+> 

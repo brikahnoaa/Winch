@@ -1,0 +1,26 @@
+***************************************************************************
+                         PSDsoft Express Version 8.10
+                    Output of Address Translation
+***************************************************************************
+  PROJECT    : app                                      DATE : 07/31/2009
+  DEVICE     : PSD835G2V                                TIME : 07:08:22
+***************************************************************************
+
+  Record  Type  : Intel Hex Record 
+  Mapping Mode  : Direct 
+
+  Memory                      Start        Stop        Memory
+  Block                      Address      Address    Data   File 
+--------------------------------------------------------------------------
+  FS0   [00000 - 0FFFF]          0         FFFF      app.hex
+  FS1   [10000 - 1FFFF]      10000        1FFFF      app.hex
+  FS2   [20000 - 2FFFF]      20000        2FFFF      app.hex
+  FS3   [30000 - 3FFFF]      30000        3FFFF      app.hex
+  FS4   [40000 - 4FFFF]      40000        4FFFF      app.hex
+  FS5   [50000 - 5FFFF]      50000        5FFFF      app.hex
+  FS6   [60000 - 6FFFF]      60000        6FFFF      app.hex
+  FS7   [70000 - 7FFFF]      70000        7FFFF      app.hex
+  CSBOOT0[80000 - 81FFF]                              
+  CSBOOT1[82000 - 83FFF]                              
+  CSBOOT2[84000 - 85FFF]                              
+  CSBOOT3[86000 - 87FFF]                              

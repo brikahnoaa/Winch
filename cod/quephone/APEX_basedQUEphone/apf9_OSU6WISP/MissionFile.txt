@@ -1,0 +1,32 @@
+> l
+APEX version 15010814  sn 4693
+User: G1D099999P0020
+Pwd:  Q003
+Pri:  ATDT0088160000519                          Mhp
+Alt:  ATDT0088160000519                          Mha
+INACTV ToD for down-time expiration. (Minutes)   Mtc
+ 00132 Down time. (Minutes)                      Mtd
+ 00192 Up time. (Minutes)                        Mtu
+ 00072 Ascent time-out. (Minutes)                Mta
+ 00000 Deep-profile descent time. (Minutes)      Mtj
+ 00011 Park descent time. (Minutes)              Mtk
+ 00005 Mission prelude. (Minutes)                Mtp
+ 00005 Telemetry retry interval. (Minutes)       Mhr
+ 00060 Host-connect time-out. (Seconds)          Mht
+     0 Continuous profile activation. (Decibars) Mc
+    50 Park pressure. (Decibars)                 Mk
+    50 Deep-profile pressure. (Decibars)         Mj
+   180 Park piston position. (Counts)            Mbp
+   000 Compensator hyper-retraction. (Counts)    Mbh
+   016 Deep-profile piston position. (Counts)    Mbj
+   010 Ascent buoyancy nudge. (Counts)           Mbn
+   022 Initial buoyancy nudge. (Counts)          Mbi
+   254 Park-n-profile cycle length.              Mn
+   124 Maximum air bladder pressure. (Counts)    Mfb
+   110 OK vacuum threshold. (Counts)             Mfv
+   226 Piston full extension. (Counts)           Mff
+   016 Piston storage position. (Counts)         Mfs
+     2 Logging verbosity. [0-5]                  D
+  0002 DebugBits.                                D
+  70eb Mission signature (hex).
+>

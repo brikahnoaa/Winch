@@ -1,0 +1,32 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# $Id: WebbPlatypusBuild,v 1.1 2008/04/11 15:35:12 dbliudnikas Exp $
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RCS Log:
+#
+# $Log: WebbPlatypusBuild,v $
+# Revision 1.1  2008/04/11 15:35:12  dbliudnikas
+# Webb build script removing cygdrive references for this machine's (platypus) tools setup.
+#
+# Revision 1.2  2007/11/26 18:56:16  dbliudnikas
+# Add header/cvs keywords.
+#
+#
+#!/bin/sh
+SHELL=/bin/csh
+# Simple script to convert UW makefiles to something Webb Platypus machine
+# can run.  Specifically, make temporary local makefiles that remove 
+# /cygdrive references and change hitech to HT-XA.  
+# This allows for machine specfic building w/o changing common
+# makefiles which can still be maintained in parallel.
+cat ../lib/makefile | sed -e "s#/cygdrive/c/#c:/##g" >../lib/maketemp2
+cat ../lib/maketemp2 | sed -e "s#c:/hitech#c:/HT-XA##g" >../lib/maketemp
+cat ../apf9lib/makefile | sed -e "s#/cygdrive/c/#c:/##g" >../apf9lib/maketemp2
+cat ../apf9lib/maketemp2 | sed -e "s#c:/hitech#c:/HT-XA##g" >../apf9lib/maketemp
+cat makefile | sed -e "s#/cygdrive/c/#c:/##g" >maketemp2
+cat maketemp2 | sed -e "s#c:/hitech#c:/HT-XA##g" >maketemp3
+cat maketemp3 | sed -e "s#FwRev -o#FwRev -e##g" >maketemp4
+cat maketemp4 | sed -e "s#make#make -f maketemp##g" >maketemp
+make -f maketemp
+rm ../lib/maketemp ../lib/maketemp2
+rm ../apf9lib/maketemp ../apf9lib/maketemp2
+rm maketemp maketemp2 maketemp3 maketemp4

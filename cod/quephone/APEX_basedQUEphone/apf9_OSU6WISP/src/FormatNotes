@@ -1,0 +1,190 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# $Id: FormatNotes,v 1.14.2.2 2008/10/01 13:15:14 dbliudnikas Exp $
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RCS Log:
+#
+# $Log: FormatNotes,v $
+# Revision 1.14.2.2  2008/10/01 13:15:14  dbliudnikas
+# Correct for Seascan TD.
+#
+# Revision 1.14.2.1  2008/09/11 20:04:35  dbliudnikas
+# Replace SBE41 with Seascan TD: No salinity, no high res CP data.
+#
+# Revision 1.14  2007/06/08 02:16:05  swift
+# Minor change to facilitate automatic management of FormatNotes.
+#
+# Revision 1.13  2007/05/07 21:05:34  swift
+# Made corrections in FormatNotes with respect to temperature encoding.
+#
+# Revision 1.12  2006/11/24 23:59:10  swift
+# Changed format description for CP data.
+#
+# Revision 1.11  2006/09/30 17:32:45  swift
+# Modifications to account for a shorter encoding of the high-resolution CTD
+# data.
+#
+# Revision 1.10  2006/01/31 19:26:48  swift
+# Eliminated "dbars" and "C" from ParkPt entries.
+#
+# Revision 1.9  2006/01/06 23:25:41  swift
+# Minor syntax fixes.
+#
+# Revision 1.8  2005/10/25 17:02:46  swift
+# Change message extension from 'prf' to 'msg'.
+#
+# Revision 1.7  2005/09/05 16:04:16  swift
+# Fleshed out formatting documentation for iridium messages.
+#
+# Revision 1.6  2005/03/30 21:11:09  swift
+# Description of the encoding of data.
+#
+# Revision 1.5  2004/12/29 23:12:17  swift
+# Deleted format notes that pertained only to ARGOS firmware.
+#
+# Revision 1.4  2004/04/10 18:38:27  swift
+# Format description for use with 28-bit Argos ids.
+#
+# Revision 1.3  2004/04/10 18:36:54  swift
+# Format description for use with 20-bit Argos ids.
+#
+# Revision 1.2  2003/11/21 02:46:23  swift
+# Added documentation for the SBE41 status buts.
+#
+# Revision 1.1  2003/11/12 23:05:54  swift
+# Initial revision
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Format specification for APF9 firmware revision: $FwName$-$FwRev$ 
+===================================================================================
+
+Iridium message files end with a ".msg" extension.  Each iridium message
+file consists of blocks of similar data presented in the order that they
+were collected during the profile cycle.  This firmware revision includes
+five blocks of data:
+
+   1) Park-phase PT samples: These are hourly low-power PT samples collected
+      during the park phase of the profile cycle.
+
+   2) Low resolution PT samples: The deep parts of the profile can be
+      represented using low-resolution spot samples collected at
+      predetermined pressures.  Low resolution spot sampling in the deep
+      water was implemented as an energy savings measure.
+
+   3) High resolution PTS samples: None.  High resolution sampling is
+      not supported by the Seascan TD.
+
+   4) GPS fixes: After the profile is executed and the float reaches the
+      surface, the location of the profile is determined via GPS.
+
+   5) Biographical & engineering data: Various kinds of biographical and
+      engineering data are collected at various times during the profile
+      cycle.  
+
+Usually, only one telemetry cycle is required to upload the data to the
+remote host computer.  However, sometimes the iridium connection is broken
+or the quality of the connection is so poor that the float will abort the
+telemetry attempt, wait a few minutes, and then try again.  Data blocks 4
+and 5 will be repeated for each telemetry cycle of a given profile.
+
+A description of the format for each of these blocks of data follows.
+
+
+1) Park-phase PT sample format.
+-------------------------------
+
+   Hourly low-power PT samples are collected during the park phase of the
+   profile cycle.  The park phase is also when active ballasting is done.
+   Each sample includes the date & time of the sample, the unix epoch (ie.,
+   the number of seconds since 00:00:00 on Jan 1, 1970), the mission time
+   (ie., the number of seconds since the start of the current profile
+   cycle), the pressure (decibars), and the temperature (C).  For example:
+
+                 |------- date -----|   UnixEpoch   MTime       P       T
+      ParkPt:    Sep 26 2006 20:50:07  1159303807   21614 1030.97  5.0535
+      ParkPt:    Sep 26 2006 21:50:04  1159307404   25211 1030.45  5.0817
+      ParkPt:    Sep 26 2006 22:50:04  1159311004   28811 1031.25  5.0639
+      ParkPt:    Sep 26 2006 23:50:04  1159314604   32411 1025.51  5.0477
+      ParkPt:    Sep 27 2006 00:50:04  1159318204   36011 1026.95  5.0784
+      ParkPt:    Sep 27 2006 01:50:04  1159321804   39611 1026.81  5.0511
+      ParkPt:    Sep 27 2006 02:50:04  1159325404   43211 1014.43  5.1526
+      ParkPt:    Sep 27 2006 03:50:04  1159329004   46811 1013.95  5.1673
+      ParkPt:    Sep 27 2006 04:50:04  1159332604   50411 1011.40  5.1861
+      ParkPt:    Sep 27 2006 05:50:04  1159336204   54011  993.80  5.2302
+
+
+
+2) Low resolution PT sample format.
+------------------------------------
+   
+   The Seascan TD that is used on iridium floats has features that enable
+   subsampling of the water column (similar to the Seabird SBE41).  For
+   subsampled data, the values of pressure and temperature are not
+   encoded but are given in conventional units (decibars, C).  For
+   example:
+      
+      $ Discrete samples: 6
+      $       p        t  
+        1021.60   5.1719  (Park Sample)
+        1994.88   2.4792  
+        1947.50   2.5454  
+        1898.08   2.6260  
+        1847.83   2.7133  
+        1797.26   2.8271  
+        1746.87   2.8982  
+
+
+
+3) High resolution PTS sample format.
+-------------------------------------   
+
+   Not applicable to the Seascan TD.
+   
+   
+
+4) GPS fix format.
+------------------
+   
+   Each telemetry cycle begins with the float attempting to acquire a GPS
+   fix.  The fix includes the amount of time required to acquire the fix,
+   the longitude and latitude (degrees), the date & time of the fix, and the
+   number of satellites used to determine the fix.  For example:
+
+      # GPS fix obtained in 98 seconds.
+      #         lon     lat mm/dd/yyyy hhmmss nsat
+      Fix: -152.945  22.544 09/01/2005 104710    8
+
+   Positive values of longitude, latitude represent east, north hemispheres,
+   respectively. Negative values of longitude, latitude represent west,
+   south hemispheres, respectively.  The date is given in month-day-year
+   format and the time is given in hours-minutes-seconds format.
+
+   If no fix was acquired then the following note is entered into the
+   iridium message:
+
+      # Attempt to get GPS fix failed after 600 seconds.
+
+
+
+5) Biographical & engineering data.
+-----------------------------------
+
+   These data have the format, "key"="value", as shown in the following
+   examples:
+
+      ActiveBallastAdjustments=5
+      AirBladderPressure=119
+      AirPumpAmps=91
+      AirPumpVolts=192
+      BuoyancyPumpOnTime=1539
+
+   Interpretation of these data requires detailed knowledge of firmware
+   implementations.  
+   
+   General conversion equations for voltage, current and vacuum are:
+   Volts = (V * 0.077) + 0.486 volts
+   Current = (I * 4.052) - 3.606 mA
+   Vacuum = (V * 0.293)-29.767 inHg
+   
+
+ 

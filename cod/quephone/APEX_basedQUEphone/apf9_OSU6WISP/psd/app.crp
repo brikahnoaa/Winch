@@ -1,0 +1,50 @@
+ ***************************************************************************
+                        PSDsoft Express Version 8.10
+                    Output of PSD Configurations
+ ***************************************************************************
+  PROJECT    : app                            DATE : 07/31/2009
+  DEVICE     : PSD835G2V                      TIME : 07:08:06
+ ***************************************************************************
+
+
+ ==== Bus Interface ==== 
+
+ Data Bus Width                                                    = 8-Bit 
+ Address/Data Mode                                                 = Multiplexed 
+ ALE/AS Signal                                                     = Active High 
+ Control Signals                                                   = /WR,/RD,/PSEN, Burst Mode
+ Main PSD flash memory will reside in this space at power-up       = Program space 
+ Secondary PSD flash memory will reside in this space at power-up  = Program space 
+
+
+ ==== Other Configurations ====  
+
+ Enable Chip-Select Input(/CSI)      = OFF 
+ Enable Standby Voltage Input (PE6)  = OFF 
+ Enable Standby-on Indicator (PE7)   = OFF 
+ Enable RDY/Busy function (PE4)      = OFF 
+ Security Protection                 = OFF 
+
+
+ ==== JTAG Configurations ====  
+
+ Enable TMS/TCK/TDI/TDO on PE0/PE1/PE2/PE3, respectively = ON 
+ Enables JTAG signal TSTAT on PE4 = OFF 
+ Enables JTAG signal TERR on PE5 = OFF 
+ User Code = FFFFFFFF
+
+ ==== Flash Sector Protect ====  
+
+ Flash Sector 0 is unprotected 
+ Flash Sector 1 is unprotected 
+ Flash Sector 2 is unprotected 
+ Flash Sector 3 is unprotected 
+ Flash Sector 4 is unprotected 
+ Flash Sector 5 is unprotected 
+ Flash Sector 6 is unprotected 
+ Flash Sector 7 is unprotected 
+ Flash Boot Sector 0 is unprotected 
+ Flash Boot Sector 1 is unprotected 
+ Flash Boot Sector 2 is unprotected 
+ Flash Boot Sector 3 is unprotected 
+

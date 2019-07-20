@@ -1,0 +1,25 @@
+/GnuLesserGeneralPublicLicense/1.1/Thu Nov 20 18:59:34 2003//TApf9iSeascan
+/apf9.c/1.22/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/apf9com.c/1.12/Mon Jul 14 17:06:13 2008//TApf9iSeascan
+/apf9icom.c/1.15/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/assert.c/1.7/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/cstring.c/1.4/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/doprnt.c/1.3/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/ds2404.c/1.11/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/errno.c/1.4/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/flashio.c/1.2/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/fstring.c/1.4/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/lt1598ad.c/1.6/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/powerup.as/1.1/Fri May 30 17:58:20 2003//TApf9iSeascan
+/psd835.c/1.4/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/rtxa--l.as/1.1/Sat Jun  7 20:40:52 2003//TApf9iSeascan
+/sermux.c/1.3/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/tc58v64.c/1.2/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/trace.c/1.6/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/unistd.c/1.5/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/vfprintf.c/1.20/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/x24c16.c/1.4/Tue Apr 24 01:43:05 2007//TApf9iSeascan
+/conio.c/1.21.2.1/Thu Sep 11 19:40:29 2008//TApf9iSeascan
+/ctdio.c/1.26.2.1/Thu Sep 11 19:40:29 2008//TApf9iSeascan
+/makefile/1.7.2.1/Thu Sep 11 19:40:29 2008//TApf9iSeascan
+D

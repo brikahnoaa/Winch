@@ -1,0 +1,405 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# $Id: FormatNotes,v 1.14 2007/06/08 02:16:05 swift Exp $
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RCS Log:
+#
+# $Log: FormatNotes,v $
+# Revision 1.14  2007/06/08 02:16:05  swift
+# Minor change to facilitate automatic management of FormatNotes.
+#
+# Revision 1.13  2007/05/07 21:05:34  swift
+# Made corrections in FormatNotes with respect to temperature encoding.
+#
+# Revision 1.12  2006/11/24 23:59:10  swift
+# Changed format description for CP data.
+#
+# Revision 1.11  2006/09/30 17:32:45  swift
+# Modifications to account for a shorter encoding of the high-resolution CTD
+# data.
+#
+# Revision 1.10  2006/01/31 19:26:48  swift
+# Eliminated "dbars" and "C" from ParkPt entries.
+#
+# Revision 1.9  2006/01/06 23:25:41  swift
+# Minor syntax fixes.
+#
+# Revision 1.8  2005/10/25 17:02:46  swift
+# Change message extension from 'prf' to 'msg'.
+#
+# Revision 1.7  2005/09/05 16:04:16  swift
+# Fleshed out formatting documentation for iridium messages.
+#
+# Revision 1.6  2005/03/30 21:11:09  swift
+# Description of the encoding of data.
+#
+# Revision 1.5  2004/12/29 23:12:17  swift
+# Deleted format notes that pertained only to ARGOS firmware.
+#
+# Revision 1.4  2004/04/10 18:38:27  swift
+# Format description for use with 28-bit Argos ids.
+#
+# Revision 1.3  2004/04/10 18:36:54  swift
+# Format description for use with 20-bit Argos ids.
+#
+# Revision 1.2  2003/11/21 02:46:23  swift
+# Added documentation for the SBE41 status buts.
+#
+# Revision 1.1  2003/11/12 23:05:54  swift
+# Initial revision
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Format specification for APF9 firmware revision: Apf9iSbe41cp-072208 
+===================================================================================
+
+Iridium message files end with a ".msg" extension.  Each iridium message
+file consists of blocks of similar data presented in the order that they
+were collected during the profile cycle.  This firmware revision includes
+five blocks of data:
+
+   1) Park-phase PT samples: These are hourly low-power PT samples collected
+      during the park phase of the profile cycle.
+
+   2) Low resolution PTS samples: The deep parts of the profile can be
+      represented using low-resolution spot samples collected at
+      predetermined pressures.  Low resolution spot sampling in the deep
+      water was implemented as an energy savings measure.
+
+   3) High resolution PTS samples: The shallower parts of the profile can be
+      represented with high resolution (ie., 2 decibar) bin-averaged PTS
+      samples.  In continuous profiling mode,  the CTD samples at 1Hz and
+      stores the data for later binning and averaging.
+
+   4) GPS fixes: After the profile is executed and the float reaches the
+      surface, the location of the profile is determined via GPS.
+
+   5) Biographical & engineering data: Various kinds of biographical and
+      engineering data are collected at various times during the profile
+      cycle.  
+
+Usually, only one telemetry cycle is required to upload the data to the
+remote host computer.  However, sometimes the iridium connection is broken
+or the quality of the connection is so poor that the float will abort the
+telemetry attempt, wait a few minutes, and then try again.  Data blocks 4
+and 5 will be repeated for each telemetry cycle of a given profile.
+
+A description of the format for each of these blocks of data follows.
+
+
+1) Park-phase PT sample format.
+-------------------------------
+
+   Hourly low-power PT samples are collected during the park phase of the
+   profile cycle.  The park phase is also when active ballasting is done.
+   Each sample includes the date & time of the sample, the unix epoch (ie.,
+   the number of seconds since 00:00:00 on Jan 1, 1970), the mission time
+   (ie., the number of seconds since the start of the current profile
+   cycle), the pressure (decibars), and the temperature (C).  For example:
+
+                 |------- date -----|   UnixEpoch   MTime       P       T
+      ParkPt:    Sep 26 2006 20:50:07  1159303807   21614 1030.97  5.0535
+      ParkPt:    Sep 26 2006 21:50:04  1159307404   25211 1030.45  5.0817
+      ParkPt:    Sep 26 2006 22:50:04  1159311004   28811 1031.25  5.0639
+      ParkPt:    Sep 26 2006 23:50:04  1159314604   32411 1025.51  5.0477
+      ParkPt:    Sep 27 2006 00:50:04  1159318204   36011 1026.95  5.0784
+      ParkPt:    Sep 27 2006 01:50:04  1159321804   39611 1026.81  5.0511
+      ParkPt:    Sep 27 2006 02:50:04  1159325404   43211 1014.43  5.1526
+      ParkPt:    Sep 27 2006 03:50:04  1159329004   46811 1013.95  5.1673
+      ParkPt:    Sep 27 2006 04:50:04  1159332604   50411 1011.40  5.1861
+      ParkPt:    Sep 27 2006 05:50:04  1159336204   54011  993.80  5.2302
+
+
+
+2) Low resolution PTS sample format.
+------------------------------------
+   
+   The SBE41CP that is used on iridium floats has features that enable
+   subsampling of the water column (similar to the SBE41) as well as the
+   ability to bin-average a continuous sampling of the water column.  For
+   subsampled data, the values of pressure, temperature, and salinity are not
+   encoded but are given in conventional units (decibars, C, PSU).  For
+   example:
+      
+      $ Discrete samples: 6
+      $       p        t        s
+        1021.60   5.1719  34.6362 (Park Sample)
+        1994.88   2.4792  34.7165
+        1947.50   2.5454  34.7142
+        1898.08   2.6260  34.7115
+        1847.83   2.7133  34.7076
+        1797.26   2.8271  34.7017
+        1746.87   2.8982  34.6964
+
+
+
+3) High resolution PTS sample format.
+-------------------------------------   
+
+   For continuously sampled data, 2-decibar bins are used for bin-averaging.
+   These data are encoded as three 16-bit integers (PTS) and then an 8-bit
+   integer that represents the number of samples in the bin:
+   
+      # Nov 05 2006 23:38:59 Sbe41cpSerNo[1520] NSample[11134] NBin[495]
+      00000000000000[2]
+      002B5CE0885115
+      003C5CE188511F
+      00505CE088511E
+      00645CE088511D
+      00785CDF88521C
+      008C5CDF88521B
+      00A05CDF88511A
+      00B45CDC88511A
+      00C85CAD885A1A
+      00DC5C8D886418
+      00F05C88886919
+      01045C88886A19
+      01185C74887618
+      012C5C4E88BB15
+      [snippage...]
+      2684144D874814
+      2698145C874D14
+   
+   The first 4-bytes of the encoded sample represents the pressure in
+   centibars.  The second 4-bytes represents the temperature in
+   millidegrees.  The third 4-bytes represent the salinity in parts per
+   million.  The final 2-bytes represent the number of samples collected in
+   the 2dbar pressure bin.
+   
+   For example, the encoding: 2698145C874D14 represents a bin with (0x14=)
+   20 samples where the mean pressure was (0x2698=) 988.0dbars, the mean
+   temperature was (0x0EDE=) 3.806C, and the mean salinity was (0x86A0=)
+   34.464PSU.  The PTS values were encoded as 16-bit hex integers according
+   to the functions below.
+   
+   Integers in square brackets '[]' indicate replicates of the same encoded
+   line.  For example, a line that looks like: 00000000000000[2] indicates
+   that there were 2 adjacent lines with the same encoding....all zeros in
+   this case.
+   
+   /*------------------------------------------------------------------------*/
+   /* function to encode the number of samples as an 8-bit unsigned integer  */
+   /*------------------------------------------------------------------------*/
+   /**
+      This function encodes the number samples in the bin average as an 8-bit
+      unsigned integer with protection against overflow.  The encoding accounts
+      for the full range of 16-bit unsigned integers but only values in the
+      open range: 0<NSample<255 are representable.  This encoding makes full
+      use of all 8-bits.
+   
+         \begin{verbatim}
+         input:
+            NSample ... The number of samples in the bin-average.
+   
+         output:
+            1) Values greater than or equal to 255 are mapped to 0xff.
+   
+            2) All other values are expressed as an 8-bit unsigned integer.
+         \end{verbatim}
+   */
+   unsigned char EncodeN(unsigned int NSample)
+   {
+      /* prevent overflow of the sample counter */
+      unsigned int N = (NSample>=255) ? 0xff : NSample;
+      
+      return N;
+   }
+   
+   /*------------------------------------------------------------------------*/
+   /* function to encode pressure as a 2-byte unsigned integer               */
+   /*------------------------------------------------------------------------*/
+   /**
+      This function implements the hex-encoding of IEEE-formattted floating
+      point pressure data into 2-byte signed integers with 2's complement
+      representation.  The encoding formula accounts for the full range of
+      32-bit IEEE floating point values but only values in the open range:
+      -3276.7<p<3276.7 are representable.  This encoding makes full use of all
+      16-bits.
+   
+         \begin{verbatim}
+         input:
+            p ... The pressure (decibars) expressed as a floating point value.
+   
+         output:
+            1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+               value: 0x8000.
+   
+            2) Pressure values less than -3276.7 are mapped to the sentinel
+               value: 0x8001.
+   
+            3) Pressure values greater than 3276.7 are mapped to the sentinel
+               value: 0x7fff.
+   
+            4) All other values are expressed in millibars rounded to the
+               nearest integer and expressed as a 16-bit signed integer in
+               2's-complement form.
+         \end{verbatim}
+   */
+   unsigned int EncodeP(float p)
+   {
+      /* initialize with the mapping for a nonfinite pressure */
+      long int P = 0x8000L;
+   
+      /* make sure long ints are at least 3 bytes long */
+      assert(sizeof(long int)>=3);
+      
+      if (finite(p))
+      {
+         /* assign out-of-range values to sentinel values */
+         if (p>=3276.7) P=0x7fffL; else if (p<=-3276.7) P=0x8001L;
+   
+         /* encode the pressure as the number of centibars (rounded) */
+         else P = (long int)(10*(p + ((p<0) ? -0.05 : 0.05)));
+   
+         /* express in 16-bit 2's-complement form */
+         if (P<0) P+=0x10000L;
+      }
+   
+      return P;
+   } 
+   
+   /*------------------------------------------------------------------------*/
+   /* function to encode salinity as a 2-byte unsigned long integer          */
+   /*------------------------------------------------------------------------*/
+   /**
+      This function implements the hex-encoding of IEEE-formattted floating
+      point salinity data into 16-bit unsigned integers with 2's complement
+      representation.  The encoding formula accounts for the full range of
+      32-bit IEEE floating point values but only values in the open range:
+      -4.095<s<61.439 are representable.  This encoding makes full use of all
+      16-bits.
+   
+         \begin{verbatim}
+         input:
+            s ... The salinity (PSU) expressed as a floating point value.
+   
+         output:
+            1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+               value: 0xf000.
+   
+            2) Salinity values less than -4.095 are mapped to the sentinel
+               value: 0xf001.
+   
+            3) Salinity values greater than 61.439 are mapped to the sentinel
+               value: 0xefff.
+   
+            4) All other values are expressed in parts-per-ten-million
+               rounded to the nearest integer and expressed as a 16-bit
+               signed integer in 2's-complement form.
+         \end{verbatim}
+   */
+   unsigned int EncodeS(float s)
+   {
+      /* initialize with the mapping for a nonfinite salinity */
+      long int S = 0xf000L;
+   
+      /* make sure that long integers have at least three bytes */
+      assert(sizeof(long int)>=3);
+   
+      if (finite(s))
+      {
+         /* assign out-of-range values to sentinel values */
+         if (s>=61.439) S=0xefffL; else if (s<=-4.095) S=0xf001L;
+   
+         /* encode the salinity as the number of parts-per-ten-million (rounded) */
+         else S = (long int)(1000*(s + ((s<0) ? -0.0005 : 0.0005)));
+   
+         /* express in 16-bit 2's-complement form */
+         if (S<0) S+=0x10000L;
+      }
+      
+      return S;
+   }
+   
+   /*------------------------------------------------------------------------*/
+   /* function to encode temperature as a 2-byte unsigned integer            */
+   /*------------------------------------------------------------------------*/
+   /**
+      This function implements the hex-encoding of IEEE-formattted floating
+      point temperature data into 16-bit unsigned integers with 2's complement
+      representation.  The encoding formula accounts for the full range of
+      32-bit IEEE floating point values but only values in the open range:
+      -4.095<t<61.439 are representable.  This encoding makes full use of all
+      16-bits.
+   
+         \begin{verbatim}
+         input:
+            t ... The temperature (C) expressed as a floating point value.
+   
+         output:
+            1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+               value: 0xf000.
+   
+            2) Temperature values less than -4.095 are mapped to the sentinel
+               value: 0xf001.
+   
+            3) Temperature values greater than 61.439 are mapped to the sentinel
+               value: 0xefff.
+   
+            4) All other values are expressed in tenths of millidegrees Celsius
+               rounded to the nearest integer and expressed as a 16-bit signed 
+               integer in 2's-complement form.
+         \end{verbatim}
+   */
+   unsigned int EncodeT(float t)
+   {
+      /* initialize with the mapping for a nonfinite temperature */
+      long int T = 0xf000L;
+   
+      /* make sure that long integers have at least three bytes */
+      assert(sizeof(long int)>=3);
+   
+      if (finite(t))
+      {
+         /* assign out-of-range values to sentinel values */
+         if (t>=61.439) T=0xefffL; else if (t<=-4.095) T=0xf001L;
+   
+         /* encode the temperature as the number of tenths of millidegrees (rounded) */
+         else T = (long int)(1000*(t + ((t<0) ? -0.0005 : 0.0005)));
+   
+         /* express in 16-bit 2's-complement form */
+         if (T<0) T+=0x10000L;
+      }
+      
+      return T;
+   }
+   
+
+
+4) GPS fix format.
+------------------
+   
+   Each telemetry cycle begins with the float attempting to acquire a GPS
+   fix.  The fix includes the amount of time required to acquire the fix,
+   the longitude and latitude (degrees), the date & time of the fix, and the
+   number of satellites used to determine the fix.  For example:
+
+      # GPS fix obtained in 98 seconds.
+      #         lon     lat mm/dd/yyyy hhmmss nsat
+      Fix: -152.945  22.544 09/01/2005 104710    8
+
+   Positive values of longitude, latitude represent east, north hemispheres,
+   respectively. Negative values of longitude, latitude represent west,
+   south hemispheres, respectively.  The date is given in month-day-year
+   format and the time is given in hours-minutes-seconds format.
+
+   If no fix was acquired then the following note is entered into the
+   iridium message:
+
+      # Attempt to get GPS fix failed after 600 seconds.
+
+
+
+5) Biographical & engineering data.
+-----------------------------------
+
+   These data have the format, "key"="value", as shown in the following
+   examples:
+
+      ActiveBallastAdjustments=5
+      AirBladderPressure=119
+      AirPumpAmps=91
+      AirPumpVolts=192
+      BuoyancyPumpOnTime=1539
+
+   Interpretation of these data requires detailed knowledge of firmware
+   implementations.  
