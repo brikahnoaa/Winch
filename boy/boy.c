@@ -248,7 +248,6 @@ PhaseType deployPhase(void) {
 // ??
 // figure out whats happening, continue as possible
 // load info from saved previous phase
-// ask antmod for our velocity
 int reboot(void) {
   MsgType msg;
   flogf("\n === rebootPhase()\t| stop stop fall fall %s", utlDateTime());
@@ -341,7 +340,7 @@ int riseDo(float targetD) {
   MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
-  float nowD, startD, velo;
+  float nowD, startD;
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG();
   // 
@@ -402,8 +401,6 @@ int riseDo(float targetD) {
     if (tmrExp(fiveTmr)) { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
-      if (!antVelo(&velo)) 
-        flogf(" velo=%4.2f", velo);
     }  // 5 seconds
     if (s16Data()) 
       s16Read();
@@ -435,7 +432,7 @@ int fallDo(float targetD) {
   MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
-  float nowD, startD, velo;
+  float nowD, startD;
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG();
   // 
@@ -494,8 +491,6 @@ int fallDo(float targetD) {
     if (tmrExp(fiveTmr)) { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
-      if (!antVelo(&velo)) 
-        flogf(" velo=%4.2f", velo);
     }  // 5 seconds
     if (s16Data()) 
       s16Read();

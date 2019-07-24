@@ -17,13 +17,6 @@ void s39Init(void) {
   s39.me="s39";
   s39Port(&s39.port);
   s39.on = false;
-  // alloc bloc to store depth values for moving/velo
-  s39.ring = (RingNode *) calloc(s39.ringSize, sizeof(RingNode));
-  // to string the nodes into a ring, access like an array
-  for (i=0; i<s39.ringSize-1; i++) {
-    s39.ring[i].next = &s39.ring[i+1];
-  }
-  s39.ring[i].next = s39.ring;
   s39Start();
   utlReadExpect(s39.port, all.str, EXEC, 2);
   utlWrite(s39.port, "TxSampleNum=N", EOL);
@@ -44,7 +37,6 @@ void s39Init(void) {
 // turn on, clean, set params, talk to sbe39
 int s39Start(void) {
   static char *self="s39Start";
-  s39Reset();           // ring buffer - do this even if on already
   if (s39.on) // verify
     if (s39Prompt()) {
       s39Sample();
@@ -197,7 +189,7 @@ void s39Sample(void) {
 // TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
 //  - note: now TS=TSSon due to TxSampleNum=N
-// sets: s39.temp .depth .ring->depth .ring->sampT
+// sets: s39.temp .depth 
 // note: s39.sampT set in s39Sample()
 bool s39Read(void) {
   char *p0, *p1, *p2;
@@ -231,8 +223,6 @@ bool s39Read(void) {
     utlErr(s39_err, "s39Read: null values");
     return false;
   }
-  // save in ring
-  ringSamp(s39.depth, s39.sampT);
   DBG2("= %4.2f, %4.2f", s39.temp, s39.depth);
   s39Sample();
   return true;
@@ -258,102 +248,6 @@ float s39Temp(void) {
   s39Depth();
   return s39.temp;
 } // s39Temp
-
-///
-// checks recent depth against previous, computes velocity m/s
-// checks ring for consistent direction v. waves
-// sets: *velo 
-// retn: 0=full success; -1=empty; -2=waves; #=how many ring samples
-int s39Velo(float *velo) {
-  int r=0, samp=s39.ringSize;
-  float v;
-  RingNode *n;
-  DBG0("s39Velo");
-  // empty ring
-  if (!s39.ring->sampT) {
-    *velo=0.0;
-    return -1;
-  }
-  // find oldest value in ring, skip empty nodes
-  n = s39.ring->next;
-  while (!n->sampT) {
-    r = --samp;
-    n = n->next;
-  } // note: r==0 if ring is full, as first test falls
-  // only one value
-  if (n==s39.ring) {
-    *velo=0.0;
-    return -1;
-  }
-  // velocity
-  v = (s39.ring->depth - n->depth) / (s39.ring->sampT - n->sampT);
-  // ring consistent direction? v>0 means falling
-  while (true) {
-    if (  (v>0 && n->depth > n->next->depth)
-        ||(v<0 && n->depth < n->next->depth)  ) {
-      *velo = 0.0;
-      return -2;
-    } // waves
-    n = n->next;
-    if (n==s39.ring) break;
-  } // walk ring
-  *velo = v;
-  DBG2("aV=%4.2f", *velo);
-  return r;
-} // s39Velo
-
-///
-// oops, doesn't include s39Ring->depth
-int s39Avg(float *avg) {
-  int r=0, samp=s39.ringSize;
-  float a=0.0;
-  RingNode *n;
-  DBG0("s39Velo");
-  // empty ring
-  if (!s39.ring->sampT) {
-    *avg=0.0;
-    return -1;
-  }
-  // find oldest value in ring, skip empty nodes
-  n = s39.ring->next;
-  while (!n->sampT) {
-    r = --samp;
-    n = n->next;
-  } // note: r==0 if ring is full, as first test falls
-  // walk around the ring
-  while (true) {
-    a += n->depth;
-    n = n->next;
-    if (n==s39.ring->next) break;
-  } // walk ring
-  *avg = a / samp;
-  return r;
-} // s39Avg
-
-///
-// s39.ring points to last good value
-// sets: ring ring.depth ring.sampT
-void ringSamp(float depth, time_t sampT) {
-  s39.ring = s39.ring->next;
-  s39.ring->depth = depth;
-  s39.ring->sampT = sampT;
-} // ringSamp
-
-///
-// clear sample times used by s39Velo, s39Avg. fresh sample
-// sets: s39.ring->sampT;
-void s39Reset(void) {
-  RingNode *n;
-  static char *self="s39Reset";
-  DBG();
-  n = s39.ring; 
-  while (true) {
-    n->depth = 0.0;
-    n->sampT = (time_t) 0;
-    n = n->next;
-    if (n==s39.ring) break;
-  } // while
-} // s39Reset
 
 ///
 // turn autonomous on/off, with no output. Fetch with s39GetSamples()
