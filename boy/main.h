@@ -41,7 +41,6 @@
 #include <s39.h>
 #include <dbg.h>
 #include <dos.h>
-#include <eng.h>
 #include <hps.h>
 #include <iri.h>
 #include <mpc.h>
