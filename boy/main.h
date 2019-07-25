@@ -38,6 +38,7 @@
 #include <boy.h>
 #include <cfg.h>
 #include <s16.h>
+#include <s39.h>
 #include <dbg.h>
 #include <dos.h>
 #include <eng.h>

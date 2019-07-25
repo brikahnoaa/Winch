@@ -6,6 +6,7 @@ CfgInfo cfg;
 extern AntInfo ant;
 extern BoyInfo boy;
 extern S16Info s16;
+extern S39Info s39;
 // extern EngInfo eng;
 extern IriInfo iri;
 extern MpcInfo mpc;
@@ -31,16 +32,8 @@ extern WspInfo wsp;
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
 
-  {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
-  {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
-  {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
-  {'c',  "ant.initStr",   &ant.initStr,     "aiS",  ""},
-  {'c',  "ant.startStr",  &ant.startStr,    "aiS",  ""},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
-  {'i',  "ant.delay",     &ant.delay,       "ade",  "3"},
-  {'i',  "ant.ringSize",  &ant.ringSize,    "arS",  "5"},
-  {'i',  "ant.sampInter", &ant.sampInter,   "asI",  "10"},
 
   {'b',  "boy.iridAuton", &boy.iridAuton,   "biA",  "false"},
   {'b',  "boy.reset",     &boy.reset,       "bre",  "false"},
@@ -100,13 +93,21 @@ static CfgParam cfgP[] = {
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
 
   {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
-  {'b',  "s16.sampClear", &s16.sampClear,   "6cS",  "false"},
+  {'b',  "s16.sampClear", &s16.sampClear,   "6sC",  "false"},
   {'b',  "s16.sampStore", &s16.sampStore,   "6sS",  "true"},
-  {'c',  "s16.initStr",   &s16.initStr,     "6iS",  ""},
-  {'c',  "s16.startStr",  &s16.startStr,    "6iS",  ""},
+  {'c',  "s16.initStr",   &s16.initStr,     "6in",  ""},
+  {'c',  "s16.startStr",  &s16.startStr,    "6st",  ""},
   {'i',  "s16.pumpMode",  &s16.pumpMode,    "6pM",  "1"},
   {'i',  "s16.sampInter", &s16.sampInter,   "6sI",  "10"},
   {'i',  "s16.timer",     &s16.timer,       "6tr",  "6"},
+
+  {'b',  "s39.auton",     &s39.auton,       "9an",  "false"},
+  {'b',  "s39.sampClear", &s39.sampClear,   "9cS",  "false"},
+  {'b',  "s39.sampStore", &s39.sampStore,   "9sS",  "true"},
+  {'c',  "s39.initStr",   &s39.initStr,     "9in",  ""},
+  {'c',  "s39.startStr",  &s39.startStr,    "9st",  ""},
+  {'i',  "s39.sampInter", &s39.sampInter,   "9sI",  "10"},
+  {'i',  "s39.timer",     &s39.timer,       "9tr",  "6"},
 
   {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
   {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},

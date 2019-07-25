@@ -5,17 +5,16 @@
 #define BAUD 9600L
 #define EXEC "<Executed/>"
 
-AntInfo s39;
+S39Info s39;
 
 ///
 // turn on s39 module, wait until s39 responds
 // sets: s39.mode .port
 void s39Init(void) {
-  short rx, tx, i;
   static char *self="s39Init";
   DBG();
   s39.me="s39";
-  s39Port(&s39.port);
+  antPort(&s39.port);
   s39.on = false;
   s39Start();
   utlReadExpect(s39.port, all.str, EXEC, 2);
@@ -111,7 +110,7 @@ bool s39Prompt() {
   DBG1("aP");
   if (s39Pending()) 
     s39DataWait();
-  s39Device(cf2_dev);
+  antDevice(cf2_dev);
   TURxFlush(s39.port);
   // if asleep, first EOL wakens but no response
   utlWrite(s39.port, "", EOL);

@@ -12,6 +12,7 @@ void main(void) {
   iriInit();
   ngkInit();
   s16Init();
+  s39Init();
   wspInit();
 
   boyMain();

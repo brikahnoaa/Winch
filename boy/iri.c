@@ -19,7 +19,7 @@ IriData irid;
 void iriInit(void) {
   static char *self="iriInit";
   DBG();
-  irid.port = antPort();
+  antPort(&irid.port);
   if (!irid.port)
     utlErr(iri_err, "no irid.port, was iriInit called before antInit?");
   iriBufMalloc();

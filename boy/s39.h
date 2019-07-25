@@ -2,13 +2,6 @@
 #ifndef H_S39
 #define H_S39
 
-// nodes in a ant.ring store previous depth/time values
-typedef struct RingNode {
-  float depth;
-  time_t sampT;
-  struct RingNode *next;
-} RingNode;
-
 typedef struct S39Info {
   bool auton;                 // autonomous mode, silent
   bool on;
@@ -21,16 +14,11 @@ typedef struct S39Info {
   float temp;
   int delay;
   int log;
-  int ringSize;               // number of nodes in the (depth,time) ring
   int sampInter;              // sample interval for auton
+  int timer;                  // timeout
   time_t sampT;               // read time() of last sample 
-  RingNode *ring;             // nodes in the (depth,time) ring
   Serial port;
 } S39Info;
-
-int s39Avg(float *avg);
-int s39Velo(float *velo);
-void s39Ring(float depth, time_t sampT);
 
 static bool s39Pending(void);
 static void s39Break(void);
@@ -49,7 +37,6 @@ int s39Start(void);
 int s39Stop(void);
 void s39GetSamples(void);
 void s39Init(void);
-void s39Reset(void);
 void s39Sample(void);
 void s39Test(void);
 
