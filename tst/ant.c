@@ -1,7 +1,8 @@
-// gpsTst.c
+// ant.c
 #include <main.h>
 
-extern GpsInfo gps;
+extern IriInfo iri;
+extern IriData irid;
 
 void main(void){
   Serial port;
@@ -9,11 +10,11 @@ void main(void){
   sysInit();
   mpcInit();
   antInit();
-  gpsInit();
+  iriInit();
   //
   antStart();
-  gpsStart();
-  port = gps.port;
+  iriStart();
+  port = irid.port;
   flogf("\nPress Q=exit A=a3la C=cf2 G=gps I=irid \n");
   while (true) {
     if (TURxQueuedCount(port)) {
@@ -29,7 +30,7 @@ void main(void){
         printf("a3la_dev\n");
         antDevice(a3la_dev);
         utlWrite(port, "ate1", "\r");
-        utlRead(port);
+        utlRead(port, all.str);
         break;
       case 'C': 
         printf("cf2_dev\n");
@@ -49,6 +50,6 @@ void main(void){
     }
   }
 
-  gpsStop();
+  iriStop();
   antStop();
 }

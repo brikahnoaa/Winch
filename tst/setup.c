@@ -18,15 +18,19 @@
  * .3 test mode?  .4 ctd pump?
  */
 
-int yorn( void );
+int yorn( char *ask );
 void veePrint(void);
 
 /// rets: 0=n 1=y
 // secret: exit on q
-int yorn( void ) {
+int yorn(char *ask) {
   short c;
-  printf( "(y/n) " );
+  if (ask) cprintf("%s ", ask);
+  cprintf( "(y/n) " );
+  cdrain();
   c = cgetc();
+  cprintf( "%c\n", c );
+  cdrain();
   switch (c) {
     case 'n': return(0);
     case 'N': return(0);
@@ -36,8 +40,7 @@ int yorn( void ) {
     case 'Q': exit(1);
   }
   // try again
-  printf( "\n" );
-  return(yorn());
+  return(yorn(NULL));
 }
 
 ///
@@ -51,17 +54,37 @@ void veePrint(void) {
   while (vv) {
     name = VEEGetName(vv);
     val = VEEFetchStr(name, "");
-    if (strstr(name, "SYS.QPBC")) continue;
-    printf("%s=%s\n", name, val);
+    cprintf("%s=%s\n", name, val);
     vv = VEEFetchNext(vv);
   } // (vv)
 } // cfgVee
 
 ///
-void main(void) {
-  int pump, test, ask;
-  pump=test=ask=0;
-  printf( "\n Set up system variables \n\n" );
-  printf( "\n%d\n", yorn());
+int main(void) {
+  cprintf( "\n Set up system variables \n\n" );
+  cprintf( "\n" );
+  cprintf("These are the settings now:\n");
   veePrint();
+  cprintf( "\n" );
+  //
+  if (yorn("Are we setting up for deployment?")) {
+    if (!yorn("Is the winch acoustic modem turned on?"))
+      if (!yorn("Please press in the button on the amodem to activate now. Done?"))
+        return 1;
+    cprintf("\n Clearing all variables \n");
+    if (yorn("Confirm, prepare winch to deploy:")) {
+      // deploy, clear vars
+      VEEClear();
+      VEEStoreStr("SYS.QPBC", "32");
+    } else {
+      cprintf("\n No changes made \n");
+    }
+  } else {
+    cprintf("\nTesting\n");
+    if (yorn("Run hardware tests?")) {
+    }
+  }
+  //
+  cprintf("Done.\n");
+  return 0;
 } // main
