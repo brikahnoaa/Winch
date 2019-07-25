@@ -2,7 +2,7 @@
 #include <main.h>
 
 extern AntInfo ant;
-extern CtdInfo ctd;
+extern S39Info s39;
 
 void main(void){
   char c;
@@ -10,20 +10,20 @@ void main(void){
   mpcInit();
   antInit();
   antStart();
-  antSample();
-  if (!antDataWait())
+  s39Sample();
+  if (!s39DataWait())
     flogf("\ndata wait fail, no response from sbe39");
-  if (!antRead())
+  if (!s39Read())
     flogf("\nread fails");
-  flogf("\nantDepth() -> %f", antDepth());
-  flogf("\nantTemp() -> %f", antTemp());
-  antDataWait();
-  antRead();
-  flogf("\nantDepth() -> %f", antDepth());
-  flogf("\nantTemp() -> %f", antTemp());
-  // antAuton(true);
+  flogf("\ns39Depth() -> %f", s39Depth());
+  flogf("\ns39Temp() -> %f", s39Temp());
+  s39DataWait();
+  s39Read();
+  flogf("\ns39Depth() -> %f", s39Depth());
+  flogf("\ns39Temp() -> %f", s39Temp());
+  // s39Auton(true);
   flogf("\n\nPress any to talk, Q to exit");
-  flogf("\nconnected to ant");
+  flogf("\nconnected to s39");
   while (true) {
     if (cgetq()) {
       c=cgetc();
@@ -35,7 +35,7 @@ void main(void){
       cputc(c);
     }
   }
-  // antAuton(false);
-  // antGetSamples();
+  // s39Auton(false);
+  // s39GetSamples();
   utlStop("\nnormal");
 }

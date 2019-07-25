@@ -1,72 +1,41 @@
-// rudics.c
+// s39.c
 #include <main.h>
 
-extern GpsInfo gps;
-extern BoyInfo boy;
+extern AntInfo ant;
+extern S39Info s39;
 
 void main(void){
-  // Serial port;
-  // char c;
-  char *buff;
-  int len, cnt;
-  int i, r;
+  char c;
   sysInit();
   mpcInit();
   antInit();
-  gpsInit();
-  //
   antStart();
-  gpsStart();
-  //
-  len = tst.t2;
-  cnt = tst.t1;
-  cprintf("\nlength tst.t2=%d, count tst.t1=%d ", len, cnt);
-  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
-  buff = malloc(len);
-  // gpsStats();
-  // flogf("\n%s\n", utlTime());
-  // gpsStats();
-  // flogf("\n%s\n", utlTime());
-  antSwitch(irid_ant);
-  if (iridSig()) return;
-  if (iridDial()) return;
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d", i, cnt, len, gps.rudBaud);
-    r = iridSendBlock(buff, len, i, cnt);
-    cprintf("(%d)\n", r);
-  }
-  iridLandResp(all.buf);
-  if (strstr(all.buf, "cmds"))
-    len = iridLandCmds(buff);
-  iridHup();
-  iridSig();
-  flogf("\n%s\n", utlTime());
-  /*
-  port = gps.port;
-  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
+  s39Sample();
+  if (!s39DataWait())
+    flogf("\ndata wait fail, no response from sbe39");
+  if (!s39Read())
+    flogf("\nread fails");
+  flogf("\ns39Depth() -> %f", s39Depth());
+  flogf("\ns39Temp() -> %f", s39Temp());
+  s39DataWait();
+  s39Read();
+  flogf("\ns39Depth() -> %f", s39Depth());
+  flogf("\ns39Temp() -> %f", s39Temp());
+  // s39Auton(true);
+  flogf("\n\nPress any to talk, Q to exit");
+  flogf("\nconnected to s39");
   while (true) {
-    if (TURxQueuedCount(port)) {
-      c=TURxGetByte(port,false);
-      cputc(c);
-    }
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      if (c=='C') {
-        antDevice(cf2_dev);
-        continue;
-      }
-      if (c=='A') {
-        antDevice(a3la_dev);
-        continue;
-      }
+      TUTxPutByte(ant.port,c,false);
+    }
+    while (TURxQueuedCount(ant.port)) {
+      c=TURxGetByte(ant.port,false);
       cputc(c);
-      TUTxPutByte(port,c,false);
     }
   }
-  */
-
-  gpsStop();
-  antStop();
+  // s39Auton(false);
+  // s39GetSamples();
+  utlStop("\nnormal");
 }
