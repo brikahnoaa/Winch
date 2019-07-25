@@ -25,6 +25,7 @@ typedef struct IriInfo {
   int landResp;             // wait secs for cmds/data string from land (20)
   int hupMs;                // ms +++ ms for HUP (2000)
   int redial;               // how many calls to make (5)
+  int sendSz;               // how many bytes to send between sendPause ms
   int signalMin;            // min iri signal level to try transmit (2)
   int timeout;              // seconds for steps like signal, sats (60)
 } IriInfo;
@@ -40,7 +41,7 @@ typedef struct IriData {
   int log;                  // log of file transfers
   int sats;
   int signal;
-  unsigned long usec;       // microsec delay calculated from rudBaud/sendSz
+  unsigned long usec;       // microsec delay calculated from baud/sendSz
 } IriData;
 
 static int iriCRC(uchar *buf, int cnt);

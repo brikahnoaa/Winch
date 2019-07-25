@@ -1,8 +1,7 @@
-// antTst.c
+// a3la.c
 #include <main.h>
 
 extern AntInfo ant;
-extern CtdInfo ctd;
 
 void main(void){
   char c;

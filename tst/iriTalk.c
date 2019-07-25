@@ -1,7 +1,7 @@
 // gpsTst.c
 #include <main.h>
 
-extern GpsInfo gps;
+extern IriData iri;
 
 void main(void){
   Serial port;
@@ -9,16 +9,16 @@ void main(void){
   sysInit();
   mpcInit();
   antInit();
-  gpsInit();
+  iriInit();
   //
   antStart();
-  gpsStart();
-  gpsSats();
-  gpsStats();
+  iriStart();
+  iriSats();
+  iriStats();
   if (iridSig())
     flogf("\niridSig\t| fail");
   /**/
-  port = gps.port;
+  port = iri.port;
   flogf("\nPress Q to exit, C:cf2, A:a3la; antenna:: G:gps, I:irid\n");
   while (true) {
     if (TURxQueuedCount(port)) {
@@ -50,6 +50,6 @@ void main(void){
   }
   /**/
 
-  gpsStop();
+  iriStop();
   antStop();
 }

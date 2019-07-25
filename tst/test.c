@@ -1,67 +1,72 @@
-// setup.c
-
+// rudics.c
 #include <main.h>
 
-/*
-  When the program starts on deck, make the screen user friendly.
-  Can Lauren run the program on the deck by herself?
-  For example, include inquiries like these:
-  a. Have you activated the winch amodem? y/n
-  (it should not proceed unless the operator responds ‘y’)
-  b. Do you want to run the CTD pump?
-  Y means it is a real deployment.  N means this is a simulation.
- */
-/*
- * talk to user about setup. preview of setup. clear and set env vars.
- *
- * .1 current vars  .2 winch amodem (push on)?  
- * .3 test mode?  .4 ctd pump?
- */
+extern GpsInfo gps;
+extern BoyInfo boy;
 
-int yorn( void );
-void veePrint(void);
-
-/// rets: 0=n 1=y
-// secret: exit on q
-int yorn( void ) {
-  short c;
-  printf( "(y/n) " );
-  c = cgetc();
-  switch (c) {
-    case 'n': return(0);
-    case 'N': return(0);
-    case 'y': return(1);
-    case 'Y': return(1);
-    case 'q': exit(1);
-    case 'Q': exit(1);
+void main(void){
+  // Serial port;
+  // char c;
+  char *buff;
+  int len, cnt;
+  int i, r;
+  sysInit();
+  mpcInit();
+  antInit();
+  gpsInit();
+  //
+  antStart();
+  gpsStart();
+  //
+  len = tst.t2;
+  cnt = tst.t1;
+  cprintf("\nlength tst.t2=%d, count tst.t1=%d ", len, cnt);
+  cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
+  buff = malloc(len);
+  // gpsStats();
+  // flogf("\n%s\n", utlTime());
+  // gpsStats();
+  // flogf("\n%s\n", utlTime());
+  antSwitch(irid_ant);
+  if (iridSig()) return;
+  if (iridDial()) return;
+  for (i=1; i<=cnt; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d", i, cnt, len, gps.rudBaud);
+    r = iridSendBlock(buff, len, i, cnt);
+    cprintf("(%d)\n", r);
   }
-  // try again
-  printf( "\n" );
-  return(yorn());
+  iridLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    len = iridLandCmds(buff);
+  iridHup();
+  iridSig();
+  flogf("\n%s\n", utlTime());
+  /*
+  port = gps.port;
+  flogf("\nPress Q to exit, C:cf2, A:a3la\n");
+  while (true) {
+    if (TURxQueuedCount(port)) {
+      c=TURxGetByte(port,false);
+      cputc(c);
+    }
+    if (cgetq()) {
+      c=cgetc();
+      if (c=='Q') break;
+      if (c=='C') {
+        antDevice(cf2_dev);
+        continue;
+      }
+      if (c=='A') {
+        antDevice(a3la_dev);
+        continue;
+      }
+      cputc(c);
+      TUTxPutByte(port,c,false);
+    }
+  }
+  */
+
+  gpsStop();
+  antStop();
 }
-
-///
-// print all vee vars, ignore qpbc
-void veePrint(void) {
-  static char *self="veePrint";
-  VEEVar *vv;
-  char *name, *val;
-  DBG();
-  vv = VEEFetchNext(NULL);
-  while (vv) {
-    name = VEEGetName(vv);
-    val = VEEFetchStr(name, "");
-    if (strstr(name, "SYS.QPBC")) continue;
-    printf("%s=%s\n", name, val);
-    vv = VEEFetchNext(vv);
-  } // (vv)
-} // cfgVee
-
-///
-void main(void) {
-  int pump, test, ask;
-  pump=test=ask=0;
-  printf( "\n Set up system variables \n\n" );
-  printf( "\n%d\n", yorn());
-  veePrint();
-} // main

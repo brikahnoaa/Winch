@@ -7,7 +7,6 @@ extern AntInfo ant;
 extern BoyInfo boy;
 extern S16Info s16;
 extern S39Info s39;
-// extern EngInfo eng;
 extern IriInfo iri;
 extern MpcInfo mpc;
 extern NgkInfo ngk;
@@ -81,6 +80,7 @@ static CfgParam cfgP[] = {
   {'i',  "iri.landResp",  &iri.landResp,    "ilR",  "20"},
   {'i',  "iri.redial",    &iri.redial,      "ire",  "25"},
   {'i',  "iri.baud",      &iri.baud,        "iba",  "1800"},
+  {'i',  "iri.sendSz",    &iri.sendSz,      "isS",  "16"},
   {'i',  "iri.signalMin", &iri.signalMin,   "isM",  "2"},
   {'i',  "iri.timeout",   &iri.timeout,     "ito",  "60"},
 

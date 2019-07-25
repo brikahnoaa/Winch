@@ -27,11 +27,11 @@ void main(void){
   if (iriDial()) return;
   try = iri.hdrTry;
   while (!s) {
-    if (try-- <= 0) throw(1);
+    if (try-- <= 0) raise(1);
     flogf(" projHdr");
     utlWriteBlock(irid.port, irid.projHdr, hdr);
-    s = utlExpect(irid.port, all.str, "ACK", iri.hdrPause);
-    if (strstr(all.str, "NO CARRIER")) throw(2);
+    s = utlReadExpect(irid.port, all.str, "ACK", iri.hdrResp);
+    if (strstr(all.str, "NO CARRIER")) raise(2);
   }
   flogf("\n hello\n");
   sprintf(irid.block, "hello");
@@ -49,11 +49,11 @@ void main(void){
       times[r++] = (float)(sec-sec0)+(float)tick/40000.0;
     } 
   }
-  catch:
-  printf("\n<%d'%s'<", r, utlNonPrintBlock(resp, r));
+  except:
+  printf("\n<%d'%s'<", r, utlNonPrint(resp, r));
   for (i=0; i<=r; i++)
     printf("\n time=%5.3f [%d] x%02X '%s'",
-        times[i], i, resp[i], utlNonPrintBlock(resp+i,1));
+        times[i], i, resp[i], utlNonPrint(resp+i,1));
   iriHup();
   iriSig();
   iriStop();
