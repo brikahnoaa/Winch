@@ -21,8 +21,6 @@ typedef struct S39Info {
 } S39Info;
 
 static bool s39Pending(void);
-static void s39Break(void);
-static void s39Flush(void);
 
 bool s39Data(void);
 bool s39DataWait(void);
@@ -31,13 +29,13 @@ bool s39Read(void);
 float s39Depth(void);
 float s39Temp(void);
 int s39Auton(bool auton);
+int s39GetSamples(void);
+int s39Init(void);
 int s39LogClose(void);
 int s39LogOpen(void);
+int s39Sample(void);
 int s39Start(void);
 int s39Stop(void);
-void s39GetSamples(void);
-void s39Init(void);
-void s39Sample(void);
-void s39Test(void);
+int s39Test(void);
 
 #endif

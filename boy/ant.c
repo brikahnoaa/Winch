@@ -11,8 +11,8 @@ AntInfo ant;
 // turn on antenna module, wait until ant responds
 // sets: ant.mode .port
 void antInit(void) {
-  short rx, tx;
   static char *self="antInit";
+  short rx, tx;
   DBG();
   ant.me="ant";
   // port
@@ -29,6 +29,7 @@ void antInit(void) {
 // turn on, clean, set params
 int antStart(void) {
   static char *self="antStart";
+  DBG();
   ant.on = true;
   flogf("\n === ant module start %s", utlDateTime());
   antLogOpen();
@@ -39,7 +40,7 @@ int antStart(void) {
   TUTxFlush(ant.port);
   PIOSet(ANT_PWR);
   // get cf2 startup message
-  if (!utlReadExpect(ant.port, all.str, "ok", 6))
+  if (!utlReadExpect(ant.port, all.str, "ok", 12))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
   DBG1("%s", all.str);
   return 0;

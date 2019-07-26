@@ -112,8 +112,8 @@ void mpcPamPulse(int pin) {
 
 ///
 // pam port is shared
-Serial mpcPamPort(void) {
-  return mpc.pamPort;
+void mpcPamPort(Serial *port) {
+  *port = mpc.pamPort;
 } // mpcPort
 
 ///

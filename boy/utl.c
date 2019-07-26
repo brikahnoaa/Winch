@@ -262,7 +262,7 @@ char *utlDateTime(void) {
 ///
 // MMDDYYYYHHMMSS 
 // returns: global char *utl.ret
-char *utlDateTimeS16(void) {
+char *utlDateTimeSBE(void) {
   struct tm *tim;
   time_t secs;
   time(&secs);

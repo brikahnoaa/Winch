@@ -10,14 +10,16 @@ S39Info s39;
 ///
 // turn on s39 module, wait until s39 responds
 // sets: s39.mode .port
-void s39Init(void) {
+int s39Init(void) {
   static char *self="s39Init";
   DBG();
   s39.me="s39";
   antPort(&s39.port);
-  s39.on = false;
-  s39Start();
-  utlReadExpect(s39.port, all.str, EXEC, 2);
+  // set params
+  if (s39.startStr) {
+    utlWrite(s39.port, s39.startStr, EOL);
+    utlReadExpect(s39.port, all.str, EXEC, 2);
+  }
   utlWrite(s39.port, "TxSampleNum=N", EOL);
   utlReadExpect(s39.port, all.str, EXEC, 2);
   utlWrite(s39.port, "txRealTime=n", EOL);
@@ -26,38 +28,26 @@ void s39Init(void) {
     utlWrite(s39.port, s39.initStr, EOL);
     utlReadExpect(s39.port, all.str, EXEC, 2);
   }
-  // just in case auton was left on
+  // just in case hw is in autonomous mode
   utlWrite(s39.port, "stop", EOL);
   utlReadExpect(s39.port, all.str, EXEC, 2);
-  s39Stop();
+  s39.on = false;
+  return 0;
 } // s39Init
 
 ///
-// turn on, clean, set params, talk to sbe39
+// open log, set time
 int s39Start(void) {
   static char *self="s39Start";
-  if (s39.on) // verify
-    if (s39Prompt()) {
-      s39Sample();
-      return 0;
-    } else {
-      flogf("\n%s(): ERR sbe39, expected prompt", self);
-      return 1;
-    }
-  s39.on = true;
-  flogf("\n === s39 module start %s", utlDateTime());
-  // s39LogOpen();
   antDevice(cf2_dev);
   utlDelay(200);
-  TURxFlush(s39.port);
-  TUTxFlush(s39.port);
-  // get cf2 startup message
-  if (!utlReadExpect(s39.port, all.str, "ok", 6))
-    flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  DBG1("%s", all.str);
-  if (s39.auton)
-    s39Auton(false);
-  sprintf(all.str, "datetime=%s", utlDateTimeS16());
+  if (!s39.on) {
+    TURxFlush(s39.port);
+    TUTxFlush(s39.port);
+    s39.on = true;
+  }
+  if (s39.auton) s39Auton(false);
+  sprintf(all.str, "datetime=%s", utlDateTimeSBE());
   utlWrite(s39.port, all.str, EOL);
   if (!utlReadExpect(s39.port, all.str, EXEC, 5))
     flogf("\n%s(): ERR sbe39, datetime not executed", self);
@@ -65,16 +55,16 @@ int s39Start(void) {
     utlWrite(s39.port, s39.startStr, EOL);
     utlReadExpect(s39.port, all.str, EXEC, 2);
   }
+  if (!s39.log) s39LogOpen();
   s39Sample();
   return 0;
 } // s39Start
 
 ///
 int s39Stop() {
-  s39.on = false;
-  flogf("\n === s39 module stop %s", utlDateTime());
+  if (s39.log) s39LogClose();
   if (s39.auton) s39Auton(false);
-  s39LogClose();
+  s39.on = false;
   return 0;
 } // s39Stop
 
@@ -83,8 +73,7 @@ int s39Stop() {
 int s39LogOpen(void) {
   static char *self="s39LogOpen";
   int r=0;
-  if (!s39.on)
-    s39Start();
+  if (!s39.on) s39Start();
   if (!s39.log)
     r = utlLogOpen(&s39.log, s39.me);
   else
@@ -119,8 +108,8 @@ bool s39Prompt() {
   utlWrite(s39.port, "", EOL);
   if (utlReadExpect(s39.port, all.str, EXEC, 1))
     return true;
-  // try a third time after break
-  s39Break();
+  // try a third time after break // send umpc main prog command
+  TUTxPutByte(s39.port, (ushort) 2,1);      // ^B  (blocking)
   utlNap(2);
   TURxFlush(s39.port);
   utlWrite(s39.port, "", EOL);
@@ -129,14 +118,6 @@ bool s39Prompt() {
   utlErr(s39_err, "s39Prompt() fail");
   return false;
 } // s39Prompt
-
-///
-// reset or exit sync mode
-void s39Break(void) {
-  static char *self="s39Break";
-  DBG();
-  TUTxPutByte(s39.port, (ushort) 2,1);      // ^B  (blocking)
-} // s39Break
 
 ///
 // data waiting
@@ -164,8 +145,8 @@ bool s39DataWait(void) {
 ///
 // flush; if !tmrOn request sample
 // sets: s39_tmr
-void s39Sample(void) {
-  if (s39Pending()) return;
+int s39Sample(void) {
+  if (s39Pending()) return 1;
   DBG0("aSam");
   // flush old data, check for sleep message and prompt if needed
   if (s39Data()) {
@@ -182,6 +163,7 @@ void s39Sample(void) {
     utlReadWait(s39.port, all.str, 1);
   tmrStart(s39_tmr, s39.delay);
   s39.sampT = time(0);
+  return 0;
 } // s39Sample
 
 ///
@@ -289,7 +271,7 @@ int s39Auton(bool auton) {
 
 ///
 // write stored sample to a file
-void s39GetSamples(void) {
+int s39GetSamples(void) {
   static char *self="s39GetSamples";
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
@@ -303,7 +285,7 @@ void s39GetSamples(void) {
   else
     if (utlLogOpen(&log, s39.me)) {
       flogf("%s() failed", self);
-      return;
+      return 1;
     }
   s39Prompt();          // wakeup
   utlWrite(s39.port, "GetSamples:", EOL);
@@ -322,4 +304,5 @@ void s39GetSamples(void) {
     utlWrite(s39.port, "initLogging", EOL);
     utlReadExpect(s39.port, all.str, "-->", 2);
   }
+  return 0;
 } // s39GetSamples

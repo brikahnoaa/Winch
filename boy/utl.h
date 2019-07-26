@@ -45,7 +45,7 @@ extern AllData all;
 
 char *utlDate(void);
 char *utlDateTime(void);
-char *utlDateTimeS16(void);
+char *utlDateTimeSBE(void);
 char *utlDateTimeFmt(time_t secs);
 char *utlReadExpect(Serial port, char *in, char *expect, int wait);
 char *utlNonPrint (char *in, int len);

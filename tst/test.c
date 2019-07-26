@@ -9,7 +9,9 @@ void main(void){
   sysInit();
   mpcInit();
   antInit();
+  s39Init();
   antStart();
+  s39Start();
   s39Sample();
   if (!s39DataWait())
     flogf("\ndata wait fail, no response from sbe39");

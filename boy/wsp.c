@@ -23,7 +23,7 @@ void wspInit(void) {
   static char *self="wspInit";
   DBG();
   wsp.me="wsp";
-  wsp.port = mpcPamPort();
+  mpcPamPort(&wsp.port);
   mpcPamPwr(wsp1_pam, false);
   mpcPamPwr(wsp2_pam, false);
   mpcPamPwr(wsp3_pam, false);

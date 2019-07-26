@@ -6,9 +6,6 @@
 
 S16Info s16;
 
-// general note: s16 wants \r only for input, outputs \r\n
-// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
-//
 // \r input, echos input.  \r\n before next output.
 // pause 0.33s between \rn and s> prompt.
 // wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
@@ -17,54 +14,47 @@ S16Info s16;
 // NOTE - sbe16 does not echo while logging, must get prompt before STOP
 
 ///
-// sets: s16.port .s16Pending
-void s16Init(void) {
+// sets: s16.port
+int s16Init(void) {
   static char *self="s16Init";
   DBG();
   s16.me="s16";
-  s16.port = mpcPamPort();
+  mpcPamPort(&s16.port);
   if (dbg.test) s16.pumpMode=0;
-  s16Start();
   utlWrite(s16.port, "DelayBeforeSampling=0", EOL);
-  utlReadWait(s16.port, all.str, 1);   // echo
+  utlReadExpect(s16.port, all.str, EXEC, 2);
+  // just in case hw is in autonomous mode
+  utlWrite(s16.port, "stop", EOL);
+  utlReadExpect(s16.port, all.str, EXEC, 2);
   if (s16.initStr) {
     utlWrite(s16.port, s16.initStr, EOL);
-    utlReadWait(s16.port, all.str, 1);   // echo
+    utlReadExpect(s16.port, all.str, EXEC, 2);
   }
-  utlWrite(s16.port, "stop", EOL);
-  utlReadWait(s16.port, all.str, 1);   // echo
-  s16Stop();
+  s16.on = false;
+  return 0;
 } // s16Init
 
 ///
 int s16Start(void) {
   static char *self="s16Start";
-  if (s16.on) // verify
-    if (s16Prompt()) {
-      s16Sample();
-      return 0;
-    } else {
-      flogf("\n%s(): ERR sbe16, expected prompt", self);
-      return 1;
-    }
-  s16.on = true;
-  s16LogOpen();
-  flogf("\n === buoy sbe16 start %s", utlDateTime());
-  mpcPamPwr(sbe16_pam, true);
-  tmrStop(s16_tmr);
-  if (!s16Prompt())
-    utlErr(s16_err, "s16: no prompt");
-  // 0=no 1=.5sec 2=during
+  if (!s16.on) {
+    TURxFlush(s16.port);
+    TUTxFlush(s16.port);
+    s16.on = true;
+  }
+  // pumpMode 0=no 1=.5sec 2=during
   sprintf(all.str, "pumpmode=%d", s16.pumpMode);
   utlWrite(s16.port, all.str, EOL);
-  utlReadWait(s16.port, all.str, 2);   // echo
-  sprintf(all.str, "datetime=%s", utlDateTimeS16());
+  utlReadExpect(s16.port, all.str, EXEC, 2);
+  sprintf(all.str, "datetime=%s", utlDateTimeSBE());
   utlWrite(s16.port, all.str, EOL);
-  utlReadWait(s16.port, all.str, 2);   // echo
+  if (!utlReadExpect(s16.port, all.str, EXEC, 5))
+    flogf("\n%s(): ERR sbe16, datetime not executed", self);
   if (s16.startStr) {
     utlWrite(s16.port, s16.startStr, EOL);
-    utlReadWait(s16.port, all.str, 2);   // echo
+    utlReadExpect(s16.port, all.str, EXEC, 2);
   }
+  if (!s16.log) s16LogOpen();
   s16Sample();
   return 0;
 } // s16Start
@@ -72,10 +62,8 @@ int s16Start(void) {
 ///
 int s16Stop(void){
   static char *self="s16Stop";
-  flogf("\n === buoy sbe16 stop %s", utlDateTime());
-  antLogClose();
+  if (s16.log) s16LogClose();
   if (s16.auton) s16Auton(false);
-  mpcPamPwr(sbe16_pam, false);
   s16.on = false;
   return 0;
 } // s16Stop
@@ -85,8 +73,7 @@ int s16Stop(void){
 int s16LogOpen(void) {
   static char *self="s16LogOpen";
   int r=0;
-  if (!s16.on)
-    s16Start();
+  if (!s16.on) s16Start();
   if (!s16.log)
     r = utlLogOpen(&s16.log, s16.me);
   else
@@ -114,26 +101,18 @@ bool s16Prompt(void) {
   DBG1("cPt");
   if (s16Pending()) 
     s16DataWait();
-  s16Flush();
+  TURxFlush(s16.port);
   utlWrite(s16.port, "", EOL);
   // looking for S> at end
   if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
   // try again after break
-  s16Break();
+  TUTxBreak(s16.port, 5000);
   utlWrite(s16.port, "", EOL);
   if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
   return false;
 } // s16Prompt
-
-///
-// reset, exit sync mode
-void s16Break(void) {
-  static char *self="s16Break";
-  DBG();
-  TUTxBreak(s16.port, 5000);
-} // s16Break
 
 ///
 // data waiting
@@ -161,8 +140,8 @@ bool s16DataWait(void) {
 ///
 // poke s16 to get sample, set interval timer (ignore s16.auton)
 // sets: s16_tmr
-void s16Sample(void) {
-  if (s16Pending()) return;
+int s16Sample(void) {
+  if (s16Pending()) return 1;
   DBG1("cSam");
   // flush old data, check for sleep message and prompt if needed
   if (s16Data()) {
@@ -178,6 +157,7 @@ void s16Sample(void) {
   if (!s16.auton)
     utlReadWait(s16.port, all.str, 1);
   tmrStart(s16_tmr, s16.timer);
+  return 0;
 } // s16Sample
 
 ///
@@ -285,7 +265,7 @@ int s16Auton(bool auton) {
 
 ///
 // get science, clear log
-void s16GetSamples(void) {
+int s16GetSamples(void) {
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
@@ -310,17 +290,12 @@ void s16GetSamples(void) {
     utlReadExpect(s16.port, all.str, EXEC, 2);
   }
   flogf(" = %d bytes to %s.log", total, s16.me);
+  return 0;
 } // s16GetSamples
 
 ///
-// flush input - clears timeout
-void s16Flush(void) {
-  TURxFlush(s16.port);
-} // s16Flush
-
-///
 // loop to test sbe16
-void s16Test(void) {
+int s16Test(void) {
   bool b;
   char c;
   float f;
@@ -390,4 +365,5 @@ void s16Test(void) {
       }
     }
   }
+  return 0;
 } // s16Test

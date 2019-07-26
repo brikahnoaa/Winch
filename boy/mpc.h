@@ -39,8 +39,8 @@ void mpcPamDev(MpcPamType pam);
 void mpcPamPwr(MpcPamType pam, bool on);
 void mpcPamPulse(int pin);
 void mpcInit(void);
+void mpcPamPort(Serial *port);
 void mpcSleep(void);
 void mpcStop(void);
-Serial mpcPamPort(void);
 
 #endif
