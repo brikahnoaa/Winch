@@ -73,7 +73,6 @@ int s16Stop(void){
 int s16LogOpen(void) {
   static char *self="s16LogOpen";
   int r=0;
-  if (!s16.on) s16Start();
   if (!s16.log)
     r = utlLogOpen(&s16.log, s16.me);
   else
@@ -98,7 +97,7 @@ int s16LogClose(void) {
 // sbe16
 // s16Prompt - poke buoy CTD, look for prompt
 bool s16Prompt(void) {
-  DBG1("cPt");
+  DBG1("6Pt");
   if (s16Pending()) 
     s16DataWait();
   TURxFlush(s16.port);
@@ -111,6 +110,7 @@ bool s16Prompt(void) {
   utlWrite(s16.port, "", EOL);
   if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
+  utlErr(s16, "s16Prompt() fail");
   return false;
 } // s16Prompt
 
@@ -118,7 +118,7 @@ bool s16Prompt(void) {
 // data waiting
 bool s16Data() {
   int r;
-  DBG2("cDa");
+  DBG2("6Da");
   r=TURxQueuedCount(s16.port);
   if (r)
     tmrStop(s16_tmr);
@@ -142,7 +142,7 @@ bool s16DataWait(void) {
 // sets: s16_tmr
 int s16Sample(void) {
   if (s16Pending()) return 1;
-  DBG1("cSam");
+  DBG1("6Sam");
   // flush old data, check for sleep message and prompt if needed
   if (s16Data()) {
     utlRead(s16.port, all.str);
@@ -166,22 +166,20 @@ int s16Sample(void) {
 bool s16Read(void) {
   char *p0, *p1, *p2, *p3;
   static char *self="s16Read";
-  DBG();
   if (!s16Data()) return false;
-  // utlRead(s16.port, all.str);
+  DBG();
+  // what about auton mode? see s39.c ??
   p0 = utlReadExpect(s16.port, all.str, EXEC, 2);
   if (!p0) {
-    utlErr(s16_err, "s16Read: no S>");
+    utlErr(s16_err, "s16Read: no data");
     return false;
   } // not data
   if (s16.log) 
-    write(s16.log, all.str, strlen(all.str)-2); // no S>
+    write(s16.log, all.str, strlen(all.str)-1); 
   // Temp, conductivity, depth, fluromtr, PAR, salinity, time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
-  // note: leading # in syncmode '# 20.6...'
-  // note: picks up trailing S> prompt if not in syncmode
-  p0 = all.str;
-  p1 = strtok(p0, "\r\n#, ");
+  // note: picks up trailing S> prompt 
+  p1 = strtok(all.str, "\r\n#, ");
   if (!p1) return false;
   s16.temp = atof( p1 );
   p2 = strtok(NULL, ", "); 

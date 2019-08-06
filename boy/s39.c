@@ -73,7 +73,6 @@ int s39Stop() {
 int s39LogOpen(void) {
   static char *self="s39LogOpen";
   int r=0;
-  if (!s39.on) s39Start();
   if (!s39.log)
     r = utlLogOpen(&s39.log, s39.me);
   else
@@ -96,24 +95,24 @@ int s39LogClose(void) {
 ///
 // rets: true==success (returns early)
 bool s39Prompt() {
-  DBG1("aP");
+  DBG1("9Pt");
+  antDevChk(cf2_dev);
   if (s39Pending()) 
     s39DataWait();
-  antDevice(cf2_dev);
   TURxFlush(s39.port);
   // if asleep, first EOL wakens but no response
   utlWrite(s39.port, "", EOL);
   if (utlReadExpect(s39.port, all.str, EXEC, 1))
     return true;
   utlWrite(s39.port, "", EOL);
-  if (utlReadExpect(s39.port, all.str, EXEC, 1))
+  if (utlReadExpect(s39.port, all.str, EXEC, 2))
     return true;
   // try a third time after break // send umpc main prog command
   TUTxPutByte(s39.port, (ushort) 2,1);      // ^B  (blocking)
   utlNap(2);
   TURxFlush(s39.port);
   utlWrite(s39.port, "", EOL);
-  if (utlReadExpect(s39.port, all.str, EXEC, 1))
+  if (utlReadExpect(s39.port, all.str, EXEC, 2))
     return true;
   utlErr(s39_err, "s39Prompt() fail");
   return false;
@@ -123,7 +122,7 @@ bool s39Prompt() {
 // data waiting
 bool s39Data() {
   int r;
-  DBG2("aD");
+  DBG2("9D");
   r=TURxQueuedCount(s39.port);
   if (r)
     tmrStop(s39_tmr);
@@ -147,7 +146,7 @@ bool s39DataWait(void) {
 // sets: s39_tmr
 int s39Sample(void) {
   if (s39Pending()) return 1;
-  DBG0("aSam");
+  DBG0("9Sam");
   // flush old data, check for sleep message and prompt if needed
   if (s39Data()) {
     utlRead(s39.port, all.str);
@@ -162,7 +161,6 @@ int s39Sample(void) {
   if (!s39.auton)
     utlReadWait(s39.port, all.str, 1);
   tmrStart(s39_tmr, s39.delay);
-  s39.sampT = time(0);
   return 0;
 } // s39Sample
 
@@ -171,13 +169,11 @@ int s39Sample(void) {
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
 //  - note: now TS=TSSon due to TxSampleNum=N
 // sets: s39.temp .depth 
-// note: s39.sampT set in s39Sample()
 bool s39Read(void) {
   char *p0, *p1, *p2;
   static char *self="s39Read";
-  DBG0("aRd");
   if (!s39Data()) return false;
-  // data waiting
+  DBG();
   // with auton there is no Executed, so look for #
   if (s39.auton)
     p0 = utlReadExpect(s39.port, all.str, "# ", 2);
@@ -196,7 +192,6 @@ bool s39Read(void) {
     utlErr(s39_err, "s39Read: garbage");
     return false;
   }
-  // sampT was set in s39Sample
   // new values
   s39.temp = atof(p1);
   s39.depth = atof(p2);

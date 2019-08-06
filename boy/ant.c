@@ -21,7 +21,7 @@ void antInit(void) {
   ant.port = TUOpen(rx, tx, BAUD, 0);
   if (ant.port==NULL)
     utlStop("antInit() com1 open fail");
-  antDevice(null_dev);
+  antDevice(cf2_dev);
   ant.on = false;
 } // antInit
 
@@ -52,7 +52,7 @@ int antStop() {
   ant.on = false;
   flogf("\n === ant module stop %s", utlDateTime());
   antLogClose();
-  antDevice(null_dev);
+  antDevice(cf2_dev);
   PIOClear(ANT_PWR);
   return 0;
 } // antStop
@@ -85,24 +85,38 @@ int antLogClose(void) {
 } // antLogClose
 
 ///
-// antmod uMPC cf2 and iridium A3LA
-// switch between devices on com1, clear pipe
-void antDevice(DevType dev) {
-  DBG1("antDevice(%s)",(dev==cf2_dev)?"cf2":"a3la");
-  if (dev==ant.dev) return;
-  utlDelay(SETTLE);
-  if (dev==cf2_dev)
-    PIOSet(ANT_SEL);
-  else if (dev==a3la_dev)
-    PIOClear(ANT_SEL);
-  else
-    return;
+// switch between devices cf2/a3la on com1, clear pipe
+// rets: sets: ant.dev
+DevType antDevice(DevType dev) {
+  DBG1("antDevice(%d)", dev);
+  if (dev==ant.dev) return dev;
+  switch (dev) {
+    case cf2_dev:
+      PIOSet(ANT_SEL); break;
+    case a3la_dev:
+      PIOClear(ANT_SEL); break;
+    default:
+      return ant.dev; 
+  }
   utlDelay(SETTLE);
   TUTxFlush(ant.port);
   TURxFlush(ant.port);
   ant.dev = dev;
-  return;
+  return dev;
 } // antDevice
+
+///
+// make sure device is set to dev
+int antDevChk(DevType dev) {
+  if (antDevice(query_dev)!=dev) {
+    sprintf(all.str, "antDevChk(%d):fail", dev);
+    utlErr(ant_err, all.str);
+    antDevice(dev);
+    return 1;
+  }
+  return 0;
+} // antDevChk
+
 
 ///
 // s39.port = gps.port = antPort()
