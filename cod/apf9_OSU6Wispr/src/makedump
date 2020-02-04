@@ -1,0 +1,214 @@
+cd ../apf9lib; make include
+make[1]: Entering directory `/home/Administrator/apf9_cj/apf9lib'
+../bin/swh.exe D=APF9_H if=apf9.c of=../include/apf9.h
+../bin/swh.exe D=APF9COM_H if=apf9com.c of=../include/apf9com.h
+../bin/swh.exe D=APF9ICOM_H if=apf9icom.c of=../include/apf9icom.h
+../bin/swh.exe D=ASSERT_H if=assert.c of=../include/assert.h
+../bin/swh.exe D=CONIO_H if=conio.c of=../include/conio.h
+../bin/swh.exe D=CSTRING_H if=cstring.c of=../include/cstring.h
+../bin/swh.exe D=CTDIO_H if=ctdio.c of=../include/ctdio.h
+../bin/swh.exe D=DOPRNT_H if=doprnt.c of=../include/doprnt.h
+../bin/swh.exe D=DS2404_H if=ds2404.c of=../include/ds2404.h
+../bin/swh.exe D=ERRNO_H if=errno.c of=../include/errno.h
+../bin/swh.exe D=FLASHIO_H if=flashio.c of=../include/flashio.h
+../bin/swh.exe D=FSTRING_H if=fstring.c of=../include/fstring.h
+../bin/swh.exe D=LT1598AD_H if=lt1598ad.c of=../include/lt1598ad.h
+../bin/swh.exe D=PSD835_H if=psd835.c of=../include/psd835.h
+../bin/swh.exe D=SERMUX_H if=sermux.c of=../include/sermux.h
+../bin/swh.exe D=TC58V64_H if=tc58v64.c of=../include/tc58v64.h
+../bin/swh.exe D=TRACE_H if=trace.c of=../include/trace.h
+../bin/swh.exe D=UNISTD_H if=unistd.c of=../include/unistd.h
+../bin/swh.exe D=X24C16_H if=x24c16.c of=../include/x24c16.h
+Done making ...
+make[1]: Leaving directory `/home/Administrator/apf9_cj/apf9lib'
+cd ../lib; make include
+make[1]: Entering directory `/home/Administrator/apf9_cj/lib'
+../bin/swh.exe D=CHAT_H if=chat.c of=../include/chat.h
+../bin/swh.exe D=CRC_H if=crc.c of=../include/crc.h
+../bin/swh.exe D=CRC16BIT_H if=crc16bit.c of=../include/crc16bit.h
+../bin/swh.exe D=EXPECT_H if=expect.c of=../include/expect.h
+../bin/swh.exe D=EXTRACT_H if=extract.c of=../include/extract.h
+../bin/swh.exe D=FIFO_H if=fifo.c of=../include/fifo.h
+../bin/swh.exe D=GARMIN_H if=garmin.c of=../include/garmin.h
+../bin/swh.exe D=LOGGER_H if=logger.c of=../include/logger.h
+../bin/swh.exe D=LOGIN_H if=login.c of=../include/login.h
+../bin/swh.exe D=MODEM_H if=modem.c of=../include/modem.h
+../bin/swh.exe D=NAN_H if=nan.c of=../include/nan.h
+../bin/swh.exe D=NMEA_H if=nmea.c of=../include/nmea.h
+../bin/swh.exe D=PKT_H if=pkt.c of=../include/pkt.h
+../bin/swh.exe D=REGCOMP_H if=regcomp.c of=../include/regcomp.h
+../bin/swh.exe D=REGERROR_H if=regerror.c of=../include/regerror.h
+../bin/swh.exe D=RX_H if=rx.c of=../include/rx.h
+../bin/swh.exe D=SBE41CP_H if=sbe41cp.c of=../include/sbe41cp.h
+../bin/swh.exe D=SEASCAN_H if=seascan.c of=../include/seascan.h
+../bin/swh.exe D=SERIAL_H if=serial.c of=../include/serial.h
+../bin/swh.exe D=SNPRINTF_H if=snprintf.c of=../include/snprintf.h
+../bin/swh.exe D=STDIO_H if=stdio.c of=../include/stdio.h
+../bin/swh.exe D=STRTIME_H if=strtime.c of=../include/strtime.h
+../bin/swh.exe D=STRTOUL_H if=strtoul.c of=../include/strtoul.h
+../bin/swh.exe D=TIME_H if=time.c of=../include/time.h
+../bin/swh.exe D=TMPARSE_H if=tmparse.c of=../include/tmparse.h
+../bin/swh.exe D=TX_H if=tx.c of=../include/tx.h
+../bin/swh.exe D=XMODEM_H if=xmodem.c of=../include/xmodem.h
+cp {../lib,../include}/regex.h
+cp {../lib,../include}/regex2.h
+cp {../lib,../include}/regutils.h
+Done making ...
+make[1]: Leaving directory `/home/Administrator/apf9_cj/lib'
+cd ../lib; make
+make[1]: Entering directory `/home/Administrator/apf9_cj/lib'
+Done making ...
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C chat.c
+chat.c: 504: illegal conversion between pointer types (warning)
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C crc.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C crc16bit.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C expect.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C extract.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C fifo.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C garmin.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C logger.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C login.c
+login.c: 175: illegal conversion between pointer types (warning)
+login.c: 235: unused variable definition: numblocks (from line 171) (warning)
+login.c: 235: unused variable definition: len (from line 169) (warning)
+login.c: 235: unused variable definition: i (from line 162) (warning)
+login.c: 235: unused variable definition: blocknum (from line 170) (warning)
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C modem.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C nan.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C nmea.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C pkt.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C regcomp.c
+regcomp.c: 612: array index out of bounds (warning)
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C regerror.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C regexec.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C regfree.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C rx.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C sbe41cp.c
+sbe41cp.c: 1083: function declared implicit int (warning)
+sbe41cp.c: 1274: function declared implicit int (warning)
+sbe41cp.c: 1506: function declared implicit int (warning)
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C seascan.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C serial.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C snprintf.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C stdio.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C stdlib.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C strtime.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C strtoul.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C time.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C tmparse.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C tx.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C xmodem.c
+/cygdrive/c/HT-XA/bin/libr < apex.cmd
+/cygdrive/c/HT-XA/bin/libr r apex.lib chat.obj crc.obj crc16bit.obj expect.obj extract.obj fifo.obj garmin.obj logger.obj login.obj 
+/cygdrive/c/HT-XA/bin/libr r apex.lib modem.obj nan.obj nmea.obj pkt.obj regcomp.obj regerror.obj regexec.obj regfree.obj rx.obj 
+/cygdrive/c/HT-XA/bin/libr r apex.lib seascan.obj serial.obj snprintf.obj stdio.obj stdlib.obj strtime.obj strtoul.obj time.obj 
+/cygdrive/c/HT-XA/bin/libr r apex.lib tmparse.obj tx.obj xmodem.obj	
+Done making ...
+Done making all ...
+make[1]: Leaving directory `/home/Administrator/apf9_cj/lib'
+cd ../lib; make include
+make[1]: Entering directory `/home/Administrator/apf9_cj/lib'
+Done making ...
+make[1]: Leaving directory `/home/Administrator/apf9_cj/lib'
+cd ../apf9lib; make include
+make[1]: Entering directory `/home/Administrator/apf9_cj/apf9lib'
+Done making ...
+make[1]: Leaving directory `/home/Administrator/apf9_cj/apf9lib'
+cd ../apf9lib; make
+make[1]: Entering directory `/home/Administrator/apf9_cj/apf9lib'
+Done making ...
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C apf9.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C apf9com.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C apf9icom.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C assert.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C conio.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C cstring.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C ctdio.c
+ctdio.c: 723: unused variable definition: CtdPutb (from line 680) (warning)
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C doprnt.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C ds2404.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C errno.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C flashio.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C fstring.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C lt1598ad.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C psd835.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C sermux.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C tc58v64.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C trace.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C unistd.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C vfprintf.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I../include -C x24c16.c
+/cygdrive/c/HT-XA/bin/asxa -x powerup.as
+/cygdrive/c/HT-XA/bin/asxa -x rtxa--l.as
+/cygdrive/c/HT-XA/bin/libr < apf9lib.cmd
+/cygdrive/c/HT-XA/bin/libr r apf9.lib apf9.obj apf9com.obj apf9icom.obj assert.obj conio.obj cstring.obj ctdio.obj doprnt.obj 
+/cygdrive/c/HT-XA/bin/libr r apf9.lib ds2404.obj errno.obj flashio.obj fstring.obj lt1598ad.obj psd835.obj sermux.obj 
+/cygdrive/c/HT-XA/bin/libr r apf9.lib tc58v64.obj trace.obj unistd.obj vfprintf.obj x24c16.obj powerup.obj rtxa--l.obj
+Done making ...
+Done making all ...
+make[1]: Leaving directory `/home/Administrator/apf9_cj/apf9lib'
+../bin/swh.exe D=CONTROL_H if=control.c of=control.h
+../bin/swh.exe D=CMDS_H if=cmds.c of=cmds.h
+../bin/swh.exe D=TELEMETR_H if=telemetr.c of=telemetr.h
+../bin/swh.exe D=PROFILE_H if=profile.c of=profile.h
+../bin/swh.exe D=DESCENT_H if=descent.c of=descent.h
+../bin/swh.exe D=PARK_H if=park.c of=park.h
+../bin/swh.exe D=GODEEP_H if=godeep.c of=godeep.h
+../bin/swh.exe D=PRELUDE_H if=prelude.c of=prelude.h
+../bin/swh.exe D=EEPROM_H if=eeprom.c of=eeprom.h
+../bin/swh.exe D=ENGINE_H if=engine.c of=engine.h
+../bin/swh.exe D=UPLOAD_H if=upload.c of=upload.h
+../bin/swh.exe D=DOWNLOAD_H if=download.c of=download.h
+../bin/swh.exe D=CLOGIN_H if=clogin.c of=clogin.h
+../bin/swh.exe D=CONFIG_H if=config.c of=config.h
+../bin/swh.exe D=LBT9522_H if=lbt9522.c of=lbt9522.h
+../bin/swh.exe D=PACTIVAT_H if=pactivat.c of=pactivat.h
+../bin/swh.exe D=RECOVERY_H if=recovery.c of=recovery.h
+../bin/swh.exe D=GPS_H if=gps.c of=gps.h
+../bin/swh.exe D=QUECOM_H if=quecom.c of=quecom.h
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -DFWREV=0xUL -I. -I../include -C apf9main.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C cmds.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C control.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C telemetr.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C profile.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C descent.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C park.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C godeep.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C prelude.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C eeprom.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C engine.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C upload.c
+upload.c: 725: illegal conversion of integer to pointer (warning)
+upload.c: 726: illegal conversion of integer to pointer (warning)
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C download.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C clogin.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C config.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C lbt9522.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C pactivat.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C recovery.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C gps.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C quecom.c
+/cygdrive/c/HT-XA/bin/hlink @app.lnk
+/cygdrive/c/HT-XA/bin/objtohex app.o app.hex
+Done making app.hex ...
+cp app.hex ../psd/app.hex
+Done making ../psd/app.hex ...
+cd ../psd; /cygdrive/c/PSDexpress/utladrm app
+UTLADRM - Merge MCU Firmware Utility
+PSDsoft Express Utility 8.03 Copyright (C) 1993-2004 STMicroelectronics, Inc.
+All Rights Reserved
+
+
+ Updating Main Flash/2nd Flash code/data to 'app.OBJ' file ...
+
+ 
+ Warning ADR025: There is no data within the specified FS5 range.
+ Warning ADR025: There is no data within the specified FS6 range.
+ Warning ADR025: There is no data within the specified FS7 range.
+ Address Translation complete.
+ 
+
+ Warning encountered - reference app.ERR for warning.
+
+Done making ../psd/app.obj ...
+Done making all ...

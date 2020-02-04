@@ -1,0 +1,63 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% $Id: RecoveryMode.tex,v 1.1 2006/11/03 19:08:57 swift Exp $
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% RCS Log:
+%
+% $Log: RecoveryMode.tex,v $
+% Revision 1.1  2006/11/03 19:08:57  swift
+% Added user manual to CVS control.
+%
+% Revision 1.2  2006/07/10 22:24:49  swift
+% Modifications to bring the manual up to date with
+% changes to the SeaBird CTD firmware (v1.1c).
+%
+% Revision 1.1  2006/04/11 14:48:16  swift
+% Initial revision
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Recovery mode.}
+\label{sec:RecoveryMode}
+
+As its name suggests, recovery mode is intended primarily to facilitate
+post-deployment recovery of the float from the ocean.  However, its
+operational behaviors are general enough to allow for many other useful
+applications, too. Recovery mode is fundamentally a remote control feature.
+Section~\ref{sec:RemoteControl} describes the facilility for remote control
+of \iridium\ floats using 2-way commands.  The
+\textbf{ActivateRecoveryMode()} command is used to both initiate and
+maintain recovery mode for as long as the operator desires.
+
+The recovery mode cycle operates on the telemetry-retry period.  Each cycle
+starts by ensuring that the piston is fully extended and the air bladder is
+fully inflated.  Then a GPS fix is obtained and telemetry is initiated to
+upload the GPS fix and a small amount of engineering data to the remote
+host.  The pathname for the file has the pattern \emph{FloatId.YYMMDDhhmm}
+where \emph{FloatId} is the 4-digit float identifier and \emph{YYMMDDhhmm}
+represents the date \& time when the recovery cycle was initiated.  It is a
+simple matter to arrange for the remote host to automatically relay the GPS
+fix to an \iridium\ handset on-board the ship.  This allows recovery
+operations to be conducted without on-shore aid.
+
+The new mission configuration file will also be downloaded from the remote
+host.  If the new mission configuration file contains the
+\textbf{ActivateRecoveryMode()} command then the float will go to sleep for
+one telemetry-retry period and then wake up to repeat the recovery mode
+cycle.  If the new mission configuration file does not contain the
+\textbf{ActivateRecoveryMode()} command then subsequent float behavior
+depends upon what the float was doing before recovery mode was initiated.
+If the float was in its mission prelude then the mission prelude is
+re-initiated\footnote{The mission prelude is not merely continued where it
+  left off when recovery mode was activated; the mission prelude is
+  completely restarted}.
+
+On the other hand, if the float's mission was in progress when recovery mode
+was initiated then upon termination of recovery mode the mission resumes
+where it left off.  That is, if profile~\emph{N\/} had been telemetered just
+prior to initiation of recovery mode then the descent phase of profile
+cycle~\emph{N+1\/} will begin as soon as recovery mode is terminated.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "IridiumApex"
+%%% End: 

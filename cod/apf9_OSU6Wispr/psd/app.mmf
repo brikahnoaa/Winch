@@ -1,0 +1,25 @@
+[ProjectInfo]
+Project=app
+Directory=H:\iridium\psd
+Device Family=PSD8XX
+PartName=PSD835G2V
+Template=
+Description=
+
+[MemoryMapInfo]
+Address Mask=0x00FFFFF
+Natural address field length(bits)=0x14
+Memcs0=fs0,0byyyyyyyy,0x00000,0x0FFFF,F
+Memcs1=fs1,0byyyyyyyy,0x10000,0x1FFFF,F
+Memcs2=fs2,0byyyyyyyy,0x20000,0x2FFFF,F
+Memcs3=fs3,0byyyyyyyy,0x30000,0x3FFFF,F
+Memcs4=fs4,0byyyyyyyy,0x40000,0x4FFFF,F
+Memcs5=fs5,0byyyyyyyy,0x50000,0x5FFFF,F
+Memcs6=fs6,0byyyyyyyy,0x60000,0x6FFFF,F
+Memcs7=fs7,0byyyyyyyy,0x70000,0x7FFFF,F
+Memcs8=rs0,0byyyyyyyy,0x01000,0x02FFF,V
+Memcs9=csiop,0byyyyyyyy,0x00F00,0x00FFF,V
+Memcs10=!pc0,0byyyyyyyy,0x03000,0x82FFF,Peripheral
+Memcs11=!pc1,0byyyyyyyy,0x00EF0,0x00EFF,Peripheral
+Memcs12=!pc2,0byyyyyyyy,0x00EE0,0x00EEF,Peripheral
+Memcs13=!pc3,0byyyyyyyy,0x00ED0,0x00EDF,Peripheral

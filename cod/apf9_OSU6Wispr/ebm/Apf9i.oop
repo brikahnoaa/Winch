@@ -1,0 +1,106 @@
+#ifndef APF9I_OOP
+#define APF9I_OOP
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: Apf9i.oop,v 1.3 2006/11/22 04:03:13 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * RCS Log:
+ *
+ * $Log: Apf9i.oop,v $
+ * Revision 1.3  2006/11/22 04:03:13  swift
+ * Updated energy costs of P, PT, and PTSO samples to match lab measurements of
+ * Sbe41cpIdo.
+ *
+ * Revision 1.2  2006/11/19 15:07:00  swift
+ * Minor change to model output format.
+ *
+ * Revision 1.1  2006/11/18 17:42:37  swift
+ * Energy model for iridium floats.
+ *
+ *========================================================================*/
+/*                                                                        */
+/*========================================================================*/
+template <class BatteryPack>
+class Apf9i
+{
+   // data members
+   private:
+
+      // define the amount of energy consumed per P-only sample
+      const float p_energy_cost; // Joules per sample
+
+      // define the amount of energy consumed per PT sample
+      const float pt_energy_cost; // Joules per sample
+
+      // define the amount of energy consumed per PTS sample
+      const float pts_energy_cost; // Joules per sample
+
+      // define the rate at which the controller consumes charge
+      const float metabolic_current; // Amps
+  
+      // define the amount of energy consumed per boot-up
+      const float boot_up; // Joules per boot-up
+    
+      // define the rate at which the active controller consumes charge
+      const float wake_current; // Amps
+
+   // function members
+   public:
+
+      // initialization constructor
+      Apf9i(void): p_energy_cost(0.40), pt_energy_cost(1.0), pts_energy_cost(1.0),
+         metabolic_current(80e-6), boot_up(0.16), wake_current(0.008) {}
+
+
+      // function to compute the energy cost of a single boot-up
+      double BootUp(void) const {return boot_up;}
+
+      // function to compute the energy cost of 1 profile
+      double MetabolicEnergyCost(BatteryPack &bat, float hours) const;
+
+      // function to return the energy cost of a single P-only sample
+      double PEnergyCost(void) const {return p_energy_cost;}
+
+      // function to return the energy cost of a single PT sample
+      double PtEnergyCost(void) const {return pt_energy_cost;}
+
+      // function to return the energy cost of a single PTS sample
+      double PtsEnergyCost(void) const {return pts_energy_cost;}
+                                         
+      // function to write properties 
+      void Properties(ostream &dest=cout) const;
+
+      // function to return the current consumed during a wake state
+      double WakeCurrent(void) const {return wake_current;}
+};
+
+/*------------------------------------------------------------------------*/
+/*                                                                        */
+/*------------------------------------------------------------------------*/
+template <class BatteryPack>
+double Apf9i<BatteryPack>::MetabolicEnergyCost(BatteryPack &bat, float hours) const
+{
+   const double SecPerHour=3600;
+   double E = hours*SecPerHour*bat.Volts(metabolic_current)*metabolic_current;
+
+   return E;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to write properties                                           */
+/*------------------------------------------------------------------------*/
+template <class BatteryPack>
+void Apf9i<BatteryPack>::Properties(ostream &dest) const
+{
+   fprintf(dest,"$ Controller Model:           %s\n"
+           "$    Metabolic current drain: %g microamps\n"
+           "$    Wake-state current drain: %g milliamps\n"
+           "$    Boot-up: %g Joules/boot-up\n"
+           "$    P-only sample: %g Joules/sample\n"
+           "$    PT sample: %g Joules/sample\n"
+           "$    PTS sample: %g Joules/sample\n"
+           "$\n","Apf9i",metabolic_current*1e6,wake_current*1000,
+           boot_up,p_energy_cost,pt_energy_cost,pts_energy_cost);
+}
+
+#endif // APF9I_OOP

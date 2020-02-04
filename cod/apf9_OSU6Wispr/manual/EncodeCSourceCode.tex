@@ -1,0 +1,318 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% $Id: EncodeCSourceCode.tex,v 1.1 2006/11/03 19:08:57 swift Exp $
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% RCS Log:
+%
+% $Log: EncodeCSourceCode.tex,v $
+% Revision 1.1  2006/11/03 19:08:57  swift
+% Added user manual to CVS control.
+%
+% Revision 1.2  2006/07/10 22:24:49  swift
+% Modifications to bring the manual up to date with
+% changes to the SeaBird CTD firmware (v1.1c).
+%
+% Revision 1.1  2006/04/11 15:32:23  swift
+% Initial revision
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Encoding of hydrographic data.}
+\label{sec:EncodeCSource}
+\renewcommand{\theequation}{\Alph{section}.\arabic{equation}}
+
+The C source code below is used in \apex\ firmware to encode the
+hydrographic data before it is telemetered to the remote host.
+
+{\small
+\begin{verbatim}
+#ifndef ENCODE_H
+#define ENCODE_H
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: EncodeCSourceCode.tex,v 1.1 2006/11/03 19:08:57 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/** RCS log of revisions to the C source code.
+ *
+ * \begin[verbatim]
+ * $Log: EncodeCSourceCode.tex,v $
+ * Revision 1.1  2006/11/03 19:08:57  swift
+ * Added user manual to CVS control.
+ *
+ * Revision 1.2  2006/07/10 22:24:49  swift
+ * Modifications to bring the manual up to date with
+ * changes to the SeaBird CTD firmware (v1.1c).
+ *
+ * Revision 1.3  2006/02/08 20:17:28  swift
+ * Modifications to shorten PTS encoding from 20-bits down to 16-bits and
+ * to shorten the encoding of the number of samples from 16-bits to 8-bits.
+ *
+ * Revision 1.2  2003/09/10 16:50:04  swift
+ * Added change-log tracking macro.
+ *
+ * Revision 1.1  2003/09/10 16:47:17  swift
+ * Initial revision
+ * \end[verbatim]
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#define encodeChangeLog "$RCSfile: EncodeCSourceCode.tex,v $  $Revision: 1.1 $   $Date: 2006/11/03 19:08:57 $"
+
+/* function prototypes */
+unsigned char EncodeN(unsigned int NSample);
+unsigned int  EncodeO(float o2);
+unsigned int  EncodeP(float p);
+unsigned int  EncodeS(float s);
+unsigned int  EncodeT(float t);
+
+#endif /* ENCODE_H */
+
+#include <assert.h>
+#include <nan.h>
+
+/*------------------------------------------------------------------------*/
+/* function to encode the number of samples as an 8-bit unsigned integer  */
+/*------------------------------------------------------------------------*/
+/**
+   This function encodes the number samples in the bin average as an 8-bit
+   unsigned integer with protection against overflow.  The encoding accounts
+   for the full range of 16-bit unsigned integers but only values in the
+   open range: 0<NSample<255 are representable.  This encoding makes full
+   use of all 8-bits.
+
+      \begin[verbatim]
+      input:
+         NSample ... The number of samples in the bin-average.
+
+      output:
+         1) Values greater than or equal to 255 are mapped to 0xff.
+
+         2) All other values are expressed as an 8-bit unsigned integer.
+      \end[verbatim]
+*/
+unsigned char EncodeN(unsigned int NSample)
+{
+   /* prevent overflow of the sample counter */
+   unsigned int N = (NSample>=255) ? 0xff : NSample;
+   
+   return N;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to encode oxygen as a 2-byte unsigned integer                 */
+/*------------------------------------------------------------------------*/
+/**
+   This function implements the hex-encoding of IEEE-formattted floating
+   point oxygen data into 16-bit unsigned integers with 2's-complement
+   representation.  The encoding formula accounts for the full range of
+   32-bit IEEE floating point values but only values in the open range:
+   -4095<o2<61439 are representable.  This encoding makes full use of all
+   16-bits.
+
+      \begin[verbatim]
+      input:
+         o2 ... The oxygen (o2-freq) expressed as a floating point value.
+
+      output:
+         1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+            value: 0xf000.
+
+         2) Oxygen frequency values less than -4095 are mapped to the
+            sentinel hex value: 0xf001.
+
+         3) Oxygen frequency values greater than 61439 are mapped to the
+            sentinel hex value: 0xefff.
+
+         4) All other values are to the nearest integer and expressed as a
+            16-bit signed integer in 2's-complement form.
+      \end[verbatim]
+
+   Important Note: This function is not portable to C-implementations for
+   which unsigned integers do not have exactly two bytes.  For the APF9
+   controller, this function has been fully tested over the full range of
+   oxygen.
+*/
+unsigned int EncodeO(float o2)
+{
+   /* initialize with the mapping for a nonfinite oxygen */
+   long int O2 = 0xf000;
+
+   /* make sure long ints are at least 3 bytes long */
+   assert(sizeof(long int)>=3);
+
+   if (finite(o2))
+   {
+      /* assign out-of-range values to sentinel values */
+      if (o2>=61439) O2=0xefff; else if (o2<=-4095) O2=0xf001;
+
+      /* encode the oxygen frequency (rounded) */
+      else O2 = (unsigned int)(o2 + ((o2<0) ? -0.5 : 0.5));
+
+      /* express in 16-bit 2's-complement form */
+      if (O2<0) O2+=0x10000L;
+   }
+   
+   return O2;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to encode pressure as a 2-byte unsigned integer               */
+/*------------------------------------------------------------------------*/
+/**
+   This function implements the hex-encoding of IEEE-formattted floating
+   point pressure data into 2-byte signed integers with 2's complement
+   representation.  The encoding formula accounts for the full range of
+   32-bit IEEE floating point values but only values in the open range:
+   -3276.7<p<3276.7 are representable.  This encoding makes full use of all
+   16-bits.
+
+      \begin[verbatim]
+      input:
+         p ... The pressure (decibars) expressed as a floating point value.
+
+      output:
+         1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+            value: 0x8000.
+
+         2) Pressure values less than -3276.7 are mapped to the sentinel
+            value: 0x8001.
+
+         3) Pressure values greater than 3276.7 are mapped to the sentinel
+            value: 0x7fff.
+
+         4) All other values are expressed in millibars rounded to the
+            nearest integer and expressed as a 16-bit signed integer in
+            2's-complement form.
+      \end[verbatim]
+*/
+unsigned int EncodeP(float p)
+{
+   /* initialize with the mapping for a nonfinite pressure */
+   long int P = 0x8000L;
+
+   /* make sure long ints are at least 3 bytes long */
+   assert(sizeof(long int)>=3);
+   
+   if (finite(p))
+   {
+      /* assign out-of-range values to sentinel values */
+      if (p>=3276.7) P=0x7fffL; else if (p<=-3276.7) P=0x8001L;
+
+      /* encode the pressure as the number of centibars (rounded) */
+      else P = (long int)(10*(p + ((p<0) ? -0.05 : 0.05)));
+
+      /* express in 16-bit 2's-complement form */
+      if (P<0) P+=0x10000L;
+   }
+
+   return P;
+} 
+
+/*------------------------------------------------------------------------*/
+/* function to encode salinity as a 2-byte unsigned long integer          */
+/*------------------------------------------------------------------------*/
+/**
+   This function implements the hex-encoding of IEEE-formattted floating
+   point salinity data into 16-bit unsigned integers with 2's complement
+   representation.  The encoding formula accounts for the full range of
+   32-bit IEEE floating point values but only values in the open range:
+   -4.095<s<61.439 are representable.  This encoding makes full use of all
+   16-bits.
+
+      \begin[verbatim]
+      input:
+         s ... The salinity (PSU) expressed as a floating point value.
+
+      output:
+         1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+            value: 0xf000.
+
+         2) Salinity values less than -4.095 are mapped to the sentinel
+            value: 0xf001.
+
+         3) Salinity values greater than 61.439 are mapped to the sentinel
+            value: 0xefff.
+
+         4) All other values are expressed in parts-per-ten-million
+            rounded to the nearest integer and expressed as a 16-bit
+            signed integer in 2's-complement form.
+      \end[verbatim]
+*/
+unsigned int EncodeS(float s)
+{
+   /* initialize with the mapping for a nonfinite salinity */
+   long int S = 0xf000L;
+
+   /* make sure that long integers have at least three bytes */
+   assert(sizeof(long int)>=3);
+
+   if (finite(s))
+   {
+      /* assign out-of-range values to sentinel values */
+      if (s>=61.439) S=0xefffL; else if (s<=-4.095) S=0xf001L;
+
+      /* encode the salinity as the number of parts-per-ten-million (rounded) */
+      else S = (long int)(1000*(s + ((s<0) ? -0.0005 : 0.0005)));
+
+      /* express in 16-bit 2's-complement form */
+      if (S<0) S+=0x10000L;
+   }
+   
+   return S;
+}
+ 
+/*------------------------------------------------------------------------*/
+/* function to encode temperature as a 2-byte unsigned integer            */
+/*------------------------------------------------------------------------*/
+/**
+   This function implements the hex-encoding of IEEE-formattted floating
+   point temperature data into 16-bit unsigned integers with 2's complement
+   representation.  The encoding formula accounts for the full range of
+   32-bit IEEE floating point values but only values in the open range:
+   -4.095<t<61.439 are representable.  This encoding makes full use of all
+   16-bits.
+
+      \begin[verbatim]
+      input:
+         t ... The temperature (C) expressed as a floating point value.
+
+      output:
+         1) Nonfinite values (Inf, -Inf, NaN) are mapped to the sentinel hex
+            value: 0xf000.
+
+         2) Temperature values less than -6.5535 are mapped to the sentinel
+            value: 0xf001.
+
+         3) Temperature values greater than 98.3039 are mapped to the sentinel
+            value: 0xefff.
+
+         4) All other values are expressed in tenths of millidegrees Celsius
+            rounded to the nearest integer and expressed as a 16-bit signed 
+            integer in 2's-complement form.
+      \end[verbatim]
+*/
+unsigned int EncodeT(float t)
+{
+   /* initialize with the mapping for a nonfinite temperature */
+   long int T = 0xf000L;
+
+   /* make sure that long integers have at least three bytes */
+   assert(sizeof(long int)>=3);
+
+   if (finite(t))
+   {
+      /* assign out-of-range values to sentinel values */
+      if (t>=61.439) T=0xefffL; else if (t<=-4.095) T=0xf001L;
+
+      /* encode the temperature as the number of tenths of millidegrees (rounded) */
+      else T = (long int)(1000*(t + ((t<0) ? -0.0005 : 0.0005)));
+
+      /* express in 16-bit 2's-complement form */
+      if (T<0) T+=0x10000L;
+   }
+   
+   return T;
+}
+\end{verbatim}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "IridiumApex"
+%%% End: 

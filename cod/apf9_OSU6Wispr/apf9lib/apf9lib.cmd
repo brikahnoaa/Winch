@@ -1,0 +1,24 @@
+r \
+apf9.lib \
+apf9.obj \
+apf9com.obj \
+apf9icom.obj \
+assert.obj \
+conio.obj \
+cstring.obj \
+ctdio.obj \
+doprnt.obj \
+ds2404.obj \
+errno.obj \
+flashio.obj \
+fstring.obj \
+lt1598ad.obj \
+psd835.obj \
+sermux.obj \
+tc58v64.obj \
+trace.obj \
+unistd.obj \
+vfprintf.obj \
+x24c16.obj \
+powerup.obj \
+rtxa--l.obj

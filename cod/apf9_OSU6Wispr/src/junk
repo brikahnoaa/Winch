@@ -1,0 +1,140 @@
+3,6c3,8
+< //User is changed. 
+< //If it starts with "G", it changes the gain, max detection/profile, DSP ON/OFF depth. 
+< //If it starts with "E", it reactivate the mission after recovery mode.
+< //Pwd is changed for QUEphone ID, e.g., Q001.  H. Matsumoto OSU
+---
+> //User is changed. User(G2D999999P0020)
+> //If it starts with "G", it changes the gain, 6 digit number after D is max 
+> //detection per profile, 4 digit number after P is DSP power ON/OFF depth. 
+> //If it starts with "E", it reactivate the mission after recovery mode.  HM
+> //Pwd is changed for QUEphone ID, e.g., Q001. HM
+> //atoi behavior is strange. It is changed to myatoi.   Dec 10, 2014 HMatsumoto
+89c91
+< #include <control.h>  //HM
+---
+> //#include <control.h>  //HM
+123,124c125,126
+<    char           alt[CfgBufLen+1];  /* Alternate modem AT dial string */
+<    char           at[CfgBufLen+1];   /* Modem AT dial string */
+---
+>    char           alt[CfgBufLen+1];  /* Alternate modem AT dialstring */
+>    char           at[CfgBufLen+1];   /* Modem AT dialstring */
+187c189
+< 
+---
+> #include <conio.h>
+207c209
+< /* change default PressureCP to 0 - not appicable to Seascan PT module */
+---
+> /* change default PressureCP to 0 - not applicable to Seascan PT module */
+239a242
+> int    myatoi(char *str, int n); //my own atoi HM 
+250c253
+<    on the float's host computer.  The syntax of configuration files is
+---
+>    on the float's host computer.  The syntax of configuration files 570G
+469,470c472,474
+<       User ..................... Change gain, max detection, and DSP power on/off
+<                                  depth.
+---
+>       User ..................... The login name on the host computer that
+>                                  the float uses to upload and download data.
+>                                  itself.
+491c495
+<       # user name (G1D000020P0400) G1 is gain. D0000020 is the number of detection
+---
+>       # user name (G1D000020T0400) G1 is gain. D0000020 is the number of detection
+493,494c497,498
+< 					parking and starts profiling. P0400 is the depth threshold value 
+< 					to turn on/off DSP.
+---
+> 					parking and starts profiling. T0400 is the threshold value can be 
+> 					passed on to the DSP.
+506,508d509
+< //int DspPwrDpt; 		//Detection threshold.  We do not know the value yet. HM  
+< //int Gain;		//Added Sept2014 HM
+< 
+569,571c570,572
+<       ///* define the configuration parameters */
+<       enum {ActivateRecoveryMode, AirBladderMaxP, AscentTimeOut, AtDialCmd, AltDialCmd,
+< 	BuoyancyNudge, CompensatorHyperRetraction, ConnectTimeOut, CpActivationP,
+---
+>       /* define the configuration parameters */
+>       enum { ActivateRecoveryMode, AirBladderMaxP, AscentTimeOut, AtDialCmd, AltDialCmd,
+>             BuoyancyNudge, CompensatorHyperRetraction, ConnectTimeOut, CpActivationP,
+573,575c574,576
+< 			FlashErase, FlashCreate, FloatId, InitialBuoyancyNudge, MaxLogKb, ParkDescentTime,
+< 			ParkPistonPos, ParkPressure, PnPCycleLen, Pwd, TelemetryRetry, ToD, UpTime, User,
+< 			Verbosity, NVAR};
+---
+>             FlashErase, FlashCreate, FloatId, InitialBuoyancyNudge, MaxLogKb, ParkDescentTime,
+>             ParkPistonPos, ParkPressure, PnPCycleLen, Pwd, TelemetryRetry, ToD, UpTime, User,
+>             Verbosity, NVAR};
+581c582,583
+<       status=1;	
+---
+>       status=1;
+> 		
+1508,1511c1510,1512
+< //Changed the User name as a mean to change Gain, max detection number and DSP 
+< //powr on/off depth. When the float receives a new command: e.g., User(G2D999999P0020), 
+< //it changes Gain=2, and Max detecitons=999999, Max_Detect_Prof=20. It sends a new 
+< //Gain DSP.  HM 11/2/2009
+---
+> //Changed the User name as a mean to change Gain and max detection number.  
+> //When the float receives a new command User(G2D000020) for example, 
+> //it changes Gain=2, and Max_Detect_Prof=20 and sends message to DSP.  HM 11/2/2009
+1513c1514
+< #include "control.h" //HM 11/18/2010
+---
+> #include <control.h> //HM 11/18/2010
+1518c1519
+<    char ChGain[2], ChMax_Detect_Prof[6], ChDspPwrDpt[4];//HM 12/10/2014
+---
+>    char ChGain[2], ChMax_Detect_Prof[6], ChDspPwrDpt[5];
+1591c1592
+< 				static cc msg[]="Reactivation initated remotely from recovery mode.\n";
+---
+> 				static cc msg[]="Reactivation initiated remotely from recovery mode.\n";
+1649,1652c1650,1655
+< 		ChDspPwrDpt[0]=config->user[10];
+< 		ChDspPwrDpt[1]=config->user[11];
+< 		ChDspPwrDpt[2]=config->user[12];
+< 		ChDspPwrDpt[3]=config->user[13];
+---
+> 		ChDspPwrDpt[0]='0';		
+> 		ChDspPwrDpt[1]=config->user[10];
+> 		ChDspPwrDpt[2]=config->user[11];
+> 		ChDspPwrDpt[3]=config->user[12];
+> 		ChDspPwrDpt[4]=config->user[13];
+> 		
+1662,1667c1665,1670
+< 	  DspPwrDpt = atoi(ChDspPwrDpt);
+<   
+< 	  LogEntry(FuncName,indent); LogAdd("Gain=%d, Max # of Det =%ld, DSP ON/OFF Depth =%i\n", Gain, Max_Detect_Prof, DspPwrDpt);//HM
+< 	  //check if the new gain is reasonable.  Definition of DspPwrDpt is undecided yet. Use bogus number for now.
+< 	  //if(Gain<10 && Gain >=0 && DspPwrDpt<2000 && DspPwrDpt>=0) {QuecomSetNCM(Gain, DspPwrDpt);}
+< 	  if(Gain<10 && Gain >=0 && DspPwrDpt<2000 && DspPwrDpt>=0) {QuecomSetNCM(Gain);} //Error corrected 
+---
+> 	  DspPwrDpt=myatoi(ChDspPwrDpt, 5); //atoi does not work.  Use my own.
+> 
+> 	  LogEntry(FuncName,indent); LogAdd("Gain=%d, Max # of Detect/Prof=%ld, DSP ON/OFF Depth =%d\n", Gain, Max_Detect_Prof, DspPwrDpt);//HM
+> 	  //check if the new gain is reasonable.  QuecomSetNCM is to bridge between here and quecom.c where
+> 	  //Gain and DpsPwrDpt are defined as extern integers in quecom.c
+> 	  if(Gain<10 && Gain >=0 && DspPwrDpt<2000 && DspPwrDpt>=0) {QuecomSetNCM(Gain, DspPwrDpt);}
+1670c1673,1674
+<       LogEntry(FuncName,indent); LogAdd("Verbosity(%d)\n",debuglevel);
+---
+>       //LogEntry(FuncName,indent); LogAdd("AscDepth (%c%c%c%c%c) IntDepth (%d)\n", ChDspPwrDpt[0],ChDspPwrDpt[1],ChDspPwrDpt[2],ChDspPwrDpt[3],ChDspPwrDpt[4],DspPwrDpt);//Debug HM
+> 	  LogEntry(FuncName,indent); LogAdd("Verbosity(%d)\n",debuglevel);
+1677a1682,1690
+> }
+> //atoi program.  Handle only the positive number.
+> //H Matsumoto Dec, 2014
+> int myatoi(char *str, int n)
+> {
+> int res =0, i;
+> for (i=0; i<n; i++)
+> 	res = res * 10 + str[i] - '0';
+> return res;

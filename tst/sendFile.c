@@ -18,9 +18,9 @@ void main(void){
   antStart();
   gpsStart();
   //
-  len = tst.t2;
-  cnt = tst.t1;
-  cprintf("\nlength tst.t2=%d, count tst.t1=%d ", len, cnt);
+  len = dbg.t2;
+  cnt = dbg.t1;
+  cprintf("\nlength dbg.t2=%d, count dbg.t1=%d ", len, cnt);
   cprintf("\nbaud gps.rudBaud=%d", gps.rudBaud);
   buff = malloc(len);
   // gpsStats();

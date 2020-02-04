@@ -1,0 +1,28 @@
+../bin/swh.exe D=CONTROL_H if=control.c of=control.h
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -DFWREV=0x030910UL -I. -I../include -C apf9main.c
+/cygdrive/c/HT-XA/bin/xac -q -E -Bl -LF -Zg -I. -I../include -C control.c
+/cygdrive/c/HT-XA/bin/hlink @app.lnk
+/cygdrive/c/HT-XA/bin/objtohex app.o app.hex
+Done making app.hex ...
+cp app.hex ../psd/app.hex
+Done making ../psd/app.hex ...
+cd ../psd; /cygdrive/c/PSDexpress/utladrm app
+UTLADRM - Merge MCU Firmware Utility
+PSDsoft Express Utility 8.03 Copyright (C) 1993-2004 STMicroelectronics, Inc.
+All Rights Reserved
+
+
+ Updating Main Flash/2nd Flash code/data to 'app.OBJ' file ...
+
+ 
+ Warning ADR025: There is no data within the specified FS5 range.
+ Warning ADR025: There is no data within the specified FS6 range.
+ Warning ADR025: There is no data within the specified FS7 range.
+ Address Translation complete.
+ 
+
+ Warning encountered - reference app.ERR for warning.
+
+Done making ../psd/app.obj ...
+perl -ne 's/\$FwName\$-\$FwRev\$/Apf9iSeascan-030910/g;print' FormatNotes > Apf9iSeascan-030910.FormatNotes
+Done making all ...

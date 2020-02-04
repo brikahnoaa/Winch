@@ -1,0 +1,23 @@
+1) This version, interacts with Blackfin DSP through 9600B serial line, informs what APEX is 
+doing, receives acoustic detection infor from DSP, stores in the *.dtg file.
+
+2) When it come back to the surface, it TX to the shore all the *.log, *.msg and *.dtg files.  
+3) Keep the file size small to make the TX successfull. 
+It also monitors # of detections, and if it exceeds maximum, change the phase 
+to profile and ascent to the surface.
+
+/lib/login.c 
+4) - Need to change the firmware here to change the float ID.
+	  For now QUEHQ001 is hard coded.  Line 175 has to be changed for each
+ float.
+ -Changed to accomodate to input the QUEphone ID.
+5) /src/gps.c- GPS almanac age is ignored at this point.  GPS clock starts at 
+	  Jan 1, 1970, when powered up. Originally it took so long to download
+	  
+6) The almanac. Line 143 ignores the almanac age.  MaxAlmacaAge is 90
+	  days. 
+/src/control.c - MaxDet is set to 36 for now.  It will not record more than 
+	
+7) MaxDet in the detection file.
+/src/control.c - accum_dtx is transferred to QuecomDTX to count the total number
+	of detections per profile. 

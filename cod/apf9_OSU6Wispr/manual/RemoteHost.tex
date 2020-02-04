@@ -1,0 +1,303 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% $Id: RemoteHost.tex,v 1.1.2.1 2008/10/01 14:51:14 dbliudnikas Exp $
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% RCS Log:
+%
+% $Log: RemoteHost.tex,v $
+% Revision 1.1.2.1  2008/10/01 14:51:14  dbliudnikas
+% Apf9i Seascan TD: Add Iridium serial number and testing.
+%
+% Revision 1.1  2006/11/03 19:08:57  swift
+% Added user manual to CVS control.
+%
+% Revision 1.2  2006/07/10 22:24:49  swift
+% Modifications to bring the manual up to date with
+% changes to the SeaBird CTD firmware (v1.1c).
+%
+% Revision 1.1  2006/02/26 16:35:26  swift
+% Initial revision
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\newcommand{\mgetty}{\textbf{mgetty}}
+\renewcommand{\-}{\~{\hspace{0in}}}
+
+\section{The remote UNIX host.}
+\label{sec:RemoteHost}  
+
+This \iridium\ implementation uses a modem-to-modem communications model.  The
+float initiates a telephone call to a remote host computer, logs into the
+remote host with a username and password, executes a sequence of commands to
+transfer data, and then logs out.  The communications session is float-driven
+
+With respect to the remote host, there is no difference between the float
+logging in and a human logging in.  The communications session is initiated
+and fully controlled by the float.  On the other hand, the float is not
+naturally adaptable or interactive like a human would be and so an unusual
+amount of fault tolerance has been built into both sides of the
+communications session.
+
+An important fault tolerance measure is redundancy in the form of two
+similarly configured remote hosts each with its own dedicated telephone
+line.  This is optional but recommended.  Ideally, these two remote hosts
+should be separated far enough from each other that power outages or
+telephone outages are not likely to simultaneously affect both remote hosts.
+The float firmware is designed to automatically switch to the alternate
+remote host if with the primary remote host appears to be out of service.
+
+\subsection{System requirements.}
+\label{sec:SystemRequirements}
+
+This \iridium\ implementation is strongly tied to the use of a UNIX computer
+as the remote host (ie., Microsoft operating systems are not suitable).
+\textbf{The most important ``system requirement'' is a system administrator
+  that is familiar, comfortable, and competent in a UNIX environment.}
+While many different flavors of UNIX could be made to work, development was
+done using RedHat Linux (versions 7-9).  RedHat Linux (version 9) will be
+assumed for the remainder of this section.
+
+The \mgetty\ package must be installed and configured to monitor a
+Hayes-compatible external modem attached to one of the serial ports.  For
+information on how to install and configure the \mgetty\ package, refer to
+the \mgetty\ documentation supplied with RedHat Linux.  If you customize the
+login prompt, make sure that it includes the phrase ``login:''.  Similarly,
+make sure that the password prompt includes the phrase ``Password:''.  The
+float will not successfully log in if these two phrases are not present.
+
+Once \mgetty\ is installed and configured properly, you should be able to log
+into the remote host via a modem-to-modem connection from another computer.
+You should test this using the following communications parameters:
+4800baud, no parity, 8-bit data, 1 stop-bit.
+
+\subsection{Remote host set up.} 
+\label{sec:RemoteHostSetUp} 
+
+Once each telemetry cycle, the float downloads ``mission.cfg'' from the home
+directory where the float logs in and this new mission configuration becomes
+active as the last step before the telemetry cycle terminates (see
+Section~\ref{sec:RemoteControl}).  In the context of a UNIX environment,
+this simple mechanism allows for great flexibility for remotely controlling
+floats individually, in groups, or fleet-wise.  It is also flexible in that
+it is possible to switch which model is used even after floats have been
+deployed.  Finally, a UNIX-based remote host facilitates easy speciation of
+floats as well as for new float developments with no requirement for
+backward compatibility.
+
+\subsubsection{Setting up the \emph{default user} on the remote host.}
+\label{sec:RemoteHostDefaultUser}
+
+Another fault tolerance measure requires creation of a \emph{default user}
+on the remote host.  Begin by creating a new {\sl iridium}\/ group to which
+the \emph{default user} and all floats will belong.  As root, execute the
+command: 
+\begin{quotation}
+  {\sl groupadd -g1000 iridium}
+\end{quotation}
+
+Next, create an account for the \emph{default user}\/ using \emph{iridium}\/
+as the username:
+\begin{quotation}
+  \mbox{\sl adduser~-s/bin/tcsh~-c"Iridium~Apex~Drifter"~-g"iridium"~-u1000~-d/home/iridium~iridium}
+\end{quotation}
+Then give the new user a password by executing (as root): 
+\begin{quotation}
+   {\sl passwd~iridium}
+\end{quotation}
+For the convenience of the float manager, you might also want to change the
+permissions on the float's home directory: 
+\begin{quotation}
+   {\sl chmod~750~\-iridium}.
+\end{quotation}
+The file, {\sl /etc/passwd\/}, will contain the following entry:
+\begin{verbatim}
+   iridium:x:1000:1000:Iridium Apex Drifter:/home/iridium:/bin/tcsh
+\end{verbatim}
+
+The remainder of the set-up for this float should be done while logged into
+the remote host as the \emph{default user}\/ (ie., \emph{iridium}\/).
+Create two directories:
+\begin{quotation}
+   {\sl mkdir \-/bin \-/logs} 
+\end{quotation}
+and populate the {\sl \-/bin\/} directory with the \emph{SwiftWare}\/ xmodem
+utilities \textbf{rx} and \textbf{sx} as well as the \textbf{chkconfig}
+utility.  These three files are in the \textbf{support} directory of your
+distribution.
+
+Finally, use \textbf{emacs} to create the following three ascii files:
+\textbf{.cshrc}, \textbf{.rxrc}, and \textbf{.sxrc}:
+\begin{description}
+\item[.cshrc:] This file configures the t-shell at login time.  You can
+  modify the configuration to suit yourself so long as your customizations
+  do not interfere with the effects that the three commands below have.  In
+  particular, it is important that the float's \textbf{bin} directory be in
+  the {\sl path\/} before any of the system directories.  This will ensure
+  that the float's version of the utilities \textbf{chkconfig}, \textbf{rx},
+  and \textbf{sx} will be used rather than the system's utilities with these
+  same names.
+  
+  \begin{verbatim}
+  # set the hostname
+  set hostname=`hostname`
+  
+  # add directories for local commands
+  set path = (. ~/bin /bin /sbin /usr/sbin /usr/local/bin)
+  
+  # set the prompt
+  set prompt=""$hostname":[$cwd]> "
+  \end{verbatim}
+  
+\item[.rxrc:] This is the configuration file for the \emph{SwiftWare}\/
+  implementation the xmodem receive utility.  \emph{SwiftWare}\/ \textbf{rx}
+  implements the standard xmodem protocol except that a nonstandard 16-bit
+  CRC is used.  Beware that the float will not be able to transfer any
+  hydrographic or engineering data to the remote host using the system
+  version of \textbf{rx}.  Make sure that the {\sl LogPath}\/ references the
+  \emph{default user's}\/ \textbf{logs} directory or else potentially
+  valuable logging/debugging information will be irretrievably lost.
+
+  \begin{verbatim}
+  # This is the configuration file for 'rx', the 
+  # SwiftWare xmodem receive utility.
+  
+  # set the default debug level (range: 0-4)
+  Verbosity=5
+  
+  # specify the name of the log file
+  LogPath=/home/iridium/logs/rxlog
+  
+  # enable (AutoLog!=0) or disable (AutoLog==0) the auto-log feature
+  AutoLog=1
+  
+  # specify ascii mode (BinaryMode==0) or binary mode (BinaryMode!=0) 
+  BinaryMode=0
+  
+  # specify CRC mode (16bit or 8bit)
+  CrcMode=16bit
+  \end{verbatim}
+ 
+\item[.sxrc:] This is the configuration file for the \emph{SwiftWare}\/
+  implementation the xmodem send utility.  \emph{SwiftWare}\/ \textbf{sx}
+  implements the standard xmodem protocol except that a nonstandard 16-bit
+  CRC is used.  Beware that new mission configurations will not be
+  downloaded from the remote host to the float if system version of
+  \textbf{sx} is used.  Make sure that the {\sl LogPath}\/ references the
+  \emph{default user's}\/ \textbf{logs} directory or else potentially
+  valuable logging/debugging information will be irretrievably lost.
+
+  \begin{verbatim}
+  # This is the configuration file for 'sx', the 
+  # SwiftWare xmodem send utility.
+  
+  # set the default debug level (range: 0-4)
+  Verbosity=5
+  
+  # specify the name of the log file
+  LogPath=/home/iridium/logs/sxlog
+  
+  # enable (AutoLog!=0) or disable (AutoLog==0) the auto-log feature
+  AutoLog=1
+  
+  # specify fixed packet type (128b or 1k)
+  # PktType=1k
+  \end{verbatim}
+
+\end{description}
+
+\subsubsection{Setting up the remote host for individualized remote control.}
+\label{sec:RemoteHostUser} 
+
+The ability to individualize each float is implemented by each float having
+its own account on the remote host.  The steps to set up the remote host are
+analagous to those for setting up the \emph{default user}\/ (see
+Section~\ref{sec:RemoteHostDefaultUser}).  For example, to create an account
+for float~5047 then make sure the \textbf{iridium} group exists (see
+Section~\ref{sec:RemoteHostDefaultUser}) and then execute the following
+command (as root):
+\begin{quotation}
+  \mbox{\sl adduser~-s/bin/tcsh~-c"Iridium~Apex~Drifter"~-g"iridium"~-u15047~-d/home/f5047~f5047}
+\end{quotation}
+Then give the new user a password and change the permissions of the float's
+home directory as shown for the \emph{default user}.  \textbf{Be sure to
+  configure the float to use this username and password} (see
+Section~\ref{sec:MissionConfiguration}).  The file, \textbf{/etc/passwd},
+will contain the following entry:
+\begin{verbatim}
+   f5047:x:15047:1000:Iridium Apex Drifter:/home/f5047:/bin/tcsh
+\end{verbatim}
+
+The remainder of the set-up for this float follows very closely that of the
+\emph{default user}\/ and should be done while logged into the remote host
+as the float (ie., \emph{f5047}\/).  Create \textbf{bin} and \textbf{logs}
+directories in the float's home directory and populate the \textbf{bin}
+directory with the \emph{SwiftWare}\/ xmodem utilities \textbf{rx} and
+\textbf{sx} as well as the \textbf{chkconfig} utility.
+
+Finally, copy the three ascii files \textbf{.cshrc}, \textbf{.rxrc}, and
+\textbf{.sxrc} from the \emph{default user's}\/ home directory to the
+float's home directory.  Be sure to edit these files so that the {\sl
+  LogPath}\/ points to the float's \textbf{logs} directory or else
+potentially valuable logging/debugging information will be irretrievably
+lost.
+
+\subsubsection{Setting up the remote host for fleet-wise remote control.} 
+\label{sec:RemoteHostFleet} 
+
+The flexibility inherent with individualized float control necessarily
+increases the level of operational management required---each float has to
+be considered and controlled individually.  However, fleet-wise management
+of floats is also made possible by configuring the float to use a fleet-wise
+username.  This is in contrast to Section~\ref{sec:RemoteHostUser} where
+each float was configured with a unique username (based on the float serial
+number).  The steps to set up the remote host for fleet-wise control are
+virtually the same as those in
+Sections~\ref{sec:RemoteHostDefaultUser}~\&~\ref{sec:RemoteHostUser} except
+that the username and password are fleet-wise parameters.  Be sure to
+configure each float in the fleet with the fleet-wise username and password.
+
+
+\subsubsection{Iridium Serial Number Handling} 
+
+The SIM phone book is programmed with the phone number assigned to the SIM (MSISDN)
+Mobile System Integrated Services Digital Network and the SIM ID number (ICCID)
+Integrated Circuit Card Identification.  The firmware will be able to query the
+LBT because it canot be done through the standard AT commands.  This protects
+against SIM cards betgin swapped between floats.  If a float fails afer deployment,
+there is a record of twhich SIM card is coupled to a particular float that allows
+the SIM card to be deactivated.
+
+This information can be programmed using a terminal emulation program (19200 N-8-1),
+LBT test fixture and the following commands:
+ 
+\begin{verbatim}
+1. AT (wait 60 seconds)
+2. AT+CPBS="SM"
+3. AT+CPBW=101,"<CCID>",129,"<MSISDN>"  where <CCID> and <MSISDN> are actual values
+4. AT+CPBS? 
+5. AT+CPBR=101 (to verify)
+
+Note: If the PIN needs to be set, use the following command: AT+CPIN="<PIN>".
+\end{verbatim}
+
+\subsubsection{GPS, LBT, Remote Host Testing}
+
+After connecting to an iridium antenna, enter sail commands via a terminal emulation
+program (9600 8-N-1).  
+
+\begin{verbatim}
+Press any key to enter command mode ">" prompt.
+
+1. gc (configure the GPS)
+2. gp (access satellites and set the real time clock)
+3. gf (get a GPS fix)
+4. hc (configure the Iridium modem)
+5. r (activate recovery mode where a GPS fix is followed by an Iridum call and 
+      once connection established, upload mission.cfg and 
+      download log information to the remote host.)
+6. k (when complete, kill mission by responding with a "y" acknowledgement)
+\end{verbatim}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "IridiumApex"
+%%% End: 

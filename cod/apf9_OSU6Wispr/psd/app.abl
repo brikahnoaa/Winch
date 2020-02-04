@@ -1,0 +1,120 @@
+module app
+a4 PIN 3; "Address line
+a5 PIN 4; "Address line
+a6 PIN 5; "Address line
+a7 PIN 6; "Address line
+a8 PIN 7; "Address line
+a9 PIN 10; "Address line
+a10 PIN 11; "Address line
+a11 PIN 12; "Address line
+a12 PIN 13; "Address line
+a13 PIN 14; "Address line
+a14 PIN 15; "Address line
+a15 PIN 16; "Address line
+a16 PIN 17; "Address line
+a17 PIN 18; "Address line
+a18 PIN 19; "Address line
+a19 PIN 20; "Address line
+_wr PIN 59;
+_psen PIN 40;
+_rd PIN 60;
+_reset PIN 39;
+pa0 PIN 51; "MCU I/O
+pa1 PIN 52; "MCU I/O
+pa2 PIN 53; "MCU I/O
+pa3 PIN 54; "MCU I/O
+pa4 PIN 55; "MCU I/O
+pa5 PIN 56; "MCU I/O
+pa6 PIN 57; "MCU I/O
+pa7 PIN 58; "MCU I/O
+pb0 PIN 61; "MCU I/O
+pb1 PIN 62; "MCU I/O
+pb2 PIN 63; "MCU I/O
+pb3 PIN 64; "MCU I/O
+pb4 PIN 65; "MCU I/O
+pb5 PIN 66; "MCU I/O
+pb6 PIN 67; "MCU I/O
+pb7 PIN 68; "MCU I/O
+pc0 PIN 41;
+pc1 PIN 42;
+pc2 PIN 43;
+pc3 PIN 44;
+pc4 PIN 45; "MCU I/O
+pc5 PIN 46; "MCU I/O
+pc6 PIN 47; "MCU I/O
+pc7 PIN 48; "MCU I/O
+ale PIN 79; "ALE/AS input
+pd1 PIN 80; "MCU I/O
+pd2 PIN 1; "MCU I/O
+pd3 PIN 2; "MCU I/O
+tms PIN 71;  "TMS
+tck PIN 72; "TCK
+tdi PIN 73; "TDI
+tdo PIN 74; "TDO
+pe4 PIN 75; "MCU I/O
+pe5 PIN 76; "MCU I/O
+pe6 PIN 77; "MCU I/O
+pe7 PIN 78; "MCU I/O
+a0 PIN 31; "Address line
+a1 PIN 32; "Address line
+a2 PIN 33; "Address line
+a3 PIN 34; "Address line
+pf4 PIN 35; "Latched address out
+pf5 PIN 36; "Latched address out
+pf6 PIN 37; "Latched address out
+pf7 PIN 38; "Latched address out
+pg0 PIN 21; "Latched address out
+pg1 PIN 22; "Latched address out
+pg2 PIN 23; "Latched address out
+pg3 PIN 24; "Latched address out
+pg4 PIN 25; "MCU I/O
+pg5 PIN 26; "MCU I/O
+pg6 PIN 27; "MCU I/O
+pg7 PIN 28; "MCU I/O
+rs0 node;
+csiop node;
+fs0 node;
+fs1 node;
+fs2 node;
+fs3 node;
+fs4 node;
+fs5 node;
+fs6 node;
+fs7 node;
+
+X = .x.;
+address = [a19..a0];
+Vcc = 1;
+Gnd = 0;
+
+
+// Begin user preserved declarations (not affected by iterations of DA usage) ===================
+
+// End user preserved declarations (not affected by iterations of DA usage) ===================
+
+
+
+equations
+
+rs0 = ((address >= ^h1000) & (address <= ^h2FFF));
+csiop = ((address >= ^h0F00) & (address <= ^h0FFF));
+fs0 = ((address >= ^h0000) & (address <= ^hFFFF));
+fs1 = ((address >= ^h10000) & (address <= ^h1FFFF));
+fs2 = ((address >= ^h20000) & (address <= ^h2FFFF));
+fs3 = ((address >= ^h30000) & (address <= ^h3FFFF));
+fs4 = ((address >= ^h40000) & (address <= ^h4FFFF));
+fs5 = ((address >= ^h50000) & (address <= ^h5FFFF));
+fs6 = ((address >= ^h60000) & (address <= ^h6FFFF));
+fs7 = ((address >= ^h70000) & (address <= ^h7FFFF));
+! pc0 = ((address >= ^h3000) & (address <= ^h82FFF) & (_psen));
+! pc1 = ((address >= ^h0EF0) & (address <= ^h0EFF) & (_psen));
+! pc2 = ((address >= ^h0EE0) & (address <= ^h0EEF) & (_psen));
+! pc3 = ((address >= ^h0ED0) & (address <= ^h0EDF) & (_psen));
+
+
+// Begin user preserved equations (not affected by iterations of DA usage) ===================
+
+// End user preserved equations (not affected by iterations of DA usage) ===================
+
+
+end app

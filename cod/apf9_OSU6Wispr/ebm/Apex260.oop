@@ -1,0 +1,264 @@
+#ifndef APEX260_OOP
+#define APEX260_OOP
+
+#include <HydroObs.oop>
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * $Id: Apex260.oop,v 1.1 2006/11/11 18:29:34 swift Exp $
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * RCS Log:
+ *
+ * $Log: Apex260.oop,v $
+ * Revision 1.1  2006/11/11 18:29:34  swift
+ * Added energy budget model to the project.
+ *
+ *========================================================================*/
+/*                                                                        */
+/*========================================================================*/
+template <class BatteryPack>
+class Apex260
+{
+   // data members
+   private:
+
+      // define some float properties
+      float M;          // float mass
+      float dLnVdp;     // float compressibility coefficient
+      float dLnVdt;     // float thermal expansion coefficient
+      float R;          // winding resistance of float's pump motor
+      float K;          // back-EMF generation factor for float's pump motor
+      float dvdc;       // volume pumped for each A/D count (ml/count)
+      LSplineProfile I; // pump current as a function of pressure
+      
+   // function members
+   public:
+
+      // initialization constructor
+      Apex260(float M=25775, float dLnVdp=-2.53e-6, float dVdC=1.157);
+
+      // function to compute the energy cost due to buoyancy engine operation
+      float EnergyCost(Hydrography &sea,BatteryPack &bat, double Pi, double Pf);
+
+      // function to compute the energy cost of pumping against pressure
+      float EnergyCost(BatteryPack &bat,double P,int counts);
+                       
+      // function to return a reference to the back-EMF generation factor
+      float &EmfFactor(void) {return K;}
+      
+      // function to return a reference to the compressibility coefficient
+      float &dLnVdP(void) {return dLnVdp;}
+
+      // function to return a reference to the thermal expansion coefficient
+      float &dLnVdT(void) {return dLnVdt;}
+
+      // function to compute the volume change for neutral buoyancy between to isobars
+      float dV(float Pi, float Pf, Hydrography &sea);
+
+      // function to return the volume pumped per A/D count
+      float dVdC(void) const {return dvdc;}
+      
+      // function to return a reference to the mass
+      float &Mass(void) {return M;}
+
+      // function to print engine properties
+      void Properties(ostream &dest=cout);
+      
+      // function to return a reference to the winding resistance
+      float &Resistance(void) {return R;}
+};
+
+/*------------------------------------------------------------------------*/
+/* initialization constructor                                             */
+/*------------------------------------------------------------------------*/
+template<class BatteryPack>
+Apex260<BatteryPack>::Apex260(float Mass, float dLnVdP, float dVdC):
+      M(Mass), dLnVdp(dLnVdP), dvdc(dVdC)
+{
+   // initialize thermal expansion coefficient
+   dLnVdT() = 6.9e-5; // per C
+
+   // initialize resistance of the motor winding
+   Resistance() = 3.776; // Ohms (see SWJ12:19, p55, eqn 2)
+
+   // initialize back-EMF generation factor
+   EmfFactor() = 64.600; // Volts/ml/sec (see SWJ12:19, p55, eqn 2)
+
+   // define the current consumption over the full range of pressures
+   //        dbar    Amp
+   I.Append(    0, 0.120);
+   I.Append(   41, 0.122);
+   I.Append(   62, 0.125);
+   I.Append(   97, 0.135);
+   I.Append(  155, 0.150);
+   I.Append(  234, 0.160);
+   I.Append(  334, 0.190);
+   I.Append(  445, 0.230);
+   I.Append(  569, 0.255);
+   I.Append(  700, 0.295);
+   I.Append(  834, 0.330);
+   I.Append(  972, 0.370);
+   I.Append( 1107, 0.410);
+   I.Append( 1248, 0.450);
+   I.Append( 1386, 0.490);
+   I.Append( 1517, 0.550);
+   I.Append( 1620, 0.590);
+   I.Append( 1689, 0.620);
+   I.Append( 2500, 0.828);
+
+   I.SeekExtremes();
+}
+
+/*------------------------------------------------------------------------*/
+/* compute the volume change for neutral buoyancy between to isobars      */
+/*------------------------------------------------------------------------*/
+template<class BatteryPack>
+float Apex260<BatteryPack>::dV(float Pi, float Pf, Hydrography &sea)
+{
+   // get the insitu temperature on the two isobars
+   float Tf=sea.T(Pf), Ti=sea.T(Pi);
+
+   // get the insitu density on the two isobars and at the surface
+   float Ri=sea.Rho(Pi), Rf=sea.Rho(Pf), Ro=sea.Rho(0);
+
+   // compute the 'potential volume' of the float
+   float Vo=Mass()/Ro;
+
+   // evaluate SWJ12:15, eqn(6), p46.
+   float dV = Vo*( Ro/Rf - Ro/Ri - dLnVdP()*(Pf-Pi) - dLnVdT()*(Tf-Ti) );
+
+   return dV;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to compute the energy cost of pumping against pressure        */
+/*------------------------------------------------------------------------*/
+template<class BatteryPack>
+float Apex260<BatteryPack>::EnergyCost(BatteryPack &bat,double P,int counts)
+{
+   // define an accumulation variable for energy
+   float E=NaN;
+
+   // make sure the pressure is within lab measured range
+   if (inCRange(I.xmin,P,I.xmax))
+   {
+      // compute the volume to be pumped
+      float dv = dVdC()*counts;
+
+      // evaluate the pump current at the pressure
+      float i = I(P);
+
+      // evaluate the battery voltage under the pump load
+      float V  = bat.Volts(i);
+
+      // check if battery voltage can generate enough torque to operate pump
+      if ((V-i*R)<0)
+      {
+         // notify the user that the battery voltage is too low 
+         message("Apex260::EnergyCost() ... "
+                  "Supply voltage insufficient to operate buoyancy engine.\n");
+      }
+      
+      // compute the energy needed to operate buoyancy engine 
+      else E = V*i*K*dv/(V-i*R);
+   }  
+   else
+   {
+      // report an error and abort the program
+      swifterr("error in Apex260::EnergyCost() ... "
+               "pressure not bracketed by pump-current data.\n");
+   }
+
+   return E;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to compute the buoyancy engine's energy budget for a profile  */
+/*------------------------------------------------------------------------*/
+template<class BatteryPack>
+float Apex260<BatteryPack>::EnergyCost(Hydrography &sea,BatteryPack &bat, double Pi, double Pf)
+{
+   // define an accumulation variable for energy
+   float E=NaN;
+   
+   if (inCRange(sea.Pmin(),Pf,sea.Pmax()) && inCRange(sea.Pmin(),Pi,sea.Pmax()))
+   {
+      // initialize the energy accumulation variable
+      E=0;
+      
+      // energy is consumed only if the final pressure is less than the initial pressure
+      if (Pf<Pi)
+      {
+         // define some loop variables
+         float a,b,K=EmfFactor(),R=Resistance(); unsigned int n;
+
+         for (a=Pf, n=0; n<sea.NPnt(); n++)
+         {
+            // find the index of the first observation deeper than Pf
+            if (a>=sea.P(n)) continue;
+
+            // find the next pressure greater than 'a'
+            b = (sea.P(n)>Pi) ? Pi : sea.P(n);
+
+            // evaluate the pump current at the midpoint of the current pressure interval
+            float i  = I((a+b)/2);
+
+            // evaluate the battery voltage under the load of the pump
+            float V  = bat.Volts(i);
+
+            // compute the buoyancy required to make the float ascend from pressure b to a
+            float dv = dV(b,a,sea);
+
+            // check if battery voltage can generate enough torque to operate pump
+            if ((V-i*R)<0)
+            {
+               // notify the user that the battery voltage is too low 
+               message("Apex260::EnergyCost() ... "
+                       "Supply voltage insufficient to operate buoyancy engine.\n");
+
+               // reset the energy consumed to an undefined state and break the loop
+               E=NaN; break;
+            }
+
+            // add the energy needed to operate buoyancy engine from pressure b to a
+            else E += V*i*K*dv/(V-i*R);
+            
+            // reinitialize the lower pressure of the next interval
+            a=b;
+         }
+      }
+   }
+   else
+   {
+      // report an error and abort the program
+      swifterr("error in Apex260::EnergyCost() ... "
+               "profiled pressures not bracketed by hydrography.\n");
+   }
+   
+   return E;
+}
+
+/*------------------------------------------------------------------------*/
+/* function to print engine properties                                    */
+/*------------------------------------------------------------------------*/
+template<class BatteryPack>
+void Apex260<BatteryPack>::Properties(ostream &dest)
+{
+   fprintf(dest,"$ Bouyancy engine model:                       %s\n"
+             "$    Mass:                                     %g g\n"
+             "$    Compressibility:                          %g per dbar\n"
+             "$    Thermal expansion coefficient:            %g per C\n"
+             "$    Winding resistance of pump motor:         %g Ohms\n"
+             "$    Back-EMF generation factor of pump motor: %g volts/(ml/sec)\n"
+             "$    Volume pumped per A/D count:              %g ml/count\n"
+             "$    Pump current as a function of pressure (dbar, Amps):",
+             "Apex(260ml)",M,-dLnVdp,dLnVdt,R,K,dvdc);
+
+   for (unsigned int i=0; i<I.NPnt(); i++)
+   {
+      if (!(i%5)) fprintf(dest,"\n$      ");
+      fprintf(dest,"  (%4.0f, %5.3f)",I.x[i],I.y[i]);
+   }
+   fprintf(dest,"\n$\n");
+}
+
+#endif // APEX260_OOP

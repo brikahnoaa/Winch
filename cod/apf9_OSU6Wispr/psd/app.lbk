@@ -1,0 +1,105 @@
+
+Current project is: 'app'
+
+AHDL2BLF  ABEL-HDL Processor
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Module: 'app'
+
+  Processing equations.............
+
+  Module parsing complete. Building logic network...
+
+  Creating Berkeley PLA file app.tt1...
+
+Module 'app' processing complete.
+
+Using backup JHD file.
+AHDL2BLF complete - 0 errors, 0 warnings. Time: 2 seconds
+
+BLIFOPT  Open-ABEL Optimizer 
+U.C. Berkeley, SIS Ver. 1.0, modified by Data I/O Corp.
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Reading Open-ABEL (PLA) file app.tt1...
+Performing 'bypin choose' optimization...
+Shortening signal names...
+Writing signal name cross reference file app.xrf... 
+Writing Open-ABEL (PLA) file app.tt2...
+
+BLIFOPT complete - 0 errors, 0 warnings. Time: 1 seconds
+
+DIOFFT  Flip-Flop Transformation program
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Input file: app.tt2.
+Output file: app.tt3.
+
+
+DIOFFT complete. - Time 0 seconds
+
+AHDL2BLF  ABEL-HDL Processor
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Module: 'app'
+
+  Processing equations.............
+
+  Module parsing complete. Building logic network...
+
+  Creating Berkeley PLA file app.tt1...
+
+Module 'app' processing complete.
+
+Using backup JHD file.
+AHDL2BLF complete - 0 errors, 0 warnings. Time: 1 seconds
+
+AHDL2BLF  ABEL-HDL Processor
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Module: 'app'
+
+  Processing equations.............
+
+  Module parsing complete. Building logic network...
+
+  Creating Berkeley PLA file app.tt1...
+
+Module 'app' processing complete.
+
+Using backup JHD file.
+AHDL2BLF complete - 0 errors, 0 warnings. Time: 1 seconds
+
+BLIFOPT  Open-ABEL Optimizer 
+U.C. Berkeley, SIS Ver. 1.0, modified by Data I/O Corp.
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Reading Open-ABEL (PLA) file app.tt1...
+Performing 'bypin choose' optimization...
+Shortening signal names...
+Writing signal name cross reference file app.xrf... 
+Writing Open-ABEL (PLA) file app.tt2...
+
+BLIFOPT complete - 0 errors, 0 warnings. Time: 1 seconds
+
+DIOFFT  Flip-Flop Transformation program
+PSDabel-CPLD 6.20 Copyright 1983-1994 Data I/O Corp. All Rights Reserved.
+Input file: app.tt2.
+Output file: app.tt3.
+
+
+DIOFFT complete. - Time 0 seconds
+
+PSD Fitter - Logic Synthesis and Device Fitting
+PSDsoft Express 8.10 Copyright (C) 1993-2004 STMicroelectronics, Inc.  All Rights Reserved.
+PROJECT    : app                              DATE : 07/31/2009
+DEVICE     : PSD835G2V                        TIME : 07:08:13
+FIT OPTION : Keep Current
+  >> PSD Fitter complete - Successful Fitting
+  >> View fitter report for detail
+PSD Address Translation - Merge MCU Firmware with PSD 
+PSDsoft Express 8.10 Copyright (C) 1993-2004 STMicroelectronics, Inc.  All Rights Reserved.
+PROJECT    : app                                      DATE : 07/31/2009
+DEVICE     : PSD835G2V                                TIME : 07:08:24
+  >> 
+  >> Warning ADR025: There is no data within the specified FS5 range.
+  >> Warning ADR025: There is no data within the specified FS6 range.
+  >> Warning ADR025: There is no data within the specified FS7 range.
+  >> Address Translation complete.
+  >> 
+
+PSDsoft ends.

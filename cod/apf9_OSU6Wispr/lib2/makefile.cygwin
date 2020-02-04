@@ -1,0 +1,94 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# $Id: makefile,v 1.6.2.1 2008/09/11 19:44:47 dbliudnikas Exp $
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RCS Log:
+#
+# $Log: makefile,v $
+# Revision 1.6.2.1  2008/09/11 19:44:47  dbliudnikas
+# Update for Webb development system: line length issue.
+#
+# Revision 1.6  2006/01/06 23:12:06  swift
+# rm -fete files to be built as a workaround for samba configuration problem.
+#
+# Revision 1.5  2004/12/29 23:06:50  swift
+# Modified LogEntry() to use strings stored in the CODE segment.  This saves
+# lots of space in the DATA segment and significantly speeds code start-up.
+#
+# Revision 1.4  2004/07/14 22:52:30  swift
+# Modifications needed to transition to the new stdio library.
+#
+# Revision 1.3  2004/04/30 00:21:56  swift
+# Modifications to account for changes in the installation directores for
+# HiTech and PsdExpress.
+#
+# Revision 1.2  2003/11/13 19:45:51  swift
+# Modifications to account for refactored directory structure.
+#
+# Revision 1.1  2003/11/12 18:15:44  swift
+# Initial revision
+#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.DEFAULT:
+.SUFFIXES:
+.PRECIOUS: %.obj %.hex %.h
+.PHONY: headers include force lib apex
+SHELL=/bin/bash
+
+HiTech = /cygdrive/c/HT-XA#
+
+binDir = ../bin#
+srcDir = ../lib#
+incDir = ../include#
+
+# construct a list of all source files in source directory
+srcFiles  = $(filter-out regengin.c, $(wildcard *.c)) 
+
+objFiles := $(subst .c,.obj, $(srcFiles))
+
+hFiles :=  $(addprefix $(incDir)/, \
+           $(filter-out vfprintf.h regexec.h regfree.h stdlib.h, \
+           $(subst .c,.h, $(srcFiles)))) $(incDir)/regex.h \
+           $(incDir)/regex2.h $(incDir)/regutils.h 
+
+all: include apex
+	@echo Done making all ...
+
+clean: force
+	-rm -f $(objFiles) $(hFiles) apex.lib apex.cmd
+
+test:
+	@echo srcDir = $(srcDir)
+	@echo srcFiles = $(srcFiles)
+	@echo objFiles = $(objFiles)
+	@echo hFiles = $(hFiles)
+
+$(incDir)/%.h: %.c 
+	$(binDir)/swh.exe D=$(shell echo $*.h|tr a-z.- A-Z__) if=$< of=$@
+
+headers include: $(hFiles)
+	@echo Done making $* ... 
+
+$(incDir)/regex.h: 
+	cp {$(srcDir),$(incDir)}/regex.h
+
+$(incDir)/regex2.h: 
+	cp {$(srcDir),$(incDir)}/regex2.h
+
+$(incDir)/regutils.h: 
+	cp {$(srcDir),$(incDir)}/regutils.h
+
+powerup.obj: powerup.as
+	$(HiTech)/bin/asxa -x powerup.as
+
+rtxa--l.obj: rtxa--l.as
+	$(HiTech)/bin/asxa -x rtxa--l.as
+
+apex lib: $(objFiles)
+	@rm -f apex.lib
+#	@echo r apex.lib $^ | (perl -ne 's/([^ ]+[ ]+)/\1\\\n/g;print' > apex.cmd)
+#	$(HiTech)/bin/libr < apex.cmd
+	$(HiTech)/bin/libr r apex.lib chat.obj crc.obj crc16bit.obj expect.obj extract.obj fifo.obj garmin.obj logger.obj login.obj 
+	$(HiTech)/bin/libr r apex.lib modem.obj nan.obj nmea.obj pkt.obj regcomp.obj regerror.obj regexec.obj regfree.obj rx.obj 
+	$(HiTech)/bin/libr r apex.lib seascan.obj serial.obj snprintf.obj stdio.obj stdlib.obj strtime.obj strtoul.obj time.obj 
+	$(HiTech)/bin/libr r apex.lib tmparse.obj tx.obj xmodem.obj	
+	@echo Done making $* ...

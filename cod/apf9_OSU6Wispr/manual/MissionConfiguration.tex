@@ -1,0 +1,372 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% $Id: MissionConfiguration.tex,v 1.5.2.2 2008/10/01 14:50:31 dbliudnikas Exp $
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% RCS Log:
+%
+% $Log: MissionConfiguration.tex,v $
+% Revision 1.5.2.2  2008/10/01 14:50:31  dbliudnikas
+% Apf9i Seascan TD: mission list update.
+%
+% Revision 1.5.2.1  2008/10/01 13:07:24  dbliudnikas
+% Update for replacement of SBE41CP CTD with Seascan TD.
+%
+% Revision 1.5  2008/07/14 17:02:19  swift
+% Added compensator hyper-retraction feature to allow floats to be
+% parked at mid-water pressures.
+%
+% Revision 1.4  2007/10/05 22:33:48  swift
+% Change telemetry retry interval and add definitions of bit-masks for status words.
+%
+% Revision 1.3  2007/05/07 23:48:34  swift
+% Added description of TimeOfDay feature including its remote control.
+%
+% Revision 1.2  2006/11/22 02:50:47  swift
+% Added sanity check for CP activation pressure to warn against spot sampling
+% in the main thermocline.
+%
+% Revision 1.1  2006/11/03 19:08:57  swift
+% Added user manual to CVS control.
+%
+% Revision 1.2  2006/07/10 22:24:49  swift
+% Modifications to bring the manual up to date with
+% changes to the SeaBird CTD firmware (v1.1c).
+%
+% Revision 1.1  2006/04/14 17:30:44  swift
+% Initial revision
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\newcommand{\cs}{Configuration Supervisor}
+
+\section{Mission configuration.}
+\label{sec:MissionConfiguration}
+
+The deconstruction of the profile cycle in
+Section~\ref{sec:DeconstructProfileCycle} will provide the framework for
+understanding how various parameter values determine the nature of the
+mission. The float's mission is configured according to the following
+mission parameters:
+
+\begin{minipage}{6in}
+\begin{verbatim}
+      APEX version 091208  sn 0000
+      User: iridium                                  
+      Pwd:  0xafb3
+      Pri:  ATDT0012066855555                          Mhp
+      Alt:  ATDT0012066165555                          Mha
+      INACTV ToD for down-time expiration. (Minutes)   Mtc
+       14400 Down time. (Minutes)                      Mtd
+       00660 Up time. (Minutes)                        Mtu
+       00540 Ascent time-out. (Minutes)                Mta
+       00360 Deep-profile descent time. (Minutes)      Mtj
+       00360 Park descent time. (Minutes)              Mtk
+       00360 Mission prelude. (Minutes)                Mtp
+       00015 Telemetry retry interval. (Minutes)       Mhr
+       00060 Host-connect time-out. (Seconds)          Mht
+           0 Continuous profile activation. (Decibars) Mc
+        1000 Park pressure. (Decibars)                 Mk
+        2000 Deep-profile pressure. (Decibars)         Mj
+         066 Park piston position. (Counts)            Mbp
+         000 Compensator hyper-retraction. (Counts)    Mbh
+         016 Deep-profile piston position. (Counts)    Mbj
+         010 Ascent buoyancy nudge. (Counts)           Mbn
+         022 Initial buoyancy nudge. (Counts)          Mbi
+         001 Park-n-profile cycle length.              Mn
+         124 Maximum air bladder pressure. (Counts)    Mfb
+         096 OK vacuum threshold. (Counts)             Mfv
+         227 Piston full extension. (Counts)           Mff
+         016 Piston storage position. (Counts)         Mfs
+           2 Logging verbosity. [0-5]                  D
+        0002 DebugBits.                                D
+        557d Mission signature (hex).
+      
+\end{verbatim}
+\end{minipage}\\
+
+A description of each mission parameter follows:
+
+\begin{description}
+
+\item[User \& Pwd]---The user-name and password used by the float to log
+  into the remote host.  The display shows an encoded version of the
+  password rather than the password itself.
+
+\item[Pri \& Alt]---The AT dialstrings used by the \iridium\ LBT (ie.,
+  modem) to dial the primary and alternate remote hosts.  Two remote hosts
+  are needed---reliance on only one remote host is dangerous and strongly
+  discouraged.
+
+\item[TimeOfDay]---This allows the user to specify that the down-time should
+  expire at a specific time of day (ToD).  For example, the ToD feature
+  allows the user to schedule profiles to happen at night.
+
+  The ToD is expressed as the number of minutes after midnight (GMT).  The
+  valid range is 0-1439 minutes.  Any value outside this range will cause
+  the ToD feature to be disabled.
+
+\item[Down-time]---The total amount of time allowed for the \emph{descent}
+  and \emph{park} phases of the profile cycle.  The sequence points K
+  (Section~\ref{sec:ParkProfileCycle}) and D
+  (Section~\ref{sec:DeepProfileCycle}) mark the end of the down-time.  The
+  valid range is 1~minute to 30~days.
+
+  \emph{Note:} If the \textbf{TimeOfDay} feature is enabled then the length
+  of the whole profile cycle will turn out to be an integral number of days.
+  The user should specify the down-time to be precisely 1~day less than the
+  desired length of the profile cycle.  For example, if profiles are to be
+  executed every 10~days then the down-time should be specified to be 9~days
+  (ie., 12960~minutes).
+
+\item[Up-time]---The total amount of time allowed for the \emph{profile} and
+  \emph{telemetry} phases of the profile cycle.  Sequence points K~[C]
+  (Section~\ref{sec:ParkProfileCycle}) and D~[C]
+  (Section~\ref{sec:DeepProfileCycle}) mark the beginning~[end] of the
+  up-time.  The valid range is 1~minute to 24~hours.
+
+\item[Ascent time-out]---The maximum amount of time allowed for the profile
+  phase to complete.  Sequence points K~[P]
+  (Section~\ref{sec:ParkProfileCycle}) and D~[P]
+  (Section~\ref{sec:DeepProfileCycle}) mark the beginning~[end] of the
+  ascent time-out period.  The valid range is 1~minute to 10~hours.
+
+\item[Deep-profile descent time]---The maximum amount of time allowed for
+  the float to descend from the park pressure to the deep target pressure.
+  Sequence points K~[D] (Section~\ref{sec:DeepProfileCycle}) mark the
+  beginning~[end] of the deep-descent period.  The valid range is 0-8~hours.
+
+\item[Park descent time]---The amount of time allowed for the float to
+  descend from the surface to the park pressure before the park phase (and
+  active ballasting) begins.  The valid range is 1~minute to 8~hours.
+
+\item[Mission prelude]---The amount of time allowed after float activation
+  before the float begins its first descent.  The valid range is 1~minute to
+  6~hours.
+
+\item[Telemetry retry interval]---The amount of time after initiation of a
+  telemetry attempt before initiating the next attempt (ie,. if the former
+  fails). The valid range is 1~minute to 6~hours.
+
+\item[Host-connection time-out]---The maximum amount of time allowed (after
+  sending the AT dialstring) to receive the ``CONNECT'' response from the
+  remote modem.  The valid range is 30~seconds to 5~minutes.
+
+\item[Continuous profile activation]---The target pressure for activating
+  the continuous profile.  During the profile phase, the firmware will stop
+  collecting spot samples and initiate continuous profiling as soon as
+  the float detects a pressure less than the target pressure.  Any finite
+  value is valid.
+
+\item[Park pressure]---The target pressure for the active ballasting
+  mechanism.  The float firmware will seek to maintain the float at this
+  pressure during the park phase.  The valid range is 0-2000~decibars.
+  \textbf{Warning:} Floats with \NComp\ are buoyancy unstable in the range
+  of pressures \mbox{$\sim$400--700~decibars} and must be parked outside
+  this range.  Refer to Section~\ref{DescentPhaseNComp} for more details.
+
+
+\item[Deep-profile pressure]---The target pressure for a deep profile.
+  During the deep-descent phase, the pressure is monitored a 5~minute
+  intervals.  The profile phase is initiated when the float detects a
+  pressure greater than this target pressure.  The valid range is
+  0-2000~decibars.
+
+\item[Park piston position]---An initialization value for the piston
+  position at the park pressure.  The autoballasting mechanism will
+  automatically adjust this value to drive the float to the park pressure.
+  The valid range is 1-254~counts.
+\item[Compensator hyper-retraction]---This parameter exists solely for
+  floats with \NComp\ and causes the piston to be temporarily retracted
+  beyond the park position.  Near the end of the descent phase, the piston
+  is extended back to the park position.  This implements the ability to
+  park such floats at any pressure deeper than 850~decibars.  Refer to
+  Section~\ref{DescentPhaseNComp} for more details. The valid range is
+  0-254~counts.  Floats without \NComp\ should have this parameter set to
+  zero.
+
+
+\item[Deep-profile piston position]---An initialization value for the piston
+  position at the deep-profile pressure.  The \apf\ firmware will
+  automatically adjust this value to drive the float to the deep-profile
+  pressure in the time allowed.  The valid range is 1-254~counts.
+
+\item[Ascent buoyancy nudge]---The amount that the piston is extended when
+  the ascent-control algorithm determines that more buoyancy is needed to
+  maintain the minimum ascent rate of 8~millibars/second.  The valid range
+  is 1-254~counts.
+
+\item[Initial buoyancy nudge]---The amount that the piston is extended at
+  the beginning of the profile phase to get the float to start ascending.
+  This same extension is also applied when the surface detection algorithm
+  terminates.  The valid range is 1-254~counts.
+
+\item[Park-n-profile cycle length]---This parameter determines how often
+  deep profiles should be executed.  For example, if this value is 4 then
+  profiles 4, 8, 12, and so on will be deep profiles.  The valid range is
+  1-254.  The value 254 is a special sentinel value that disables the
+  park-n-profile feature.
+
+\item[Maximum air bladder pressure]---This parameter determines the
+  cut-off pressure when inflating the air bladder.   The valid range is
+  1-240~counts. 
+
+\item[OK vacuum threshold]---This parameter determines the threshold
+  internal pressure during the float's self-test at the beginning of the
+  mission.  If the internal pressure exceeds this threshold then the
+  self-test will fail and the mission will be aborted.  After the mission
+  starts, this value is never used again.  The valid range is 1-254~counts.
+
+\item[Piston full extension]---This parameter determines the maximum piston
+  extension allowed to prevent the buoyancy pump from self-destructing.  The
+  valid range is 1-254~counts.
+
+\item[Piston storage position]---This parameter determines the preferred
+  piston extension during storage and shipment.  The valid range is
+  1-254~counts.
+
+\item[Logging verbosity]---An integer in the range [0,5] that determines the
+  logging verbosity with higher values producing more verbose logging.  A
+  verbosity of 2 yields standard logging.
+
+\end{description}
+
+The values of all mission parameters can be set via the firmware's
+command-mode user interface.  In addition, a subset of these parameters can
+be set via the remote control user interface (see
+Section~\ref{sec:RemoteControl}).  
+
+\subsection{The \emph{Configuration Supervisor}.}
+\label{sec:ConfigSupervisor}
+
+The objective of the \cs\ is to guard against various common classes of
+misconfigurations.  When examining a given mission configuration, the \cs\
+applies $\sim40$ tests that seek to detect parameters or interactions
+between parameters that could be harmful or fatal to a deployed float.
+
+However, \textbf{the \cs\ is not a substitute for a thinking human
+  brain}---misconfigurations exist that can not be detected by firmware but
+which are effectively fatal to a deployed float.  Thorough laboratory
+simulations of new configurations are strongly encouraged and careful
+predeployment testing of each float is essential.
+
+Each of the $\sim40$ tests is classified as either a constraint or a sanity
+check.  Constraint violations are likely fatal to a deployed float and the
+\cs\ will refuse to accept parameters or combinations of parameters that
+violate a constraint.  Sanity checks detect various suspicious conditions
+that are not likely fatal but that are probably inadvisable or unintended.
+
+Each time the \cs\ encounters a violation, a verbal description of the
+violation is given together with the C-source code for the test that was
+violated.  The C-source code is expressed in terms of the mission
+configuration parameters and can be used to figure out how to correct the
+problem. 
+
+\subsubsection{Missions impossible.}
+
+Constraint violations represent missions that are not possible or else
+potentially fatal to a deployed float.  The \cs\ will reject mission
+configurations that violate constraints.  The following is a description of
+each constraint:
+
+\begin{description}
+\begin{minipage}{6in}
+\item[\textnormal{Range constraints are applied to most mission parameters:}]\ \\ 
+  \begin{tabular}{llcccl} 
+    & 0          & $\le$ & Verbosity                  & $\le$ & 5             \\
+    & 1~Count    & $\le$ & AirBladderMaxP             & $\le$ & 240~Counts    \\
+    & 1~Count    & $\le$ & OkVacuumCount              & $\le$ & 254~Counts    \\
+    & 1~Count    & $\le$ & PistonBuoyancyNudge        & $\le$ & 254~Counts    \\
+    & 1~Count    & $\le$ & DeepProfilePistonPos       & $\le$ & 254~Counts    \\
+    & 1~Count    & $\le$ & PistonFullExtension        & $\le$ & 254~Counts    \\
+    & 1~Count    & $\le$ & PistonInitialBuoyancyNudge & $\le$ & 254~Counts    \\
+    & 0~Count    & $\le$ & PistonParkHyperRetraction  & $\le$ & 254~Counts    \\
+    & 1~Count    & $\le$ & ParkPistonPos              & $\le$ & 254~Counts    \\
+    & 1~Count    & $\le$ & PistonStoragePosition      & $\le$ & 254~Counts    \\
+    & 1          & $\le$ & PnPCycleLen                & $\le$ & 254           \\
+    & 0~Decibars & $\le$ & ParkPressure               & $\le$ & 2000~Decibars \\
+    & 0~Decibars & $\le$ & DeepProfilePressure        & $\le$ & 2000~Decibars \\
+    & 0~Minute   & $\le$ & DeepProfileDescentTime     & $\le$ & 8~Hours       \\
+    & 0~Minute   & $<$   & DownTime                   & $\le$ & 30~Days       \\
+    & 1~Minute   & $\le$ & AscentTimeOut              & $\le$ & 10~Hours      \\
+    & 0~Minute   & $<$   & ParkDescentTime            & $\le$ & 8~Hours       \\
+    & 0~Minute   & $<$   & TimePrelude                & $\le$ & 6~Hours       \\
+    & 1~Minute   & $\le$ & TelemetryRetry             & $\le$ & 6~Hours       \\
+    & 0~Minutes  & $<$   & UpTime                     & $\le$ & 24~Hours      \\
+    & 30~Seconds & $\le$ & ConnectTimeOut             & $\le$ & 5~Minutes     \\
+  \end{tabular}
+\end{minipage}
+  
+\item[\textnormal{The up-time must allow for a deep profile plus 2 hours for telemetry:}]\ \\
+  $mission.TimeUp >= (mission.PressureProfile/dPdt) + 2*Hour$
+  
+\item[\textnormal{The up-time must allow for a park profile plus 2 hours for telemetry:}]\ \\
+  $mission.TimeUp >= (mission.PressurePark/dPdt) + 2*Hour$
+  
+\item[\textnormal{The up-time has to be greater than the ascent time-out period:}]\ \\
+  $mission.TimeUp > mission.TimeOutAscent$
+
+\item[\textnormal{The down-time has to be greater than the park-descent time plus deep-profile descent time:}]\ \\
+  $mission.TimeDown > mission.TimeParkDescent+mission.TimeDeepProfileDescent$
+
+\item[\textnormal{The profile pressure must be greater than (or equal to) the park pressure:}]\ \\
+  $mission.PressureProfile >= mission.PressurePark$
+
+\item[\textnormal{The primary dial command must begin with AT:}]\ \\
+  !strncmp(mission.at, AT,2)
+
+\item[\textnormal{The alternate dial command must begin with AT:}]\ \\
+  !strncmp(mission.alt,AT,2)
+
+\end{description}
+
+\subsubsection{Missions insane.}
+
+The \cs\ will warn the operator about violations of sanity checks but will not
+reject the configuration.  The following is a list of each sanity check:
+
+\begin{description}
+
+\item[\textnormal{Ascent time should be sufficient for a deep profile:}]\ \\
+  $mission.TimeOutAscent >= (mission.PressureProfile/dPdt) + 1*Hour$
+
+\item[\textnormal{Ascent time should be sufficient for a park profile:}]\ \\
+  $mission.TimeOutAscent >= (mission.PressurePark/dPdt) + 1*Hour$
+
+\item[\textnormal{Up time should be sufficient to guarantee at least 2 hours for telemetry:}]\ \\
+  $mission.TimeUp >= mission.TimeOutAscent + 2*Hour$
+
+\item[\textnormal{Park descent period should be compatible with park pressure:}]\ \\
+  $mission.TimeParkDescent >= mission.PressurePark/dPdt$
+
+\item[\textnormal{Park descent period should not be excessive:}]\ \\
+  $mission.TimeParkDescent <= 1.5*mission.PressurePark/dPdt + 1*Hour$
+
+\item[\textnormal{Deep-profile descent period should be compatible with profile pressure:}]\ \\
+  $mission.TimeDeepProfileDescent >= (mission.PressureProfile-mission.PressurePark)/dPdt)$
+
+\item[\textnormal{Down time should be sufficient for active ballasting algorithm to adjust buoyancy:}]\ \\
+  \mbox{$mission.TimeDown > mission.TimeDeepProfileDescent + mission.TimeParkDescent + 2*Hour$}
+
+\item[\textnormal{Deep-profile descent period should not be excessive:}]\ \\
+  \mbox{$mission.TimeDeepProfileDescent <= 1.5*(mission.PressureProfile-mission.PressurePark)/dPdt + Hour$}
+
+\item[\textnormal{Profile piston position should be compatible with park piston position:}]\ \\
+  $mission.PistonDeepProfilePosition <= mission.PistonParkPosition$
+\item[\textnormal{Compensator instability: N2 float should be parked
+    deeper.}]  This sanity check applies only if the compensator
+    hyper-retraction is nonzero. \\
+  $mission.PressurePark >= MinN2ParkPressure$
+
+
+\item[\textnormal{Maximum air-bladder pressure seems insane:}]\ \\
+  $120 \le mission.MaxAirBladder \le 128$
+
+\item[\textnormal{The float serial number should be greater than zero:}]\ \\
+  $mission.FloatId>0$
+
+\end{description}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "IridiumApex"
+%%% End: 

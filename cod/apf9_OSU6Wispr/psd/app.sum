@@ -1,0 +1,128 @@
+***********************************************************************
+                         PSDsoft Express Version 8.10
+                         Summary of Design Assistant
+***********************************************************************
+PROJECT    : app                           DATE : 07/31/2009
+DEVICE     : PSD835G2V                     TIME : 07:17:42
+MCU/DSP    : P51XAG3x    
+***********************************************************************
+
+Initial setting for Program and Data Space:
+===========================================
+
+  Main PSD flash memory will reside in this space at power-up:      Program Space Only
+  Secondary PSD flash memory will reside in this space at power-up: Program Space Only
+
+Pin Definitions:
+================
+
+Pin          Signal                    Pin
+Name         Name                      Type
+------------ ------------------------- ------------
+adio0        a4                        Address line
+adio1        a5                        Address line
+adio2        a6                        Address line
+adio3        a7                        Address line
+adio4        a8                        Address line
+adio5        a9                        Address line
+adio6        a10                       Address line
+adio7        a11                       Address line
+adio8        a12                       Address line
+adio9        a13                       Address line
+adio10       a14                       Address line
+adio11       a15                       Address line
+adio12       a16                       Address line
+adio13       a17                       Address line
+adio14       a18                       Address line
+adio15       a19                       Address line
+cntl0        _wr                       MCU bus control signal
+cntl2        _psen                     MCU bus control signal
+cntl1        _rd                       MCU bus control signal
+_reset       _reset                    RESET input 
+pa0          pa0                       MCU I/O mode
+pa1          pa1                       MCU I/O mode
+pa2          pa2                       MCU I/O mode
+pa3          pa3                       MCU I/O mode
+pa4          pa4                       MCU I/O mode
+pa5          pa5                       MCU I/O mode
+pa6          pa6                       MCU I/O mode
+pa7          pa7                       MCU I/O mode
+pb0          pb0                       MCU I/O mode
+pb1          pb1                       MCU I/O mode
+pb2          pb2                       MCU I/O mode
+pb3          pb3                       MCU I/O mode
+pb4          pb4                       MCU I/O mode
+pb5          pb5                       MCU I/O mode
+pb6          pb6                       MCU I/O mode
+pb7          pb7                       MCU I/O mode
+pc0          pc0                       External chip select - Active-Lo
+pc1          pc1                       External chip select - Active-Lo
+pc2          pc2                       External chip select - Active-Lo
+pc3          pc3                       External chip select - Active-Lo
+pc4          pc4                       MCU I/O mode
+pc5          pc5                       MCU I/O mode
+pc6          pc6                       MCU I/O mode
+pc7          pc7                       MCU I/O mode
+pd0          ale                       ALE/AS input
+pd1          pd1                       MCU I/O mode
+pd2          pd2                       MCU I/O mode
+pd3          pd3                       MCU I/O mode
+pe0          tms                       Dedicated JTAG - TMS
+pe1          tck                       Dedicated JTAG - TCK
+pe2          tdi                       Dedicated JTAG - TDI
+pe3          tdo                       Dedicated JTAG - TDO
+pe4          pe4                       MCU I/O mode
+pe5          pe5                       MCU I/O mode
+pe6          pe6                       MCU I/O mode
+pe7          pe7                       MCU I/O mode
+pf0          a0                        Address line
+pf1          a1                        Address line
+pf2          a2                        Address line
+pf3          a3                        Address line
+pf4          pf4                       Latched address out
+pf5          pf5                       Latched address out
+pf6          pf6                       Latched address out
+pf7          pf7                       Latched address out
+pg0          pg0                       Latched address out
+pg1          pg1                       Latched address out
+pg2          pg2                       Latched address out
+pg3          pg3                       Latched address out
+pg4          pg4                       MCU I/O mode
+pg5          pg5                       MCU I/O mode
+pg6          pg6                       MCU I/O mode
+pg7          pg7                       MCU I/O mode
+
+User defined nodes:
+===================
+
+None defined
+
+Page Register settings:
+=======================
+
+pgr0 is not used
+pgr1 is not used
+pgr2 is not used
+pgr3 is not used
+pgr4 is not used
+pgr5 is not used
+pgr6 is not used
+pgr7 is not used
+
+Equations:
+==========
+
+rs0 = ((address >= ^h1000) & (address <= ^h2FFF));
+csiop = ((address >= ^h0F00) & (address <= ^h0FFF));
+fs0 = ((address >= ^h0000) & (address <= ^hFFFF));
+fs1 = ((address >= ^h10000) & (address <= ^h1FFFF));
+fs2 = ((address >= ^h20000) & (address <= ^h2FFFF));
+fs3 = ((address >= ^h30000) & (address <= ^h3FFFF));
+fs4 = ((address >= ^h40000) & (address <= ^h4FFFF));
+fs5 = ((address >= ^h50000) & (address <= ^h5FFFF));
+fs6 = ((address >= ^h60000) & (address <= ^h6FFFF));
+fs7 = ((address >= ^h70000) & (address <= ^h7FFFF));
+! pc0 = ((address >= ^h3000) & (address <= ^h82FFF) & (_psen));
+! pc1 = ((address >= ^h0EF0) & (address <= ^h0EFF) & (_psen));
+! pc2 = ((address >= ^h0EE0) & (address <= ^h0EEF) & (_psen));
+! pc3 = ((address >= ^h0ED0) & (address <= ^h0EDF) & (_psen));
