@@ -1,11 +1,11 @@
-// ant.c - for working with antenna module
+// s39.c - for working with antenna module sbe39
 #include <main.h>
 
 #define EOL "\r"
 #define BAUD 9600L
 #define EXEC "<Executed/>"
 
-AntInfo ant;
+S39Info s39;
 
 ///
 // turn on antenna module, wait until ant responds

@@ -5,5 +5,5 @@
   lg = log --graph --decorate --oneline --date=local --date-order --pretty=format:'%C(blue)%h  %C(yellow)%ad  %C(green)%d %Creset %n%B' 
   ls = log --pretty=format:'%C(blue)%h  %C(yellow)%ad  %C(green)%d %Creset %n%B' --name-status 
   recommit = commit -a --amend -C HEAD
-[push]
-	default = simple
+  hist = log --follow -p --
+  history = log --follow -p --
