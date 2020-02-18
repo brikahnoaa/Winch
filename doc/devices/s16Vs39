@@ -1,0 +1,5 @@
+compare s16 vs s39
+
+.1 #define EXEC "S>" V "<Executed/>"
+.2 no s39.pumpmode
+
