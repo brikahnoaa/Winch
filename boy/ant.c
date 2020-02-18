@@ -3,7 +3,6 @@
 
 #define EOL "\r"
 #define BAUD 9600L
-#define EXEC "<Executed/>"
 
 AntInfo ant;
 
@@ -23,13 +22,6 @@ void antInit(void) {
     utlStop("antInit() com1 open fail");
   antDevice(null_dev);
   ant.on = false;
-  // alloc bloc to store depth values for moving/velo
-  ant.ring = (RingNode *) calloc(ant.ringSize, sizeof(RingNode));
-  // to string the nodes into a ring, access like an array
-  for (i=0; i<ant.ringSize-1; i++) {
-    ant.ring[i].next = &ant.ring[i+1];
-  }
-  ant.ring[i].next = ant.ring;
   antStart();
   utlReadExpect(ant.port, all.str, EXEC, 2);
   utlWrite(ant.port, "TxSampleNum=N", EOL);
@@ -50,7 +42,6 @@ void antInit(void) {
 // turn on, clean, set params, talk to sbe39
 int antStart(void) {
   static char *self="antStart";
-  antReset();           // ring buffer - do this even if on already
   if (ant.on) // verify
     if (antPrompt()) {
       antSample();
@@ -209,7 +200,7 @@ void antSample(void) {
 // TS   ->' 20.1000,    1.287, 18 Sep 1914, 12:40:30\\<Executed/>\\' 56
 // TSSon->' 20.1000,    1.287, 18 Sep 1914, 12:40:30, 126\\<Executed/>\\' 61
 //  - note: now TS=TSSon due to TxSampleNum=N
-// sets: ant.temp .depth .ring->depth .ring->sampT
+// sets: ant.temp .depth 
 // note: ant.sampT set in antSample()
 bool antRead(void) {
   char *p0, *p1, *p2;
@@ -243,8 +234,6 @@ bool antRead(void) {
     utlErr(ant_err, "antRead: null values");
     return false;
   }
-  // save in ring
-  ringSamp(ant.depth, ant.sampT);
   DBG2("= %4.2f, %4.2f", ant.temp, ant.depth);
   antSample();
   return true;
@@ -270,134 +259,6 @@ float antTemp(void) {
   antDepth();
   return ant.temp;
 } // antTemp
-
-///
-// checks recent depth against previous, computes velocity m/s
-// checks ring for consistent direction v. waves
-// sets: *velo 
-// retn: 0=full success; -1=empty; -2=waves; #=how many ring samples
-int antVelo(float *velo) {
-  int r=0, samp=ant.ringSize;
-  float v;
-  RingNode *n;
-  DBG0("antVelo");
-  // empty ring
-  if (!ant.ring->sampT) {
-    *velo=0.0;
-    return -1;
-  }
-  // find oldest value in ring, skip empty nodes
-  n = ant.ring->next;
-  while (!n->sampT) {
-    r = --samp;
-    n = n->next;
-  } // note: r==0 if ring is full, as first test falls
-  // only one value
-  if (n==ant.ring) {
-    *velo=0.0;
-    return -1;
-  }
-  // velocity
-  v = (ant.ring->depth - n->depth) / (ant.ring->sampT - n->sampT);
-  // ring consistent direction? v>0 means falling
-  while (true) {
-    if (  (v>0 && n->depth > n->next->depth)
-        ||(v<0 && n->depth < n->next->depth)  ) {
-      *velo = 0.0;
-      return -2;
-    } // waves
-    n = n->next;
-    if (n==ant.ring) break;
-  } // walk ring
-  *velo = v;
-  DBG2("aV=%4.2f", *velo);
-  return r;
-} // antVelo
-
-///
-// oops, doesn't include antRing->depth
-int antAvg(float *avg) {
-  int r=0, samp=ant.ringSize;
-  float a=0.0;
-  RingNode *n;
-  DBG0("antVelo");
-  // empty ring
-  if (!ant.ring->sampT) {
-    *avg=0.0;
-    return -1;
-  }
-  // find oldest value in ring, skip empty nodes
-  n = ant.ring->next;
-  while (!n->sampT) {
-    r = --samp;
-    n = n->next;
-  } // note: r==0 if ring is full, as first test falls
-  // walk around the ring
-  while (true) {
-    a += n->depth;
-    n = n->next;
-    if (n==ant.ring->next) break;
-  } // walk ring
-  *avg = a / samp;
-  return r;
-} // antAvg
-
-///
-// ant.ring points to last good value
-// sets: ring ring.depth ring.sampT
-void ringSamp(float depth, time_t sampT) {
-  ant.ring = ant.ring->next;
-  ant.ring->depth = depth;
-  ant.ring->sampT = sampT;
-} // ringSamp
-
-///
-// is this ring consistent increasing (1) or decreasing (-1)
-int ringDir(float v) {
-  RingNode *n;
-  int dir;
-  // direction - check all samples for consistent direction
-  dir = (v>0) ? 1 : -1;
-  for (n=ant.ring; n->next!=ant.ring; n=n->next) {
-    DBG2("rd:%3.1f", n->depth);
-    if (dir==1) // fall
-      if (n->depth > n->next->depth)
-        dir = 0;
-    if (dir==-1) // rise
-      if (n->depth < n->next->depth)
-        dir = 0;
-    if (dir==0) break;
-  }
-  return dir;
-} // ringDir
-
-/// debug
-// print out values of ring
-void ringPrint(void) {
-  RingNode *n = ant.ring;
-  time_t now = time(0);
-  int i;
-  for (i=0; i<ant.ringSize; i++) {
-    flogf("\n[%d]%3.1f,%ld", i, n->depth, n->sampT);
-    n = n->next;
-  }
-}
-
-///
-// clear sample times used by antVelo, antAvg. fresh sample
-// sets: ant.ring->sampT;
-void antReset(void) {
-  RingNode *n;
-  static char *self="antReset";
-  DBG();
-  n = ant.ring; 
-  while (true) {
-    n->depth = 0.0;
-    n->sampT = (time_t) 0;
-    n = n->next;
-    if (n==ant.ring) break;
-  } // while
-} // antReset
 
 ///
 // antmod uMPC cf2 and iridium A3LA

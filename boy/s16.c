@@ -6,16 +6,6 @@
 
 S16Info s16;
 
-// general note: s16 wants \r only for input, outputs \r\n
-// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
-//
-// \r input, echos input.  \r\n before next output.
-// pause 0.33s between \rn and s> prompt.
-// wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
-// pause between ts\r\n and result = 4.32s
-// sbe16 response is just over 3sec in sync, well over 4sec in command
-// NOTE - sbe16 does not echo while logging, must get prompt before STOP
-
 ///
 // sets: s16.port .s16Pending
 void s16Init(void) {
@@ -44,7 +34,7 @@ int s16Start(void) {
       s16Sample();
       return 0;
     } else {
-      flogf("\n%s(): ERR sbe16, expected prompt", self);
+      flogf("\n%s(): ERR sbe16, no response", self);
       return 1;
     }
   s16.on = true;
@@ -391,3 +381,14 @@ void s16Test(void) {
     }
   }
 } // s16Test
+
+//
+// general note: s16 wants \r only for input, outputs \r\n
+// Bug:! TUTxPrint translates \n into \r\n, which sorta kinda works if lucky
+//
+// \r input, echos input.  \r\n before next output.
+// pause 0.33s between \rn and s> prompt.
+// wakeup takes 1.045s, writes extra output "SBE 16plus\r\nS>"
+// pause between ts\r\n and result = 4.32s
+// sbe16 response is just over 3sec in sync, well over 4sec in command
+// NOTE - sbe16 does not echo while logging, must get prompt before STOP

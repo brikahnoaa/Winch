@@ -3,46 +3,42 @@
 #define H_S39
 
 typedef struct S39Info {
-  Serial port;
-  bool auton;                 // autonomous mode, silent
-  bool on;
-  bool sampClear;             // clear after getSamples
+  Serial port;                // this is ant module
+  bool auton;                 // now doing autonomous sampling
+  bool on;                    // now init'd
+  bool sampClear;             // clear stored samples after GetSamples()
   bool sampStore;             // store on device with TSSon - except auton
-  char *me;
+  char *me;                   // s39
+  char initStr[256];          // init time setting for ctd
+  char startStr[256];         // start time setting for ctd
   float depth;
   float temp;
-  int delay;                  // Delay seconds expected between polled samples
   int log;                    // log fileid
-  int sampInt;                // sample interval for auton
-  time_t sampT;               // read time() of last sample 
+  //int pumpMode;               // 0=no 1=.5sec 2=during
+  int sampInter;              // sample Interval for auton
+  int timer;                  // Delay seconds expected between polled samples
+  time_t sampT;
 } S39Info;
 
-static bool s39Pending(void);
 static void s39Break(void);
+static void s39Flush(void);
+static bool s39Pending(void);
 
-Serial s39Port(void);
 bool s39Data(void);
 bool s39DataWait(void);
 bool s39Prompt(void);
 bool s39Read(void);
-bool s39Surf(void);
 float s39Depth(void);
-float s39SurfD(void);
-float s39Temp(void);
 int s39Auton(bool auton);
-int s39Avg(float *avg);
-int s39Start(void);
-int s39Stop(void);
-int s39Velo(float *velo);
 int s39LogClose(void);
 int s39LogOpen(void);
-void s39DevPwr(char c, bool on);
-void s39Device(DevType dev);
-void s39Flush(void);
+int s39Start(void);
+int s39Stop(void);
 void s39GetSamples(void);
 void s39Init(void);
-void s39Reset(void);
 void s39Sample(void);
-void s39Switch(AntType antenna);
+void s39Test(void);
+
+
 
 #endif

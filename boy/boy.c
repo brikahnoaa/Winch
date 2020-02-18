@@ -402,8 +402,6 @@ int riseDo(float targetD) {
     if (tmrExp(fiveTmr)) { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
-      if (!antVelo(&velo)) 
-        flogf(" velo=%4.2f", velo);
     }  // 5 seconds
     if (s16Data()) 
       s16Read();
@@ -494,8 +492,6 @@ int fallDo(float targetD) {
     if (tmrExp(fiveTmr)) { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
-      if (!antVelo(&velo)) 
-        flogf(" velo=%4.2f", velo);
     }  // 5 seconds
     if (s16Data()) 
       s16Read();
