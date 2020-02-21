@@ -1,0 +1,39 @@
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
++antInit()
++gpsInit()
++iridCRC()
++antStart() 06-28-18 20:45:46 <<'' <<' 1' <<' 0 x0D  x0A ok x0D  x0D  x0A ' >>' x0D ' <<' x0D  x0A <Executed/> x0D  x0A ' >>'datetime=06282018204551 x0D ' <<'datetime=06282018204551 x0D  x0A <Executed/> x0D  x0A '
++antReset()
++aSam >>'TSSon x0D ' <<'TSSon x0D  x0A '
++aDW
++antRead() <<'  20.9499,    0.006, 28 Jun 2018, 20:45:51, ' <<'2682 x0D  x0A <Executed/> x0D  x0A '
++aSam >>'TSSon x0D ' <<'TSSon x0D  x0A '
++gpsStart() 20:45:53 <<'Copyright(c) 2009-2012 x0D  x0A NAL Research Corporation x0D  x0A Iridium Modem Model: A3LA-RG x0D  x0A Firmware Version 1.1.0r197 x0D  x0A  x0D  x0A Running Self Test...Passed x0D  x0A ENCRYPTION DISABLED THIS POWER CYCLE x0D  x0A ' <<' x0D  x0A COMMAND MODE x0D  x0A ' >>'ate0 x0D ' <<'ate0 x0D  x0D  x0A OK x0D  x0A '
+start 20:45:56
++iridSig() >>'at+csq x0D ' <<' x0D  x0A +CSQ:5 x0D  x0A  x0D  x0A OK x0D  x0A ' csq=5
++iridSendTest(64)
++iridCRC()
+iridDial() 20:46:08 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600 [>>]=13 <<'ACK x0A ' [>>]=74
+land-> <<'cmds x0A 'cmds x0A  <<'@@@y'@@@y <<'&C x01  x01 SendData() x0A SendData() x0A SendData() x0A '&C x01  x01 SendData() x0A SendData() x0A SendData() x0A 
++iridSendTest(128)
++iridCRC()
+iridDial() 20:47:08 >>'at+cpas x0D ' <<' x0D  x0A NO CARRIER x0D  x0A '
++utlExpect(OK, 5) timeout
++iridSendTest(256)
++iridCRC()
+iridDial() 20:47:14 >>'at+cpas x0D ' <<' x0D  x0A +CPAS:000 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'at+clcc x0D ' <<' x0D  x0A +CLCC:006 x0D  x0A  x0D  x0A OK x0D  x0A ' >>'atd0088160000519 x0D ' <<' x0D  x0A CONNECT 9600 x0D  x0A ' CONNECT 9600 [>>]=13 <<'ACK x0A ' [>>]=266
+land-> <<'@@@'@@@ <<'aR'aR
++iridSendTest(1024)
++iridCRC()
+iridDial() 20:48:13 >>'at+cpas x0D '
++utlExpect(OK, 5) timeout [>>]=3 >>'at x0D '
++utlExpect(OK, 5) timeout [>>]=3 >>'at x0D '
++utlExpect(OK, 5) timeout [>>]=3 >>'at x0D '
++utlExpect(OK, 5) timeout >>'at+chup x0D '
++utlExpect(OK, 5) timeout
+stop 20:48:45
+Press Q to exit, C:cf2, A:a3la
+
++gpsStop() >>'at*p x0D '
++utlExpect(OK, 2) timeout
+

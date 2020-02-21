@@ -1,0 +1,18 @@
+2do
+v user break anytime, for sealed devo
+. utlNap break
+v deploy without antMoving, use basic test
+v ant test
+v gps query
+v terminate after how many? BUOY response
+v aM fail less than x meters
+
+ initlogging after successful store, not at start
+ ctdauton during deploy
+
+v ctd16 auton
+
+! cheap hack, delay in aDat to work
+
+        |riseUp() stopCmd timeout, but stopped so continue...
+        | riseUp() to depth 16369
