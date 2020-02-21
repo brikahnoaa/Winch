@@ -12,18 +12,19 @@ void s16Init(void) {
   static char *self="s16Init";
   DBG();
   s16.me="s16";
-  s16.takeSamp="TSSON";
   s16.port = mpcPamPort();
   if (dbg.test) s16.pumpMode=0;
   s16Start();
   utlWrite(s16.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(s16.port, all.str, 1);   // echo
+  //// utlWrite(s16.port, "TxSampleNum=N", EOL);
+  //// utlReadExpect(s16.port, all.str, EXEC, 2);
+  utlWrite(s16.port, "txRealTime=n", EOL);
+  utlReadExpect(s16.port, all.str, EXEC, 2);
   if (s16.initStr) {
     utlWrite(s16.port, s16.initStr, EOL);
     utlReadWait(s16.port, all.str, 1);   // echo
   }
-  utlWrite(s16.port, "stop", EOL);
-  utlReadWait(s16.port, all.str, 1);   // echo
   s16Stop();
 } // s16Init
 
@@ -68,7 +69,6 @@ int s16Stop(void){
   static char *self="s16Stop";
   flogf("\n === buoy sbe16 stop %s", utlDateTime());
   antLogClose();
-  if (s16.auton) s16Auton(false);
   mpcPamPwr(sbe16_pam, false);
   s16.on = false;
   return 0;
@@ -105,15 +105,15 @@ int s16LogClose(void) {
 // sbe16
 // s16Prompt - poke buoy CTD, look for prompt
 bool s16Prompt(void) {
-  DBG1("s16");
+  DBG1("s16Pr");
   if (s16Pending()) 
     s16DataWait();
   s16Flush();
   utlWrite(s16.port, "", EOL);
   if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
-  // try again after break
-  s16Break();
+  s16Stop();
+  s16Start();
   utlWrite(s16.port, "", EOL);
   if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
@@ -121,18 +121,9 @@ bool s16Prompt(void) {
 } // s16Prompt
 
 ///
-// reset, exit sync mode
-void s16Break(void) {
-  static char *self="s16Break";
-  DBG();
-  TUTxBreak(s16.port, 5000);
-} // s16Break
-
-///
 // data waiting
 bool s16Data() {
   int r;
-  // static char *self="s16Data";
   r=TURxQueuedCount(s16.port);
   if (r)
     tmrStop(s16_tmr);
@@ -152,7 +143,7 @@ bool s16DataWait(void) {
 } // s16DataWait
 
 ///
-// poke s16 to get sample, set interval timer (ignore s16.auton)
+// poke s16 to get sample, set interval timer 
 // sets: s16_tmr
 void s16Sample(void) {
   static char *self="s16Sample";
@@ -225,55 +216,6 @@ float s16Depth(void) {
 } // s16Depth
 
 ///
-// NOTE - sbe16 does not echo while logging, but it does S> prompt
-// must get prompt after log starts, before STOP 
-// "start logging at = 08 Jul 2018 05:28:29, sample interval = 10 seconds\r\n"
-// sets: .auton
-// rets: 0=good 1=off 2=badResponse
-int s16Auton(bool auton) {
-  int r=0;
-  flogf("\ns16Auton(%s)", auton?"true":"false");
-  if (!s16.on) {
-    r = 1;
-    s16Start();
-  }
-  if (auton) {
-    // note - initlogging may be done at end of s16GetSamples
-    if (s16Pending())
-      s16DataWait();
-    s16Prompt();
-    sprintf(all.str, "sampleInterval=%d", s16.sampInter);
-    utlWrite(s16.port, all.str, EOL);
-    utlReadExpect(s16.port, all.str, EXEC, 2);
-    utlWrite(s16.port, "txRealTime=n", EOL);
-    utlReadExpect(s16.port, all.str, EXEC, 2);
-    utlWrite(s16.port, "startnow", EOL);
-    if (!utlReadExpect(s16.port, all.str, "start logging", 4)) {
-      r = 1;
-      utlErr(s16_err, "s16Auton: expected 'start logging'");
-    }
-    // s16Prompt();
-  } else {
-    // turn off
-    s16Prompt();
-    // utlWrite(s16.port, "stop", EOL);
-    // utlReadExpect(s16.port, all.str, EXEC, 2);
-    utlWrite(s16.port, "stop", EOL);
-    if (!utlReadExpect(s16.port, all.str, "logging stopped", 4)) {
-      flogf("\nERR\t| expected 'logging stopped', retry...");
-      utlWrite(s16.port, "stop", EOL);
-      if (!utlReadExpect(s16.port, all.str, "logging stopped", 4)) {
-        r=2;
-        flogf("\nERR\t| got '%s'", all.str);
-        utlErr(s16_err, "expected 'logging stopped'");
-      }
-    }
-  } // if auton
-  s16.auton = auton;
-  return r;
-} // s16Auton
-
-///
 // get science, clear log
 void s16GetSamples(void) {
   int len1=sizeof(all.str);
@@ -322,8 +264,8 @@ void s16Test(void) {
       cputc(' ');
       switch (c) {
       case '?':
-        printf("s16.on=%d .log=%d .auton=%d .depth=%3.1f .temp=%3.1f\n",
-            s16.on, s16.log, s16.auton, s16.depth, s16.temp);
+        printf("s16.on=%d .log=%d .depth=%3.1f .temp=%3.1f\n",
+            s16.on, s16.log, s16.depth, s16.temp);
         break;
       case 'd':
         b=s16Data();

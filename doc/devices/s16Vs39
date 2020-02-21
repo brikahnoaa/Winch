@@ -2,4 +2,12 @@ compare s16 vs s39
 
 .1 #define EXEC "S>" V "<Executed/>"
 .2 no s39.pumpmode
-.3 TSSON
+.3 TSSON - same?
+.4 power
+s16 mpc pulse WISPR_PWR_ON (37) WISPR_PWR_OFF (42)
+s39 umpc toggle SBEPWR (23)
+.5 old format
+sbe39 has a new format, look at appendix III pg 72. Use legacy=y?
+s39 txRealTime=n to avoid # at start of data
+"When TxRealTime=Y, real-time autonomous data and real-time serial
+line sync data transmitted to the computer is preceded by a # sign"

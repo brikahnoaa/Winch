@@ -31,18 +31,9 @@ extern WspInfo wsp;
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
 
-  {'b',  "ant.auton",     &ant.auton,       "aau",  "false"},
-  {'b',  "ant.sampClear", &ant.sampClear,   "asC",  "true"},
-  {'b',  "ant.sampStore", &ant.sampStore,   "asS",  "true"},
-  {'c',  "ant.initStr",   &ant.initStr,     "aiS",  ""},
-  {'c',  "ant.startStr",  &ant.startStr,    "aiS",  ""},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
-  {'i',  "ant.delay",     &ant.delay,       "ade",  "3"},
-  {'i',  "ant.ringSize",  &ant.ringSize,    "arS",  "5"},
-  {'i',  "ant.sampInter", &ant.sampInter,   "asI",  "10"},
 
-  {'b',  "boy.iridAuton", &boy.iridAuton,   "biA",  "false"},
   {'b',  "boy.reset",     &boy.reset,       "bre",  "false"},
   {'b',  "boy.stop",      &boy.stop,        "bst",  "false"},
   {'b',  "boy.useBrake",  &boy.useBrake,    "buB",  "false"},
@@ -99,14 +90,21 @@ static CfgParam cfgP[] = {
   {'f',  "pwr.chargeMin", &pwr.chargeMin,   "pcM",  "200.0"},
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
 
-  {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
-  {'b',  "s16.sampClear", &s16.sampClear,   "6cS",  "false"},
-  {'b',  "s16.sampStore", &s16.sampStore,   "6sS",  "true"},
+  // {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
+  // {'i',  "s16.autoInter", &s16.autoInter,   "6aI",  "10"},
   {'c',  "s16.initStr",   &s16.initStr,     "6iS",  ""},
-  {'c',  "s16.startStr",  &s16.startStr,    "6iS",  ""},
+  {'c',  "s16.startStr",  &s16.startStr,    "6sS",  ""},
+  {'c',  "s16.takeSamp",  &s16.takeSamp,    "6tS",  "TSSON"},
   {'i',  "s16.pumpMode",  &s16.pumpMode,    "6pM",  "1"},
-  {'i',  "s16.sampInter", &s16.sampInter,   "6sI",  "10"},
   {'i',  "s16.timer",     &s16.timer,       "6tr",  "6"},
+
+  // {'b',  "s39.auton",     &s39.auton,       "3an",  "false"},
+  // {'i',  "s39.autoInter", &s39.autoInter,   "3aI",  "10"},
+  {'c',  "s39.initStr",   &s39.initStr,     "3iS",  ""},
+  {'c',  "s39.startStr",  &s39.startStr,    "3sS",  ""},
+  {'c',  "s39.takeSamp",  &s39.takeSamp,    "3tS",  "TSSON"},
+  //// {'i',  "s39.pumpMode",  &s39.pumpMode,    "3pM",  "1"},
+  {'i',  "s39.timer",     &s39.timer,       "3tr",  "3"},
 
   {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
   {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},

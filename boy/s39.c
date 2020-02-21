@@ -12,18 +12,19 @@ void s39Init(void) {
   static char *self="s39Init";
   DBG();
   s39.me="s39";
-  s39.takeSamp="TSSON";
   s39.port = antPort();
   //// if (dbg.test) s16.pumpMode=0;
   s39Start();
   utlWrite(s39.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(s39.port, all.str, 1);   // echo
+  utlWrite(s39.port, "TxSampleNum=N", EOL);
+  utlReadExpect(s39.port, all.str, EXEC, 2);
+  utlWrite(s39.port, "txRealTime=n", EOL);
+  utlReadExpect(s39.port, all.str, EXEC, 2);
   if (s39.initStr) {
     utlWrite(s39.port, s39.initStr, EOL);
     utlReadWait(s39.port, all.str, 1);   // echo
   }
-  utlWrite(s39.port, "stop", EOL);
-  utlReadWait(s39.port, all.str, 1);   // echo
   s39Stop();
 } // s39Init
 
@@ -42,13 +43,13 @@ int s39Start(void) {
   s39.on = true;
   s39LogOpen();
   flogf("\n === buoy sbe39 start %s", utlDateTime());
-  antStart(); //// mpcPamPwr(sbe39_pam, true);
+  antDevPwr('S', true);
   tmrStop(s39_tmr);
   if (!s39Prompt()) {
     utlErr(s39_err, "s39: no prompt");
     return 2;
   }
-  // 0=no 1=.5sec 2=during
+  //// // 0=no 1=.5sec 2=during
   //// sprintf(all.str, "pumpmode=%d", s16.pumpMode);
   //// utlWrite(s16.port, all.str, EOL);
   utlReadWait(s39.port, all.str, 2);   // echo
@@ -68,8 +69,7 @@ int s39Stop(void){
   static char *self="s39Stop";
   flogf("\n === buoy sbe39 stop %s", utlDateTime());
   antLogClose();
-  if (s39.auton) s39Auton(false);
-  mpcPamPwr(sbe39_pam, false);
+  antDevPwr('S', false);
   s39.on = false;
   return 0;
 } // s39Stop
@@ -105,15 +105,15 @@ int s39LogClose(void) {
 // sbe39
 // s39Prompt - poke buoy CTD, look for prompt
 bool s39Prompt(void) {
-  DBG1("s39");
+  DBG1("s39Pr");
   if (s39Pending()) 
     s39DataWait();
   s39Flush();
   utlWrite(s39.port, "", EOL);
   if (utlReadExpect(s39.port, all.str, EXEC, 5))
     return true;
-  // try again after break
-  s39Break();
+  s39Stop();
+  s39Start();
   utlWrite(s39.port, "", EOL);
   if (utlReadExpect(s39.port, all.str, EXEC, 5))
     return true;
@@ -121,18 +121,9 @@ bool s39Prompt(void) {
 } // s39Prompt
 
 ///
-// reset, exit sync mode
-void s39Break(void) {
-  static char *self="s39Break";
-  DBG();
-  TUTxBreak(s39.port, 5000);
-} // s39Break
-
-///
 // data waiting
 bool s39Data() {
   int r;
-  // static char *self="s39Data";
   r=TURxQueuedCount(s39.port);
   if (r)
     tmrStop(s39_tmr);
@@ -152,7 +143,7 @@ bool s39DataWait(void) {
 } // s39DataWait
 
 ///
-// poke s39 to get sample, set interval timer (ignore s39.auton)
+// poke s39 to get sample, set interval timer 
 // sets: s39_tmr
 void s39Sample(void) {
   static char *self="s39Sample";
@@ -225,55 +216,6 @@ float s39Depth(void) {
 } // s39Depth
 
 ///
-// NOTE - sbe39 does not echo while logging, but it does S> prompt
-// must get prompt after log starts, before STOP 
-// "start logging at = 08 Jul 2018 05:28:29, sample interval = 10 seconds\r\n"
-// sets: .auton
-// rets: 0=good 1=off 2=badResponse
-int s39Auton(bool auton) {
-  int r=0;
-  flogf("\ns39Auton(%s)", auton?"true":"false");
-  if (!s39.on) {
-    r = 1;
-    s39Start();
-  }
-  if (auton) {
-    // note - initlogging may be done at end of s39GetSamples
-    if (s39Pending())
-      s39DataWait();
-    s39Prompt();
-    sprintf(all.str, "sampleInterval=%d", s39.sampInter);
-    utlWrite(s39.port, all.str, EOL);
-    utlReadExpect(s39.port, all.str, EXEC, 2);
-    utlWrite(s39.port, "txRealTime=n", EOL);
-    utlReadExpect(s39.port, all.str, EXEC, 2);
-    utlWrite(s39.port, "startnow", EOL);
-    if (!utlReadExpect(s39.port, all.str, "start logging", 4)) {
-      r = 1;
-      utlErr(s39_err, "s39Auton: expected 'start logging'");
-    }
-    // s39Prompt();
-  } else {
-    // turn off
-    s39Prompt();
-    // utlWrite(s39.port, "stop", EOL);
-    // utlReadExpect(s39.port, all.str, EXEC, 2);
-    utlWrite(s39.port, "stop", EOL);
-    if (!utlReadExpect(s39.port, all.str, "logging stopped", 4)) {
-      flogf("\nERR\t| expected 'logging stopped', retry...");
-      utlWrite(s39.port, "stop", EOL);
-      if (!utlReadExpect(s39.port, all.str, "logging stopped", 4)) {
-        r=2;
-        flogf("\nERR\t| got '%s'", all.str);
-        utlErr(s39_err, "expected 'logging stopped'");
-      }
-    }
-  } // if auton
-  s39.auton = auton;
-  return r;
-} // s39Auton
-
-///
 // get science, clear log
 void s39GetSamples(void) {
   int len1=sizeof(all.str);
@@ -322,8 +264,8 @@ void s39Test(void) {
       cputc(' ');
       switch (c) {
       case '?':
-        printf("s39.on=%d .log=%d .auton=%d .depth=%3.1f .temp=%3.1f\n",
-            s39.on, s39.log, s39.auton, s39.depth, s39.temp);
+        printf("s39.on=%d .log=%d .depth=%3.1f .temp=%3.1f\n",
+            s39.on, s39.log, s39.depth, s39.temp);
         break;
       case 'd':
         b=s39Data();

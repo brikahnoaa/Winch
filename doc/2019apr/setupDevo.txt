@@ -1,2 +1,0 @@
-  git clone https://github.com/brikahnoaa/Winch.git
-  sh ./Winch/cod/bin/cygSetup.sh
