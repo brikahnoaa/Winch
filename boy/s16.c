@@ -12,6 +12,7 @@ void s16Init(void) {
   static char *self="s16Init";
   DBG();
   s16.me="s16";
+  s16.takeSamp="TSSON";
   s16.port = mpcPamPort();
   if (dbg.test) s16.pumpMode=0;
   s16Start();
@@ -27,6 +28,7 @@ void s16Init(void) {
 } // s16Init
 
 ///
+// ret: 0=ok 1=not
 int s16Start(void) {
   static char *self="s16Start";
   if (s16.on) // verify
@@ -42,8 +44,10 @@ int s16Start(void) {
   flogf("\n === buoy sbe16 start %s", utlDateTime());
   mpcPamPwr(sbe16_pam, true);
   tmrStop(s16_tmr);
-  if (!s16Prompt())
+  if (!s16Prompt()) {
     utlErr(s16_err, "s16: no prompt");
+    return 2;
+  }
   // 0=no 1=.5sec 2=during
   sprintf(all.str, "pumpmode=%d", s16.pumpMode);
   utlWrite(s16.port, all.str, EOL);
@@ -101,12 +105,11 @@ int s16LogClose(void) {
 // sbe16
 // s16Prompt - poke buoy CTD, look for prompt
 bool s16Prompt(void) {
-  DBG1("cPt");
+  DBG1("s16");
   if (s16Pending()) 
     s16DataWait();
   s16Flush();
   utlWrite(s16.port, "", EOL);
-  // looking for S> at end
   if (utlReadExpect(s16.port, all.str, EXEC, 5))
     return true;
   // try again after break
@@ -129,7 +132,7 @@ void s16Break(void) {
 // data waiting
 bool s16Data() {
   int r;
-  DBG2("cDa");
+  // static char *self="s16Data";
   r=TURxQueuedCount(s16.port);
   if (r)
     tmrStop(s16_tmr);
@@ -139,7 +142,7 @@ bool s16Data() {
 ///
 // wait for data or not pending (timeout)
 bool s16DataWait(void) {
-  static char *self="cDW";
+  static char *self="s16DataWait";
   DBG();
   do if (s16Data()) 
     return true;
@@ -152,21 +155,18 @@ bool s16DataWait(void) {
 // poke s16 to get sample, set interval timer (ignore s16.auton)
 // sets: s16_tmr
 void s16Sample(void) {
+  static char *self="s16Sample";
   if (s16Pending()) return;
-  DBG1("cSam");
-  // flush old data, check for sleep message and prompt if needed
+  DBG();
+  // flush old data, check for sleep message and wake if needed
   if (s16Data()) {
     utlRead(s16.port, all.str);
     if (strstr(all.str, "time out"))
       s16Prompt();      // wakeup
   } // s16Data()
-  if (!s16.auton && s16.sampStore)
-    utlWrite(s16.port, "TSSon", EOL);
-  else
-    utlWrite(s16.port, "TS", EOL);
-  // get echo // NOTE - sbe16 does not echo while auton
-  if (!s16.auton)
-    utlReadWait(s16.port, all.str, 1);
+  utlWrite(s16.port, s16.takeSamp, EOL);
+  // get echo 
+  utlReadWait(s16.port, all.str, 1);
   tmrStart(s16_tmr, s16.timer);
 } // s16Sample
 
@@ -293,12 +293,6 @@ void s16GetSamples(void) {
     total += len3;
   } // while ==
   s16LogClose();
-  if (s16.sampClear) {
-    utlWrite(s16.port, "initLogging", EOL);
-    utlReadExpect(s16.port, all.str, "verify", 2);
-    utlWrite(s16.port, "initLogging", EOL);
-    utlReadExpect(s16.port, all.str, EXEC, 2);
-  }
   flogf(" = %d bytes to %s.log", total, s16.me);
 } // s16GetSamples
 

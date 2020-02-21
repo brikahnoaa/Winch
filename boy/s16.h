@@ -6,11 +6,10 @@ typedef struct S16Info {
   Serial port;                // this is pam4
   bool auton;                 // now doing autonomous sampling
   bool on;                    // now init'd
-  bool sampClear;             // clear stored samples after GetSamples()
-  bool sampStore;             // store on device with TSSon - except auton
   char *me;                   // s16
   char initStr[256];          // init time setting for ctd
   char startStr[256];         // start time setting for ctd
+  char *takeSamp;             // TSSON or TS
   float depth;
   float temp;
   int log;                    // log fileid

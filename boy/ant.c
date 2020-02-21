@@ -42,12 +42,11 @@ void antInit(void) {
 // turn on, clean, set params, talk to sbe39
 int antStart(void) {
   static char *self="antStart";
-  if (ant.on) // verify
+  if (ant.on) // already on, verify
     if (antPrompt()) {
-      antSample();
       return 0;
     } else {
-      flogf("\n%s(): ERR sbe39, expected prompt", self);
+      utlErr(ant_err, "ant: no prompt");
       return 1;
     }
   ant.on = true;
@@ -62,24 +61,18 @@ int antStart(void) {
   // get cf2 startup message
   if (!utlReadExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  DBG1("%s", all.str);
-  if (ant.auton)
-    antAuton(false);
-  sprintf(all.str, "datetime=%s", utlDateTimeS16());
-  utlWrite(ant.port, all.str, EOL);
-  if (!utlReadExpect(ant.port, all.str, EXEC, 5))
-    flogf("\n%s(): ERR sbe39, datetime not executed", self);
   if (ant.startStr) {
     utlWrite(ant.port, ant.startStr, EOL);
     utlReadExpect(ant.port, all.str, EXEC, 2);
   }
-  antSample();
+  s39Start();
   return 0;
 } // antStart
 
 ///
 // turn off power to antmod 
 int antStop() {
+  s39Stop();
   ant.on = false;
   flogf("\n === ant module stop %s", utlDateTime());
   if (ant.auton) antAuton(false);

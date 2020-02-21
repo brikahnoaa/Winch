@@ -12,8 +12,9 @@ void s39Init(void) {
   static char *self="s39Init";
   DBG();
   s39.me="s39";
-  s39.port = mpcPamPort();
-  // if (dbg.test) s39.pumpMode=0;
+  s39.takeSamp="TSSON";
+  s39.port = antPort();
+  //// if (dbg.test) s16.pumpMode=0;
   s39Start();
   utlWrite(s39.port, "DelayBeforeSampling=0", EOL);
   utlReadWait(s39.port, all.str, 1);   // echo
@@ -27,6 +28,7 @@ void s39Init(void) {
 } // s39Init
 
 ///
+// ret: 0=ok 1=not
 int s39Start(void) {
   static char *self="s39Start";
   if (s39.on) // verify
@@ -40,13 +42,15 @@ int s39Start(void) {
   s39.on = true;
   s39LogOpen();
   flogf("\n === buoy sbe39 start %s", utlDateTime());
-  mpcPamPwr(sbe39_pam, true);
+  antStart(); //// mpcPamPwr(sbe39_pam, true);
   tmrStop(s39_tmr);
-  if (!s39Prompt())
+  if (!s39Prompt()) {
     utlErr(s39_err, "s39: no prompt");
+    return 2;
+  }
   // 0=no 1=.5sec 2=during
-  sprintf(all.str, "pumpmode=%d", s39.pumpMode);
-  utlWrite(s39.port, all.str, EOL);
+  //// sprintf(all.str, "pumpmode=%d", s16.pumpMode);
+  //// utlWrite(s16.port, all.str, EOL);
   utlReadWait(s39.port, all.str, 2);   // echo
   sprintf(all.str, "datetime=%s", utlDateTimeSBE());
   utlWrite(s39.port, all.str, EOL);
@@ -101,12 +105,11 @@ int s39LogClose(void) {
 // sbe39
 // s39Prompt - poke buoy CTD, look for prompt
 bool s39Prompt(void) {
-  DBG1("cPt");
+  DBG1("s39");
   if (s39Pending()) 
     s39DataWait();
   s39Flush();
   utlWrite(s39.port, "", EOL);
-  // looking for S> at end
   if (utlReadExpect(s39.port, all.str, EXEC, 5))
     return true;
   // try again after break
@@ -129,7 +132,7 @@ void s39Break(void) {
 // data waiting
 bool s39Data() {
   int r;
-  DBG2("cDa");
+  // static char *self="s39Data";
   r=TURxQueuedCount(s39.port);
   if (r)
     tmrStop(s39_tmr);
@@ -139,7 +142,7 @@ bool s39Data() {
 ///
 // wait for data or not pending (timeout)
 bool s39DataWait(void) {
-  static char *self="cDW";
+  static char *self="s39DataWait";
   DBG();
   do if (s39Data()) 
     return true;
@@ -152,21 +155,18 @@ bool s39DataWait(void) {
 // poke s39 to get sample, set interval timer (ignore s39.auton)
 // sets: s39_tmr
 void s39Sample(void) {
+  static char *self="s39Sample";
   if (s39Pending()) return;
-  DBG1("cSam");
+  DBG();
   // flush old data, check for sleep message and prompt if needed
   if (s39Data()) {
     utlRead(s39.port, all.str);
     if (strstr(all.str, "time out"))
       s39Prompt();      // wakeup
   } // s39Data()
-  if (!s39.auton && s39.sampStore)
-    utlWrite(s39.port, "TSSon", EOL);
-  else
-    utlWrite(s39.port, "TS", EOL);
-  // get echo // NOTE - sbe39 does not echo while auton
-  if (!s39.auton)
-    utlReadWait(s39.port, all.str, 1);
+  utlWrite(s39.port, s39.takeSamp, EOL);
+  // get echo
+  utlReadWait(s39.port, all.str, 1);
   tmrStart(s39_tmr, s39.timer);
 } // s39Sample
 
@@ -293,12 +293,6 @@ void s39GetSamples(void) {
     total += len3;
   } // while ==
   s39LogClose();
-  if (s39.sampClear) {
-    utlWrite(s39.port, "initLogging", EOL);
-    utlReadExpect(s39.port, all.str, "verify", 2);
-    utlWrite(s39.port, "initLogging", EOL);
-    utlReadExpect(s39.port, all.str, EXEC, 2);
-  }
   flogf(" = %d bytes to %s.log", total, s39.me);
 } // s39GetSamples
 

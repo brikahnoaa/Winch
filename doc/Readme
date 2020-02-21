@@ -1,0 +1,9 @@
+serial:
+. MPC com1
+buoy MPC com1 has 2x 2wire ports, multiplexed by ANT_SEL line in antDevice()
+.. port A goes to ant uMPC com0, talks to s39 and switches antenna
+... uMPC program used to connect to a3la, not now
+.. port B goes to a3la
+
+sbe*:
+s16 v s39 differences doc in doc/devices/s16Vs39

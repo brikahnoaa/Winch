@@ -41,7 +41,6 @@ float antDepth(void);
 float antSurfD(void);
 float antTemp(void);
 int antAuton(bool auton);
-int antAvg(float *avg);
 int antStart(void);
 int antStop(void);
 int antLogClose(void);
