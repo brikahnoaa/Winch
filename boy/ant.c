@@ -10,7 +10,7 @@ AntInfo ant;
 // turn on antenna module, wait until ant responds
 // sets: ant.mode .port
 void antInit(void) {
-  short rx, tx, i;
+  short rx, tx;
   static char *self="antInit";
   DBG();
   ant.me="ant";
@@ -26,15 +26,10 @@ void antInit(void) {
 
 ///
 // turn on, clean, set params, talk to sbe39
+// rets: 0=good
 int antStart(void) {
   static char *self="antStart";
-  if (ant.on) // already on, verify
-    if (antPrompt()) {
-      return 0;
-    } else {
-      utlErr(ant_err, "ant: no prompt");
-      return 1;
-    }
+  if (ant.on) return 0;
   ant.on = true;
   flogf("\n === ant module start %s", utlDateTime());
   antLogOpen();
@@ -47,10 +42,6 @@ int antStart(void) {
   // get cf2 startup message
   if (!utlReadExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  if (ant.startStr) {
-    utlWrite(ant.port, ant.startStr, EOL);
-    utlReadExpect(ant.port, all.str, EXEC, 2);
-  }
   s39Start();
   return 0;
 } // antStart
@@ -156,7 +147,7 @@ void antSwitch(AntType antenna) {
 } // antSwitch
     
 bool antSurf(void) {
-  return (s39.Depth()<(ant.surfD+2));
+  return (s39Depth()<(ant.surfD+2));
 }
 
 float antSurfD(void) {

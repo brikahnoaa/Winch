@@ -106,7 +106,7 @@ void logInit(char *file) {
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   // copy to log\MMDDHHMM.sys
   if (stat(file, &finfo)>=0) { // sys.log exists
-    dt=utlDateTimeS16();
+    dt=utlDateTimeSBE();
     sprintf(cmd, "copy %s log\\%.4s%.4s.sys", file, dt, dt+8);
     fprintf("\n%s: '%s'", self, cmd);
     execstr(cmd);

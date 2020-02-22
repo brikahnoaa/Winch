@@ -35,7 +35,6 @@ typedef struct BoyData {
 
 // boy params
 typedef struct BoyInfo {
-  bool iridAuton;         // record depth during irid transfer
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
   bool useBrake;          // false->no brake, true->riseDo(antSurfD())

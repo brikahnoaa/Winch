@@ -53,7 +53,7 @@ int s16Start(void) {
   sprintf(all.str, "pumpmode=%d", s16.pumpMode);
   utlWrite(s16.port, all.str, EOL);
   utlReadWait(s16.port, all.str, 2);   // echo
-  sprintf(all.str, "datetime=%s", utlDateTimeS16());
+  sprintf(all.str, "datetime=%s", utlDateTimeSBE());
   utlWrite(s16.port, all.str, EOL);
   utlReadWait(s16.port, all.str, 2);   // echo
   if (s16.startStr) {
@@ -209,11 +209,17 @@ bool s16Pending(void) {
 
 ///
 float s16Depth(void) {
-  DBG1("cDep");
   if (s16Data())
-      s16Read();
+    s16Read();
   return s16.depth;
 } // s16Depth
+
+///
+float s16Temp(void) {
+  if (s16Data())
+    s16Read();
+  return s16.temp;
+} // s16Temp
 
 ///
 // get science, clear log

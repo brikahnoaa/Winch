@@ -6,7 +6,7 @@ CfgInfo cfg;
 extern AntInfo ant;
 extern BoyInfo boy;
 extern S16Info s16;
-// extern EngInfo eng;
+extern S39Info s39;
 extern IriInfo iri;
 extern MpcInfo mpc;
 extern NgkInfo ngk;

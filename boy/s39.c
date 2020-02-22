@@ -209,11 +209,17 @@ bool s39Pending(void) {
 
 ///
 float s39Depth(void) {
-  DBG1("cDep");
   if (s39Data())
-      s39Read();
+    s39Read();
   return s39.depth;
 } // s39Depth
+
+///
+float s39Temp(void) {
+  if (s39Data())
+    s39Read();
+  return s39.temp;
+} // s39Temp
 
 ///
 // get science, clear log

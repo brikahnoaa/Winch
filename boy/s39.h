@@ -27,6 +27,7 @@ bool s39DataWait(void);
 bool s39Prompt(void);
 bool s39Read(void);
 float s39Depth(void);
+float s39Temp(void);
 int s39LogClose(void);
 int s39LogOpen(void);
 int s39Start(void);

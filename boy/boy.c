@@ -107,7 +107,7 @@ PhaseType risePhase(void) {
     result = riseDo(0);
   if (result) 
     utlErr(phase_err, "rise phase failure");
-  boyd.surfD = antDepth(); // ??
+  boyd.surfD = s39Depth(); // ??
   time(&boyd.riseEnd);
   return irid_pha;
 } // risePhase
@@ -119,13 +119,9 @@ PhaseType iridPhase(void) {
   flogf("\niridPhase %s", utlDateTime());
   if (dbg.test && dbg.noIrid) return fall_pha;
   boyEngLog();
-  if (boy.iridAuton) 
-    antAuton(true);
   if (iridDo()) { // 0==success
     // ?? check for fail
   }
-  if (boy.iridAuton) 
-    antAuton(false);
   return fall_pha;
 } // iridPhase
 
@@ -200,21 +196,21 @@ PhaseType deployPhase(void) {
   flogf(" sbe16@%3.1f", s16Depth());
   antStart();
   // test sbe39
-  antSample();
-  antDataWait();
-  if (!antRead())
-    utlErr(ant_err, "sbe39 failure");
+  s39Sample();
+  s39DataWait();
+  if (!s39Read())
+    utlErr(s39_err, "sbe39 failure");
   //
-  flogf(" sbe39@%3.1f", antDepth());
+  flogf(" sbe39@%3.1f", s39Depth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
-      antDepth(), s16Depth(), utlDateTime());
+      s39Depth(), s16Depth(), utlDateTime());
   flogf("\n\t| wait up to %d minutes to reach bottom", boy.depWait);
   tmrStart( deploy_tmr, MINUTE*boy.depWait );
   // wait until under 10m
   while (true) {
-    antSample();
-    antDataWait();
-    depth = antDepth();
+    s39Sample();
+    s39DataWait();
+    depth = s39Depth();
     flogf("\ndeployPhase@%4.2fm %s", depth, utlTime());
     if (depth>10) break;
     if (tmrExp(deploy_tmr)) 
@@ -227,10 +223,10 @@ PhaseType deployPhase(void) {
   while (true) {
     // must fall at least 1m in 15 sec
     utlNap(15);
-    antSample();
-    antDataWait();
+    s39Sample();
+    s39DataWait();
     lastD = depth;
-    depth = antDepth();
+    depth = s39Depth();
     flogf(" %3.1f", depth);
     if (depth-lastD<1.0) break;
     if (tmrExp(drop_tmr)) break;
@@ -248,7 +244,6 @@ PhaseType deployPhase(void) {
 // ??
 // figure out whats happening, continue as possible
 // load info from saved previous phase
-// ask antmod for our velocity
 int reboot(void) {
   MsgType msg;
   flogf("\n === rebootPhase()\t| stop stop fall fall %s", utlDateTime());
@@ -341,13 +336,14 @@ int riseDo(float targetD) {
   MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
-  float nowD, startD, velo;
+  float nowD, startD;
+  // float velo; ??
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG();
   // 
   s16DataWait(); 
-  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), antDepth());
-  nowD = startD = antDepth();
+  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), s39Depth());
+  nowD = startD = s39Depth();
   // winch
   ngkFlush();
   ngkTries = 0;
@@ -405,8 +401,8 @@ int riseDo(float targetD) {
     }  // 5 seconds
     if (s16Data()) 
       s16Read();
-    if (antData()) 
-      nowD = antDepth();
+    if (s39Data()) 
+      nowD = s39Depth();
     if (tmrExp(phase_tmr)) {
       flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
           self, phaseEst, nowD);
@@ -417,7 +413,7 @@ int riseDo(float targetD) {
   } // while !err
   // fail if error
   if (err) {
-    flogf("\n%s: ERR \t| phase error %d at %3.1fm", self, err, antDepth());
+    flogf("\n%s: ERR \t| phase error %d at %3.1fm", self, err, s39Depth());
     return err;
   } else { 
     // normal stop
@@ -433,13 +429,14 @@ int fallDo(float targetD) {
   MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
-  float nowD, startD, velo;
+  float nowD, startD;
+  // float velo; ??
   int err=0, ngkTries, phaseEst, ngkDelay;
   DBG();
   // 
   s16DataWait(); 
-  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), antDepth());
-  nowD = startD = antDepth();
+  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), s39Depth());
+  nowD = startD = s39Depth();
   // winch
   ngkFlush();
   ngkTries = 0;
@@ -495,8 +492,8 @@ int fallDo(float targetD) {
     }  // 5 seconds
     if (s16Data()) 
       s16Read();
-    if (antData()) 
-      nowD = antDepth();
+    if (s39Data()) 
+      nowD = s39Depth();
     if (tmrExp(phase_tmr)) {
       flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
           self, phaseEst, nowD);
@@ -506,7 +503,7 @@ int fallDo(float targetD) {
   } // while !err
   // fail if error
   if (err) {
-    flogf("\n%s: ERR \t| phase error %d at %3.1fm", self, err, antDepth());
+    flogf("\n%s: ERR \t| phase error %d at %3.1fm", self, err, s39Depth());
     return err;
   } else { 
     // normal stop
@@ -529,13 +526,13 @@ int oceanCurr(float *curr) {
     return 1;
   }
   cD=s16Depth();
-  antSample();
-  antDataWait();
-  if (!antRead()) {
+  s39Sample();
+  s39DataWait();
+  if (!s39Read()) {
     utlErr(ant_err, "sbe39 data failure");
     return 1;
   }
-  aD=antDepth();
+  aD=s39Depth();
   // pythagoras a^2 + b^2 = c^2
   // solve for b:=horizontal displacement, caused by current
   a=cD-aD;
@@ -560,6 +557,7 @@ int oceanCurr(float *curr) {
 ///
 // rets: 0 safe, +1 current!, +10 ice!, -1 err
 // uses: boy.currMax
+// sets: *curr, *temp
 int boySafeChk(float *curr, float *temp) {
   static char *self="boySafeChk";
   float sideways;
@@ -572,7 +570,7 @@ int boySafeChk(float *curr, float *temp) {
     utlErr(boy_err, ": oceanCurr failed");
     return -1;
   }
-  flogf("\n%s: lateral @ %.1f = %.1f", self, antDepth(), sideways);
+  flogf("\n%s: lateral @ %.1f = %.1f", self, s39Depth(), sideways);
   *curr = sideways;
   if (sideways>boy.currMax) {
     flogf(" !! too strong, cancel ascent");
@@ -580,7 +578,7 @@ int boySafeChk(float *curr, float *temp) {
     r += 1;
   }
   // ice check
-  *temp=antTemp();
+  *temp=s39Temp();
   return r;
 } // boySafeChk
 
@@ -618,7 +616,7 @@ int boyEngLog(void) {
   sprintf(b+strlen(b), "program start %s, boot #%d\n",
       utlDateTimeFmt(all.startProg), all.starts);
   sprintf(b+strlen(b), "antSurfD:%3.1f, s39:%3.1f, s16:%3.1f\n",
-      antSurfD(), antDepth(), s16Depth());
+      antSurfD(), s39Depth(), s16Depth());
   // sprintf(b+strlen(b), "=== physical stats ===\n");
   // hps=&boyd.physical;
   // hpsRead(hps);
