@@ -20,9 +20,9 @@ void main(void){
   antStart();
   iriStart();
   //
-  cnt = tst.t1;
-  len = tst.t2;
-  cprintf("\n count tst.t1=%d   length tst.t2=%d\n", cnt, len);
+  cnt = dbg.t1;
+  len = dbg.t2;
+  cprintf("\n count dbg.t1=%d   length dbg.t2=%d\n", cnt, len);
   buff = irid.block;
   antSwitch(irid_ant);
   if (iriSig()) return;
@@ -33,7 +33,7 @@ void main(void){
   for (i=1; i<=cnt; i++) {
     memset(buff, 0, len);
     sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.baud, iri.sendSz);
+      i, cnt, len, iri.baud, iri.blkSz);
     buff[len-1] = 'Z';
     r = iriSendBlock(len, i, cnt);
     // utlDelay(500);
@@ -46,7 +46,7 @@ void main(void){
   for (i=1; i<=cnt; i++) {
     memset(buff, 0, len);
     sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.baud, iri.sendSz);
+      i, cnt, len, iri.baud, iri.blkSz);
     buff[len-1] = 'Z';
     r = iriSendBlock(len, i, cnt);
     // utlDelay(500);

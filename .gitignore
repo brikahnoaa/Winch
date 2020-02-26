@@ -6,6 +6,7 @@ a.out
 *.a
 # codewar
 cod/war/
+tst/Test.c
 # tmp
 *~
 *.swp
