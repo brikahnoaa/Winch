@@ -1,31 +1,31 @@
-// ctdTst.c
+// sbe16.c
 #include <main.h>
 
-extern CtdInfo ctd;
+extern S16Info s16;
 
 void main(void){
   char c;
   sysInit();
   mpcInit();
-  ctdInit();
-  ctdStart();
-  ctdSample();
-  ctdDataWait();
-  // ctdRead();
-  flogf("ctdDepth %2.1f", ctdDepth());
-  if (!ctdPrompt())
-    flogf("ctdPrompt fail\n");
+  s16Init();
+  s16Start();
+  s16Sample();
+  s16DataWait();
+  // s16Read();
+  flogf("s16Depth %2.1f", s16Depth());
+  if (!s16Prompt())
+    flogf("s16Prompt fail\n");
   flogf("\nPress Q to exit\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      TUTxPutByte(ctd.port,c,false);
+      TUTxPutByte(s16.port,c,false);
     }
-    if (TURxQueuedCount(ctd.port)) {
-      c=TURxGetByte(ctd.port,false);
+    if (TURxQueuedCount(s16.port)) {
+      c=TURxGetByte(s16.port,false);
       cputc(c);
     }
   }
-  ctdStop();
+  s16Stop();
 }

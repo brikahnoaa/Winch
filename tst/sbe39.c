@@ -1,41 +1,32 @@
-// s39.c
+// sbe39.c
 #include <main.h>
 
-extern AntInfo ant;
-extern CtdInfo ctd;
+extern S39Info s39;
 
 void main(void){
   char c;
   sysInit();
   mpcInit();
   antInit();
-  antStart();
-  antSample();
-  if (!antDataWait())
-    flogf("\ndata wait fail, no response from sbe39");
-  if (!antRead())
-    flogf("\nread fails");
-  flogf("\nantDepth() -> %f", antDepth());
-  flogf("\nantTemp() -> %f", antTemp());
-  antDataWait();
-  antRead();
-  flogf("\nantDepth() -> %f", antDepth());
-  flogf("\nantTemp() -> %f", antTemp());
-  // antAuton(true);
-  flogf("\n\nPress any to talk, Q to exit");
-  flogf("\nconnected to ant");
+  s39Init();
+  s39Start();
+  s39Sample();
+  s39DataWait();
+  // s39Read();
+  flogf("s39Depth %2.1f", s39Depth());
+  if (!s39Prompt())
+    flogf("s39Prompt fail\n");
+  flogf("\nPress Q to exit\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();
       if (c=='Q') break;
-      TUTxPutByte(ant.port,c,false);
+      TUTxPutByte(s39.port,c,false);
     }
-    while (TURxQueuedCount(ant.port)) {
-      c=TURxGetByte(ant.port,false);
+    if (TURxQueuedCount(s39.port)) {
+      c=TURxGetByte(s39.port,false);
       cputc(c);
     }
   }
-  // antAuton(false);
-  // antGetSamples();
-  utlStop("\nnormal");
+  s39Stop();
 }
