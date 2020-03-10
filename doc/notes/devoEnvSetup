@@ -5,11 +5,15 @@ install persistor.
 mklink /D "c:\Program Files\Persistor" "c:\Program Files (x86)\Persistor" 
 reboot
 Run buildall, ignore errors.  open "CW for Palm OS Support\BuildAll"
+C:\Program Files (x86)\Metrowerks\CodeWarrior\CW for Palm OS Support\Build All
+
  pref menu := codewarrior:Edit:Preferences:SourceTrees:ImportPanel=
 c:\Program Files\Persistor\MotoCross Support\CFX\XMLSettingsPanels\IDE\Source Trees_CF2_IDEGlobalPref.xml
 
-cygwin setup
-  setup-x86_64.exe -qP bind-utils,binutils,ctags,cygcheck-dep,cygutils-extra,cygwin-devel,enscript,git,indent,openssh,perl,python2,python2-setuptools,rsync,vim,vim-common,vim-doc,wget
+. cyg setup
+  setup-x86_64.exe 
+  sh ./Winch/cod/bin/cygSetup.sh
+  # setup-x86_64.exe -qP bind-utils,binutils,ctags,cygcheck-dep,cygutils-extra,cygwin-devel,enscript,git,indent,openssh,perl,python2,python2-setuptools,rsync,vim,vim-common,vim-doc,wget"
 
 .. pip install pyserial 
  # easy_install-2[TAB] pip
@@ -17,11 +21,12 @@ cygwin setup
  # pip2 install pyserial
  # pip3 install pyserial
 
+. get kahnwin dotfiles, esp .bashrc .ssh/git* .minttyrc
+
 . clone repository
   cd
   git clone https://github.com/brikahnoaa/Winch.git
-. cyg setup
-  sh ./Winch/cod/bin/cygSetup.sh
+  git remote set-url origin git@github.com:brikahnoaa/Winch.git
 
 Tue, Jun 13, 2017  2:16:54 PM
  ctags -o /home/kahn/cf2/tags.h.cf2 $(find ~/cf2/headers/*/Headers -name '*.h')
