@@ -1,3 +1,7 @@
+:gorda:
+turn off serial, parallel, IR, C5 sleep mode
+power settings: stay on
+
 :codewarrior:
 install CW9.0 using defaults except: deskFolder CodeWar, skip c++
 run CW9.2 update, +palm +handspring. 
