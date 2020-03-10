@@ -3,7 +3,7 @@ from design import *
 import winch, sbe16, sbe39, ant, floats
 
 # this should be set from env var if present
-serOffset=2
+Offset = 0
 
 def init():
     "init all"
@@ -14,10 +14,10 @@ def init():
 
 def start():
     "start all"
-    winch.start(serOffset+3)
-    sbe16.start(serOffset+2)
-    sbe39.start(serOffset+1)
-    # ant.start(1)
+    winch.start(3+Offset)
+    sbe16.start(2+Offset)
+    # sbe39.start(1+Offset)
+    ant.start(1+Offset)
 
 def stop():
     "stop all"

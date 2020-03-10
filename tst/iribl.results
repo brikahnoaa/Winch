@@ -1,0 +1,154 @@
+Tue, Mar 10, 2020 10:14:26 AM
+:success::
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9
+startCheck(): starts 21, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Feb 27 2020 15:22:26
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 21
+Started: 2020-03-10 17:03:59
+---   --- DBG0 cfgInit()
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg' cfgRead(lara.cfg)
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1 cfgVee()
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42 mpcPamDev(0)
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 antInit() iriInit()
+ === ant module start 2020-03-10 17:04:00 s39Init() utlLogOpen()
+ === buoy sbe39 start 2020-03-10 17:04:04 antDevPwr(S, 1) s39Sample()
+ === buoy sbe39 stop 2020-03-10 17:04:09 antDevPwr(S, 0)
+ === buoy sbe39 start 2020-03-10 17:04:09 antDevPwr(S, 1) s39Sample() iriStart() 17:04:12 iriCRC()
+ count=4 dbg.t1=0, length=1024 dbg.t2=0
+ iriSig() csq=5 iriDial() 17:04:25 (0) (1)
+CONNECTED@~1800 4442us projHdr hello iriSendBlock(5,1,1) iriCRC() 1/1
+LandResp(cmds) iriLandCmds()
+iriLandCmds(send1) iriSendBlock(1024,1,4) iriCRC() 1/4 iriSendBlock(1024,2,4) iriCRC() 2/4 iriSendBlock(1024,3,4) iriCRC() 3/4 iriSendBlock(1024,4,4) iriCRC() 4/4
+LandResp( \rcmds) iriLandCmds()
+iriLandCmds(send2) iriSendBlock(1024,1,4) iriCRC() 1/4 iriSendBlock(1024,2,4) iriCRC() 2/4 iriSendBlock(1024,3,4) iriCRC() 3/4 iriSendBlock(1024,4,4) iriCRC() 4/4
+LandResp( \rcmds) iriLandCmds()
+iriLandCmds(send3) utlReadExpect(done, 5) timeout utlReadExpect(OK, 4) timeout iriSig() csq=5
+17:05:59
+
+Application error 10 [0xA]
+
+C:\>
+::success:
+
+:fail::
+C:\>set
+SHUTDOWN=user quit
+DBG.TEST=1
+DBG0=0
+STARTS=21
+DBG.T2=4096
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9
+startCheck(): starts 22, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Feb 27 2020 15:22:26
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 22
+Started: 2020-03-10 17:09:32
+---   --- DBG0 cfgInit()
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg' cfgRead(lara.cfg)
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1 cfgVee()
+VEE: DBG.TEST=1
+VEE: DBG.T2=4096
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42 mpcPamDev(0)
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 antInit() iriInit()
+ === ant module start 2020-03-10 17:09:33 s39Init() utlLogOpen()
+ === buoy sbe39 start 2020-03-10 17:09:36 antDevPwr(S, 1) s39Sample()
+ === buoy sbe39 stop 2020-03-10 17:09:41 antDevPwr(S, 0)
+ === buoy sbe39 start 2020-03-10 17:09:41 antDevPwr(S, 1) s39Sample() iriStart() 17:09:44 iriCRC()
+ count=4 dbg.t1=0, length=4096 dbg.t2=4096
+ iriSig() csq=5 iriDial() 17:09:57 (0)
+CONNECTED@~1800 4442us projHdr hello iriSendBlock(5,1,1) iriCRC() 1/1
+LandResp(cmds) iriLandCmds()
+iriLandCmds(send1) iriSendBlock(4096,1,4) iriCRC() 1/4 iriSendBlock(4096,2,4) iriCRC() 2/4 iriSendBlock(4096,3,4) iriCRC() 3/4 iriSendBlock(4096,4,4) iriCRC() 4/4
+LandResp()
+EXC LandResp->1 1=respTimeout iriSendBlock(4096,1,4) iriCRC() 1/4 iriSendBlock(4096,2,4) iriCRC() 2/4 iriSendBlock(4096,3,4) iriCRC() 3/4 iriSendBlock(4096,4,4) iriCRC() 4/4
+LandResp()
+EXC LandResp->1 1=respTimeout utlReadExpect(done, 5) timeout iriSig() csq=5
+17:13:58
+
+Application error 10 [0xA]
+
+C:\>
+::fail:
+
+:fail::
+C:\>set
+SHUTDOWN=user quit
+DBG.TEST=1
+DBG0=0
+STARTS=22
+DBG.T2=2048
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds
+startCheck(): starts 23, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Feb 27 2020 15:22:26
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 23
+Started: 2020-03-10 18:05:54
+---   --- DBG0 cfgInit()
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg' cfgRead(lara.cfg)
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1 cfgVee()
+VEE: DBG.TEST=1
+VEE: DBG.T2=2048
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42 mpcPamDev(0)
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 antInit() iriInit()
+ === ant module start 2020-03-10 18:05:55 s39Init() utlLogOpen()
+ === buoy sbe39 start 2020-03-10 18:05:59 antDevPwr(S, 1) s39Sample()
+ === buoy sbe39 stop 2020-03-10 18:06:04 antDevPwr(S, 0)
+ === buoy sbe39 start 2020-03-10 18:06:04 antDevPwr(S, 1) s39Sample() iriStart() 18:06:07 iriCRC()
+ count=4 dbg.t1=0, length=2048 dbg.t2=2048
+ iriSig() csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=0 csq=1 csq=4 iriDial() 18:07:17
+CONNECTED@~1800 4442us projHdr hello iriSendBlock(5,1,1) iriCRC() 1/1
+LandResp(cmds) iriLandCmds()
+iriLandCmds(send1) iriSendBlock(2048,1,4) iriCRC() 1/4 iriSendBlock(2048,2,4) iriCRC() 2/4 iriSendBlock(2048,3,4) iriCRC() 3/4 iriSendBlock(2048,4,4) iriCRC() 4/4
+LandResp()
+EXC LandResp->1 1=respTimeout iriSendBlock(2048,1,4) iriCRC() 1/4 iriSendBlock(2048,2,4) iriCRC() 2/4 iriSendBlock(2048,3,4) iriCRC() 3/4 iriSendBlock(2048,4,4) iriCRC() 4/4
+LandResp()
+EXC LandResp->1 1=respTimeout utlReadExpect(done, 5) timeout iriSig() csq=4
+18:09:57
+
+Application error 10 [0xA]
+
+C:\>
+::fail:
