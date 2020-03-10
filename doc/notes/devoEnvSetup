@@ -16,9 +16,10 @@ cygwin setup
   setup-x86_64.exe -qP bind-utils,binutils,ctags,cygcheck-dep,cygutils-extra,cygwin-devel,enscript,git,indent,openssh,perl,python2,python2-setuptools,rsync,vim,vim-common,vim-doc,wget
 
 .. pip install pyserial 
+run-elevated cygterm
  # easy_install-2[TAB] pip
+ # pip install pyserial
  # easy_install-3[TAB] pip
- # pip2 install pyserial
  # pip3 install pyserial
 
 . clone repository

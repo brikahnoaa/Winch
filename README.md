@@ -1,2 +1,0 @@
-# Winch
-Winch buoy antenna
