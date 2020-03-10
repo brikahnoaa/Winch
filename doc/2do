@@ -1,5 +1,7 @@
 Fri, Feb 21, 2020  9:29:34 AM
 .1 s39 stop == power down?
+.2 all.cycle vs UTC midnight
+
 
 Thu, Jun 13, 2019 12:15:44 PM
 .1 utlReadWait() wait is a short?
