@@ -13,7 +13,6 @@ void antInit(void) {
   short rx, tx;
   static char *self="antInit";
   DBG();
-  ant.me="ant";
   // port
   rx = TPUChanFromPin(ANT_RX);
   tx = TPUChanFromPin(ANT_TX);
@@ -66,7 +65,7 @@ int antLogOpen(void) {
   if (!ant.on)
     antStart();
   if (!ant.log)
-    r = utlLogOpen(&ant.log, ant.me);
+    r = utlLogOpen(&ant.log, "ant");
   else
     DBG2("%s: log already open", self);
   return r;

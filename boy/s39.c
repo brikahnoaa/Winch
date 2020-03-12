@@ -11,7 +11,6 @@ S39Info s39;
 void s39Init(void) {
   static char *self="s39Init";
   DBG();
-  s39.me="s39";
   s39.port = antPort();
   //// if (dbg.test) s16.pumpMode=0;
   s39Start();
@@ -82,7 +81,7 @@ int s39LogOpen(void) {
   if (!s39.on)
     s39Start();
   if (!s39.log)
-    r = utlLogOpen(&s39.log, s39.me);
+    r = utlLogOpen(&s39.log, "s39");
   else
     DBG2("%s: log already open", self);
   return r;
@@ -236,12 +235,12 @@ void s39GetSamples(void) {
     len2 = (int) TURxGetBlock(s39.port, all.str, (long) len1, (short) 1000);
     len3 = write(s39.log, all.str, len2);
     if (len2!=len3) 
-      flogf("\nERR\t| s39GetSamples() could not write %s.log", s39.me);
+      flogf("\nERR\t| s39GetSamples() could not write s39.log");
     flogf("+[%d]", len3);
     total += len3;
   } // while ==
   s39LogClose();
-  flogf(" = %d bytes to %s.log", total, s39.me);
+  flogf(" = %d bytes to s39.log", total);
 } // s39GetSamples
 
 ///

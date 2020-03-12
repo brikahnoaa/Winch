@@ -4,7 +4,6 @@
 EngInfo eng;
 
 int engInit(void) {
-  eng.me="eng";
   return 0;
 } // engInit
 
@@ -13,7 +12,7 @@ int engInit(void) {
 int engLogOpen(void) {
   int r=0;
   if (!eng.log)
-    r = utlLogOpen(&eng.log, eng.me);
+    r = utlLogOpen(&eng.log, "eng");
   return r;
 } // engLogOpen
 
