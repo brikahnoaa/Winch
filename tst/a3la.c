@@ -1,4 +1,5 @@
-// rudTalk.c
+// a3la.c
+// talk to a3la
 #include <main.h>
 
 extern IriInfo iri;

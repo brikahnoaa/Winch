@@ -1,4 +1,4 @@
-// antTst.c
+// rudBaud.c
 #include <main.h>
 
 extern AntInfo ant;
