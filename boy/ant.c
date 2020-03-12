@@ -41,7 +41,6 @@ int antStart(void) {
   // get cf2 startup message
   if (!utlReadExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  s39Start();
   return 0;
 } // antStart
 
