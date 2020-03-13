@@ -71,6 +71,9 @@ int iriStart(void) {
   TUTxPutByte(irid.port, 'I', false);
   antDevice(a3la_dev);
   if (!utlReadExpect(irid.port, all.buf, "COMMAND MODE", 12)) return 1;
+  /// ??
+  utlWrite(irid.port, "AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4", EOL);
+  if (!utlReadExpect(irid.port, all.str, "OK", 5)) return 2;
   utlWrite(irid.port, "ate0", EOL);
   if (!utlReadExpect(irid.port, all.str, "OK", 5)) return 2;
   return 0;

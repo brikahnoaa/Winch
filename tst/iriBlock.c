@@ -1,4 +1,4 @@
-// iridBlock.c
+// iriBlock.c
 #include <main.h>
 
 extern IriInfo iri;

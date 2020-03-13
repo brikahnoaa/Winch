@@ -1,20 +1,17 @@
-// a3la.c
-// talk to a3la
+// iriBlock.c
 #include <main.h>
 
 extern IriInfo iri;
 extern IriData irid;
 extern BoyInfo boy;
-
-int header(void);
-int block(int len, int cnt);
+extern SysInfo sys;
 
 void main(void){
-  Serial port;
-  char *help;
-  // int i, r;
-  int cnt, x, y;
-  bool run=true;
+  // Serial port;
+  // char c;
+  char *buff;
+  int len, cnt;
+  int i, r;
   sysInit();
   mpcInit();
   antInit();
@@ -23,79 +20,44 @@ void main(void){
   antStart();
   iriStart();
   //
-  port = irid.port;
-  //
-  utlWrite(irid.port, "at", "\r");
-  //
-  printf("\ndbg.t1=length=%d iri.baud=%d", dbg.t1, iri.baud);
+  cnt = dbg.t1;
+  len = dbg.t2;
+  cprintf("\n count dbg.t1=%d   length dbg.t2=%d\n", cnt, len);
+  buff = irid.block;
   antSwitch(irid_ant);
-  iriSig();
-  help = "q=quit '=cmd g=gps i=iri p=prompt s=sig c=call b=blk h=hdr ?=hlp";
-  printf ("\n%s\n", help);
-  while (run) {
-    if ((cnt = utlGetBlock(port, all.buf, BUFSZ, 500)))
-      utlNonPrintBlock(all.buf, cnt);
-    cnt = getstr(all.str, 999);
-    printf("\n");
-    if (cnt==0) continue;
-    if (all.str[0]=='\'') { // input, tick==cmdmode
-      switch(all.str[1]) {
-        case 'q': run=false; break;
-        case 'g': antSwitch(gps_ant); break;
-        case 'i': antSwitch(irid_ant); break;
-        case 'p': iriPrompt(); break;
-        case 's': iriSig(); break;
-        case 'c': iriDial(); iriProjHello("wassup?"); break;
-        case 'x': iriHup(); break;
-        case 'b': x=dbg.t1; y=dbg.t2; block(x?x:128, y?y:1); break;
-        case 'h': header(); break;
-        case '?': printf ("\n%s\n", help); break;
-      } // case
-    } else {
-      utlWrite(port, all.str, "\r");
-    } // input
-  } // run
+  if (iriSig()) return;
+  if (iriDial()) return;
+  if (iriProjHello(buff)) return;
+  //
+  utlWrite(irid.port, "data", "");
+  for (i=1; i<=cnt; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d [%d]", 
+      i, cnt, len, iri.baud, iri.blkSz);
+    buff[len-1] = 'Z';
+    r = iriSendBlock(len, i, cnt);
+    // utlDelay(500);
+  }
+  iriLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iriLandCmds(all.buf);
+  //
+  utlWrite(irid.port, "data", "");
+  for (i=1; i<=cnt; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d [%d]", 
+      i, cnt, len, iri.baud, iri.blkSz);
+    buff[len-1] = 'Z';
+    r = iriSendBlock(len, i, cnt);
+    // utlDelay(500);
+  }
+  iriLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iriLandCmds(all.buf);
+  //
   iriHup();
   iriSig();
   flogf("\n%s\n", utlTime());
-  iriStop();
-  antStop();
-  return;
-}
-
-#define IRID_BUF_SUB 5
-#define IRID_BUF_BLK 10
-
-// hdr only, expect user to type stuff
-int header(void) {
-  static char *self="header";
-  static char *rets="1=inFromLand";
-  int size;
-  int bsiz=1000, bnum=1, btot=1;
-  utlWrite(irid.port, "data", "");
-  // make hdr - beware null terminated sprintf, use memcpy
-  size = bsiz+IRID_BUF_BLK-IRID_BUF_SUB;
-  sprintf(all.str, "@@@CS%c%cT%c%c",
-    (char) (size>>8 & 0xFF), (char) (size & 0xFF),
-    (char) bnum, (char) btot);
-  memcpy(irid.buf, all.str, IRID_BUF_BLK);
-  TUTxPutBlock(irid.port, irid.buf, (long) IRID_BUF_BLK, 9999);
-  return 0;
-} // header
-
-int block(int len, int cnt) {
-  int i=1, r;
-  utlWrite(irid.port, "data", "");
-  for (i=1; i<=cnt; i++) {
-    memset(irid.block, 0, len);
-    sprintf(irid.block, "%d of %d =%d @%d", i, cnt, len, iri.baud);
-    irid.block[len] = 'Z';
-    r = iriSendBlock(len, i, cnt);
-  }
-  iriLandResp(all.buf);
-  if (strstr(all.buf, "cmds")) {
-    len = iriLandCmds(all.buf);
-    utlNonPrintBlock(all.buf, len);
-  }
-  return 0;
+  // iriStop();
+  // antStop();
 }
