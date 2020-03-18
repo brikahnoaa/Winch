@@ -20,9 +20,16 @@ void main(void){
   antStart();
   iriStart();
   //
-  cnt = dbg.t1;
-  len = dbg.t2;
-  cprintf("\n count dbg.t1=%d   length dbg.t2=%d\n", cnt, len);
+  if (dbg.t1)
+    cnt = dbg.t1;
+  else
+    cnt = 4;
+  if (dbg.t2)
+    len = dbg.t2;
+  else
+    len = 1024;
+  cprintf("\n count=%d (dbg.t1=%d)   length=%d (dbg.t2=%d)\n", 
+      cnt, dbg.t1, len, dbg.t2);
   buff = irid.block;
   antSwitch(irid_ant);
   if (iriSig()) return;
