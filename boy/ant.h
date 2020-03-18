@@ -7,7 +7,6 @@ typedef enum { null_ant, gps_ant, irid_ant } AntType;
 
 typedef struct AntInfo {
   bool on;
-  char *me;
   float subD;                 // subsurfaceD; ant.surfD + boy.ant2tip
   float surfD;                // surfaceDepth of buoy when ant is floating
   int log;

@@ -7,7 +7,6 @@ typedef struct S16Info {
   // bool auton;                 // now doing autonomous sampling
   // int autoInter;              // sample Interval for auton
   bool on;                    // now init'd
-  char *me;                   // s16
   char initStr[256];          // init time setting for ctd
   char startStr[256];         // start time setting for ctd
   char takeSamp[8];           // TSSON or TS

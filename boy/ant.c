@@ -13,7 +13,6 @@ void antInit(void) {
   short rx, tx;
   static char *self="antInit";
   DBG();
-  ant.me="ant";
   // port
   rx = TPUChanFromPin(ANT_RX);
   tx = TPUChanFromPin(ANT_TX);
@@ -42,7 +41,6 @@ int antStart(void) {
   // get cf2 startup message
   if (!utlReadExpect(ant.port, all.str, "ok", 6))
     flogf("\n%s(): expected ok, saw '%s'", self, all.str);
-  s39Start();
   return 0;
 } // antStart
 
@@ -66,7 +64,7 @@ int antLogOpen(void) {
   if (!ant.on)
     antStart();
   if (!ant.log)
-    r = utlLogOpen(&ant.log, ant.me);
+    r = utlLogOpen(&ant.log, "ant");
   else
     DBG2("%s: log already open", self);
   return r;

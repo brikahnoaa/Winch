@@ -22,7 +22,6 @@ WspInfo wsp;
 void wspInit(void) {
   static char *self="wspInit";
   DBG();
-  wsp.me="wsp";
   wsp.port = mpcPamPort();
   mpcPamPwr(wsp1_pam, false);
   mpcPamPwr(wsp2_pam, false);
@@ -60,7 +59,7 @@ int wspStart(void) {
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log)
-    utlLogOpen(&wsp.log, wsp.me);
+    utlLogOpen(&wsp.log, "wsp");
   return r;
 } // wspStart
 

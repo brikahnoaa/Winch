@@ -7,7 +7,6 @@ typedef struct S39Info {
   // bool auton;                 // now doing autonomous sampling
   // int autoInter;              // sample Interval for auton
   bool on;                    // now init'd
-  char *me;                   // s39
   char initStr[256];          // init time setting for ctd
   char startStr[256];         // start time setting for ctd
   char takeSamp[8];           // TSSON or TS

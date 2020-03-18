@@ -11,7 +11,6 @@ S16Info s16;
 void s16Init(void) {
   static char *self="s16Init";
   DBG();
-  s16.me="s16";
   s16.port = mpcPamPort();
   if (dbg.test) s16.pumpMode=0;
   s16Start();
@@ -82,7 +81,7 @@ int s16LogOpen(void) {
   if (!s16.on)
     s16Start();
   if (!s16.log)
-    r = utlLogOpen(&s16.log, s16.me);
+    r = utlLogOpen(&s16.log, "s16");
   else
     DBG2("%s: log already open", self);
   return r;
@@ -236,12 +235,12 @@ void s16GetSamples(void) {
     len2 = (int) TURxGetBlock(s16.port, all.str, (long) len1, (short) 1000);
     len3 = write(s16.log, all.str, len2);
     if (len2!=len3) 
-      flogf("\nERR\t| s16GetSamples() could not write %s.log", s16.me);
+      flogf("\nERR\t| s16GetSamples() could not write s16.log");
     flogf("+[%d]", len3);
     total += len3;
   } // while ==
   s16LogClose();
-  flogf(" = %d bytes to %s.log", total, s16.me);
+  flogf(" = %d bytes to s16.log", total);
 } // s16GetSamples
 
 ///
