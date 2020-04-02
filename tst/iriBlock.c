@@ -10,8 +10,9 @@ void main(void){
   // Serial port;
   // char c;
   char *buff;
-  int len, cnt;
-  int i, r;
+  int i, j, r;
+  int blk, len, cnt;
+  blk = 4; len = 1024; cnt = 1;
   sysInit();
   mpcInit();
   antInit();
@@ -20,9 +21,12 @@ void main(void){
   antStart();
   iriStart();
   //
-  cnt = dbg.t1;
-  len = dbg.t2;
-  cprintf("\n count dbg.t1=%d   length dbg.t2=%d\n", cnt, len);
+  cprintf("\niriBlock sends dbg.t3 files with .t1 blocks of size .t2\n");
+  if (dbg.t1) blk = dbg.t1;
+  if (dbg.t2) len = dbg.t2;
+  if (dbg.t3) cnt = dbg.t3;
+  cprintf("\n block=%d dbg.t1=%d   length=%d dbg.t2=%d   count=%d dbg.t3=%d\n", 
+      blk, dbg.t1, len, dbg.t2, cnt, dbg.t3);
   buff = irid.block;
   antSwitch(irid_ant);
   if (iriSig()) return;
@@ -30,12 +34,12 @@ void main(void){
   if (iriProjHello(buff)) return;
   //
   utlWrite(irid.port, "data", "");
-  for (i=1; i<=cnt; i++) {
+  for (i=1; i<=blk; i++) {
     memset(buff, 0, len);
     sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.baud, iri.blkSz);
+      i, blk, len, iri.baud, iri.blkSz);
     buff[len-1] = 'Z';
-    r = iriSendBlock(len, i, cnt);
+    r = iriSendBlock(len, i, blk);
     // utlDelay(500);
   }
   iriLandResp(all.buf);
@@ -43,13 +47,15 @@ void main(void){
     r = iriLandCmds(all.buf);
   //
   utlWrite(irid.port, "data", "");
-  for (i=1; i<=cnt; i++) {
-    memset(buff, 0, len);
-    sprintf(buff, "%d of %d =%d @%d [%d]", 
-      i, cnt, len, iri.baud, iri.blkSz);
-    buff[len-1] = 'Z';
-    r = iriSendBlock(len, i, cnt);
-    // utlDelay(500);
+  for (j=1; j<=cnt; i++) {
+    for (i=1; i<=blk; i++) {
+      memset(buff, 0, len);
+      sprintf(buff, "%d of %d =%d @%d [%d]", 
+        i, blk, len, iri.baud, iri.blkSz);
+      buff[len-1] = 'Z';
+      r = iriSendBlock(len, i, blk);
+      // utlDelay(500);
+    }
   }
   iriLandResp(all.buf);
   if (strstr(all.buf, "cmds"))
