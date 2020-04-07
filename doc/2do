@@ -1,3 +1,33 @@
+
+. robust
+.. reboot recovery
+.. print statement review
+.. watchdog
+.. component tests, ongoing
+... file system
+... memory free
+... sbe
+... err counts
+. power mgmt
+.. cpu speed
+.. cpu sleep during acoustics
+... power to realtime clock
+.. power level checks (not consumption, alkalines)
+. test cycling
+.. scheme to shorten time
+.. 
+. winter algorithm
+.. rise under ice
+.. test for urgent stop
+.. end of season test 
+... expect open water noise change
+... clock drift
+. irid
+.. test multiple 1K file
+.. shortcut to PC irid proto
+... cf2 prog to create header/cksum for a data file, save to file2
+... transmit saved file from PC
+
 Fri, Feb 21, 2020  9:29:34 AM
 .1 s39 stop == power down?
 .2 all.cycle vs UTC midnight
