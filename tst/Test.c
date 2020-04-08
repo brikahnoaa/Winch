@@ -1,5 +1,5 @@
 // iriBlock.c
-#include <main.h>
+#include <test.h>
 
 extern IriInfo iri;
 extern IriData irid;
@@ -47,13 +47,14 @@ void main(void){
     r = iriLandCmds(all.buf);
   //
   utlWrite(irid.port, "data", "");
-  for (j=1; j<=cnt; i++) {
+  for (j=1; j<=cnt; j++) {
     for (i=1; i<=blk; i++) {
       memset(buff, 0, len);
-      sprintf(buff, "%d of %d =%d @%d [%d]", 
-        i, blk, len, iri.baud, iri.blkSz);
+      sprintf(buff, "%d / %d =%d in #%d @%d [%d]", 
+        i, blk, len, j, iri.baud, iri.blkSz);
       buff[len-1] = 'Z';
       r = iriSendBlock(len, i, blk);
+      qq;
       // utlDelay(500);
     }
   }
