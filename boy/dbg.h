@@ -17,6 +17,9 @@ typedef struct DbgInfo {
   int t1;                 // test param (0)
   int t2;                 // test param (0)
   int t3;                 // test param (0)
+  int t4;                 // test param (0)
+  int t5;                 // test param (0)
+  int t6;                 // test param (0)
   int x;                    // exception value for faux raise(#)/except
   void (*funcPtr)(void);  // test program run by utlX 'd' 
 } DbgInfo;

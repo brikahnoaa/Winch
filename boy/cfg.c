@@ -65,6 +65,9 @@ static CfgParam cfgP[] = {
   {'i',  "dbg.t1",        &dbg.t1,          "dt1",  "0"},
   {'i',  "dbg.t2",        &dbg.t2,          "dt2",  "0"},
   {'i',  "dbg.t3",        &dbg.t3,          "dt3",  "0"},
+  {'i',  "dbg.t4",        &dbg.t4,          "dt4",  "0"},
+  {'i',  "dbg.t5",        &dbg.t5,          "dt5",  "0"},
+  {'i',  "dbg.t6",        &dbg.t6,          "dt6",  "0"},
 
   {'b',  "iri.setTime",   &iri.setTime,     "isT",  "true"},
   {'b',  "iri.logging",   &iri.logging,     "ilo",  "false"},
