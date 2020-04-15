@@ -13,7 +13,7 @@ extern SysInfo sys;
 //
 
 void main(void){
-  int sdGB=32;
+  int i;
   short ok;
   ATADvr iodvr;
   //
@@ -22,9 +22,9 @@ void main(void){
   ushort heads;
   void *info;
   //
-  ulong sector;
+  // ulong sector;
   uchar *buffer;
-  short count;
+  // short count;
   //
   sysInit();
   mpcInit();
