@@ -23,7 +23,7 @@ void main(void){
   void *info;
   //
   ulong sector;
-  void *buffer;
+  uchar *buffer;
   short count;
   //
   sysInit();
@@ -36,6 +36,19 @@ void main(void){
     CFEnable(true);
     ok=ATACapacity(iodvr, &sectors, &spt, &heads, &info);
     cprintf("card has %ld sectors   (status %d)\n", sectors, ok);
+    buffer=malloc(512*4);
+    memset(buffer, 0xA5, 512*4);
+    ok=ATAWriteSectors(iodvr, sectors-3, buffer, 4);
+    if (ok) cprintf("write err   (status %d)\n", ok);
+    memset(buffer, 0, 512*4);
+    ok=ATAReadSectors(iodvr, sectors-3, buffer, 4);
+    if (ok) cprintf("read err   (status %d)\n", ok);
+    // any zeros?
+    for (i=0; i<512*4; i++)
+      if (buffer[i]==0) {
+        cprintf("zero err   (status %d)\n", ok);
+        break;
+      }
   }
   exit(0);
   //
