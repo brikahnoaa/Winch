@@ -154,12 +154,14 @@ PhaseType fallPhase() {
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
   int success;
+  time_t riseT;
   flogf("\ndataPhase %s", utlDateTime());
   if (dbg.test && dbg.noData) return rise_pha;
   // save power
   antStop();
   // ngkStop();
-  success = wspDetectD(&wspd, boy.callFreq, boy.callHour);
+  riseTime(&riseT);
+  success = wspDetect(&wspd, riseT);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;
@@ -420,6 +422,47 @@ int riseDo(float targetD) {
     return 0;
   }
 } // riseDo
+
+///
+// calculate rise time
+// sets: *riseT = next callHour, or callFreq hours interval from midnight
+void riseTime(time_t *riseT) {
+  int hour;
+  int callFreq=boy.callFreq;
+  time_t r, now;
+  struct tm *tmPtr, tmLocal;
+  static char *self="riseTime";
+  DBG();
+  // get time, break it down
+  time(&now);
+  tmPtr = gmtime(&now);
+  memcpy(&tmLocal, tmPtr, sizeof(struct tm));
+  // figure target hour
+  if (callFreq) {
+    // instead of a fixed rise hour, figure next interval
+    hour = ((int)(tmLocal.tm_hour/callFreq)+1) * callFreq;
+  } else {
+    hour=boy.callHour;
+  }
+  // check the hour, is it past? add one interval
+  tmLocal.tm_hour = hour;
+  tmLocal.tm_min = 0;
+  tmLocal.tm_sec = 0;
+  r = mktime(&tmLocal);
+  if (r<now) {
+    // next day/interval
+    DBG1("r<now");
+    // be careful with long math and big ints, do not (time_t) (24*60*60)
+    if (callFreq) {
+      r = r + (time_t) callFreq*60*60;
+    } else {
+      r = r + (time_t) 24*60*60;
+    }
+  }
+  flogf("\nriseTime(): rise at %s", utlDateTimeFmt(r));
+  *riseT = r;
+  return;
+} // riseTime
 
 ///
 // based on riseDo()

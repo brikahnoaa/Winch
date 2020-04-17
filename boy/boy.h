@@ -71,6 +71,7 @@ static int nextCycle(void);
 static int reboot(void);
 static int oceanCurr(float *curr);
 static int riseDo(float targetD);
+static void riseTime(time_t *riseT);
 
 int boyEngLog(void);
 int boySafeChk(float *curr, float *temp);

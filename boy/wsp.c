@@ -105,46 +105,6 @@ int wspClose(void) {
 } // wspClose
 
 ///
-// calculate rise time
-// sets: *riseT = next callHour, or callFreq hours interval from midnight
-void wspRiseT(time_t *riseT, int callFreq, int callHour) {
-  int hour;
-  time_t r, now;
-  struct tm *tmPtr, tmLocal;
-  static char *self="wspRiseT";
-  DBG();
-  // get time, break it down
-  time(&now);
-  tmPtr = gmtime(&now);
-  memcpy(&tmLocal, tmPtr, sizeof(struct tm));
-  // figure target hour
-  if (callFreq) {
-    // instead of a fixed rise hour, figure next interval
-    hour = ((int)(tmLocal.tm_hour/callFreq)+1) * callFreq;
-  } else {
-    hour=callHour;
-  }
-  // check the hour, is it past? add one interval
-  tmLocal.tm_hour = hour;
-  tmLocal.tm_min = 0;
-  tmLocal.tm_sec = 0;
-  r = mktime(&tmLocal);
-  if (r<now) {
-    // next day/interval 
-    DBG1("r<now");
-    // be careful with long math and big ints, do not (time_t) (24*60*60)
-    if (callFreq) {
-      r = r + (time_t) callFreq*60*60;
-    } else {
-      r = r + (time_t) 24*60*60;
-    }
-  }
-  flogf("\nwspRiseT(): rise at %s", utlDateTimeFmt(r));
-  *riseT = r;
-  return;
-} // wspRiseT
-
-///
 // wsp storm check started. interact.
 // rets: 1=open 2=RDY 3=predict 8=close
 int wspStorm(char *buf) {
@@ -306,17 +266,16 @@ int wspDetectH(int *detectH, char *spectr) {
 // uses: .spectRun 
 // sets: *detect+=
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
-int wspDetectD(WspData *wspd, int callFreq, int callHour) {
+int wspDetect(WspData *wspd, time_t riseT) {
   static char *self="wspDetectD";
   float laterH;
   int detH=0, r=0;
-  time_t now, riseT;
+  time_t now;
   DBG();
   flogf("\n%s: setting wispr date/time", self);
   wspDateTime();
   wspd->detects = 0;
   time(&now);
-  wspRiseT(&riseT, callFreq, callHour);
   laterH = (float)(riseT-now)/60/60;
   flogf("\n  starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {
