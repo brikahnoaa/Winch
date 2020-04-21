@@ -1,55 +1,70 @@
-// sdcard
+// iriBlock.c
 #include <test.h>
 
+extern IriInfo iri;
+extern IriData irid;
 extern BoyInfo boy;
 extern SysInfo sys;
 
-// bool CFCardDetect(void);
-// void CFEnable(bool on);
-// void *CFGetDriver(void);
-// short ATACapacity(ATADvr iodvr, ulong *sectors, ushort *spt, ushort *heads, void **info);
-// short ATAReadSectors(ATADvr iodvr, ulong sector, void *buffer, short count);
-// short ATAWriteSectors(ATADvr iodvr, ulong sector, void *buffer, short count);
-//
-
 void main(void){
-  int sdGB=32, i;
-  short ok;
-  ATADvr iodvr;
-  //
-  ulong sectors;
-  ushort spt;
-  ushort heads;
-  void *info;
-  //
-  ulong sector;
-  uchar *buffer;
-  short count;
-  //
+  // Serial port;
+  // char c;
+  char *buff;
+  int i, j, r;
+  int blk, len, cnt;
+  blk = 4; len = 1024; cnt = 1;
   sysInit();
   mpcInit();
-  iodvr=CFGetDriver();
+  antInit();
+  iriInit();
   //
-  cprintf("\n sdcard read direct access \n");
+  antStart();
+  iriStart();
   //
-  if (CFCardDetect()) {
-    CFEnable(true);
-    ok=ATACapacity(iodvr, &sectors, &spt, &heads, &info);
-    cprintf("card has %ld sectors   (status %d)\n", sectors, ok);
-    buffer=malloc(512*4);
-    memset(buffer, 0xA5, 512*4);
-    ok=ATAWriteSectors(iodvr, sectors-4, buffer, 4);
-    if (ok) cprintf("write err   (status %d)\n", ok);
-    memset(buffer, 0, 512*4);
-    ok=ATAReadSectors(iodvr, sectors-4, buffer, 4);
-    if (ok) cprintf("read err   (status %d)\n", ok);
-    // any zeros?
-    for (i=0; i<512*4; i++)
-      if (buffer[i]==0) {
-        cprintf("zero err   (status %d)\n", ok);
-        break;
-      }
+  cprintf("\niriBlock sends dbg.t3 files with .t1 blocks of size .t2\n");
+  if (dbg.t1) blk = dbg.t1;
+  if (dbg.t2) len = dbg.t2;
+  if (dbg.t3) cnt = dbg.t3;
+  cprintf("\n block=%d dbg.t1=%d   length=%d dbg.t2=%d   count=%d dbg.t3=%d\n", 
+      blk, dbg.t1, len, dbg.t2, cnt, dbg.t3);
+  buff = irid.block;
+  antSwitch(irid_ant);
+  if (iriSig()) return;
+  if (iriDial()) return;
+  if (iriProjHello(buff)) return;
+  //
+  utlWrite(irid.port, "data", "");
+  for (i=1; i<=blk; i++) {
+    memset(buff, 0, len);
+    sprintf(buff, "%d of %d =%d @%d [%d]", 
+      i, blk, len, iri.baud, iri.blkSz);
+    buff[len-1] = 'Z';
+    r = iriSendBlock(len, i, blk);
+    // utlDelay(500);
   }
-  exit(0);
+  iriLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iriLandCmds(all.buf);
   //
+  utlWrite(irid.port, "data", "");
+  for (j=1; j<=cnt; j++) {
+    for (i=1; i<=blk; i++) {
+      memset(buff, 0, len);
+      sprintf(buff, "%d / %d =%d in #%d @%d [%d]", 
+        i, blk, len, j, iri.baud, iri.blkSz);
+      buff[len-1] = 'Z';
+      r = iriSendBlock(len, i, blk);
+      qq;
+      // utlDelay(500);
+    }
+  }
+  iriLandResp(all.buf);
+  if (strstr(all.buf, "cmds"))
+    r = iriLandCmds(all.buf);
+  //
+  iriHup();
+  iriSig();
+  flogf("\n%s\n", utlTime());
+  // iriStop();
+  // antStop();
 }

@@ -1,3 +1,6 @@
+. check
+.. wspr log appends, log is redundant to detections
+.. file open/close/open reuses fileid
 . robust
 .. reboot recovery
 ... state definition

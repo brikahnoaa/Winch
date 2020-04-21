@@ -17,9 +17,6 @@ typedef struct WspInfo {
   int diskFree;               // free disk min GB, else go on to new wispr
   int dutyM;                  // percent of cycle to run wispr (50%)
   int log;                    // log fileid
-  int phaseH;                 // hours per data phase (24)
-  int riseH;                  // hour of day to rise (2)
-  int riseInt;                // rise interval; if set, ignore riseH (0)
   int spectGain;              // mic sensitivity
   int spectRun;               // 0=no 1=before rise 2=hourly
   int wisprGain;              // mic sensitivity
@@ -40,9 +37,9 @@ static void wspRemainS(int *remains);
 
 int wspCardSwap(void);
 int wspDateTime(void);
-int wspDetect(WspData *wspd, time_t riseT);
+int wspDetect(WspData *wspd, int minutes);
 int wspDetectH(int *detectH, char *spectr);
-int wspDetectM(int *detectM, int minutes);
+int wspDetectM(int *detectM, 
 int wspLog(char *str);
 int wspQuery(int *detect);
 int wspSpace(float *disk);

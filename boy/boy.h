@@ -42,10 +42,10 @@ typedef struct BoyInfo {
   float boy2ant;          // meters from buoy s16 to ant s16 under still water
   float currChkD;         // stop at this depth to check ocean current
   float currMax;          // too much ocean current
-  float iceDanger;        // ice danger at this temp (-1.2)
+  float iceTemper;        // ice danger at this temp (-1.2)
   float predFallV;        // predicted fall velo (.2)
   float predRiseV;        // predicted rise velo (.33)
-  int callFreq;           // number of times per day to call !iridHour (0)
+  int callFreq;           // number of times per day to call !callHour (0)
   int callHour;           // 0-23 (midnight-11pm) hour to call home (1)
   int depSettle;          // time to let deploy settle (60)
   int depWait;            // wait until deployed after start (240min)

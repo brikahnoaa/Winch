@@ -77,7 +77,8 @@ int wspStop(void) {
 } // wspStop
 
 ///
-// turn on and open wispr /mnt/start
+// Expect cmd string prompt WSP_OPEN
+// when found, ten seconds to send a command
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
@@ -266,8 +267,8 @@ int wspDetectH(int *detectH, char *spectr) {
 // uses: .spectRun 
 // sets: *detect+=
 // rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
-int wspDetect(WspData *wspd, time_t riseT) {
-  static char *self="wspDetectD";
+int wspDetect(WspData *wspd, int minutes) {
+  static char *self="wspDetect";
   float laterH;
   int detH=0, r=0;
   time_t now;
@@ -287,7 +288,7 @@ int wspDetect(WspData *wspd, time_t riseT) {
     wspStorm(all.buf);
   // ?? log
   return r;
-} // wspDetectD
+} // wspDetect
 
 ///
 // seconds remaining in this hour
