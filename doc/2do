@@ -1,3 +1,7 @@
+. check
+.. wspr log appends, log is redundant to detections
+... tst/wspCmd read cmd from term, start wsp, execute, print result
+.. file open/close/open reuses fileid
 . robust
 .. reboot recovery
 ... state definition

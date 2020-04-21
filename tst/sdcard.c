@@ -13,7 +13,7 @@ extern SysInfo sys;
 //
 
 void main(void){
-  int i;
+  int sdGB=32, i;
   short ok;
   ATADvr iodvr;
   //
@@ -22,9 +22,9 @@ void main(void){
   ushort heads;
   void *info;
   //
-  // ulong sector;
+  ulong sector;
   uchar *buffer;
-  // short count;
+  short count;
   //
   sysInit();
   mpcInit();
@@ -38,10 +38,10 @@ void main(void){
     cprintf("card has %ld sectors   (status %d)\n", sectors, ok);
     buffer=malloc(512*4);
     memset(buffer, 0xA5, 512*4);
-    ok=ATAWriteSectors(iodvr, sectors-3, buffer, 4);
+    ok=ATAWriteSectors(iodvr, sectors-4, buffer, 4);
     if (ok) cprintf("write err   (status %d)\n", ok);
     memset(buffer, 0, 512*4);
-    ok=ATAReadSectors(iodvr, sectors-3, buffer, 4);
+    ok=ATAReadSectors(iodvr, sectors-4, buffer, 4);
     if (ok) cprintf("read err   (status %d)\n", ok);
     // any zeros?
     for (i=0; i<512*4; i++)
