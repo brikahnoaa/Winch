@@ -39,7 +39,7 @@ int wspCardSwap(void);
 int wspDateTime(void);
 int wspDetect(WspData *wspd, int minutes);
 int wspDetectH(int *detectH, char *spectr);
-int wspDetectM(int *detectM, int minutes);
+int wspDetectM(int *detectM, 
 int wspLog(char *str);
 int wspQuery(int *detect);
 int wspSpace(float *disk);

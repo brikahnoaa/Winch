@@ -77,7 +77,8 @@ int wspStop(void) {
 } // wspStop
 
 ///
-// turn on and open wispr /mnt/start
+// Expect cmd string prompt WSP_OPEN
+// when found, ten seconds to send a command
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";

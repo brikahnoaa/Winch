@@ -364,17 +364,15 @@ int utlLogOpen(int *log, char *base) {
     sprintf(utl.str, "open ERR %d (errno %d), path %s", fd, errno, path);
     utlErr(log_err, utl.str);
     return 1;
-  } else {
-    DBG1("\n%s path\t| %s", self, path);
-    sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
-    DBG2("\n%s(%s):%d", self, path, fd);
-    r = write(fd, utl.str, strlen(utl.str)); 
-    if (r<1) {
-      sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
-      utlErr(log_err, utl.str);
-      close(fd);
-      return 2;
-    }
+  } 
+  DBG1("\n%s(%s):%d", self, base, fd);
+  sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
+  r = write(fd, utl.str, strlen(utl.str)); 
+  if (r<1) {
+    sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
+    utlErr(log_err, utl.str);
+    close(fd);
+    return 2;
   }
   *log=fd;
   return 0;
