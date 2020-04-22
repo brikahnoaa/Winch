@@ -270,12 +270,13 @@ int wspDetect(WspData *wspd, int minutes) {
   static char *self="wspDetect";
   float laterH;
   int detH=0, r=0;
-  time_t now;
+  time_t now, riseT;
   DBG();
   flogf("\n%s: setting wispr date/time", self);
   wspDateTime();
   wspd->detects = 0;
   time(&now);
+  riseT=now+minutes;
   laterH = (float)(riseT-now)/60/60;
   flogf("\n  starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {

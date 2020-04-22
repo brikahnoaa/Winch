@@ -1,0 +1,653 @@
+Wed, Apr 22, 2020 10:14:02 AM
+C:\>
+C:\>
+C:\>dir test
+
+ Volume in drive C is PICODOS    
+ Volume Serial Number is 5FE8-1273
+ Directory of C:\TEST
+
+.              <DIR>         05-01-19 10:30p
+..             <DIR>         05-01-19 10:30p
+ANT.PXE              67,526  07-05-19  6:19p
+GPS.PXE              62,524  09-24-18  3:35p
+HPS.PXE              58,822  09-26-18 11:57p
+S16.PXE              62,658  02-27-20  5:43p
+S39.PXE              64,168  02-27-20  5:52p
+A3LA.PXE             69,604  03-12-20 11:42p
+IRIBLOCK.PXE         69,586  04-08-20  5:08p
+SBE16.PXE            63,794  03-29-19 10:37p
+SBE39.PXE            59,302  03-14-19  4:38a
+TEST.LOG              3,315  09-26-18  4:43a
+WINCH.PXE            55,628  09-10-18  9:31p
+WISPR.PXE            64,804  03-14-19  4:36a
+RUD.PXE              73,688  07-05-19  6:14p
+
+        13 file(s)         775,419 bytes
+         2 dir(s)      515,047,424 bytes free
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 10, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Mar 13 2020 10:09:09
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 10
+Started: 2020-04-21 20:34:43
+---   ---
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+VEE: DBG.T2=512
+VEE: DBG.T3=8
+VEE: DBG.T1=4
+VEE: IRI.BLKSZ=1
+VEE: DBG.T4=222
+-ERR(cfg)	|0| 20:34:44 cfgString() no match on name/id DBG.T4=222 ??
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 20:34:44
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block=4 dbg.t1=4   length=512 dbg.t2=512   count=8 dbg.t3=8
+ csq=4 20:35:01 (0) (1) (2)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>dir
+
+ Volume in drive C is PICODOS    
+ Volume Serial Number is 5FE8-1273
+ Directory of C:\
+
+LOG            <DIR>         05-01-19 10:30p
+TEST           <DIR>         05-01-19 10:33p
+AUTOEXEC.BAT             49  03-14-19  5:54p
+BOY.PXE              94,988  06-13-19 10:33p
+HELLO.TXT                 7  09-27-18  6:46p
+HPSENS.PXE           26,254  03-29-18 11:27a
+INITLARA.BAT             61  03-30-19  7:58p
+LARA.CFG                 44  06-05-19 11:55p
+PAM1.BAT                 21  03-13-19  3:45p
+PAM2.BAT                 21  03-13-19  3:46p
+PAMO.BAT                 28  03-13-19  3:50p
+PAMX.BAT                 28  03-13-19 12:28a
+SLEEP.PXE            20,176  04-27-18  4:10p
+SYS.LOG                 833  04-21-20  8:35p
+TST.PXE              61,330  04-15-20  7:07p
+UWCODE.PXE           68,896  03-13-20  9:00p
+
+        14 file(s)         272,736 bytes
+         2 dir(s)      515,039,232 bytes free
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 11, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 14 2020 13:38:08
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 11
+Started: 2020-04-21 20:36:05
+---   ---
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+VEE: DBG.T2=512
+VEE: DBG.T3=8
+VEE: DBG.T1=4
+VEE: IRI.BLKSZ=1
+VEE: DBG.T4=222
+-ERR(cfg)	|0| 20:36:05 cfgString() no match on name/id DBG.T4=222 ??
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ sdcard read direct access 
+card has 1019088 sectors   (status 0)
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 12, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Mar 13 2020 10:09:09
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 12
+Started: 2020-04-21 20:36:35
+---   ---
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+VEE: DBG.T2=512
+VEE: DBG.T3=8
+VEE: DBG.T1=4
+VEE: IRI.BLKSZ=1
+VEE: DBG.T4=222
+-ERR(cfg)	|0| 20:36:36 cfgString() no match on name/id DBG.T4=222 ??
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 20:36:36
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block=4 dbg.t1=4   length=512 dbg.t2=512   count=8 dbg.t3=8
+ csq=4 20:36:58 (0) (1)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>
+###MX Load: CRC 010000 021067 = 83485A20
+Gs test\iriblock
+Saving 69736 bytes to TEST\IRIBLOCK.PXE...
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 13, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 13
+Started: 2020-04-21 20:41:59
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+VEE: DBG.T2=512
+VEE: DBG.T3=8
+VEE: DBG.T1=4
+VEE: IRI.BLKSZ=1
+VEE: DBG.T4=222
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 20:42:00
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=512   files.t3=8   delay.t4=222
+ csq=5 20:42:22 (0)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>set
+DBG.TEST=1
+DBG.T2=512
+DBG.T3=8
+DBG.T1=4
+IRI.BLKSZ=1
+SHUTDOWN=starts>max
+DBG.T4=222
+STARTS=13
+
+C:\>set dbg.t4=
+
+C:\>set dbg.t1=
+
+C:\>set dbg.t2=
+
+C:\>set dbg.t3=
+
+C:\>set
+DBG.TEST=1
+IRI.BLKSZ=1
+SHUTDOWN=starts>max
+STARTS=13
+
+C:\>set iri.blksz=
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 14, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 14
+Started: 2020-04-21 20:44:11
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 20:44:12
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=1   delay.t4=0
+ csq=5 20:44:29 (0)
+CONNECTED@~1800 4442us projHdr projHdr projHdr
+ === buoy sbe39 stop 2020-04-21 20:45:43
+ === ant module stop 2020-04-21 20:45:44
+ === buoy sbe16 stop 2020-04-21 20:45:44
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+###MX Load: CRC 010000 021067 = 6C7DBA6F
+Gs test\iriblock
+Saving 69736 bytes to TEST\IRIBLOCK.PXE...
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 15, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 15
+Started: 2020-04-21 22:01:34
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 22:01:35
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=2   delay.t4=0
+ csq=4 22:01:52 (0)
+CONNECTED@~1800 4442us projHdr projHdr
+EXC iriProjHello->2 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 2 [0x2]
+
+C:\>
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 16, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 16
+Started: 2020-04-21 22:04:25
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 22:04:26
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=2   delay.t4=0
+ csq=5 22:04:43 (0) (1)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds 
+startCheck(): starts 17, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 17
+Started: 2020-04-21 22:07:18
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-21 22:07:20
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=2   delay.t4=0
+ csq=5 22:07:37 (0)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9  8  7  6  5 
+startCheck(): starts 18, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 18
+Started: 2020-04-22 16:05:59
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-22 16:06:00
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=2   delay.t4=0
+ csq=5 16:06:22 (0) (1)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>
+###MX Load: CRC 010000 021295 = 10F087A9
+Gs tst
+Saving 70294 bytes to TST.PXE...
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 19, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 22 2020 09:18:40
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 19
+Started: 2020-04-22 16:19:22
+---   ---
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-22 16:19:22
+-ERR(log)	|0| 16:19:26 open ERR -1 (errno 17), path log\000þÜº‘.log
+ === buoy sbe39 start 2020-04-22 16:19:26
+
+<<<< CRASH >>>>  (saved @ 0xB000)  <<<< CRASH >>>>
+
+CPU STATE:   PC.00E2E06E  SS.0000FF8A  SR.2004
+D0.00000000  D1.00000C80  D2.00006040  D3.000CED6A
+D4.00000000  D5.00000001  D6.00000001  D7.00E00001
+A0.00000000  A1.FEDCBA91  A2.00006A74  A3.0001E206
+A4.000077D2  A5.0001E206  A6.00018D8E  A7.0000FF8A
+VB.00000000  US.09256562  SF.00000005  DF.00000005
+
+STACK FRAME: PC.00E2E06E  SR.2004  FT.C  VT.00C/03
+S0.FEDCBABB  S1.FEDCBA91  S2.00E2E06E  S3.000B0055
+
+EXCEPTION VECTOR: 0x03 = "AERR"
+
+PC HISTORY:  PC.00E2E06E
+00E2E04E  6014 4857 2078 0450 4E90 4A00 584F 67D4 
+00E2E05E  70FF 4FEF 000E 245F 4E75 206F 0004 2250 
+00E2E06E  3369 002A 002C 4269 0030 4269 002E 4269 
+00E2E07E  000E 4E75 2F0A 2F03 3600 7000 3003 E588 
+
+
+STACK DUMP:  A7.0000FF8A
+0000FF6A  E89E 000F 0000 000F 000C ED01 0002 840C 
+0000FF7A  0002 8430 0000 2004 0000 000C ED01 0000 
+0000FF8A  2004 00E2 E06E C00C FEDC BABB FEDC BA91 
+0000FF9A  00E2 E06E 000B 0055 0001 DEE4 0000 0000 
+0000FFAA  0001 DC50 0001 DA2C 0016 5301 01F0 0001 
+0000FFBA  E92A 0002 42D0 0001 B430 0001 DF3C 000C 
+0000FFCA  ED6A 0000 0000 0000 0001 0000 0001 0000 
+0000FFDA  6A74 0001 8F30 0001 0000 6A74 0001 0000 
+
+<<< MORE? (Y/N/A) [N] >>> 10..9..8..7..6..5..
+
+<<< RESETTING >>>
+
+
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+###MX Load: CRC 010000 020DA5 = DACC08CC
+Gs tst
+Saving 69030 bytes to TST.PXE...
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 20, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 22 2020 09:30:30
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 20
+Started: 2020-04-22 16:34:33
+---   ---
+cfgDefault: 80 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-22 16:34:33
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block=4 dbg.t1=0   length=1024 dbg.t2=0   count=1 dbg.t3=0
+ csq=4 16:34:50 (0)
+CONNECTED@~1800 4442us projHdr projHdr projHdr
+EXC iriProjHello->1 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 1 [0x1]
+
+C:\>
+###MX Load: CRC 010000 021067 = 97F8035A
+Gs tst
+Saving 69736 bytes to TST.PXE...
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 21, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 22 2020 09:37:44
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 21
+Started: 2020-04-22 16:38:23
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-22 16:38:24
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=1   delay.t4=0
+
+Application error 1 [0x1]
+
+C:\>tst
+
+ press ' ' ([space]) to exit into picoDOS 
+You have 10 seconds  9 
+startCheck(): starts 22, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 22 2020 09:37:44
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 22
+Started: 2020-04-22 16:49:52
+---   ---
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-22 16:49:53
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=1   delay.t4=0
+ csq=4 16:50:10 (0) (1)
+CONNECTED@~1800 4442us projHdr hello 1/1
+LandResp(cmds)
+EXC iriLandCmds->2 1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad
+EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
+Application error 22 [0x16]
+
+C:\>
