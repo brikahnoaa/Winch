@@ -26,8 +26,9 @@ extern DbgInfo dbg;
 // faux exception processing: raise(10) ---> except: {return dbg.x;}
 // except: {flogf(" %s", rets); return dbg.x;}
 
+static char *rets="unknown error";  // default, may be locally defined return val
 #define raise(X_VALUE) { dbg.x=X_VALUE; \
-  flogf("\nEXC %s->%d", self, dbg.x); goto except; }
+  flogf("\nEXC %s->%d (%s)", self, dbg.x, rets); goto except; }
 
 ///
 // the DBG* global vars are used in macros

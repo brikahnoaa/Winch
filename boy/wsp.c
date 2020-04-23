@@ -134,8 +134,7 @@ int wspStorm(char *buf) {
   if (wspClose()) return 9;
   return 0;
   //
-  except:
-    return(dbg.x);
+  except: return(dbg.x);
 } // wspStorm
 
 ///
@@ -216,9 +215,10 @@ int wspDetectM(int *detectM, int minutes) {
   if (wspClose()) raise(8);
   return 0;
   //
-  except:
+  except: {
     wspStop();
     return(dbg.x);
+  }
 } // wspDetectM
 
 ///
