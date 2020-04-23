@@ -1,6 +1,15 @@
-
+. check
+.. wspr log appends, log is redundant to detections
+... tst/wspCmd read cmd from term, start wsp, execute, print result
+.. file open/close/open reuses fileid
 . robust
 .. reboot recovery
+... state definition
+... state save/restore
+... super vram - direct sd storage to avoid filesystem corruption
+.... make 2nd partition and rules for setup
+x... block read write
+.... crc, duplication, verify
 .. print statement review
 .. watchdog
 .. component tests, ongoing
@@ -12,10 +21,11 @@
 .. cpu speed
 .. cpu sleep during acoustics
 ... power to realtime clock
+... re-init serial etc after power sleep?
 .. power level checks (not consumption, alkalines)
 . test cycling
 .. scheme to shorten time
-.. 
+.. inducing err conditions
 . winter algorithm
 .. rise under ice
 .. test for urgent stop
@@ -23,7 +33,8 @@
 ... expect open water noise change
 ... clock drift
 . irid
-.. test multiple 1K file
+x. test multiple 1K file - failed!
+.. direct connect to modem, bypass ant green cable
 .. shortcut to PC irid proto
 ... cf2 prog to create header/cksum for a data file, save to file2
 ... transmit saved file from PC
