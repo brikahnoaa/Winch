@@ -77,8 +77,7 @@ int wspStop(void) {
 } // wspStop
 
 ///
-// Expect cmd string prompt WSP_OPEN
-// when found, ten seconds to send a command
+// turn on and open wispr /mnt/start
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
@@ -135,8 +134,7 @@ int wspStorm(char *buf) {
   if (wspClose()) return 9;
   return 0;
   //
-  except:
-    return(dbg.x);
+  except: return(dbg.x);
 } // wspStorm
 
 ///
@@ -217,9 +215,10 @@ int wspDetectM(int *detectM, int minutes) {
   if (wspClose()) raise(8);
   return 0;
   //
-  except:
+  except: {
     wspStop();
     return(dbg.x);
+  }
 } // wspDetectM
 
 ///
@@ -271,12 +270,13 @@ int wspDetect(WspData *wspd, int minutes) {
   static char *self="wspDetect";
   float laterH;
   int detH=0, r=0;
-  time_t now;
+  time_t now, riseT;
   DBG();
   flogf("\n%s: setting wispr date/time", self);
   wspDateTime();
   wspd->detects = 0;
   time(&now);
+  riseT=now+minutes;
   laterH = (float)(riseT-now)/60/60;
   flogf("\n  starting wispr detection; end in %3.1f hours", laterH);
   while (time(NULL) < riseT) {
