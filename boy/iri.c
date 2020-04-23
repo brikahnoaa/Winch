@@ -121,8 +121,6 @@ int iriDateTime(GpsStats *stats) {
   }
   flogf("\n%s: %s  %s", self, stats->date, stats->time);
   return 0;
-  //
-  except: return(dbg.x);
 } // iriDateTime
 
 ///
@@ -291,8 +289,6 @@ int iriProjHello(uchar *resp) {
     iriProcessCmds(resp);
   }
   return 0;
-  //
-  except: return(dbg.x);
 } // iriProjHello
 
 ///
@@ -349,8 +345,6 @@ int iriSendBlock(int bsiz, int bnum, int btot) {
   iriSendSlow(irid.buf, bsiz+IRID_BUF_BLK); 
   if (irid.log) write(irid.log, irid.block, (long) bsiz);
   return 0;
-  //
-  except: return(dbg.x);
 } // iriSendBlock
 
 ///
@@ -392,8 +386,6 @@ int iriSendFile(char *fname) {
     iriProcessCmds(all.buf);
   }
   return 0;
-  //
-  except: return(dbg.x);
 } // iriSendFile
 
 ///
@@ -426,8 +418,6 @@ int iriLandResp(uchar *buff) {
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   if (r) raise(1);
   return 0;
-  //
-  except: return(dbg.x);
 } // iriLandResp
 
 ///
@@ -458,8 +448,6 @@ int iriLandCmds(uchar *buff) {
   buff[got]=0;
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
-  //
-  except: return(dbg.x);
 } // iriLandCmds
 
 ///
