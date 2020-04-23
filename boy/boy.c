@@ -326,8 +326,6 @@ int iridDo(void) {
   // turn off a3la
   iriStop();
   return r;
-  //
-  except: return dbg.x;
 } // iridDo
 
 ///

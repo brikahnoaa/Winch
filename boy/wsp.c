@@ -133,8 +133,6 @@ int wspStorm(char *buf) {
   // stop
   if (wspClose()) return 9;
   return 0;
-  //
-  except: return(dbg.x);
 } // wspStorm
 
 ///
@@ -183,7 +181,7 @@ int wspDetectM(int *detectM, int minutes) {
   if (wsp.wisprLog)
     sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.wisprLog, all.cycle );
   // start
-  if (wspOpen()) raise(1);
+  if (wspOpen()) raisex(1);
   flogf( "\nexec '%s'", b );
   utlWrite( wsp.port, b, EOL );
   // run for minutes; every .detInt, query and reset.
@@ -193,26 +191,26 @@ int wspDetectM(int *detectM, int minutes) {
   while (!tmrExp(minute_tmr)) {
     if (tmrExp(data_tmr)) {
       // query and reset
-      if (wspQuery(&detQ)) raise(10);
+      if (wspQuery(&detQ)) raisex(10);
       *detectM += detQ;
-      if (wspSpace(&free)) raise(20);
+      if (wspSpace(&free)) raisex(20);
       flogf("\n%s: disk %3.0f%% free on wispr#%d", self, free, wsp.card);
       
       tmrStart(data_tmr, wsp.detInt*60);
     } // data_tmr
   } // minute_tmr
-  if (wspQuery(&detQ)) raise(10);
+  if (wspQuery(&detQ)) raisex(10);
   *detectM += detQ;
   // ?? query diskFree
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlReadExpect(wsp.port, all.buf, "FIN", 5)) {
     flogf("\n%s(): expected FIN, got '%s'", self, all.buf);
-    raise(3);
+    raisex(3);
   }
   // ?? add to daily log
   // stop
-  if (wspClose()) raise(8);
+  if (wspClose()) raisex(8);
   return 0;
   //
   except: {
