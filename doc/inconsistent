@@ -651,3 +651,56 @@ EXC iriProjHello->22 1=retries 2=noCarrier +10=landResp +20=landCmds
 Application error 22 [0x16]
 
 C:\>
+
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9  8
+startCheck(): starts 32, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 22 2020 16:43:44
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 32
+Started: 2020-04-28 01:50:16
+---   --- DBG1 DBG3
+cfgDefault: 79 config settings ant.subD=3.49 ant.surfD=1.14 boy.reset=false boy.stop=false boy.useBrake=false boy.ant2tip=2.35 boy.boy2ant=14.29 boy.currChkD=10.0 boy.currMax=99.0 boy.iceTemper=-1.2 boy.predFallV=0.2 boy.predRiseV=0.33 boy.callFreq=1 boy.callHour=1 boy.depSettle=60 boy.depWait=240 boy.fallOpM=30 boy.iridOpM=5 boy.ngkDelay=8 boy.riseOpM=20 boy.startPh=0 boy.stayDown=0 cfg.file=lara.cfg dbg.noData=false dbg.noDeploy=false dbg.noIrid=false dbg.noRise=false dbg.test=false dbg.t1=0 dbg.t2=0 dbg.t3=0 iri.setTime=true iri.logging=false iri.phoneNum=0088160000519 iri.platform=LR01 iri.project=QUEH iri.blkSz=256 iri.fileMaxKB=64 iri.hdrResp=30 iri.hdrTry=3 iri.hupMs=2000 iri.landResp=20 iri.redial=25 iri.baud=1800 iri.signalMin=2 iri.timeout=60 ngk.delay=8 ngk.winchId=1 pwr.on=false pwr.charge=12000.0 pwr.chargeMin=200.0 pwr.voltsMin=12.5 s16.initStr= s16.startStr= s16.takeSamp=TSSON s16.pumpMode=1 s16.timer=6 s39.initStr= s39.startStr= s39.takeSamp=TSSON s39.timer=3 sys.program=LARA sys.version=4.0 utl.ignoreCon=false wsp.on=false wsp.spectCmd=/bin/spectrogram wsp.spectFlag=-v1 -C12 -n512 -o256 wsp.spectLog=noise wsp.wisprCmd=/bin/wispr_bw wsp.wisprFlag=-v2 -T8 -b15 -M2 -F2 wsp.wisprLog=wispr wsp.card=2 wsp.detInt=10 wsp.detMax=10 wsp.diskFree=5 wsp.dutyM=30 wsp.spectGain=1 wsp.spectRun=1 wsp.wisprGain=1
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+(i) boy.callHour=7
+	wsp.spectRun=2
+(i) wsp.spectRun=2
+	wsp.card=1
+(i) wsp.card=1
+VEE: DBG.TEST=1
+(b) dbg.test=1
+VEE: DBG.DGB2=1
+-ERR(cfg)	|0| 01:50:19 cfgString() no match on name/id DBG.DGB2=1 ??
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13 antDevice(a3la)
+iriBufMalloc: setting blkSize to 256
+ === ant module start 2020-04-28 01:50:20 (log\000ant.log)
+utlLogOpen(ant):1 antDevice(cf2) utlReadExpect(ok, 6)  <<39'Press [SPACE] key to exit. 3 seconds, 2'<<  <<2' 1'<<  <<4' 0 \r\n '<<  <<5'ok \r \r\n '<< antDevice(cf2) antDevice(a3la) utlReadExpect(COMMAND MODE, 12)  <<176'Copyright(c) 2009-2012 \r\n NAL Research Corporation \r\n Iridium Modem Model: A3LA-RG \r\n Firmware Version 1.1.0r197 \r\n  \r\n Running Self Test...Passed \r\n ENCRYPTION DISABLED THIS POWER CYCLE \r\n '<<  <<16' \r\n COMMAND MODE \r\n '<<  >>54'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r'>> utlReadExpect(OK, 5)  <<60'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r \r\n OK \r\n '<<  >>5'ate0 \r'>> utlReadExpect(OK, 5)  <<11'ate0 \r \r\n OK \r\n '<<
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block=4 dbg.t1=0   length=1024 dbg.t2=0   count=1 dbg.t3=0
+ antSwitch(irid) antDevice(cf2) antDevice(a3la)  >>7'at+csq \r'>> utlReadExpect(OK, 12)  <<16' \r\n +CSQ:5 \r\n  \r\n OK \r\n '<< utlMatchAfter(CSQ:) csq=5 01:50:37  >>8'at+cpas \r'>> utlReadExpect(OK, 5)  <<19' \r\n +CPAS:000 \r\n  \r\n OK \r\n '<<  >>8'at+clcc \r'>> utlReadExpect(OK, 5)  <<19' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<< utlMatchAfter(+CLCC:)  >>17'atd0088160000519 \r'>>  <<14' \r\n NO CARRIER \r\n '<<
+
+NO CARRIER
+
+ (0)  >>17'atd0088160000519 \r'>>  <<16' \r\n CONNECT 9600 \r\n '<<
+
+CONNECT 9600
+
+
+CONNECTED@~1800 4442us projHdr iriSendSlow(13):4442 >>>13>>> utlReadExpect(ACK, 30)  <<4'ACK\n '<< hello 1/1 iriSendSlow(15):4442 >>>15>>> . .  <<4'cmds'<<
+LandResp(cmds)  <[10' \r\n NO CARRI'<[
+EXC iriLandCmds->2 (1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad)
+EXC iriProjHello->22 (1=retries 2=noCarrier +10=landResp +20=landCmds)
+Application error 22 [0x16]
+
+C:\>
