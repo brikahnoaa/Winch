@@ -33,14 +33,14 @@ typedef struct IriData {
   GpsStats stats;           // we read stats, repeat, compare
   RTCTimer timer;           // elapsed usec timer for slower baud
   Serial port;
-  uchar *block;             // offset into buf for file transfer
-  uchar *buf;               // buffer for file transfer
+  uchar *block;             // the data block, an offset into buf past header
+  uchar *buf;               // buffer for file transfer, includes header
   uchar projHdr[16];        // rudicsland
-  int blkSz;                // size of *block - verify GspInfo.blockSz
+  int blkSz;                // size of irid.block, usually equals iri.blkSz
   int log;                  // log of file transfers
   int sats;
   int signal;
-  unsigned long usec;       // microsec delay per char, TUBlDu* 9600/iri.baud
+  unsigned long usec;       // microsec time per char, effective baudrate iri.baud
 } IriData;
 
 static int iriCRC(uchar *buf, int cnt);

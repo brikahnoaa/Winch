@@ -41,25 +41,26 @@ void iriBufMalloc(void) {
 ///
 // turn on, clean, set params, talk to a3la
 // assumes: antStart()
-// sets: irid.projHdr .blkSz .buf .block .usec
+// sets: irid.projHdr .blkSz .buf .block .usec .timer
 int iriStart(void) {
   static char *self="iriStart";
   long usec;
   int cs;
   DBG0("iriStart() %s", utlTime());
   // set projHdr to 13 char project header, 0 in byte 14
-  // poke in cs high and low bytes
+  // poke in checksum high and low bytes
   sprintf(irid.projHdr, "???cs%4s%4s", iri.project, iri.platform);
   cs = iriCRC(irid.projHdr+5, 8);
   irid.projHdr[3] = (char) (cs >> 8) & 0xFF;
   irid.projHdr[4] = (char) (cs & 0xFF);
-  // block & buf, size could be set during run
+  // block & buf, size could be changed during run (iri.blkSz)
   if (irid.blkSz != iri.blkSz) iriBufMalloc();
   if (iri.baud>0 && iri.baud<9600) {
     RTCElapsedTimerSetup(&irid.timer);
-    // usec per byte 
+    // usec per byte, at real baud rate
     usec = TUBlockDuration(irid.port, 1000L);
     DBG4("%s: usec=%ld", self, usec);
+    // usec per byte, at effective baud rate
     irid.usec = usec * 9600 / iri.baud;
   } else irid.usec = 0L;
   // log?
@@ -304,13 +305,15 @@ int iriSendSlow(uchar *c, int len) {
   DBG3(">>>%d>>>", len);
   for (i=0; i<len; i++) {
     if (irid.usec) {
+      RTCElapsedTimerSetup(&irid.timer);
+      TUTxPutByte(irid.port, c[i], true);
       utlX(); // spare time
       elapsed = RTCElapsedTime(&irid.timer);
       if (elapsed < irid.usec) 
         RTCDelayMicroSeconds(irid.usec-elapsed);
-      RTCElapsedTimerSetup(&irid.timer);
+    } else {
+      TUTxPutByte(irid.port, c[i], true);
     }
-    TUTxPutByte(irid.port, c[i], true);
   } // for len
   return 0;
 } // iriSendSlow
