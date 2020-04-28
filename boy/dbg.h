@@ -20,7 +20,7 @@ typedef struct DbgInfo {
   int t4;                 // test param (0)
   int t5;                 // test param (0)
   int t6;                 // test param (0)
-  int x;                    // exception value for faux raise(#)/except
+  int except;             // exception value for faux raise(#)/except
   void (*funcPtr)(void);  // test program run by utlX 'd' 
 } DbgInfo;
 
@@ -31,9 +31,9 @@ extern DbgInfo dbg;
 
 static char *rets="unknown error";  // default, may be locally defined return val
 #define raise(EXC) { flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
-  dbg.x=EXC; return EXC; }
+  dbg.except=EXC; return EXC; }
 #define raisex(EXC) { flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
-  dbg.x=EXC; goto except; }
+  dbg.except=EXC; goto except; }
 
 ///
 // the DBG* global vars are used in macros

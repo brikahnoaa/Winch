@@ -425,32 +425,40 @@ int iriLandResp(uchar *buff) {
 
 ///
 // just got landResp(cmds), read and format land cmds
+// read header, then content of cmds
 // 1sec delay between "cmds" and cmd message
 // 1ms delay at byte 5 (checksum)
 // rets: *buff (string)
 int iriLandCmds(uchar *buff) {
   static char *self="iriLandCmds";
-  static char *rets="1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad";
-  static int nonMsg=5, hdr=10, respms=4000;
+  static char *rets="1=timeout 2=short 3=!'@@@' 4=!'C11' 5=szBad";
+  static int nonMsg=5, hdr=10, respms=3000;
   unsigned char *p, myBuf[12];
   int got, msgSz;
   DBG();
   got = utlGetBlock(irid.port, myBuf, hdr, respms);
-  if (got<hdr) raise(1);
+  if (got==0) raise(1);
+  if (got<hdr) raisex(2);
   // 2 len bytes // block length includes hdr from size on
   p = myBuf;
-  if (p[0]!='@') raise(2);
-  while (p[0]=='@') p++; // skip @
+  if (p[0]!='@') raisex(3);
+  while (p[0]=='@') p++; // skip @ - 1,2,3 is stupid protocol
   p += 2; // skip checksum - should we check it??
   msgSz = p[0] << 8; // compiler is fussy about syntax here
   msgSz += p[1] - nonMsg;
-  if (!(p[2]=='C' && p[3]==1 && p[4]==1)) raise(3);
-  if (msgSz>1024 || msgSz<1) raise(4);
+  if (!(p[2]=='C' && p[3]==1 && p[4]==1)) raisex(4);
+  if (msgSz>1024 || msgSz<1) raisex(5);
   // msg into buff
   got = utlGetBlock(irid.port, buff, msgSz, respms);
   buff[got]=0;
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   return 0;
+  except: {
+    memcpy(buff, myBuf, got);
+    utlRead(irid.port, buff+got); // get rest of it
+    flogf("\n%s: unexpected '%s'", self, utlNonPrint(buff));
+    return(dbg.except);
+  }
 } // iriLandCmds
 
 ///
