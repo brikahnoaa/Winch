@@ -315,7 +315,7 @@ char *utlNonPrintBlock (char *in, int len) {
   while (i<len) {
     ch = in[i++];
     if (ch==0x0A) {
-      out[o++] = '\';
+      out[o++] = '\\';
     } else if (ch==0x0D) {
       out[o++] = '/';
     } else if ((ch<32)||(ch>126)) {
