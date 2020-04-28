@@ -215,7 +215,7 @@ int wspDetectM(int *detectM, int minutes) {
   //
   except: {
     wspStop();
-    return(dbg.x);
+    return(dbg.except);
   }
 } // wspDetectM
 

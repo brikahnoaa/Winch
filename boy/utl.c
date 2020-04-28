@@ -88,7 +88,7 @@ void utlWrite(Serial port, char *out, char *eol) {
 ///
 // read all the chars on the port, with a normal char delay; discard nulls=0
 // char *in should be BUFSZ, null terminated string
-// returns: *in (string), 1=overrun
+// returns: *in (string), -1=overrun
 int utlRead(Serial port, char *in) {
   short ch;
   int len;
@@ -101,7 +101,7 @@ int utlRead(Serial port, char *in) {
   in[len]=0;            // string
   DBG2(" <%d<", len);
   if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
-  if (len>=BUFSZ) return 1;
+  if (len>=BUFSZ-1) return -1;
   return 0;
 } // utlRead
 
@@ -171,7 +171,7 @@ int utlGetUntil(Serial port, char *in, char *lookFor) {
   }
   in[len]=0;            // string
   DBG2(" <%d<", len);
-  if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
+  if (len) DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
   if (len>=BUFSZ) return 1;
   return 0;
 } // utlGetUntil
@@ -315,11 +315,9 @@ char *utlNonPrintBlock (char *in, int len) {
   while (i<len) {
     ch = in[i++];
     if (ch==0x0A) {
-      sprintf(out+o, "\\n ");
-      o += 3;
+      out[o++] = '\';
     } else if (ch==0x0D) {
-      sprintf(out+o, " \\r");
-      o += 3;
+      out[o++] = '/';
     } else if ((ch<32)||(ch>126)) {
       // non printing char
       sprintf(out+o, " x%02X ", ch);
