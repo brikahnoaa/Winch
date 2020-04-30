@@ -703,4 +703,188 @@ EXC iriLandCmds->2 (1=hdrShort 2=!'@@@' 3=!'C11' 4=szBad)
 EXC iriProjHello->22 (1=retries 2=noCarrier +10=landResp +20=landCmds)
 Application error 22 [0x16]
 
+Thu, Apr 30, 2020 10:25:23 AM
+
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9
+pc 21
+
+Pin 21 [I/O OUT] = 0pc 22
+
+Pin 22 [I/O OUT] = 0pc 26
+
+Pin 26 [I/O OUT] = 0pc 37
+
+Pin 37 [I/O OUT] = 0pc 42
+
+Pin 42 [I/O OUT] = 0ps 42
+
+Pin 42 [I/O OUT] = 1pc 42
+
+Pin 42 [I/O OUT] = 0
+C:\>
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9
+startCheck(): starts 35, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 35
+Started: 2020-04-30 16:58:00
+---   --- DBG3
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-30 16:58:02  <<39'Press [SPACE] key to exit. 3 seconds, 2'<<  <<2' 1'<<  <<4' 0 \r\n '<<  <<5'ok \r \r\n '<<  <<176'Copyright(c) 2009-2012 \r\n NAL Research Corporation \r\n Iridium Modem Model: A3LA-RG \r\n Firmware Version 1.1.0r197 \r\n  \r\n Running Self Test...Passed \r\n ENCRYPTION DISABLED THIS POWER CYCLE \r\n '<<  <<16' \r\n COMMAND MODE \r\n '<<  >>54'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r'>>  <<60'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r \r\n OK \r\n '<<  >>5'ate0 \r'>>  <<11'ate0 \r \r\n OK \r\n '<<
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=2   delay.t4=0
+  >>7'at+csq \r'>>  <<16' \r\n +CSQ:5 \r\n  \r\n OK \r\n '<< csq=5 16:58:19  >>8'at+cpas \r'>>  <<19' \r\n +CPAS:000 \r\n  \r\n OK \r\n '<<  >>8'at+clcc \r'>>  <<19' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<<  >>17'atd0088160000519 \r'>>  <<14' \r\n NO CARRIER \r\n '<< (0)  >>17'atd0088160000519 \r'>>  <<16' \r\n CONNECT 9600 \r\n '<<
+CONNECTED@~1800 4442us projHdr >>>13>>>  <<4'ACK\n '<< hello 1/1 >>>15>>>  <<4'cmds'<<
+LandResp(cmds)  <[10'@@@[ xC9  x00 \n C x01  x01 '<[  <[5'send1'<[
+iriLandCmds(send1)  >>4'data'>> 1/4 >>>1034>>> 2/4 >>>1034>>> 3/4 >>>1034>>> 4/4 >>>1034>>>
+LandResp()
+EXC LandResp->1 1=respTimeout
+Application error 1 [0x1]
+
+C:\>
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds
+startCheck(): starts 36, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 36
+Started: 2020-04-30 16:59:44
+---   --- DBG3
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-30 16:59:45  <<39'Press [SPACE] key to exit. 3 seconds, 2'<<  <<2' 1'<<  <<4' 0 \r\n '<<  <<5'ok \r \r\n '<<  <<176'Copyright(c) 2009-2012 \r\n NAL Research Corporation \r\n Iridium Modem Model: A3LA-RG \r\n Firmware Version 1.1.0r197 \r\n  \r\n Running Self Test...Passed \r\n ENCRYPTION DISABLED THIS POWER CYCLE \r\n '<<  <<16' \r\n COMMAND MODE \r\n '<<  >>54'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r'>>  <<60'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r \r\n OK \r\n '<<  >>5'ate0 \r'>>  <<11'ate0 \r \r\n OK \r\n '<<
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=4   length.t2=1024   files.t3=2   delay.t4=0
+  >>7'at+csq \r'>>  <<16' \r\n +CSQ:5 \r\n  \r\n OK \r\n '<< csq=5 17:00:02  >>8'at+cpas \r'>>  <<19' \r\n +CPAS:000 \r\n  \r\n OK \r\n '<<  >>8'at+clcc \r'>>  <<19' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<<  >>17'atd0088160000519 \r'>>  <<14' \r\n NO CARRIER \r\n '<< (0)  >>17'atd0088160000519 \r'>>  <<16' \r\n CONNECT 9600 \r\n '<<
+CONNECTED@~1800 4442us projHdr >>>13>>>  <<4'ACK\n '<< hello 1/1 >>>15>>>  <<4'cmds'<<
+LandResp(cmds)  <[10'@@@[ xC9  x00 \n C x01  x01 '<[  <[5'send1'<[
+iriLandCmds(send1)  >>4'data'>> 1/4 >>>1034>>> 2/4 >>>1034>>> 3/4 >>>1034>>> 4/4 >>>1034>>>
+LandResp()
+EXC LandResp->1 1=respTimeout
+Application error 1 [0x1]
+
+C:\>set dbg.t1=1
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9  8
+startCheck(): starts 37, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 37
+Started: 2020-04-30 17:03:17
+---   --- DBG3
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+VEE: DBG.T1=1
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-30 17:03:17  <<39'Press [SPACE] key to exit. 3 seconds, 2'<<  <<2' 1'<<  <<4' 0 \r\n '<<  <<5'ok \r \r\n '<<  <<176'Copyright(c) 2009-2012 \r\n NAL Research Corporation \r\n Iridium Modem Model: A3LA-RG \r\n Firmware Version 1.1.0r197 \r\n  \r\n Running Self Test...Passed \r\n ENCRYPTION DISABLED THIS POWER CYCLE \r\n '<<  <<16' \r\n COMMAND MODE \r\n '<<  >>54'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r'>>  <<60'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r \r\n OK \r\n '<<  >>5'ate0 \r'>>  <<11'ate0 \r \r\n OK \r\n '<<
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=1   length.t2=1024   files.t3=2   delay.t4=0
+  >>7'at+csq \r'>>  <<16' \r\n +CSQ:5 \r\n  \r\n OK \r\n '<< csq=5 17:03:34  >>8'at+cpas \r'>>  <<19' \r\n +CPAS:000 \r\n  \r\n OK \r\n '<<  >>8'at+clcc \r'>>  <<19' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<<  >>17'atd0088160000519 \r'>>  <<14' \r\n NO CARRIER \r\n '<< (0)  >>17'atd0088160000519 \r'>>  <<14' \r\n NO CARRIER \r\n '<< (1)  >>17'atd0088160000519 \r'>>  <<16' \r\n CONNECT 9600 \r\n '<<
+CONNECTED@~1800 4442us projHdr >>>13>>>  <<4'ACK\n '<< hello 1/1 >>>15>>>  <<4'cmds'<<
+LandResp(cmds)  <[10'@@@[ xC9  x00 \n C x01  x01 '<[  <[5'send1'<[
+iriLandCmds(send1)  >>4'data'>> 1/1 >>>1034>>>  <<5' \rcmds'<<
+LandResp( \rcmds)  <[10'@@@k xAA  x00 \n C x01  x01 '<[  <[5'send2'<[
+iriLandCmds(send2)  >>4'data'>> 1/1 >>>1034>>>  <<5' \rcmds'<<
+LandResp( \rcmds)  <[10'@@@{ x8B  x00 \n C x01  x01 '<[  <[5'send3'<[
+iriLandCmds(send3)  >>4'done'>>  <<6' \rcmds\n '<<  <<14'@@@ x0B l\n C x01  x01 send4'<<  >>1' \r'>>  >>3'at \r'>>  <<14' \r\n NO CARRIER \r\n '<<  >>7'at+csq \r'>>  <<16' \r\n +CSQ:5 \r\n  \r\n OK \r\n '<< csq=5
+17:04:31
+  >>5'at*p \r'>>  <<6' \r\n OK \r\n '<<
+ === buoy sbe39 stop 2020-04-30 17:04:32
+ === ant module stop 2020-04-30 17:04:32
+C:\>set dbg.t1=2
+
+C:\>set dbg.t3=4
+
+C:\>test\iriblock
+
+ press ' ' ([space]) to exit into picoDOS
+You have 10 seconds  9  8
+startCheck(): starts 38, max 50
+SYS.LOG
+
+       1 file(s) copied
+
+1 file(s) erased
+
+---   ---
+Program: sys.c,  Build: Apr 21 2020 13:41:02
+System Parameters: CF2 SN 16188, PicoDOS 4.03, BIOS 4.03
+Program:   Version:   Starts: 38
+Started: 2020-04-30 17:18:46
+---   --- DBG3
+cfgDefault: 83 config settings
+cfgInit: config file default name 'lara.cfg'
+	boy.callHour=7
+	wsp.spectRun=2
+	wsp.card=1
+VEE: DBG.TEST=1
+VEE: DBG.T1=2
+VEE: DBG.T3=4
+set outputs low 1 19 21 22 23 24 25 26 29 30 37 42
+16000kHz nsF:90 nsR:70 nsC:190 adj:-10 WF:0  WR:0  WC:2  SYPCR:13
+ === ant module start 2020-04-30 17:18:47  <<39'Press [SPACE] key to exit. 3 seconds, 2'<<  <<2' 1'<<  <<4' 0 \r\n '<<  <<5'ok \r \r\n '<<  <<176'Copyright(c) 2009-2012 \r\n NAL Research Corporation \r\n Iridium Modem Model: A3LA-RG \r\n Firmware Version 1.1.0r197 \r\n  \r\n Running Self Test...Passed \r\n ENCRYPTION DISABLED THIS POWER CYCLE \r\n '<<  <<16' \r\n COMMAND MODE \r\n '<<  >>54'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r'>>  <<60'AT &C1 &D0 &K0 &R1 &S1 E1 Q0 S0=1 S7=45 S10=100 V1 X4 \r \r\n OK \r\n '<<  >>5'ate0 \r'>>  <<11'ate0 \r \r\n OK \r\n '<<
+iriBlock sends dbg.t3 files with .t1 blocks of size .t2
+
+ block.t1=2   length.t2=1024   files.t3=4   delay.t4=0
+  >>7'at+csq \r'>>  <<16' \r\n +CSQ:4 \r\n  \r\n OK \r\n '<< csq=4 17:19:04  >>8'at+cpas \r'>>  <<19' \r\n +CPAS:000 \r\n  \r\n OK \r\n '<<  >>8'at+clcc \r'>>  <<19' \r\n +CLCC:006 \r\n  \r\n OK \r\n '<<  >>17'atd0088160000519 \r'>>  <<14' \r\n NO CARRIER \r\n '<< (0)  >>17'atd0088160000519 \r'>>  <<16' \r\n CONNECT 9600 \r\n '<<
+CONNECTED@~1800 4442us projHdr >>>13>>>  <<4'ACK\n '<< hello 1/1 >>>15>>>  <<4'cmds'<<
+LandResp(cmds)  <[10'@@@[ xC9  x00 \n C x01  x01 '<[  <[5'send1'<[
+iriLandCmds(send1)  >>4'data'>> 1/2 >>>1034>>> 2/2 >>>1034>>>  <<5' \rcmds'<<
+LandResp( \rcmds)  <[10'@@@k xAA  x00 \n C x01  x01 '<[  <[5'send2'<[
+iriLandCmds(send2)  >>4'data'>> 1/2 >>>1034>>> 2/2 >>>1034>>>
+LandResp()
+EXC LandResp->1 1=respTimeout
+Application error 1 [0x1]
+
 C:\>
