@@ -47,9 +47,24 @@ void main(void){
       qq;
     }
     r = iriLandResp(all.buf);
-    if (r) exit(r);
+    if (r) break;
     if (strstr(all.buf, "cmds"))
       r = iriLandCmds(all.buf);
+  }
+  // talk about it
+  for (i=1; i<10; i++) {
+    cprintf("\ntalk to me: \n");
+    j=CIOgets(all.str, 100);
+    if (j==0) break;
+    if (all.str[0]=='Q') break;
+    utlRead(irid.port, all.buf);
+    if (*all.buf) 
+      cprintf("<<-%s<<-", all.buf);
+    cprintf("->>%s->>", all.str);
+    utlWrite(irid.port, all.str, "\r");
+    utlReadWait(irid.port, all.buf, 10);
+    if (*all.buf) 
+      cprintf("<<-%s<<-", all.buf);
   }
   //
   iriHup();
