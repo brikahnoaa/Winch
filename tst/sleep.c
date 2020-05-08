@@ -2,7 +2,7 @@
 #include <test.h>
 
 void main(void){
-  int i=0, delayms=100;
+  int i=0, delayms=100, sleepsec=2;
   // char *buff;
   // int i, j, r;
   // int blk, len, fil, del;
@@ -13,7 +13,9 @@ void main(void){
   //
   cprintf("\nsleep 6 sec\n");
   if (dbg.t1) delayms = dbg.t1;
-  cprintf(" delayms:t1=%d\n", delayms);
+  if (dbg.t2) sleepsec = dbg.t2;
+  cprintf(" delayms:t1=%d, sleepsec:t2=%d\n", 
+    delayms, sleepsec);
   //if (dbg.t2) len = dbg.t2;
   //if (dbg.t3) fil = dbg.t3;
   //if (dbg.t4) del = dbg.t4;
@@ -23,14 +25,14 @@ void main(void){
   cprintf("%s\n", utlDateTime());
   cprintf("to sleep,");
   cdrain();
-  PWRSuspendTicks(4, true, WakeOnTimeout);
+  PWRSuspendSecs(sleepsec, true, WakeOnTimeout);
   cputc(0); utlDelay(delayms);   
   // cprintf("-"); utlDelay(delayms);   
   cprintf("\n perchance \n");
-  PWRSuspendSecs(2, true, WakeOnTimeout);
+  PWRSuspendSecs(sleepsec, true, WakeOnTimeout);
   cputc(0); utlDelay(delayms);   
   cprintf("to dream\n");
-  PWRSuspendSecs(2, true, WakeOnTimeout);
+  PWRSuspendSecs(sleepsec, true, WakeOnTimeout);
   cputc(0); utlDelay(delayms);   
   cprintf("%s\n", utlDateTime());
   exit(0);
