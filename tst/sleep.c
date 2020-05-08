@@ -2,7 +2,6 @@
 #include <test.h>
 
 void main(void){
-  time_t now;
   // char *buff;
   // int i, j, r;
   // int blk, len, fil, del;
@@ -19,12 +18,14 @@ void main(void){
   //cprintf("\n block.t1=%d   length.t2=%d   files.t3=%d   delay.t4=%d\n", 
       //blk, len, fil, del);
   //
-  time(&now);
+  cprintf("%s\n", utlDateTime());
   cprintf("to sleep,");
-  PWRSuspendUntil(now+2, true, WakeOnTimeout);
+  PWRSuspendSecs(2, true, WakeOnTimeout);
   cprintf(" perchance ");
-  PWRSuspendUntil(now+4, true, WakeOnTimeout);
+  PWRSuspendSecs(2, true, WakeOnTimeout);
   cprintf("to dream");
-  PWRSuspendUntil(now+6, true, WakeOnTimeout);
+  PWRSuspendSecs(2, true, WakeOnTimeout);
+  cprintf("...\n");
+  cprintf("%s\n", utlDateTime());
   exit(0);
 }
