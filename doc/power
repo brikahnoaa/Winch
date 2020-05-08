@@ -1,0 +1,3 @@
+Fri, May  8, 2020  2:20:38 PM
+PWRSuspendSecs works, but serial is funky after. 
+Console requires output a char and delay 2ms to get output normal.
