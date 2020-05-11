@@ -15,12 +15,18 @@
 #define PAM_2 30    // 29&30 -> wsp2
 #define ANT_TX 31   // com1: ant mod, uMPC and A3LA
 #define ANT_RX 32   // selected by 23
-#define MDM_RX 33   // acoustic modem
-#define MDM_TX 35   //
+#define MDM_RX 33   // acoustic modem tpu14
+#define MDM_TX 35   // tpu12
 #define WISPR_PWR_ON 37
 #define WISPR_PWR_OFF 42
-#define MDM_RX_TTL 48
-#define MDM_TX_TTL 50
+# com0tx 43         // max 3222 RS<>/45
+# com0rx 44         // max 3222 RS<>/46
+# com0/tx 45
+# com0/rx 46
+# com4tx 47         // max 3222 RS<>/48
+# com4rx 49         // max 3222 RS<>/50
+# MDM_RX_TTL 48
+# MDM_TX_TTL 50
 
 typedef enum { null_pam=0, wsp1_pam, wsp2_pam, wsp3_pam, sbe16_pam } MpcPamType;
 

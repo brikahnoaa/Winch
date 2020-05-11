@@ -1,3 +1,9 @@
 Fri, May  8, 2020  2:20:38 PM
 PWRSuspendSecs works, but serial is funky after. 
 Console requires output a char and delay 2ms to get output normal.
+
+.2 cpu speed
+  RS232 Examples/RS232-LP-BigBuf.c
+SYSCLK  choose: 3680, 7360, 14720 for best RS-232; 1840, 920, 460, 230?
+    CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
+    TMGSetSpeed(SYSCLK);
