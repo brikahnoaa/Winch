@@ -2,7 +2,7 @@
 #include <test.h>
 
 void main(void){
-  int i=0, best=14720, delay=3, divisor=4; // vs 16000
+  int i=0, best=14720, delay=3, divisor=4, speed; // vs 16000
   // char *buff;
   // int i, j, r;
   // int blk, len, fil, del;
@@ -22,16 +22,23 @@ void main(void){
       //blk, len, fil, del);
   //
   cprintf("%s\n", utlDateTime());
-  TMGSetSpeed(best/divisor);
-  cprintf("to sleep,");
-  utlNap(delay);
-  // cprintf("-"); utlDelay(delayms);   
-  TMGSetSpeed(best/divisor);
-  cprintf("\n perchance \n");
-  utlNap(delay);
-  TMGSetSpeed(best/divisor);
-  cprintf("to dream\n");
-  utlNap(delay);
+  speed=best/(divisor);
+  cprintf("[%5d] ", speed);
+  TMGSetSpeed(speed);
+  cprintf("to sleep, ");
   cprintf("%s\n", utlDateTime());
+  utlNap(delay);
+  speed=best/(divisor*2);
+  cprintf("[%5d] ", speed);
+  TMGSetSpeed(speed);
+  cprintf(" perchance ");
+  cprintf("%s\n", utlDateTime());
+  utlNap(delay);
+  speed=best/(divisor*4);
+  cprintf("[%5d] ", speed);
+  TMGSetSpeed(speed);
+  cprintf("to dream ");
+  cprintf("%s\n", utlDateTime());
+  utlNap(delay);
   BIOSResetToPicoDOS();
 }

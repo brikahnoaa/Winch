@@ -30,9 +30,9 @@ void ngkInit(void) {
   // max3222 on CF2 is serial chip rs232<>TTL
   // CF2 pins 47, 49 go thru max3222 to CF2 pins 48, 50 (MDM_RX_TTL, _TX_)
   // CF2 pins 48, 50 are connected to CF2 tpu pins 33, 35 (MDM_RX, MDM_TX)
+  PIORead(48);    // force let go of RTS <gsg page 26>
   mdmRX = TPUChanFromPin(MDM_RX);
   mdmTX = TPUChanFromPin(MDM_TX);
-  // PIORead(MDM_RX_TTL);
   // Power up the DC-DC for the Acoustic Modem Port
   ngkStop();
   utlDelay(SETTLE);

@@ -2,7 +2,7 @@
 #include <test.h>
 
 void main(void){
-  int i=0, delayms=100, sleepsec=2;
+  int delayms=100, sleepsec=2;
   // char *buff;
   // int i, j, r;
   // int blk, len, fil, del;
@@ -24,10 +24,8 @@ void main(void){
   //
   cprintf("%s\n", utlDateTime());
   cprintf("to sleep,");
-  cdrain();
   PWRSuspendSecs(sleepsec, true, WakeOnTimeout);
   cputc(0); utlDelay(delayms);   
-  // cprintf("-"); utlDelay(delayms);   
   cprintf("\n perchance \n");
   PWRSuspendSecs(sleepsec, true, WakeOnTimeout);
   cputc(0); utlDelay(delayms);   
