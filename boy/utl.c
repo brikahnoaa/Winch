@@ -414,7 +414,7 @@ void utlErr( ErrType err, char *str) {
 // nap called often
 void utlNap(int sec) {
   DBG2("utlNap(%d)", sec);
-  while(sec-- > 0) {
+  while(sec-- >= 0) {
     utlX();
     pwrNap(1);
   }

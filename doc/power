@@ -4,8 +4,8 @@ Console requires output a char and delay 2ms to get output normal.
 
 .2 cpu speed
   RS232 Examples/RS232-LP-BigBuf.c
-  16000 -- ?
+  
 TMGSetSpeed(SYSCLK);
-  SYSCLK  choose: 3680, 7360, 14720 for best RS-232
-  1840 is too slow for output
+  SYSCLK 160 - 32000: 3680, 7360, 14720 for best RS-232
+  1840 (3680/2) is too slow, errors in 9600 console output
     CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
