@@ -1,3 +1,7 @@
+Tue, May 12, 2020  1:21:49 PM
+cf2 idle uses .01A
+hpsens uses .06A during operation, .03A after, .18A during first 3 sec 
+
 Fri, May  8, 2020  2:20:38 PM
 PWRSuspendSecs works, but serial is funky after. 
 Console requires output a char and delay 2ms to get output normal.
@@ -9,3 +13,9 @@ TMGSetSpeed(SYSCLK);
   SYSCLK  choose: 3680, 7360, 14720 for best RS-232
   1840 is too slow for output
     CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
+
+
+.1 cpu speed
+serial works at 3640 but console falls apart below that down to 480
+between 460 and 160 serial works well, but rtc is unstable, fails
+sometimes clock fails right away, sometimes after a while
