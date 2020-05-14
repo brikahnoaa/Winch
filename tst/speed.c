@@ -1,12 +1,18 @@
 // speed.c
 #include <test.h>
+#define EOL "\r\n"
 
 void idle(int secs);
+void tpuinit(void);
+Serial tpuport;
 
 void main(void){
-  int i, best=14720, good=3680, slow=1840, secs=3, loop=2, speed; 
+  int i, j=0, best=14720, good=3680, slow=1840, secs=3, loop=2, speed;
+  speed=TMGGetSpeed(); 
   sysInit();
   mpcInit();
+  tpuinit();
+  sprintf(all.str, "hello %d", speed); utlWrite(tpuport, all.str, EOL);
   //
   cprintf("\nclock speeds\n");
   if (dbg.t1) best = dbg.t1;
@@ -20,12 +26,14 @@ void main(void){
   speed=best;
   cprintf("[%5d] ", speed);
   TMGSetSpeed(speed);
+  sprintf(all.str, "hello %d", speed); utlWrite(tpuport, all.str, EOL);
   cprintf("to sleep, ");
   cprintf("%s\n", utlDateTime());
   idle(secs);
   speed=good;
   cprintf("[%5d] ", speed);
   TMGSetSpeed(speed);
+  sprintf(all.str, "hello %d", speed); utlWrite(tpuport, all.str, EOL);
   cprintf(" perchance ");
   cprintf("%s\n", utlDateTime());
   idle(secs);
@@ -33,9 +41,11 @@ void main(void){
     speed=best;
     cprintf("[%5d] ", speed);
     TMGSetSpeed(speed);
+  sprintf(all.str, "hello %d", speed); utlWrite(tpuport, all.str, EOL);
     speed=slow;
     cprintf("[%5d] ", speed);
     TMGSetSpeed(speed);
+  sprintf(all.str, "hello %d", speed); utlWrite(tpuport, all.str, EOL);
     cprintf("to dream ");
     cprintf("%s\n", utlDateTime());
     idle(secs);
@@ -57,4 +67,11 @@ void idle(int secs){
       if (cgetc()=='q') exit(1);
     }
   }
+}
+
+void tpuinit(void){
+  tpuport=mpcPamPort();
+  if (tpuport==NULL)
+    utlStop("com1 open fail");
+  mpcPamPwr(sbe16_pam, true);
 }
