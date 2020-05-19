@@ -5,6 +5,8 @@
 #define STARTS_MAX "50"
 #define SYS_LOG "SYS.LOG"
 #define C_DRV ('C'-'A')
+#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
+#define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 
 SysInfo sys;
 ///
@@ -32,11 +34,18 @@ IEV_C_PROTO(ExtFinishPulseRuptHandler);
 // sets: all.starts
 int sysInit(void) {
   TUChParams *params;
+  ushort nsRAM, nsFlash, nsCF;
+  short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
   short qsize = 64*1024;
   preRun(10);
   all.starts = startCheck();
   time(&all.startProg);     // program start time, global
   time(&all.startCycle);    // cycle start time, global
+  // clock
+  TMGSetSpeed(SYSCLK);
+  CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
+  CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
+  CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
   // need utlInit before logInit
   utlInit();                // malloc global all.str
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
@@ -49,6 +58,10 @@ int sysInit(void) {
   TUSetDefaultParams( params );
   // enable TUAlloc for serial ports
   TUInit(calloc, free);   
+  flogf(
+      "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
+      TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
+      waitsCF, *(uchar *)0xFFFFFA21);
   return all.starts;
 } // sysInit
 

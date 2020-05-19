@@ -1,8 +1,6 @@
 // mpc.c - hardware, mpc specific; pam x 4
 #include <main.h>
 
-#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
-#define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 #define PAM_BAUD 9600
 
 MpcInfo mpc;
@@ -21,12 +19,10 @@ short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 // #define CUSTOM_SYPCR 
 
 //
-// Set IO pins, set SYSCLK
+// Set IO pins
 // ?? walk thru to verify all actions
 //
 void mpcInit(void) {
-  ushort nsRAM, nsFlash, nsCF;
-  short waitsFlash, waitsRAM, waitsCF, nsBusAdj;
   short rx, tx;
   int i;
   uchar iopins[] = {27, 28, 31, 32, 33, 34, 35, 48, 50, 0};
@@ -45,15 +41,6 @@ void mpcInit(void) {
   if (mpc.pamPort==NULL)
     utlStop("mpcInit() pam open fail");
   mpcPamDev(null_pam);
-
-  TMGSetSpeed(SYSCLK);
-  CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
-  CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
-  CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
-  flogf(
-      "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
-      TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
-      waitsCF, *(uchar *)0xFFFFFA21);
 } // mpcInit
 
 ///
@@ -137,6 +124,7 @@ static void spur_ISR(void) {
 
 ///
 // Sleep until keypress or wispr
+/*
 void mpcSleep(void) {
   ciflush(); // flush any junk
   flogf("\nmpcSleep() at %s", utlDateTime());
@@ -182,5 +170,6 @@ void mpcSleep(void) {
   flogf(", wakeup at %s", utlTime());
   putflush(); 
 } // mpcSleep
+ */
 
 void mpcStop(){}
