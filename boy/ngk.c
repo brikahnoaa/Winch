@@ -29,13 +29,14 @@ void ngkInit(void) {
   DBG();
   mdmRX = TPUChanFromPin(MDM_RX);
   mdmTX = TPUChanFromPin(MDM_TX);
-  PIORead(MDM_RX_TTL);              // tpu->rs232 is pin 33->48->47
+  // tpu->rs232 is pin 33++48--->47
+  // quiet pin 48 so it doesn't interfere with pin 35 MDM_TX
+  PIORead(MDM_TX_RTS);              
   // Power up the DC-DC for the Acoustic Modem Port
   ngkStop();
   utlDelay(SETTLE);
   ngkStart();
   utlDelay(SETTLE);
-  // PIOClear(MDM_TX_TTL);             // tpu->rs232 is pin 35->50->49
   p = TUOpen(mdmRX, mdmTX, BAUD, 0);
   if (p == 0)
     utlStop("\nERR\t|ngkInit() Bad ngk serial port");

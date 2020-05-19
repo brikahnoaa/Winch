@@ -25,15 +25,16 @@ short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 void mpcInit(void) {
   short rx, tx;
   int i;
-  uchar iopins[] = {27, 28, 31, 32, 33, 34, 35, 48, 50, 0};
-  uchar systempins[] = {15, 16, 17, 18, 19, 20, 0};
-  uchar outputpins[] = {1, 19, 21, 22, 23, 24, 25, 26, 29, 30, 37, 42, 0};
+  // iopins[] = {7, 15-35, 37, 39-42 } 
+  uchar iopinsOut[] = {15, 17, 19, 
+      21, 22, 23, 24, 25, 26, 27, 29, 
+      30, 31, 33, 35, 37, 42, 46, 0};
   flogf("\nset outputs low");
-  for (i=0; outputpins[i]!=0; i++) {
-    PIOClear(outputpins[i]);
-    flogf(" %d", outputpins[i]);
+  for (i=0; iopinsOut[i]!=0; i++) {
+    PIOClear(iopinsOut[i]);
+    flogf(" %d", iopinsOut[i]);
   }
-  // PIOMirrorList(outputpins);
+  // PIOMirrorList(iopinsOut);
   // setup pam port, shared by wispr and science s16 sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
