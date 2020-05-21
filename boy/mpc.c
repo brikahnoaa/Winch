@@ -18,23 +18,11 @@ MpcInfo mpc;
 short CustomSYPCR = WDT105s | HaltMonEnable | BusMonEnable | BMT32;
 // #define CUSTOM_SYPCR 
 
-//
-// Set IO pins
-// ?? walk thru to verify all actions
-//
+///
+// sets: mpc.pamPort mpcPins()
 void mpcInit(void) {
   short rx, tx;
-  int i;
-  // iopins[] = {7, 15-35, 37, 39-42 } 
-  uchar iopinsOut[] = {15, 17, 19, 
-      21, 22, 23, 24, 25, 26, 27, 29, 
-      30, 31, 33, 35, 37, 42, 46, 0};
-  flogf("\nset outputs low");
-  for (i=0; iopinsOut[i]!=0; i++) {
-    PIOClear(iopinsOut[i]);
-    flogf(" %d", iopinsOut[i]);
-  }
-  // PIOMirrorList(iopinsOut);
+  mpcPins();
   // setup pam port, shared by wispr and science s16 sbe16
   rx = TPUChanFromPin(PAM_RX);
   tx = TPUChanFromPin(PAM_TX);
@@ -43,6 +31,23 @@ void mpcInit(void) {
     utlStop("mpcInit() pam open fail");
   mpcPamDev(null_pam);
 } // mpcInit
+
+///
+// Set IO pins output low to save power
+// iopins[] = { 22-35, 37, 39-42 } 
+void mpcPins(void) {
+  short i, j;
+  uchar iopinsOut[] = {21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 35, 37, 42, 0};
+  // uchar iopinsOut[] = {22, 23, 24, 25, 26, 29, 30, 37, 42, 0};
+  // PIOMirrorList( iopinsOut );
+  for (i=0; (j=iopinsOut[i])!=0; i++) {
+    if (PIOTestAssertClear(j)) cprintf(" %d=0", j);
+    if (PIOTestAssertSet(j)) cprintf(" %d=1", j);
+    if (PIOTestIsItBus(j)) cprintf(" %d~", j);
+    PIOClear(j);
+  }
+  cprintf("\n");
+} // mpcPins
 
 ///
 // turn pam on/off
