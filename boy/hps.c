@@ -55,7 +55,7 @@
 **	the terms of this license. 
 **	
 \******************************************************************************/
-
+/*
 //#define DEBUG			// comment this out to turn off diagnostics
 //#include <cfxbios.h>		// Persistor BIOS and I/O Definitions
 //#include <cfxpico.h>		// Persistor PicoDOS Definitions
@@ -71,8 +71,8 @@
 #ifndef NOT_R216_RECIPECARD
 #ifndef NO_AD_REF_SHDN_PIN
 #define     AD_REF_SHDN_PIN     28  // default /SHDN on Pii boards
-#endif /*  */
-#endif /*  */
+#endif 
+#endif
 //#define ADTYPE ADisADS8344
 //#ifdef DEBUG
   	//#define	DBG(X)	X	// template:	DBG( cprintf("\n"); )
@@ -84,9 +84,6 @@
 #define HPSENS_PWR_ON  26 //For HP sensor power ON/OFF 1=ON, 0=OFF 3/12/2018 HM
 //#define ADREF_SHDN_PIN 28 //For CSACDAQ
 
-/******************************************************************************\
-**	main
-\******************************************************************************/
 //main()
 	//{
 
@@ -200,4 +197,4 @@ int readStat (float *ret, int c) {
 
 	}	// readStat
 
-	
+  */
