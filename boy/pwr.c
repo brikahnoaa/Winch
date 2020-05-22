@@ -1,6 +1,59 @@
 // pwr.c
 #include <main.h>
 
+
+PwrInfo pwr;
+void pwrInit(void)
+{ //
+  // allow for BREAK on console to interrupt sleep
+  IEVInsertAsmFunct(pwrIrq4RxISR, level4InterruptAutovector);
+  IEVInsertAsmFunct(pwrIrq4RxISR, spuriousInterrupt);
+} // pwrInit
+
+void pwrStop(void){}  // TBD
+
+void pwrIrq4RxISR(void) { PinIO(IRQ4RXD); RTE(); }
+
+///
+// power down as much as we can
+// allow for operator BREAK
+// ?? does it help to shut off CFcard rs232MAX
+// rets: 0=sleep #=woke with sec remaining
+int pwrSleep(long secs)
+{ // using LPStop with wakeup every second from PIT watchdog
+  time_t now, then;
+  long sec;
+  float tuning=2.7;
+  // adjust seconds using tuning percent, PIT chore is smaller than 1 sec
+  sec = (tuning+100)/100 * secs;
+  time(&now);
+  then = now;
+  cprintf("sleep %ld(%ld) @ %s\n", secs, sec, utlDateTimeFmt(now));
+  cdrain();
+  utlDelay(10);
+  while(sec--)
+  { // loop once a second, or break on console BREAK
+    utlPet(0);
+    PinBus(IRQ4RXD);
+    LPStopCSE(FullStop);
+    // woke by PIT or console BREAK? interrupt handler sets pin to I/O
+    if (PinTestIsItBus(IRQ4RXD)) continue; // PIT! continue loop
+    if (SCIRxBreak(50)) // console! test for noise 
+    { // BREAK!
+      while (SCIRxBreak(10)) {} // consume rest of BREAK
+      cprintf("user break. sleepsec remaining=%d\n", sec);
+      break; // leave loop
+    }
+  } // sec--
+  time(&now);
+  cprintf("slept %ld @ %s\n", now-then, utlDateTimeFmt(now));
+  return(sec);
+} // pwrSleep
+
+void pwrNap(int sec) {
+  utlDelay(sec*1000);
+}
+
 /*
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
@@ -19,32 +72,6 @@
 // 104 second pwr cycle
 #define BITSHIFT 11
  */
-
-PwrInfo pwr;
-void pwrInit(void)
-{ //
-  // allow for BREAK on console to interrupt sleep
-  IEVInsertAsmFunct(pwrIrq4RxISR, level4InterruptAutovector);
-  IEVInsertAsmFunct(pwrIrq4RxISR, spuriousInterrupt);
-} // pwrInit
-
-void pwrStop(void){}  // TBD
-
-void pwrIrq4RxISR(void) { PinIO(IRQ4RXD); RTE(); }
-
-///
-// power down as much as we can
-// allow for operator BREAK
-// ?? does it help to shut off CFcard rs232MAX
-int pwrSleep(long sec)
-{ // using LPStop with wakeup every second from PIT watchdog
-  return(sec);
-} // pwrSleep
-
-void pwrNap(int sec) {
-  utlDelay(sec*1000);
-}
-
 /*
 //
 // 12.2.2015 - Received many errno=0 when fopen return NULL. 
