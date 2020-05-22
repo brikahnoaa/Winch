@@ -9,17 +9,18 @@ static void Irq4RxISR(void) { PinIO(IRQ4RXD); RTE(); }
 
 void main(void){
   time_t now, then;
-  int i=0, watchdog=30, sleepsec=6, breakms=2;
+  int cons=0, watchdog=30, sleepsec=6, tuning=27;
   sysInit();
   mpcInit();
   //
   if (dbg.t1) watchdog = dbg.t1;
   if (dbg.t2) sleepsec = dbg.t2;
-  if (dbg.t3) breakms = dbg.t3;
+  if (dbg.t3) tuning = dbg.t3;
   cprintf("\nsleep lite\n");
-  cprintf(" watchdog:t1=%d, sleepsec:t2=%d, breakms:t3=%d\n", 
-    watchdog, sleepsec, breakms);
+  cprintf(" watchdog:t1=%d, sleepsec:t2=%d, tuning:t3=%d\n", 
+    watchdog, sleepsec, tuning);
  
+  sleepsec = 1.027 * sleepsec;
   // this goes in utlInit?
   dog=watchdog;
   IEVInsertAsmFunct(Irq4RxISR, level4InterruptAutovector);
@@ -38,17 +39,19 @@ void main(void){
   { // loop until console BREAK or PIT seconds
     PinBus(IRQ4RXD);
     LPStopCSE(FullStop);
-    if (SCIRxBreak(breakms)) 
-    { // consume BREAK, leave loop
-      while (SCIRxBreak(breakms)) i++; 
-      break;
-    }
+    // console or PIT?
+    if (!PinTestIsItBus(IRQ4RXD))
+      if (SCIRxBreak(50)) 
+      { // not noise
+        cons = 1;
+        // consume BREAK
+        while (SCIRxBreak(10)) {}
+        break;
+      }
   } // loop
-  if (i) 
-  { // user BREAK
-    cprintf("break %dms\n", ++i*breakms);
-    cprintf("sleepsec remaining=%d\n", sleepsec);
-  }
+  //
+  if (cons)
+    cprintf("user break. sleepsec remaining=%d\n", sleepsec);
   PITSet51msPeriod(PITOff);  
   PITRemoveChore(MyChore); 
   time(&now);
