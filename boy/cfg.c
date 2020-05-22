@@ -113,6 +113,7 @@ static CfgParam cfgP[] = {
   {'c',  "sys.version",   &sys.version,     "svn",  "4.0"},
 
   {'b',  "utl.console",   &utl.console,     "uce",  "true"},
+  {'l',  "utl.bone",      &utl.bone,        "ube",  "30"},
 
   {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},

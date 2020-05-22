@@ -109,6 +109,7 @@ Serial mpcPamPort(void) {
   return mpc.pamPort;
 } // mpcPort
 
+/*
 ///
 // capture interrupt, used to wake up
 static void IRQ4_ISR(void) {
@@ -130,7 +131,6 @@ static void spur_ISR(void) {
 
 ///
 // Sleep until keypress or wispr
-/*
 void mpcSleep(void) {
   ciflush(); // flush any junk
   flogf("\nmpcSleep() at %s", utlDateTime());

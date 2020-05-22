@@ -2,24 +2,21 @@
 #ifndef H_UTL
 #define H_UTL
 
-#define null NULL
-
 // 4K and 32K
 #define BUFSZ 4096
 #define FILESZ ((size_t)1024 * 32)
+#define SETTLE 200          // settle time for electronics power on
+#define null NULL
 
 // millisecond delay
-#define utlDelay(x) RTCDelayMicroSeconds((long)x*1000L);
-// settle time for electronics power on
-#define SETTLE 200
+#define utlDelay(x) RTCDelayMicroSeconds(1000L*x);
 
 typedef TUPort * Serial;
 
 // sync with utlInit()
 typedef enum {
     ant_err, boy_err, cfg_err, s16_err, s39_err,
-    iri_err, ngk_err, wsp_err, phase_err, log_err, 
-    watchdog_err,
+    iri_err, ngk_err, wsp_err, log_err, dog_err,
     sizeof_err} ErrType;
 
 typedef struct UtlInfo {
@@ -29,8 +26,8 @@ typedef struct UtlInfo {
   char *ret;                // semi-global, returned by some char *utlFunc()
   char *str;
   int errCnt[sizeof_err];
-  long dog;                 // seconds left until watchdog timeout
-  long pet;                 // put seconds on watchdog timeout
+  long bone;                // default bone to give dog
+  long watch;               // watchdog countdown timer secs
 } UtlInfo;
 
 typedef struct AllData {
@@ -44,6 +41,8 @@ typedef struct AllData {
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern AllData all;
+
+static void utlDogPit(void);
 
 char *utlDate(void);
 char *utlDateTime(void);
@@ -74,9 +73,7 @@ void utlSleep(void);
 void utlStop(char *out);
 void utlTestLoop(void);
 void utlX(void);
-void utlWatchdog(void);
 void utlWrite(Serial port, char *out, char *eol);
 void utlWriteBlock(Serial port, char *out, int len);
 
-// void utlDelay(int milli);
-#endif
+#endif H_UTL

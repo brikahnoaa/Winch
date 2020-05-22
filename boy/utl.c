@@ -9,7 +9,9 @@ AllData all;
 UtlInfo utl;
 
 ///
-// malloc static buffers (heap is 384K, stack only 16K)
+// malloc static buffers (heap is 384K, stack only 16K), watchdog pit
+#define DOG_51 19         // 19 * 51ms =~ 1sec (-2.7%)
+#define DOG_INTR 6        // why 6? default is 3 ??
 void utlInit(void) {
   DBG2("utlInit()");
   // utl.ret is semi-global, it is returned by some char *utlFuncs()
@@ -18,16 +20,21 @@ void utlInit(void) {
   utl.buf = malloc(BUFSZ);
   utl.ret = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
-  
+  // watchdog init using PIT51
+  PITInit(DOG_INTR);              // interrupt priority
+  PITSet51msPeriod(DOG_51);       // 19 * 51ms =~ 1sec (-2.7%)
+  PITAddChore(utlDogPit, DOG_INTR);
   // sync this with enum ErrType
   utl.errName[ant_err] = "ant";
   utl.errName[boy_err] = "boy";
   utl.errName[cfg_err] = "cfg";
   utl.errName[s16_err] = "s16";
+  utl.errName[s39_err] = "s39";
   utl.errName[iri_err] = "iri";
   utl.errName[ngk_err] = "ngk";
   utl.errName[wsp_err] = "wsp";
   utl.errName[log_err] = "log";
+  utl.errName[dog_err] = "dog";
 }
 
 ///
@@ -403,9 +410,11 @@ void utlCloseErr(char *str) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
+  utl.errCnt[err]++;
+  flogf("\n------------------");
   flogf("\n-ERR(%s)\t|%d| %s %s", 
     utl.errName[err], utl.errCnt[err], utlTime(), str);
-  utl.errCnt[err]++;
+  flogf("\n------------------");
 }
 
 ///
@@ -441,7 +450,7 @@ void utlTestLoop(void) {
 // do misc activity, frequently
 void utlX(void) {
   char c;
-  utlPet(utl.pet);  // use default utl.pet
+  utlPet(utl.bone);  // use default utl.pet
   // are we responding to console?
   if (utl.console) {
     if (cgetq()) {
@@ -467,8 +476,12 @@ void utlX(void) {
 
 ///
 // set watchdog length to pet seconds, or default if 0
-void utlPet(long pet) { utl.dog = pet?pet:utl.pet; }
+void utlPet(long pet) { utl.watch = pet?pet:utl.bone; }
 
 ///
 // watchdog chore run by pit every second
-void utlWatchdog(void) { if (! --utl.dog) utlErr( watchdog_err, "woof" ); }
+void utlDogPit(void)
+{ // watch counts down to zero
+  if (! --utl.watch) utlErr( dog_err, "Bark! Woof!" );
+} // utlDogPit
+

@@ -1,6 +1,7 @@
 // pwr.c
 #include <main.h>
 
+/*
 // A-D SYSTEM CURRENT AND VOLTAGE LOGGING
 // Changing parameters here will cause problems to program timing.
 #define FCHAN 0   // first channel
@@ -15,13 +16,31 @@
 #define INITIAL_BATTERY_CAPACITY 5000
 #define MINIMUM_BATTERY_CAPACITY INITIAL_BATTERY_CAPACITY * 0.1
 
-// 104 second power cycle
+// 104 second pwr cycle
 #define BITSHIFT 11
+ */
 
 PwrInfo pwr;
-void pwrInit(void){}  // TBD
+void pwrInit(void)
+{ //
+  // allow for BREAK on console to interrupt sleep
+  IEVInsertAsmFunct(pwrIrq4RxISR, level4InterruptAutovector);
+  IEVInsertAsmFunct(pwrIrq4RxISR, spuriousInterrupt);
+} // pwrInit
+
 void pwrStop(void){}  // TBD
-void pwrFlush(void){}  // TBD
+
+void pwrIrq4RxISR(void) { PinIO(IRQ4RXD); RTE(); }
+
+///
+// power down as much as we can
+// allow for operator BREAK
+// ?? does it help to shut off CFcard rs232MAX
+int pwrSleep(long sec)
+{ // using LPStop with wakeup every second from PIT watchdog
+  return(sec);
+} // pwrSleep
+
 void pwrNap(int sec) {
   utlDelay(sec*1000);
 }
@@ -36,10 +55,10 @@ void pwrNap(int sec) {
 // Here we can average a large number of samples at a quick rate due to
 // bit shift division. At the end of every average, we write the three
 // different "ushort" values (current, voltage, and time of sampling)
-// to the power file.  Only when power monitor is called does the power
+// to the pwr file.  Only when pwr monitor is called does the pwr
 // file sum its "ushort" values and divided again ( non-bit shifted
 // integer division) before it is converted to a floating point value with
-// "CFxADRawToVolts(...)"  This makes for a very fast and efficient power
+// "CFxADRawToVolts(...)"  This makes for a very fast and efficient pwr
 // logging process.
 // 
 // 1) BITSHIFT of 10 results in 25.6 secon buffers, 11: 51.2, 12: 102.4 etc.
@@ -63,7 +82,7 @@ CFxAD *ad, adbuf;
 
 // ADSample is ptr returned by CFxADQueueToArray(), alloc'd by magic
 short *ADSample;
-long powerSum[2] = {0, 0};
+long pwrSum[2] = {0, 0};
 
 // Parameters Summed for calculation of ADS
 static long voltsSum = 0L; // Summation of channel 1 from QSPI sampling function
@@ -79,7 +98,7 @@ static char ADAvgFileName[] = "c:00000000.pwr";
 // bool off; bool sampleReady; float minBatCharge; float minBatVolt;
 // int counter; int filehdl; long batCap; short interval;
 // ushort currentMax; ushort voltsMin;
-PowerInfo power = {
+PowerInfo pwr = {
   true, false, 150.0, 12.5,
   0, 0, 123000, 1440, 
   99, 99,
@@ -116,8 +135,8 @@ IEV_C_FUNCT(ADTimingRuptHandler) {
   }
 
   if (sampleCnt >= intervalSamples) {
-    powerSum[0] = currentSum;
-    powerSum[1] = voltsSum;
+    pwrSum[0] = currentSum;
+    pwrSum[1] = voltsSum;
     currentSum = 0;
     voltsSum = 0;
     pwr.sampleReady = true;
@@ -136,10 +155,10 @@ IEV_C_FUNCT(ADSamplingRuptHandler) {
   QPBClearInterrupt();
 } // ADSamplingRuptHandler
 
-bool powCheck(void) {
+bool pwrCheck(void) {
   if (pwr.sampleReady == true && !pwr.off) {
     utlPet();
-    powLog();
+    pwrLog();
     return true;
   } else
     return false;
@@ -153,7 +172,7 @@ bool powCheck(void) {
   pwr.off = !ads_on;
   if (!pwr.off) {
     bitshift = val;
-    powOpenLog(filecounter);
+    pwrOpenLog(filecounter);
     flogf("\n%s|ADS(%s)", Time(NULL), ADAvgFileName);
     Setup_Acquisition(bitshift);
 
@@ -170,7 +189,7 @@ bool powCheck(void) {
 //
 // Void OpenAvgFile()
 //
-void powOpenLog(long counter) {
+void pwrOpenLog(long counter) {
 
   sprintf(&ADAvgFileName[2], "%08ld.pwr", counter);
   utlDelay(25);
@@ -180,7 +199,7 @@ void powOpenLog(long counter) {
     return;
   }
   if (close(ADSFileHandle) != 0)
-    flogf("\nERROR  |powOpenLog() %s Close error: %d", ADAvgFileName, errno);
+    flogf("\nERROR  |pwrOpenLog() %s Close error: %d", ADAvgFileName, errno);
 
   utlDelay(10);
 
@@ -201,8 +220,8 @@ void Setup_Acquisition(ushort bitshift) {
 
   utlDelay(20);
 
-  powerSum[0] = 0L;
-  powerSum[1] = 0L;
+  pwrSum[0] = 0L;
+  pwrSum[1] = 0L;
 
   // Initialize AD Slot and Lock
   ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
@@ -237,14 +256,14 @@ void Setup_Acquisition(ushort bitshift) {
 // 2) writes correct side of AD Buffer to file 
 // sets: pwr.sampleReady=false
 //
-void powLog(void) {
+void pwrLog(void) {
 
   ushort AveragedEnergy[2] = {0, 0};
   float current = 0.0;
 
   if (pwr.sampleReady && !pwr.off) {
-    AveragedEnergy[0] = (ushort)(powerSum[0] >> bitshift);
-    AveragedEnergy[1] = (ushort)(powerSum[1] >> bitshift);
+    AveragedEnergy[0] = (ushort)(pwrSum[0] >> bitshift);
+    AveragedEnergy[1] = (ushort)(pwrSum[1] >> bitshift);
   }
 
   current = CFxADRawToVolts(ad, AveragedEnergy[0], VREF, true);
@@ -252,7 +271,7 @@ void powLog(void) {
   flogf("\n\t|POWER: %5.3fA, %5.2fV", current, voltage);
 
   pwr.sampleReady = false;
-  powerWrite(AveragedEnergy);
+  pwrWrite(AveragedEnergy);
 } // ADLog
 
 //
@@ -276,42 +295,42 @@ reading.
 // This function will increment the variable pwr.counter==FWT ~5minutes
 // 
 //
-void powerWrite(ushort *AveragedEnergy) {
-  DBG0("powerWrite");
+void pwrWrite(ushort *AveragedEnergy) {
+  DBG0("pwrWrite");
   // global
   CLK(start_clock = clock();)
   pwr.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
   if (pwr.filehdl <= 0) {
-    flogf("\nERROR|powerWrite() %s open fail. errno: %d", ADAvgFileName, errno);
+    flogf("\nERROR|pwrWrite() %s open fail. errno: %d", ADAvgFileName, errno);
     return;
   }
 
   CLK(stop_clock = clock();
-      print_clock_cycle_count(start_clock, stop_clock, "powerWrite: open");)
+      print_clock_cycle_count(start_clock, stop_clock, "pwrWrite: open");)
 
   CLK(start_clock = clock();)
 
   write(pwr.filehdl, AveragedEnergy, 3 * sizeof(ushort));
   utlDelay(25);
   CLK(stop_clock = clock();
-      print_clock_cycle_count(start_clock, stop_clock, "powerWrite: write");)
+      print_clock_cycle_count(start_clock, stop_clock, "pwrWrite: write");)
 
-  if (pwr.off) // SetupAD(false) from power monitor
+  if (pwr.off) // SetupAD(false) from pwr monitor
     return;
   if (close(pwr.filehdl) < 0)
-    flogf("\nERROR  |powerWrite() %s Close error: %d", ADAvgFileName, errno);
-  // DBG(   else      flogf("\n\t|powerWrite() %s Closed", ADAvgFileName););
+    flogf("\nERROR  |pwrWrite() %s Close error: %d", ADAvgFileName, errno);
+  // DBG(   else      flogf("\n\t|pwrWrite() %s Closed", ADAvgFileName););
  
   utlDelay(10);
 
-} // powerWrite
+} // pwrWrite
 //
 // PowerMonitor
 // This function is called when the WriteInterval (WRTINT) is met.
 // With a FWT for the ADS of 32seconds and a WRTINT of ~60 minutes (really 64
 minutes)
 //
-float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
+float pwrMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   struct stat fileinfo;
   ulong DataCount = 0;
   ulong filelength = 0;
@@ -326,17 +345,17 @@ float powMonitor(ulong totaltime, int filehandle, ulong *LoggingTime) {
   int byteswritten;
   float voltage = 0.0, amps = 0.0;
 
-  // Normal enterance to powMonitor
+  // Normal enterance to pwrMonitor
   if (totaltime != 0) {
-    powInit(false, NULL, NULL);
+    pwrInit(false, NULL, NULL);
     if (pwr.interval < 1)
       pwr.interval = 1044;
     // Last AD Power Buffer size
     pwr.interval = ((10 * totaltime) % pwr.interval); 
-    powLog();
+    pwrLog();
     // opens adsfh
   }
-  // Coming in after reboot // powInit(false), powLog also opens .pwr file
+  // Coming in after reboot // pwrInit(false), pwrLog also opens .pwr file
   else {
     pwr.filehdl = open(ADAvgFileName, O_RDWR | O_BINARY | O_APPEND);
     ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
@@ -461,12 +480,12 @@ void GetPowerSettings(void) {
 }
 
 //
-// powDelay()
-// AD function with time delay.  Do powLog at 5 sec incrment.
+// pwrDelay()
+// AD function with time delay.  Do pwrLog at 5 sec incrment.
 // number of seconds for delay while watching Power
 // Logging & Tickling Watch Dog Timer
 //
-void powDelay(short Sec) {
+void pwrDelay(short Sec) {
   short i;
   long last, rem;
   DBG1(" {%d} ", Sec );
@@ -477,13 +496,214 @@ void powDelay(short Sec) {
   utlPet(); // another reprieve
   for (i = 0; i < last; i++) {
 
-    powCheck();
+    pwrCheck();
     utlDelay(5000);
   }
-  powCheck();
+  pwrCheck();
   utlDelay(rem * 1000);
   utlPet();                         // another reprieve
 
-} //powDelay()
+} //pwrDelay()
 
 */
+
+
+// here on was hps.c -------------------------------
+
+/******************************************************************************\
+** HPADMain.c
+** Simple AD program for MPC board.  Not for CSACDAQ.
+** MPC uses CF2 pin 19 to enable ADC and REF ICs, whereas CSACDAQ uses 28.
+** MPC uses CF2 pin 26 to power ON. 1=ON, 0=OFF  
+**
+** Revised to set pin 28 (AD_REF_SHDN_PIN) on to enable AD on receipe card.(8/08/2011)
+** Revised to control pin 35 to turn on/off pre-amp (rev 9b). (08/07/2011)
+**	
+**	Program to read A/D values of NOAADAQ2 board using ADS8344 chip.			
+**	
+**	Release:		2001/12/22
+**  Version 2		2003/08/21
+**					Updated mcp for Palm 8.0 Codewarrior and newer BIOS 3.00
+**
+*****************************************************************************
+**	
+**	COPYRIGHT (C) 1995-2001 PERSISTOR INSTRUMENTS INC., ALL RIGHTS RESERVED
+**	
+**	Developed by: John H. Godley for Persistor Instruments Inc.
+**	254-J Shore Road, Bourne, MA 02532  USA
+**	jhgodley@persistor.com - http://www.persistor.com
+**	
+**	Copyright (C) 1995-2001 Persistor Instruments Inc.
+**	All rights reserved.
+**	
+*****************************************************************************
+**	
+**	Copyright and License Information
+**	
+**	Persistor Instruments Inc. (hereafter, PII) grants you (hereafter,
+**	Licensee) a non-exclusive, non-transferable license to use the software
+**	source code contained in this single source file with hardware products
+**	sold by PII. Licensee may distribute binary derivative works using this
+**	software and running on PII hardware products to third parties without
+**	fee or other restrictions.
+**	
+**	PII MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
+**	SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+**	IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+**	OR NON-INFRINGEMENT. PII SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+**	LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THE SOFTWARE OR
+**	ITS DERIVATIVES.
+**	
+**	By using or copying this Software, Licensee agrees to abide by the
+**	copyright law and all other applicable laws of the U.S. including, but
+**	not limited to, export control laws, and the terms of this license. PII
+**	shall have the right to terminate this license immediately by written
+**	notice upon Licensee's breach of, or non-compliance with, any of its
+**	terms. Licensee may be held legally responsible for any copyright
+**	infringement or damages resulting from Licensee's failure to abide by
+**	the terms of this license. 
+**	
+\******************************************************************************/
+/*
+//#define DEBUG			// comment this out to turn off diagnostics
+//#include <cfxbios.h>		// Persistor BIOS and I/O Definitions
+//#include <cfxpico.h>		// Persistor PicoDOS Definitions
+//#include <cfxad.h>		// Generic SPI A-D QPB Driver for CFx
+//#include "ADExamples.h"	// Common definitions for the A-D Examples
+//#include <ADS8344.h>
+//#include <stdio.h>
+//#include	<stdlib.h>
+//#include	<ctype.h>
+//#include <dosdrive.h>
+
+#define PICODEV 4
+#ifndef NOT_R216_RECIPECARD
+#ifndef NO_AD_REF_SHDN_PIN
+#define     AD_REF_SHDN_PIN     28  // default /SHDN on Pii boards
+#endif 
+#endif
+//#define ADTYPE ADisADS8344
+//#ifdef DEBUG
+  	//#define	DBG(X)	X	// template:	DBG( cprintf("\n"); )
+	//#pragma message	("!!! "__FILE__ ": Don't ship with DEBUG compile flag set!")
+//#else
+  //#define	DBG(X)		// nothing
+//#endif
+#define ADREF_SHDN_PIN 19 //For MPC board 3/12/2018 HM
+#define HPSENS_PWR_ON  26 //For HP sensor power ON/OFF 1=ON, 0=OFF 3/12/2018 HM
+//#define ADREF_SHDN_PIN 28 //For CSACDAQ
+
+//main()
+	//{
+
+///
+// HP Sensor stats
+int hpsRead (HpsStats *hps) {
+  float ret;
+  readStat( &ret, 0);
+  readStat( &(hps->curr), 0);
+  readStat( &(hps->volt), 1);
+  readStat( &(hps->pres), 2);
+  readStat( &(hps->humi), 3);
+  // turn off
+  readStat( &ret, 4);
+  return 0;
+} // hpsRead
+
+///
+// read one stat
+int readStat (float *ret, int c) {
+	///char		c, r;
+	bool		uni = true;		// true for unipolar, false for bipolar
+	bool		sgl = true;		// true for single-ended, false for differential
+	short	   sample,  *samples;
+	CFxAD		adbuf, *ad;
+	float		vref = VREF;   //defined in ADExamples.h
+  	ushort	entryclock = TMGGetSpeed();
+  	float    output;
+
+	samples = (ushort *) malloc(8* sizeof(ushort)); 
+	
+	//Identify the program and build
+	///printf("\nProgram: %s: %s %s \n", __FILE__, __DATE__, __TIME__);
+	///cprintf("ADREF PIN = %d, Sensor board PWR ON pin = %d\n",AD_REF_SHDN_PIN, HPSENS_PWR_ON);
+	///cprintf("This program is for MPC.You must use a different prog for CSACDAQ. Proceed ? y/n ");
+   ///r=cgetc();
+   ///cprintf("%c\n",r);
+   ///putflush();
+   ///if(r=='y'||r=='Y')
+   {
+		//Power on
+		PIOSet(ADREF_SHDN_PIN);  //ADC and Ref IC power ON
+		PIOSet(HPSENS_PWR_ON);   //HP-Sensor board power on from DiFar Power port  (J14) 
+		
+		// Initialize QPB to accept our A-D with its QSPI connection.
+		ad = CFxADInit(&adbuf, ADSLOT, ADInitFunction);
+
+		///cprintf("\nKey in 0 to 3 for a single channel ADC. '.' to quite\n");
+		///cprintf("0 = current, 1 = Bat voltage, 2 = Pressure, 3 = Humidity\n");
+		///cprintf("also Unipolar, Bipolar, Single-ended, Differential, Powerdown\n");
+	 	///cprintf("\n%c%c> ", uni ? 'U' : 'B', sgl ? 'S' : 'D');
+	   ///fflush(stdout);  
+		
+		///while (true)
+			{
+			///c = cgetc();
+			///switch (c = toupper(c))
+                        switch (c)
+				{
+				///case '0' : 
+				///case '1' : 
+				///case '2' : 
+				///case '3' : 
+				case 0 : 
+				case 1 : 
+				case 2 : 
+				case 3 : 
+					///sample = CFxADSample(ad, c - '0', uni, sgl, false);
+					sample = CFxADSample(ad, c, uni, sgl, false);
+					output=CFxADRawToVolts(ad, sample, vref, uni);
+					///if (c=='0') 
+					if (c==0) 
+						{
+						output=output*1000.;  //Current in mA
+						///printf("Current  = %7.1f mA\n", output);
+						}
+					///if (c=='1') 
+					if (c==1) 
+						{
+						output= output*100.;  //Voltage in V
+						///printf("Bat Volt = %7.1f V\n", output);
+						}
+
+					///if (c=='2') 
+					if (c==2) 
+						{
+						//output=(output*0.4+0.040)*2439.0;//pressure
+						output=(output*0.4+0.040)*2494.0;//pressure
+						///printf("Pressure = %7.1f mBar\n", output);
+						}
+					///if (c=='3') 
+					if (c==3) 
+						{
+						output=(output*2-0.831)/0.029;//humidity
+						///printf("Humidity = %7.1f %\n", output);
+						}
+                    *ret = output;
+					break;
+	   		///putflush();				
+				//case 'U' :	uni = true;		break;
+				//case 'B' :	uni = false;	break;
+				//case 'S' :	sgl = true;		break;
+				//case 'D' :	sgl = false;	break;
+				//case 'P' :	CFxADPowerDown(ad, true);	break;
+				///case '.' :	PIOClear(ADREF_SHDN_PIN); PIOClear(HPSENS_PWR_ON); return 0;
+				case 4 :	PIOClear(ADREF_SHDN_PIN); PIOClear(HPSENS_PWR_ON); return 0;
+				}
+			}
+        }
+	return 0;
+
+	}	// readStat
+
+  */

@@ -47,7 +47,7 @@ int sysInit(void) {
   CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
   CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
   // need utlInit before logInit
-  utlInit();                // malloc global all.str
+  utlInit();                // malloc global all.str, start PIT
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
   dbgInit();                // common init: dbg0,1,2
   cfgInit();
@@ -192,7 +192,7 @@ long sysDiskFree(void) {
 // call flush for each module with logging
 void sysFlush(void) {
   boyFlush();
-  pwrFlush();
+  // pwrFlush();
   // antFlush();
   // s16Flush();
 } // sysFlush

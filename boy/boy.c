@@ -106,7 +106,7 @@ PhaseType risePhase(void) {
   else
     result = riseDo(0);
   if (result) 
-    utlErr(phase_err, "rise phase failure");
+    utlErr(boy_err, "rise phase failure");
   boyd.surfD = s39Depth(); // ??
   time(&boyd.riseEnd);
   return irid_pha;
@@ -137,7 +137,7 @@ PhaseType fallPhase() {
   result = fallDo(0);
   if (result) {
     flogf( "\nERR %s: error number %d", self, result);
-    utlErr(phase_err, "fall phase failure");
+    utlErr(boy_err, "fall phase failure");
   }
   time(&boyd.fallEnd);
   antLogClose();
