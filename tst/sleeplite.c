@@ -2,11 +2,10 @@
 #include <test.h>
 
 int dog;
-time_t watch;
+void MyChore(void); 
+void MyChore(void) { if (! --dog) utlErr( watchdog_err, "woof" ); } 
 static void Irq4RxISR(void);
 static void Irq4RxISR(void) { PinIO(IRQ4RXD); RTE(); }
-void MyChore(void); 
-void MyChore(void) { ++watch; if (--dog<1) BIOSResetToPicoDOS(); } 
 
 void main(void){
   time_t now, then;
@@ -25,30 +24,35 @@ void main(void){
   dog=watchdog;
   IEVInsertAsmFunct(Irq4RxISR, level4InterruptAutovector);
   IEVInsertAsmFunct(Irq4RxISR, spuriousInterrupt);
-  time(&watch);
   //
   PITInit(6); //At priority 6  
   PITSet51msPeriod(19);  // ~ 1sec 
   PITAddChore(MyChore,6); 
   //
-  cprintf("%s  %s\n", utlDateTimeFmt(watch), utlDateTime());
+  time(&now);
+  then = now;
+  cprintf("sleep %d @ %s\n", sleepsec, utlDateTimeFmt(now));
   cdrain();
   utlDelay(100);
-  time(&now);
-  then=now+sleepsec;
-  while(true) {
+  while(sleepsec--) 
+  { // loop until console BREAK or PIT seconds
     PinBus(IRQ4RXD);
     LPStopCSE(FullStop);
-    if (SCIRxBreak(breakms)) break;
-    if (watch>=then) break;
+    if (SCIRxBreak(breakms)) 
+    { // consume BREAK, leave loop
+      while (SCIRxBreak(breakms)) i++; 
+      break;
+    }
+  } // loop
+  if (i) 
+  { // user BREAK
+    cprintf("break %dms\n", ++i*breakms);
+    cprintf("sleepsec remaining=%d\n", sleepsec);
   }
-  while (SCIRxBreak(breakms)) i++; 
-  if (i) cprintf("break %dms\n", i*breakms+breakms);
-  cprintf("watchdog=%d\n", dog);
-  cdrain();
   PITSet51msPeriod(PITOff);  
   PITRemoveChore(MyChore); 
-  cprintf("%s  %s\n", utlDateTimeFmt(watch), utlDateTime());
+  time(&now);
+  cprintf("slept %ld @ %s\n", now-then, utlDateTimeFmt(now));
   cdrain();
   BIOSResetToPicoDOS();
 }

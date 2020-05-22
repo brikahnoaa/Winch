@@ -19,15 +19,18 @@ typedef TUPort * Serial;
 typedef enum {
     ant_err, boy_err, cfg_err, s16_err, s39_err,
     iri_err, ngk_err, wsp_err, phase_err, log_err, 
+    watchdog_err,
     sizeof_err} ErrType;
 
 typedef struct UtlInfo {
-  bool ignoreCon;             // ignore console input
+  bool console;             // respond to console input
   char *buf;
   char *errName[sizeof_err];
   char *ret;                // semi-global, returned by some char *utlFunc()
   char *str;
   int errCnt[sizeof_err];
+  long dog;                 // seconds left until watchdog timeout
+  long pet;                 // put seconds on watchdog timeout
 } UtlInfo;
 
 typedef struct AllData {
@@ -66,11 +69,12 @@ void utlInit(void);
 void utlLogPathName(char *path, char *base, int day);
 void utlLogTime(void);
 void utlNap(int sec);
-void utlPet(void);
+void utlPet(long pet);
 void utlSleep(void);
 void utlStop(char *out);
 void utlTestLoop(void);
 void utlX(void);
+void utlWatchdog(void);
 void utlWrite(Serial port, char *out, char *eol);
 void utlWriteBlock(Serial port, char *out, int len);
 

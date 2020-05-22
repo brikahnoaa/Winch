@@ -90,7 +90,7 @@ void mpcPamDev(MpcPamType pam) {
   utlDelay(200);
   TUTxFlush(mpc.pamPort);
   TURxFlush(mpc.pamPort);
-  utlPet();
+  utlX();
   mpc.pamDev = pam;
   return;
 } // mpcPam
@@ -151,7 +151,7 @@ void mpcSleep(void) {
   PinBus(IRQ4RXD);          // console
   PinBus(IRQ5);             // wispr
 
-  utlPet();      // another reprieve
+  utlX();      // another reprieve
   TMGSetSpeed(1600);
   while (PinTestIsItBus(IRQ4RXD) && PinTestIsItBus(IRQ5)) {
     // we loop here on spurious interrupt
@@ -159,7 +159,7 @@ void mpcSleep(void) {
     //*(ushort *)0xffffe00c=0xF000; //force CF card into Card-1 active mode
 
     LPStopCSE(FullStop); // we will be here until interrupted
-    utlPet();
+    utlX();
   }
 
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);

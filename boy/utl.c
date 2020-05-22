@@ -330,8 +330,6 @@ char *utlNonPrintBlock (char *in, int len) {
   return (out);
 } // utlNonPrintBlock
 
-void utlPet() { TickleSWSR(); }              // pet the watchdog
-
 ///
 // rets: path\name
 void utlLogPathName(char *path, char *base, int day) {
@@ -443,31 +441,34 @@ void utlTestLoop(void) {
 // do misc activity, frequently
 void utlX(void) {
   char c;
-  // ?? pwrChk();
-  utlPet();
-  // console?
-  if (cgetq()) {
-    if (!utl.ignoreCon) {
+  utlPet(utl.pet);  // use default utl.pet
+  // are we responding to console?
+  if (utl.console) {
+    if (cgetq()) {
       c = tolower( cgetc() );
       switch (c) {
       case 'q':
       case 'x':
         utlStop("user quit");
         break;
-      // turn dbg on/off
+      // toggle dbg on/off
       case '0': dbg.dbg0 = !dbg.dbg0; break;
       case '1': dbg.dbg1 = !dbg.dbg1; break;
       case '2': dbg.dbg2 = !dbg.dbg2; break;
       case '3': dbg.dbg3 = !dbg.dbg3; break;
       case '4': dbg.dbg4 = !dbg.dbg4; break;
-      case 'd': // adhoc func for debug
-        (*dbg.funcPtr)();
-        break;
-      case 't': // start time test
-        utlTestLoop();
-        break;
+      case 'd': (*dbg.funcPtr)(); break;
+      case 't': utlTestLoop(); break;
       }
-    } else 
       ciflush();
-  }
+    } // getq
+  } // console
 } // utlX
+
+///
+// set watchdog length to pet seconds, or default if 0
+void utlPet(long pet) { utl.dog = pet?pet:utl.pet; }
+
+///
+// watchdog chore run by pit every second
+void utlWatchdog(void) { if (! --utl.dog) utlErr( watchdog_err, "woof" ); }

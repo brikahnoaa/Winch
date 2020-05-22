@@ -69,7 +69,7 @@ int sysInit(void) {
 // short delay for operator abort
 void preRun(int delay) {
   char c;
-  utlPet();
+  utlX();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
   ciflush();
   // start
@@ -114,7 +114,7 @@ void logInit(char *file) {
   char *dt, cmd[64];
   struct stat finfo;
   DBG0("logInit(%s)", file);
-  utlPet();
+  utlX();
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   // copy to log\MMDDHHMM.sys
