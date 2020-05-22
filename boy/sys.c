@@ -47,7 +47,7 @@ int sysInit(void) {
   CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
   CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
   // need utlInit before logInit
-  utlInit();                // malloc global all.str
+  utlInit();                // malloc global all.str, start PIT
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
   dbgInit();                // common init: dbg0,1,2
   cfgInit();
@@ -69,7 +69,7 @@ int sysInit(void) {
 // short delay for operator abort
 void preRun(int delay) {
   char c;
-  utlPet();
+  utlX();
   cprintf("\n press ' ' ([space]) to exit into picoDOS \n");
   ciflush();
   // start
@@ -114,7 +114,7 @@ void logInit(char *file) {
   char *dt, cmd[64];
   struct stat finfo;
   DBG0("logInit(%s)", file);
-  utlPet();
+  utlX();
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   // copy to log\MMDDHHMM.sys
@@ -192,7 +192,7 @@ long sysDiskFree(void) {
 // call flush for each module with logging
 void sysFlush(void) {
   boyFlush();
-  pwrFlush();
+  // pwrFlush();
   // antFlush();
   // s16Flush();
 } // sysFlush

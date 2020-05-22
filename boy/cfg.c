@@ -109,10 +109,11 @@ static CfgParam cfgP[] = {
   //// {'i',  "s39.pumpMode",  &s39.pumpMode,    "3pM",  "1"},
   {'i',  "s39.timer",     &s39.timer,       "3tr",  "3"},
 
-  {'c',  "sys.program",   &sys.program,     "spg",  "LARA"},
-  {'c',  "sys.version",   &sys.version,     "sve",  "4.0"},
+  {'c',  "sys.program",   &sys.program,     "spm",  "LARA"},
+  {'c',  "sys.version",   &sys.version,     "svn",  "4.0"},
 
-  {'b',  "utl.ignoreCon", &utl.ignoreCon,   "uiC",  "false"},
+  {'b',  "utl.console",   &utl.console,     "uce",  "true"},
+  {'l',  "utl.bone",      &utl.bone,        "ube",  "30"},
 
   {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},

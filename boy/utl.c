@@ -9,7 +9,9 @@ AllData all;
 UtlInfo utl;
 
 ///
-// malloc static buffers (heap is 384K, stack only 16K)
+// malloc static buffers (heap is 384K, stack only 16K), watchdog pit
+#define DOG_51 19         // 19 * 51ms =~ 1sec (-2.7%)
+#define DOG_INTR 6        // why 6? default is 3 ??
 void utlInit(void) {
   DBG2("utlInit()");
   // utl.ret is semi-global, it is returned by some char *utlFuncs()
@@ -18,16 +20,21 @@ void utlInit(void) {
   utl.buf = malloc(BUFSZ);
   utl.ret = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
-  
+  // watchdog init using PIT51
+  PITInit(DOG_INTR);              // interrupt priority
+  PITSet51msPeriod(DOG_51);       // 19 * 51ms =~ 1sec (-2.7%)
+  PITAddChore(utlDogPit, DOG_INTR);
   // sync this with enum ErrType
   utl.errName[ant_err] = "ant";
   utl.errName[boy_err] = "boy";
   utl.errName[cfg_err] = "cfg";
   utl.errName[s16_err] = "s16";
+  utl.errName[s39_err] = "s39";
   utl.errName[iri_err] = "iri";
   utl.errName[ngk_err] = "ngk";
   utl.errName[wsp_err] = "wsp";
   utl.errName[log_err] = "log";
+  utl.errName[dog_err] = "dog";
 }
 
 ///
@@ -330,8 +337,6 @@ char *utlNonPrintBlock (char *in, int len) {
   return (out);
 } // utlNonPrintBlock
 
-void utlPet() { TickleSWSR(); }              // pet the watchdog
-
 ///
 // rets: path\name
 void utlLogPathName(char *path, char *base, int day) {
@@ -405,9 +410,11 @@ void utlCloseErr(char *str) {
 ///
 // ?? tbd sophist err handling, allow limit by type
 void utlErr( ErrType err, char *str) {
+  utl.errCnt[err]++;
+  flogf("\n------------------");
   flogf("\n-ERR(%s)\t|%d| %s %s", 
     utl.errName[err], utl.errCnt[err], utlTime(), str);
-  utl.errCnt[err]++;
+  flogf("\n------------------");
 }
 
 ///
@@ -443,31 +450,38 @@ void utlTestLoop(void) {
 // do misc activity, frequently
 void utlX(void) {
   char c;
-  // ?? pwrChk();
-  utlPet();
-  // console?
-  if (cgetq()) {
-    if (!utl.ignoreCon) {
+  utlPet(utl.bone);  // use default utl.pet
+  // are we responding to console?
+  if (utl.console) {
+    if (cgetq()) {
       c = tolower( cgetc() );
       switch (c) {
       case 'q':
       case 'x':
         utlStop("user quit");
         break;
-      // turn dbg on/off
+      // toggle dbg on/off
       case '0': dbg.dbg0 = !dbg.dbg0; break;
       case '1': dbg.dbg1 = !dbg.dbg1; break;
       case '2': dbg.dbg2 = !dbg.dbg2; break;
       case '3': dbg.dbg3 = !dbg.dbg3; break;
       case '4': dbg.dbg4 = !dbg.dbg4; break;
-      case 'd': // adhoc func for debug
-        (*dbg.funcPtr)();
-        break;
-      case 't': // start time test
-        utlTestLoop();
-        break;
+      case 'd': (*dbg.funcPtr)(); break;
+      case 't': utlTestLoop(); break;
       }
-    } else 
       ciflush();
-  }
+    } // getq
+  } // console
 } // utlX
+
+///
+// set watchdog length to pet seconds, or default if 0
+void utlPet(long pet) { utl.watch = pet?pet:utl.bone; }
+
+///
+// watchdog chore run by pit every second
+void utlDogPit(void)
+{ // watch counts down to zero
+  if (! --utl.watch) utlErr( dog_err, "Bark! Woof!" );
+} // utlDogPit
+

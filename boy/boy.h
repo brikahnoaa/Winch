@@ -2,8 +2,7 @@
 #ifndef H_BOY
 #define H_BOY
 
-#include <hps.h>
-#include <iri.h>
+#include <iri.h>  // ?? remove this?
 
 typedef enum {
   deploy_pha=0, 
@@ -16,7 +15,7 @@ typedef enum { free_ris, run_ris } RiseType;
 typedef struct BoyData {
   GpsStats gpsBgn;        // initial stats, just surfaced
   GpsStats gpsEnd;        // final stats, irid done
-  HpsStats physical;      // float curr, volt, pres, humi;
+  // HpsStats physical;      // float curr, volt, pres, humi;
   Serial port;            // sbe16 or ant mod
   float dockD;            // Depth when docked in winch
   float fallV1st;         // meters/s of the first fall
