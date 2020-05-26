@@ -23,14 +23,17 @@ int pwrSleep(long secs)
 { // using LPStop with wakeup every second from PIT watchdog
   time_t now, then;
   long sec;
-  float tuning=2.7;
-  // adjust seconds using tuning percent, PIT chore is smaller than 1 sec
-  sec = (tuning+100)/100 * secs;
+  float tuning=1.02;
+  int i;
+  // adjust seconds using tuning percent, PIT chore is more than 1 sec
+  sec = secs/tuning;
   time(&now);
   then = now;
-  cprintf("sleep %ld(%ld) @ %s\n", secs, sec, utlDateTimeFmt(now));
+  flogf("sleep %ld(%ld PITs) @ %s\n", secs, sec, utlDateTimeFmt(now));
   cdrain();
-  utlDelay(10);
+  utlDelay(2); // cdrain is not enough !?
+  EIAForceOff(true);          // turn off the RS232 driver
+  CFEnable(false);            // turn off the CompactFlash card
   while(sec--)
   { // loop once a second, or break on console BREAK
     utlPet(0);
@@ -40,13 +43,17 @@ int pwrSleep(long secs)
     if (PinTestIsItBus(IRQ4RXD)) continue; // PIT! continue loop
     if (SCIRxBreak(50)) // console! test for noise 
     { // BREAK!
-      while (SCIRxBreak(10)) {} // consume rest of BREAK
-      cprintf("user break. sleepsec remaining=%d\n", sec);
+      for (i=200; (SCIRxBreak(10)) && i>0; i--) {} // BREAK up to 2 sec
       break; // leave loop
     }
   } // sec--
+  EIAForceOff(false);         // turn on the RS232 driver
+  CFEnable(true);             // turn on the CompactFlash card
+  utlDelay(2); // settle
+  if (sec) // user break
+    flogf("user break. sleepsec remaining=%d\n", sec);
   time(&now);
-  cprintf("slept %ld @ %s\n", now-then, utlDateTimeFmt(now));
+  flogf("slept %ld @ %s\n", now-then, utlDateTimeFmt(now));
   return(sec);
 } // pwrSleep
 
