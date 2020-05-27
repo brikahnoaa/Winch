@@ -26,10 +26,10 @@ int pwrSleep(long secs)
   float tuning=1.02;
   int i;
   // adjust seconds using tuning percent, PIT chore is more than 1 sec
-  sec = secs/tuning;
+  sec = secs/tuning + 1.5; // add one and round up
   time(&now);
   then = now;
-  flogf("sleep %ld(%ld PITs) @ %s\n", secs, sec, utlDateTimeFmt(now));
+  flogf("sleep %ld secs (%ld PITs) @ %s\n", secs, sec, utlDateTimeFmt(now));
   cdrain();
   utlDelay(2); // cdrain is not enough !?
   EIAForceOff(true);          // turn off the RS232 driver
