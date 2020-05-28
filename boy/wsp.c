@@ -2,8 +2,6 @@
 #include <main.h>
 
 #define EOL "\r"
-#define WSP_OPEN "<wispr>"
-#define WSP_CLOSE "</wispr>"
 
 WspInfo wsp;
 
@@ -77,39 +75,39 @@ int wspStop(void) {
 } // wspStop
 
 ///
-// turn on and open wispr /mnt/start
+// wspr is giving us xml style <wispr> </wispr>
+#define WSP_OPEN "<wispr>"
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
+  static char *rets="1=off 2=!<wispr>";
   DBG();
-  if (!wsp.on) wspStart();
-  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
-    utlErr(wsp_err, "wsp start fail");
-    r=1;
-  }
-  return r;
+  if (!wsp.on) raise(1);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, 20)) raise(2);
+  return 0;
 } // wspOpen
 
 ///
 // close wispr /mnt/start
+// wspr is giving us xml style <wispr> </wispr>
+#define WSP_CLOSE "</wispr>"
 int wspClose(void) {
   int r=0;
   static char *self="wspClose";
+  static char *rets="1=off 2=!</wispr>";
   DBG();
-  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
-    flogf("\n%s: did not get %s ", self, WSP_CLOSE);
-    r=1;
-  }
-  wspStop();
-  return r;
+  if (!wsp.on) raise(1);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, 12)) raise(2);
+  return 0;
 } // wspClose
 
 ///
+// ?? validate. standalone or paired with detect?
 // wsp storm check started. interact.
 // rets: 1=open 2=RDY 3=predict 8=close
 int wspStorm(char *buf) {
   static char *self="wspStorm";
-  static char *rets="1=open 2=RDY 3=predict 8=close";
+  static char *rets="1=open 2=RDY 3=predict 9=close";
   char *b;
   DBG();
   // cmd
@@ -131,16 +129,18 @@ int wspStorm(char *buf) {
   flogf("\nwspStorm prediction: %s", buf);
   // ?? add to daily
   // stop
-  if (wspClose()) return 9;
+  if (wspClose()) raise(9);
   return 0;
 } // wspStorm
 
 ///
 // if wsp.log else flog
 int wspLog(char *str) {
+  static char *self="wspLog";
+  static char *rets="1=!open 2=!write";
   int r=0;
   if (wsp.log) {
-    sprintf(all.str, "%s\n", str);
+    sprintf(all.str, "%s\n", str); // ?? risky
     if (write(wsp.log, all.str, strlen(all.str))<1) return 1;
   } else {
     flogf("\nwspLog(%s)", str);
@@ -152,11 +152,22 @@ int wspLog(char *str) {
 // set date time on wispr
 int wspDateTime(void) {
   static char *self="wspDateTime";
+  static char *rets="1=off 2=!open 3=!close";
   DBG();
-  if (wspOpen()) return 1;
+  if (!wsp.on) raise(1);
+  if (wspOpen()) raise(2);
   sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
   utlWrite(wsp.port, all.str, EOL);
-  if (wspClose()) return 9;
+  if (wspClose()) raise(3);
+  return 0;
+}
+
+///
+// stub
+int wspDetect(WspData *wspd, int minutes) {
+  int x;
+  wspDetectM(&x, minutes);
+  wspd=null;
   return 0;
 }
 
@@ -171,7 +182,6 @@ int wspDetectM(int *detectM, int minutes) {
   static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
   char *b;
   int r=0, detQ=0;
-  float free;
   DBGN( "(%d)", minutes );
   // cmd
   b=all.str;
@@ -186,21 +196,6 @@ int wspDetectM(int *detectM, int minutes) {
   utlWrite( wsp.port, b, EOL );
   // run for minutes // query at end 
   pwrSleep(minutes*60);
-  /*
-  tmrStart(data_tmr, wsp.detInt*60);
-  tmrStart(minute_tmr, minutes*60);
-  while (!tmrExp(minute_tmr)) {
-    if (tmrExp(data_tmr)) {
-      // query and reset
-      if (wspQuery(&detQ)) raisex(10);
-      *detectM += detQ;
-      if (wspSpace(&free)) raisex(20);
-      flogf("\n%s: disk %3.0f%% free on wispr#%d", self, free, wsp.card);
-      
-      tmrStart(data_tmr, wsp.detInt*60);
-    } // data_tmr
-  } // minute_tmr
-  */
   if (wspQuery(&detQ)) raisex(10);
   *detectM += detQ;
   // ?? query diskFree
@@ -216,6 +211,7 @@ int wspDetectM(int *detectM, int minutes) {
   return 0;
   //
   except: {
+    wspClose();
     wspStop();
     return(dbg.except);
   }
@@ -286,15 +282,16 @@ One single program can be operated in the following 5 different modes.
   the buffer.  File name has to be bw_test.wav.  
   Detection results are stored in detections.dtx.
 
-   $GPS ,%ld, %8.3f,%7.3f*	Cr  GPS time, long and lat    	CF2->WISPR
-   $DX?,%ld,%ld*                Cr  Inq detections            	CF2->WISPR
-   $DXN ,%d* 			Cr  Num of detections         	WISPR->CF2
-   $ACK* 			Cr  Send ACK for each line      WISPR->CF2
-   $NGN,%d* 			Cr  New gain (0-3)            	CF2->WISPR
-   $EXI* 			Cr  End logging              	CF2->WISPR
-   $DET,%d* 			Cr  Detection parameter	        WISPR->CF2
-   $DFP* 			Cr  Inq disk space   		CF2->WISPR
-   $DFP,%5.2f*                  Cr  Reply disk space avail %    WISPR->CF2
+commands end with \r
+   $GPS ,%ld, %8.3f,%7.3f*	GPS time, long and lat    	CF2->WISPR
+   $DX?,%ld,%ld*            Inq detections            	CF2->WISPR
+   $DXN,%d* 			    Num of detections         	WISPR->CF2
+   $ACK* 			        Send ACK for each line      WISPR->CF2
+   $NGN,%d* 			    New gain (0-3)            	CF2->WISPR
+   $EXI* 			        End logging              	CF2->WISPR
+   $DET,%d* 			    Detection parameter	        WISPR->CF2
+   $DFP* 			        Inq disk space   		    CF2->WISPR
+   $DFP,%5.2f*              Reply disk space avail %    WISPR->CF2
 
 The followings are descriptions of the wispr command line parameters.  
 Options:           	DESCRIPTION                                	DEFAULT

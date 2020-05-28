@@ -96,6 +96,32 @@ void iriStop(void) {
 } // iriStop
 
 ///
+// sets: *ret //??
+// rets: err code
+int iriDateTimeToSecs(time_t *ret, char *date, time_t *time) {
+  struct tm t;
+  char *s;
+  static char *self="iriDateTimeToSecs";
+  static char *rets="1..6=field missing (sep=[-:.])";
+  strcpy(all.str, date);
+  if (!(s = strtok(all.str, " -:."))) raise(1);
+  t.tm_mon = atoi(s) - 1;
+  if (!(s = strtok(NULL, " -:."))) raise(2);
+  t.tm_mday = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) raise(3);
+  t.tm_year = atoi(s) - 1900;
+  strcpy(all.str, time);
+  if (!(s = strtok(all.str, " -:."))) raise(4);
+  t.tm_hour = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) raise(5);
+  t.tm_min = atoi(s);
+  if (!(s = strtok(NULL, " -:."))) raise(6);
+  t.tm_sec = atoi(s);
+  *ret = mktime(&t);
+  return 0;
+} // iriDateTimeToSec
+
+///
 // get gps date time twice, err if not consistent
 // sets: irid.stats
 // rets: *stats
@@ -107,8 +133,8 @@ int iriDateTime(GpsStats *stats) {
   if (iriSats()) raise(1);
   if (iriDateTimeGet(stats)) raise(2);
   if (iriDateTimeGet(&irid.stats)) raise(2);
-  utlDateTimeToSecs(&secs, stats->date, stats->time);
-  utlDateTimeToSecs(&secs2, irid.stats.date, irid.stats.time);
+  iriDateTimeToSecs(&secs, stats->date, stats->time);
+  iriDateTimeToSecs(&secs2, irid.stats.date, irid.stats.time);
   // now is about 1.5Msec, sanity check 1M<now<2M
   if (secs<pow(10, 9) || secs>pow(10, 9)*2) raise(3);
   // compare two readings

@@ -95,7 +95,7 @@ void utlWrite(Serial port, char *out, char *eol) {
 ///
 // read all the chars on the port, with a normal char delay; discard nulls=0
 // char *in should be BUFSZ, null terminated string
-// returns: *in (string), -1=overrun
+// rets: *in (string), -1=overrun
 int utlRead(Serial port, char *in) {
   short ch;
   int len;
@@ -221,7 +221,7 @@ void utlLogTime(void) {
 
 ///
 // HH:MM:SS now
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlTime(void) {
   struct tm *tim;
   time_t secs;
@@ -234,7 +234,7 @@ char *utlTime(void) {
 
 ///
 // Date String // YY-MM-DD 
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlDate(void) {
   struct tm *tim;
   time_t secs;
@@ -247,7 +247,7 @@ char *utlDate(void) {
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlDateTimeFmt(time_t secs) {
   struct tm *tim;
   tim = gmtime(&secs);
@@ -259,7 +259,7 @@ char *utlDateTimeFmt(time_t secs) {
 
 ///
 // YYYY-MM-DD HH:MM:SS 
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlDateTime(void) {
   time_t secs;
   time(&secs);
@@ -268,7 +268,7 @@ char *utlDateTime(void) {
 
 ///
 // MMDDYYYYHHMMSS 
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlDateTimeSBE(void) {
   struct tm *tim;
   time_t secs;
@@ -281,38 +281,15 @@ char *utlDateTimeSBE(void) {
 } // utlDateTimeSBE
 
 ///
-// rets: time(gps)
-int utlDateTimeToSecs(time_t *ret, char *date, time_t *time) {
-  struct tm t;
-  char *s;
-  strcpy(utl.str, date);
-  if (!(s = strtok(utl.str, " -:."))) return 1;
-  t.tm_mon = atoi(s) - 1;
-  if (!(s = strtok(NULL, " -:."))) return 2;
-  t.tm_mday = atoi(s);
-  if (!(s = strtok(NULL, " -:."))) return 3;
-  t.tm_year = atoi(s) - 1900;
-  strcpy(utl.str, time);
-  if (!(s = strtok(utl.str, " -:."))) return 4;
-  t.tm_hour = atoi(s);
-  if (!(s = strtok(NULL, " -:."))) return 5;
-  t.tm_min = atoi(s);
-  if (!(s = strtok(NULL, " -:."))) return 6;
-  t.tm_sec = atoi(s);
-  *ret = mktime(&t);
-  return 0;
-} // utlDateTimeToSec
-
-///
 // format non-printable string; null terminate
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlNonPrint (char *in) {
   return (utlNonPrintBlock(in, strlen(in)));
 } // utlNonPrint
 
 ///
 // format non-printable string; null terminate
-// returns: global char *utl.ret
+// rets: global char *utl.ret
 char *utlNonPrintBlock (char *in, int len) {
   unsigned char ch;
   char *out = utl.ret;
@@ -353,11 +330,12 @@ void utlLogPathName(char *path, char *base, int day) {
 
 ///
 // takes a base name and makes a full path, opens file, writes dateTime
-// rets: fileID or 0=err
+// sets: *log
 int utlLogOpen(int *log, char *base) {
   int r=0, fd, flags;
   char path[64];
   static char *self="utlLogOpen";
+  static char *rets="1=!open 2=!write";
   DBG();
   if (*log) {close(*log); *log=0;}
   utlLogPathName(path, base, all.cycle);
@@ -366,16 +344,16 @@ int utlLogOpen(int *log, char *base) {
   if (fd<=0) {
     sprintf(utl.str, "open ERR %d (errno %d), path %s", fd, errno, path);
     utlErr(log_err, utl.str);
-    return 1;
+    raise(1);
   } 
   DBG1("\n%s(%s):%d", self, base, fd);
   sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
   r = write(fd, utl.str, strlen(utl.str)); 
   if (r<1) {
-    sprintf(utl.str, "write ERR %d (errno %d), path %s", r, errno, path);
+    sprintf(utl.str, "write ERR %d (errno %d) path %s", r, errno, path);
     utlErr(log_err, utl.str);
     close(fd);
-    return 2;
+    raise(2);
   }
   *log=fd;
   return 0;
@@ -383,8 +361,10 @@ int utlLogOpen(int *log, char *base) {
 
 /// 
 // close file
+// sets: *fd
 int utlLogClose(int *fd) {
   static char *self="utlLogClose";
+  static char *rets="1=!close";
   int f;
   DBG();
   if (*fd<1) return 0;   // no fd
@@ -392,8 +372,9 @@ int utlLogClose(int *fd) {
   *fd=0;
   DBG2("\n%s():%d ", self, f);
   if (close(f)<0) {
-    flogf("\n%s(): ERR closing file (fd=%d)", self, f);
-    return 1;
+    sprintf(utl.str, "close ERR (errno %d) fd=%d", errno, f);
+    utlErr(log_err, utl.str);
+    raise(1);
   }
   return 0;
 } // utlLogClose

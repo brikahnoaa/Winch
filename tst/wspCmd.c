@@ -6,6 +6,7 @@ void main(void){
   int r;
   sysInit();
   mpcInit();
+  pwrInit();
   wspInit();
   while (!(r=CIOgets(all.str, 100))) { // wait for input
     if (all.str[0]=='q')
