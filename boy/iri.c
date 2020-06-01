@@ -123,6 +123,7 @@ int iriDateTimeToSecs(time_t *ret, char *date, time_t *time) {
 
 ///
 // get gps date time twice, err if not consistent
+// ?? why set irid.stats? used how?
 // sets: irid.stats
 // rets: *stats
 int iriDateTime(GpsStats *stats) {

@@ -108,27 +108,22 @@ int wspClose(void) {
 int wspStorm(char *buf) {
   static char *self="wspStorm";
   static char *rets="1=open 2=RDY 3=predict 9=close";
-  char *b;
   DBG();
   // cmd
   buf[0]=0;
-  b=all.str;
-  sprintf( b, "%s %s", wsp.spectCmd, wsp.spectFlag );
-  if (wsp.spectGain)
-    sprintf( b+strlen(b), " -g%d", wsp.spectGain );
-  if (wsp.spectLog)
-    sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.spectLog, all.cycle );
+  sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
+      wsp.spectCmd, wsp.spectFlag, wsp.spectGain, wsp.spectLog, all.cycle );
   // start 
   if (wspOpen()) raise(1);
-  flogf( "\nexec '%s'", b );
-  utlWrite( wsp.port, b, EOL );
+  flogf( "\nexec '%s'", all.str );
+  utlWrite( wsp.port, all.str, EOL );
   // gather
   if (!utlReadExpect(wsp.port, buf, "RDY", 200)) raise(2);
   utlWrite(wsp.port, "$WS?*", EOL);
   if (utlReadWait(wsp.port, buf, 60)) raise(3);
   flogf("\nwspStorm prediction: %s", buf);
-  // ?? add to daily
-  // stop
+  // ?? add to daily, eng log
+  // ?? parse - we need to decide rise or not
   if (wspClose()) raise(9);
   return 0;
 } // wspStorm
@@ -180,25 +175,20 @@ int wspDetect(WspData *wspd, int minutes) {
 int wspDetectM(int *detectM, int minutes) {
   static char *self="wspDetectM";
   static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
-  char *b;
   int r=0, detQ=0;
   DBGN( "(%d)", minutes );
   // cmd
-  b=all.str;
-  sprintf( b, "%s %s", wsp.wisprCmd, wsp.wisprFlag );
-  if (wsp.wisprGain)
-    sprintf( b+strlen(b), " -g%d", wsp.wisprGain );
-  if (wsp.wisprLog)
-    sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.wisprLog, all.cycle );
+  sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
+      wsp.wisprCmd, wsp.wisprFlag, wsp.wisprGain, wsp.wisprLog, all.cycle );
   // start
   if (wspOpen()) raisex(1);
-  flogf( "\nexec '%s'", b );
-  utlWrite( wsp.port, b, EOL );
+  flogf( "\nexec '%s'", all.str );
+  utlWrite( wsp.port, all.str, EOL );
   // run for minutes // query at end 
   pwrSleep(minutes*60);
   if (wspQuery(&detQ)) raisex(10);
   *detectM += detQ;
-  // ?? query diskFree
+  // ?? query disk free
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlReadExpect(wsp.port, all.buf, "FIN", 5)) {

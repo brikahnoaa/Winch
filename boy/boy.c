@@ -280,6 +280,7 @@ int iridDo(void) {
   flogf("\n%s ===\n", utlTime());
   antSwitch(gps_ant);
   while (true) { // try datetime 3x
+    // ?? need to turn off irid on errs 
     if (try++ > 2) raise(1);
     if (!iriDateTime(&boyd.gpsBgn)) break;
   }
@@ -321,6 +322,7 @@ int iridDo(void) {
   // utlWrite(irid.port, "done", "");
   flogf("\n%s =====\n", utlTime());
   antSwitch(gps_ant);
+  // ?? should be entered in eng log and sys log instead?
   iriDateTime(&boyd.gpsEnd);
   iriLatLng(&boyd.gpsEnd);
   // turn off a3la
