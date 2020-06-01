@@ -3,8 +3,7 @@
 #define H_PWR
 
 typedef struct PwrInfo {
-  bool on;              // track and log battery capacity
-  bool sampleReady;     // sample should be saved, until written
+  bool track;           // track and log battery capacity
   float amps;
   float charge;         // minimum system capacity to run
   float chargeMin;      // minimum system capacity to run

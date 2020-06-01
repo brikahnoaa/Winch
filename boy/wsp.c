@@ -180,6 +180,8 @@ int wspDetectM(int *detectM, int minutes) {
   // cmd
   sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
       wsp.wisprCmd, wsp.wisprFlag, wsp.wisprGain, wsp.wisprLog, all.cycle );
+  if (wsp.wisprTest)
+    sprintf( all.str+strlen(all.str), " -W" );
   // start
   if (wspOpen()) raisex(1);
   flogf( "\nexec '%s'", all.str );

@@ -88,7 +88,7 @@ static CfgParam cfgP[] = {
   {'i',  "ngk.delay",     &ngk.delay,       "nde",  "8"},
   {'i',  "ngk.winchId",   &ngk.winchId,     "nwI",  "1"},
 
-  {'b',  "pwr.on",        &pwr.on,          "pon",  "false"},
+  {'b',  "pwr.track",     &pwr.track,       "ptk",  "false"},
   {'f',  "pwr.charge",    &pwr.charge,      "pch",  "12000.0"},
   {'f',  "pwr.chargeMin", &pwr.chargeMin,   "pcM",  "200.0"},
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
@@ -115,7 +115,7 @@ static CfgParam cfgP[] = {
   {'b',  "utl.console",   &utl.console,     "uce",  "true"},
   {'l',  "utl.bone",      &utl.bone,        "ube",  "30"},
 
-  {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
+  {'b',  "wsp.wisprTest", &wsp.wisprTest,   "wwT",  "false"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},
   {'c',  "wsp.spectFlag", &wsp.spectFlag,   "wsF",  "-v1 -C12 -n512 -o256"},
   {'c',  "wsp.spectGain", &wsp.spectGain,   "wsG",  "-g1"},

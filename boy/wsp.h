@@ -5,6 +5,7 @@
 typedef struct WspInfo {
   Serial port;                // mpcPamPort()
   bool on;                    // run wispr
+  bool wisprTest;             // set -W flaf
   char spectCmd[32];          // spectragram command
   char spectFlag[64];         // -v1 -C12 -n512 -o256 
   char spectGain[8];          // mic sensitivity
