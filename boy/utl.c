@@ -463,6 +463,9 @@ void utlPet(long pet) { utl.watch = pet?pet:utl.bone; }
 // watchdog chore run by pit every second
 void utlDogPit(void)
 { // watch counts down to zero
-  if (! --utl.watch) utlErr( dog_err, "Bark! Woof!" );
+  if (! --utl.watch) 
+  { utlErr( dog_err, "Bark! Woof!" );
+    utlPet(0);
+  }
 } // utlDogPit
 

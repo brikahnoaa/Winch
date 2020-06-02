@@ -47,6 +47,7 @@ int antStart(void) {
 ///
 // turn off power to antmod 
 int antStop() {
+  if (!ant.on) return 0;
   s39Stop();
   ant.on = false;
   flogf("\n === ant module stop %s", utlDateTime());
@@ -113,8 +114,9 @@ Serial antPort(void) {
 // tell antmod to power dev on/off
 // char c I|S
 void antDevPwr(char c, bool on) {
-  DevType currDev=ant.dev;
+  DevType currDev;
   DBG0("antDevPwr(%c, %d)", c, on);
+  currDev=ant.dev;
   if (ant.on)
     antDevice(cf2_dev);       // make sure
   else

@@ -77,13 +77,15 @@ int wspStop(void) {
 ///
 // wspr is giving us xml style <wispr> </wispr>
 #define WSP_OPEN "<wispr>"
+#define WSP_START_SEC 20
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
   static char *rets="1=off 2=!<wispr>";
   DBG();
   if (!wsp.on) raise(1);
-  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, 20)) raise(2);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, WSP_START_SEC)) 
+    raise(2);
   return 0;
 } // wspOpen
 
@@ -97,12 +99,12 @@ int wspClose(void) {
   static char *rets="1=off 2=!</wispr>";
   DBG();
   if (!wsp.on) raise(1);
-  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, 12)) raise(2);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, WSP_START_SEC)) 
+    raise(2);
   return 0;
 } // wspClose
 
 ///
-// ?? validate. standalone or paired with detect?
 // wsp storm check started. interact.
 // rets: 1=open 2=RDY 3=predict 8=close
 int wspStorm(char *buf) {
@@ -168,7 +170,7 @@ int wspDetect(WspData *wspd, int minutes) {
 
 ///
 // run detection program for minutes, take a nap during
-// if this fails, assume card is bad
+// if this fails, assume card is bad; does not call wspStop
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
 // sets: *detectM+=
 // rets: 1=start 3=FIN 8=close 9=stop 10=query 20=space
@@ -204,7 +206,6 @@ int wspDetectM(int *detectM, int minutes) {
   //
   except: {
     wspClose();
-    wspStop();
     return(dbg.except);
   }
 } // wspDetectM
