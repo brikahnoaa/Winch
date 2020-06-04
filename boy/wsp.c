@@ -49,16 +49,17 @@ int wspCardSwap(void) {
 // sets: wsp.on 
 // rets: 0=success >=nextCard
 int wspStart(void) {
-  int r=0;
   static char *self="wspStart";
+  static char *rets="1=!log 2=!<wispr>";
   DBG();
   if (wsp.on) wspStop();
   DBG1("\n%s: activating wispr#%d", self, wsp.card);
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log)
-    utlLogOpen(&wsp.log, "wsp");
-  return r;
+    if (utlLogOpen(&wsp.log, "wsp")) raise(1);
+  if (wspDateTime()) raise(2);
+  return 0;
 } // wspStart
 
 ///
@@ -73,6 +74,20 @@ int wspStop(void) {
   mpcPamPwr(wsp.card, false);
   return 0;
 } // wspStop
+
+///
+// set date time on wispr
+int wspDateTime(void) {
+  static char *self="wspDateTime";
+  static char *rets="1=off 2=!open 3=!close";
+  DBG();
+  if (!wsp.on) raise(1);
+  if (wspOpen()) raise(2);
+  sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
+  utlWrite(wsp.port, all.str, EOL);
+  if (wspClose()) raise(3);
+  return 0;
+}
 
 ///
 // wspr is giving us xml style <wispr> </wispr>
@@ -105,7 +120,23 @@ int wspClose(void) {
 } // wspClose
 
 ///
-// wsp storm check started. interact.
+// assumes started.
+int wspCmd(char *out, char *cmd, int wait) {
+  static char *self="wspCmd";
+  static char *rets="1=!open 2=WSP_CLOSE timeout";
+  DBG();
+  out[0]=0;
+  if (wspOpen()) raise(1);
+  cprintf("sending to wispr: %s \n", cmd);
+  utlWrite( wsp.port, cmd, EOL );
+  if (wait)
+    if (!utlReadExpect(wsp.port, out, WSP_CLOSE, 3)) 
+      raise(2);
+  return 0;
+} // wspCmd
+
+///
+// wsp storm check. interact. assumes already started.
 // rets: 1=open 2=RDY 3=predict 8=close
 int wspStorm(char *buf) {
   static char *self="wspStorm";
@@ -144,20 +175,6 @@ int wspLog(char *str) {
   }
   return r;
 } // wspLog
-
-///
-// set date time on wispr
-int wspDateTime(void) {
-  static char *self="wspDateTime";
-  static char *rets="1=off 2=!open 3=!close";
-  DBG();
-  if (!wsp.on) raise(1);
-  if (wspOpen()) raise(2);
-  sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
-  utlWrite(wsp.port, all.str, EOL);
-  if (wspClose()) raise(3);
-  return 0;
-}
 
 ///
 // stub

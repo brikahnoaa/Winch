@@ -9,9 +9,7 @@ AllData all;
 UtlInfo utl;
 
 ///
-// malloc static buffers (heap is 384K, stack only 16K), watchdog pit
-#define DOG_51 19         // 19 * 51ms =~ 1sec (-2.7%)
-#define DOG_INTR 6        // why 6? default is 3 ??
+// malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
   DBG2("utlInit()");
   // utl.ret is semi-global, it is returned by some char *utlFuncs()
@@ -20,10 +18,6 @@ void utlInit(void) {
   utl.buf = malloc(BUFSZ);
   utl.ret = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
-  // watchdog init using PIT51
-  PITInit(DOG_INTR);              // interrupt priority
-  PITSet51msPeriod(DOG_51);       // 19 * 51ms =~ 1sec (-2.7%)
-  PITAddChore(utlDogPit, DOG_INTR);
   // sync this with enum ErrType
   utl.errName[ant_err] = "ant";
   utl.errName[boy_err] = "boy";
@@ -144,6 +138,7 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
   while (!r) { // !strstr
+    utlX();
     if (tmrExp(utl_tmr)) {
       DBG0("utlReadExpect(%s, %d) timeout", expect, wait);
       return NULL;
@@ -156,7 +151,6 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
       sz += l;
     }
     r = strstr(in, expect);
-    utlX();
   } // !strstr
   return r;
 } // utlReadExpect
@@ -457,15 +451,6 @@ void utlX(void) {
 
 ///
 // set watchdog length to pet seconds, or default if 0
-void utlPet(long pet) { utl.watch = pet?pet:utl.bone; }
-
-///
-// watchdog chore run by pit every second
-void utlDogPit(void)
-{ // watch counts down to zero
-  if (! --utl.watch) 
-  { utlErr( dog_err, "Bark! Woof!" );
-    utlPet(0);
-  }
-} // utlDogPit
+// this could be a macro
+void utlPet(long pet) { all.watch = pet?pet:utl.bone; }
 

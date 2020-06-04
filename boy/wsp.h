@@ -30,12 +30,13 @@ typedef struct WspData {      // pass from boy to wsp
   int detects;                // wsp: detections
 } WspData;
 
-static int wspClose(void);
+int wspClose(void);
 static int wspOpen(void);
-static int wspStart(void);
+int wspStart(void);
 static void wspRemainS(int *remains);
 
 int wspCardSwap(void);
+int wspCmd(char *out, char *cmd, int wait);
 int wspDateTime(void);
 int wspDetect(WspData *wspd, int minutes);
 int wspDetectH(int *detectH, char *spectr);

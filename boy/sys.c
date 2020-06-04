@@ -5,8 +5,6 @@
 #define STARTS_MAX "50"
 #define SYS_LOG "SYS.LOG"
 #define C_DRV ('C'-'A')
-#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
-#define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 
 SysInfo sys;
 ///
@@ -27,7 +25,10 @@ SysInfo sys;
 
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
-
+#define DOG_51 20     // 20 * 51ms =~ 1.02sec
+#define DOG_INTR 6    // why 6? default is 3 ??
+#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
+#define SYSCLK 14720  // SYSCLK 160 - 32000: 3680, 7360, 14720 for best RS-232
 ///
 // pre, starts, config, log, pico
 // uses: sys.logfile
@@ -39,13 +40,16 @@ int sysInit(void) {
   short qsize = 64*1024;
   preRun(10);
   all.starts = startCheck();
-  time(&all.startProg);     // program start time, global
-  time(&all.startCycle);    // cycle start time, global
   // clock
   TMGSetSpeed(SYSCLK);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
   CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
   CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
+  // watchdog init using PIT51
+  all.watch = 60;           // one minute to get set up
+  PITInit(DOG_INTR);        // interrupt priority
+  PITSet51msPeriod(DOG_51); // ~ 1sec
+  PITAddChore(sysDogPit, DOG_INTR);
   // need utlInit before logInit
   utlInit();                // malloc global all.str, start PIT
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
@@ -62,6 +66,8 @@ int sysInit(void) {
       "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
       TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
       waitsCF, *(uchar *)0xFFFFFA21);
+  time(&all.startProg);     // program start time, global
+  time(&all.startCycle);    // cycle start time, global
   return all.starts;
 } // sysInit
 
@@ -187,6 +193,14 @@ long sysDiskFree(void) {
   sys.diskSize = DSDDataSectors(C_DRV);
   return sys.diskFree/2;
 } // sysDiskFree
+
+///
+// watchdog chore run by pit every second
+void sysDogPit(void)
+{ // watch counts down to zero
+  if (! all.watch--)
+    utlErr( dog_err, "Bark! Woof!" );
+} // sysDogPit
 
 ///
 // call flush for each module with logging
