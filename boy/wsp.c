@@ -28,21 +28,8 @@ void wspInit(void) {
   wsp.on = false;
 } // wspInit
 
-///
-// change cards if we have another one
-// rets: 0=success >=fail
-int wspCardSwap(void) {
-  if (wsp.card<=1) {
-    wsp.card=0;
-    utlErr(wsp_err, "No more wispr cards");
-    return 1;
-  } else {
-    wsp.card-=1;
-    flogf( "\nwspCardSwap() -> %d", wsp.card );
-    return 0;
-  }
-} // wspCardSwap
-
+#define WSP_START_OPEN "<wispr>"
+#define WSP_START_SEC 20
 ///
 // select card, turn on
 // uses: .card
@@ -50,7 +37,7 @@ int wspCardSwap(void) {
 // rets: 0=success >=nextCard
 int wspStart(void) {
   static char *self="wspStart";
-  static char *rets="1=!log 2=!<wispr>";
+  static char *rets="1=!log 2=!<wispr> 3=!date";
   DBG();
   if (wsp.on) wspStop();
   DBG1("\n%s: activating wispr#%d", self, wsp.card);
@@ -58,10 +45,13 @@ int wspStart(void) {
   wsp.on = true;
   if (!wsp.log)
     if (utlLogOpen(&wsp.log, "wsp")) raise(1);
-  if (wspDateTime()) raise(2);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_START_OPEN, WSP_START_SEC))
+    raise(2);
+  if (wspDateTime()) raise(3);
   return 0;
 } // wspStart
 
+#define WSP_START_CLOSE "</wispr>"
 ///
 // stop wsp.card
 int wspStop(void) {
@@ -83,55 +73,58 @@ int wspDateTime(void) {
   DBG();
   if (!wsp.on) raise(1);
   if (wspOpen()) raise(2);
-  sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
+  sprintf(all.str, "date -s '%s'; hwclock -w", utlDateTime());
   utlWrite(wsp.port, all.str, EOL);
   if (wspClose()) raise(3);
   return 0;
 }
 
 ///
-// wspr is giving us xml style <wispr> </wispr>
-#define WSP_OPEN "<wispr>"
-#define WSP_START_SEC 20
+// wspr is giving us xml style <cmd> </cmd>
+#define WSP_CMD_OPEN "<cmd>"
+#define WSP_CMD_SEC 20
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
-  static char *rets="1=off 2=!<wispr>";
+  static char *rets="1=off 2=!<cmd>";
   DBG();
   if (!wsp.on) raise(1);
-  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, WSP_START_SEC)) 
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CMD_OPEN, WSP_CMD_SEC)) 
     raise(2);
   return 0;
 } // wspOpen
 
 ///
 // close wispr /mnt/start
-// wspr is giving us xml style <wispr> </wispr>
-#define WSP_CLOSE "</wispr>"
+// wspr is giving us xml style <cmd> </cmd>
+#define WSP_CMD_CLOSE "</cmd>"
 int wspClose(void) {
   int r=0;
   static char *self="wspClose";
   static char *rets="1=off 2=!</wispr>";
   DBG();
   if (!wsp.on) raise(1);
-  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, WSP_START_SEC)) 
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CMD_CLOSE, WSP_CMD_SEC)) 
     raise(2);
   return 0;
 } // wspClose
 
 ///
 // assumes started.
-int wspCmd(char *out, char *cmd, int wait) {
+int wspCmd(char *out, char *cmd) {
   static char *self="wspCmd";
-  static char *rets="1=!open 2=WSP_CLOSE timeout";
+  static char *rets="1=!open 2=WSP_CMD_SEC timeout";
+  char *r;
   DBG();
   out[0]=0;
   if (wspOpen()) raise(1);
   cprintf("sending to wispr: %s \n", cmd);
   utlWrite( wsp.port, cmd, EOL );
-  if (wait)
-    if (!utlReadExpect(wsp.port, out, WSP_CLOSE, 3)) 
-      raise(2);
+  r = utlReadExpect( wsp.port, all.buf, WSP_CMD_CLOSE, WSP_CMD_SEC );
+  if (r) 
+    flogf("\n%s\n", all.buf);
+  else
+    raise(2);
   return 0;
 } // wspCmd
 
@@ -265,6 +258,21 @@ int wspSpace(float *free) {
   *free = atof(s);
   return 0;
 } // wspChkCF
+
+///
+// change cards if we have another one
+// rets: 0=success >=fail
+int wspCardSwap(void) {
+  if (wsp.card<=1) {
+    wsp.card=0;
+    utlErr(wsp_err, "No more wispr cards");
+    return 1;
+  } else {
+    wsp.card-=1;
+    flogf( "\nwspCardSwap() -> %d", wsp.card );
+    return 0;
+  }
+} // wspCardSwap
 
 /*
  * wispr doc <winchProj\LARASystem5.doc>

@@ -46,12 +46,15 @@ int sysInit(void) {
   CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
   CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
   // watchdog init using PIT51
-  all.watch = 60;           // one minute to get set up
+  all.watch = 60;           // big bone for watchdog, one minute to get set up
   PITInit(DOG_INTR);        // interrupt priority
   PITSet51msPeriod(DOG_51); // ~ 1sec
   PITAddChore(sysDogPit, DOG_INTR);
+  //
+  time(&all.startProg);     // program start time, global
+  time(&all.startCycle);    // cycle start time, global
   // need utlInit before logInit
-  utlInit();                // malloc global all.str, start PIT
+  utlInit();                // malloc global and utl buffers
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
   dbgInit();                // common init: dbg0,1,2
   cfgInit();
@@ -60,14 +63,25 @@ int sysInit(void) {
   params->rxqsz = qsize;
   params->txqsz = qsize;
   TUSetDefaultParams( params );
-  // enable TUAlloc for serial ports
-  TUInit(calloc, free);   
+  TUInit(calloc, free);     // enable TUAlloc for serial ports
+  // log sys info
   flogf(
       "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
       TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
       waitsCF, *(uchar *)0xFFFFFA21);
-  time(&all.startProg);     // program start time, global
-  time(&all.startCycle);    // cycle start time, global
+  flogf("\n---   ---");
+  flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
+  flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
+        BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
+        BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
+  flogf("\nProgram: %s  Version: %s  Starts: %d",
+    sys.program, sys.version, all.starts);
+  flogf("\nStarted: %s", utlDateTime());
+  flogf("\n---   ---");
+  fflush(NULL);               // ??
+  cdrain();
+  ciflush();
+  coflush();
   return all.starts;
 } // sysInit
 
@@ -120,7 +134,7 @@ void logInit(char *file) {
   char *dt, cmd[64];
   struct stat finfo;
   DBG0("logInit(%s)", file);
-  utlX();
+  // utlX(); not until after cfgInit
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   // copy to log\MMDDHHMM.sys
@@ -135,19 +149,6 @@ void logInit(char *file) {
   }
   //
   Initflog(file, true);
-  flogf("\n---   ---");
-  flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
-  flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
-        BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
-        BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
-  flogf("\nProgram: %s  Version: %s  Starts: %d",
-    sys.program, sys.version, all.starts);
-  flogf("\nStarted: %s", utlDateTime());
-  flogf("\n---   ---");
-  fflush(NULL);               // ??
-  cdrain();
-  ciflush();
-  coflush();
 } // logInit
 
 ///
@@ -160,6 +161,7 @@ void sysStop(char *out) {
   ngkStop();
   pwrStop();
   wspStop();
+  BIOSReset();
 } // sysStop
 
 ///

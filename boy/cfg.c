@@ -124,7 +124,7 @@ static CfgParam cfgP[] = {
   {'c',  "wsp.wisprFlag", &wsp.wisprFlag,   "wwF",  "-v2 -T8 -b15 -M2 -F2"},
   {'c',  "wsp.wisprGain", &wsp.wisprGain,   "wwG",  "-g1"},
   {'c',  "wsp.wisprLog",  &wsp.wisprLog,    "wwL",  "wispr"},
-  {'i',  "wsp.card",      &wsp.card,        "wcd",  "2"},
+  {'i',  "wsp.card",      &wsp.card,        "wcd",  "1"},
   {'i',  "wsp.detMax",    &wsp.detMax,      "wdx",  "10"},
   {'i',  "wsp.diskMin",   &wsp.diskMin,     "wdM",  "10"},
   {'i',  "wsp.restM",     &wsp.restM,       "wrt",  "30"},

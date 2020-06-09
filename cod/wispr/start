@@ -14,30 +14,55 @@ cp /mnt/spectrogram8kHz /bin/spectrogram
 chmod 777 /bin/wispr_bw
 chmod 777 /bin/spectrogram
 
-# do commands from com1 until 10 second timeout
+secs=3
+com1=/dev/ttyBF1
+# do commands from com1 until $secs second timeout
 
+cd /mnt
 echo " "
-echo "--- Embedded Ocean Systems WISPR V1.0 --- (10 sec to shell)"
-date
+echo "--- Embedded Ocean Systems WISPR V1.0 --- ($secs sec to shell)"
+echo -n "<wispr>" > $com1
+echo "<wispr>"
 
 while true; do
   line=""
-  echo -n "<wispr>" > /dev/ttyBF1
+  sleep 1
+  echo -n "<cmd>" > $com1
+  echo "<cmd>"
   # -s noecho -t timeout
-  read -s -t 10 line < /dev/ttyBF1
+  read -s -t $secs line < $com1
+  if [ -n "$line" ]; then
+    echo "$line"
+    eval "$line"
+  fi
+  # if output created, write it up
+  if [ -f /mnt/output ]; then
+    wc /mnt/output
+    cat /mnt/output > $com1
+    rm /mnt/output
+  fi
+  sleep 1
+  echo -n "</cmd>" > $com1
+  echo "</cmd>"
   if [ -z "$line" ]; then break; fi
-  echo "$line"
-  eval "$line"
-  echo -n "</wispr>" > /dev/ttyBF1
 done
 
-if ls /mnt/*.flac; then mv /mnt/*.flac /mnt/flac; fi
-if ls /mnt/*.log; then mv /mnt/*.log /mnt/log; fi
+# cannot have too many files in top of msdos filesystem
+if ls /mnt/*.flac 2>/dev/null; then
+  mv /mnt/*.flac /mnt/flac
+fi
+if ls /mnt/*.log 2>/dev/null; then
+  mv /mnt/*.log /mnt/log
+fi
 
 
-if mount | grep /mnt; then
+if mount | grep -q /mnt; then
   echo umounting /mnt ...
+  cd /
   sync
   umount /mnt
+  echo "try     mount /dev/sda1 /mnt"
 fi
-echo "try     mount /dev/sda1 /mnt"
+sleep 1
+echo -n "</wispr>" > $com1
+echo "</wispr>"

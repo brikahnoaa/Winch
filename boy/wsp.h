@@ -36,7 +36,7 @@ int wspStart(void);
 static void wspRemainS(int *remains);
 
 int wspCardSwap(void);
-int wspCmd(char *out, char *cmd, int wait);
+int wspCmd(char *out, char *cmd);
 int wspDateTime(void);
 int wspDetect(WspData *wspd, int minutes);
 int wspDetectH(int *detectH, char *spectr);

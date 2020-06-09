@@ -12,12 +12,13 @@ UtlInfo utl;
 // malloc static buffers (heap is 384K, stack only 16K)
 void utlInit(void) {
   DBG2("utlInit()");
-  // utl.ret is semi-global, it is returned by some char *utlFuncs()
   all.buf = malloc(BUFSZ);
   all.str = malloc(BUFSZ);
-  utl.buf = malloc(BUFSZ);
-  utl.ret = malloc(BUFSZ);
   utl.str = malloc(BUFSZ);
+  // utl.buf used by utlRead
+  utl.buf = malloc(BUFSZ);
+  // utl.ret is returned by NonPrint and DateTime funcs
+  utl.ret = malloc(BUFSZ);
   // sync this with enum ErrType
   utl.errName[ant_err] = "ant";
   utl.errName[boy_err] = "boy";
@@ -88,8 +89,9 @@ void utlWrite(Serial port, char *out, char *eol) {
 
 ///
 // read all the chars on the port, with a normal char delay; discard nulls=0
-// char *in should be BUFSZ, null terminated string
-// rets: *in (string), -1=overrun
+// char *in should be BUFSZ
+// sets: *in = string
+// rets: -1=overrun
 int utlRead(Serial port, char *in) {
   short ch;
   int len;
@@ -126,7 +128,7 @@ int utlReadWait(Serial port, char *in, int wait) {
 
 ///
 // utlRead until we get the expected string (or timeout)
-// note: reads past *expect if chars streaming, see utlGetUntil()
+// note: reads past *expect if chars streaming, see utlGetUntil utlGetUntilWait
 // args: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf // sets: *in (string)
 // rets: char* to expected str, or null
