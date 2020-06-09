@@ -21,7 +21,7 @@ int engLogOpen(void) {
 // open or reopen log file
 int engLogClose(void) {
   int r=0;
-  if (!eng.log)
+  if (eng.log)
     r = utlLogClose(&eng.log);
   return r;
 } // engLogClose

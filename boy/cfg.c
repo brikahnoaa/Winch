@@ -88,7 +88,7 @@ static CfgParam cfgP[] = {
   {'i',  "ngk.delay",     &ngk.delay,       "nde",  "8"},
   {'i',  "ngk.winchId",   &ngk.winchId,     "nwI",  "1"},
 
-  {'b',  "pwr.on",        &pwr.on,          "pon",  "false"},
+  {'b',  "pwr.track",     &pwr.track,       "ptk",  "false"},
   {'f',  "pwr.charge",    &pwr.charge,      "pch",  "12000.0"},
   {'f',  "pwr.chargeMin", &pwr.chargeMin,   "pcM",  "200.0"},
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
@@ -115,21 +115,20 @@ static CfgParam cfgP[] = {
   {'b',  "utl.console",   &utl.console,     "uce",  "true"},
   {'l',  "utl.bone",      &utl.bone,        "ube",  "30"},
 
-  {'b',  "wsp.on",        &wsp.on,          "won",  "false"},
+  {'b',  "wsp.wisprTest", &wsp.wisprTest,   "wwT",  "false"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},
   {'c',  "wsp.spectFlag", &wsp.spectFlag,   "wsF",  "-v1 -C12 -n512 -o256"},
+  {'c',  "wsp.spectGain", &wsp.spectGain,   "wsG",  "-g1"},
   {'c',  "wsp.spectLog",  &wsp.spectLog,    "wsL",  "noise"},
   {'c',  "wsp.wisprCmd",  &wsp.wisprCmd,    "wwC",  "/bin/wispr_bw"},
   {'c',  "wsp.wisprFlag", &wsp.wisprFlag,   "wwF",  "-v2 -T8 -b15 -M2 -F2"},
+  {'c',  "wsp.wisprGain", &wsp.wisprGain,   "wwG",  "-g1"},
   {'c',  "wsp.wisprLog",  &wsp.wisprLog,    "wwL",  "wispr"},
-  {'i',  "wsp.card",      &wsp.card,        "wcd",  "2"},
-  {'i',  "wsp.detInt",    &wsp.detInt,      "wdI",  "10"},
-  {'i',  "wsp.detMax",    &wsp.detMax,      "wdX",  "10"},
-  {'i',  "wsp.diskFree",  &wsp.diskFree,    "wdF",  "5"},
-  {'i',  "wsp.dutyM",     &wsp.dutyM,       "wdM",  "30"},
-  {'i',  "wsp.spectGain", &wsp.spectGain,   "wsG",  "1"},
-  {'i',  "wsp.spectRun",  &wsp.spectRun,    "wsR",  "1"},
-  {'i',  "wsp.wisprGain", &wsp.wisprGain,   "wwG",  "1"},
+  {'i',  "wsp.card",      &wsp.card,        "wcd",  "1"},
+  {'i',  "wsp.detMax",    &wsp.detMax,      "wdx",  "10"},
+  {'i',  "wsp.diskMin",   &wsp.diskMin,     "wdM",  "10"},
+  {'i',  "wsp.restM",     &wsp.restM,       "wrt",  "30"},
+  {'i',  "wsp.runM",      &wsp.runM,        "wrM",  "30"},
 
 };
 

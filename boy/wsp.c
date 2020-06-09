@@ -2,8 +2,6 @@
 #include <main.h>
 
 #define EOL "\r"
-#define WSP_OPEN "<wispr>"
-#define WSP_CLOSE "</wispr>"
 
 WspInfo wsp;
 
@@ -30,39 +28,30 @@ void wspInit(void) {
   wsp.on = false;
 } // wspInit
 
-///
-// change cards if we have another one
-// rets: 0=success >=fail
-int wspCardSwap(void) {
-  if (wsp.card<=1) {
-    wsp.card=0;
-    utlErr(wsp_err, "No more wispr cards");
-    return 1;
-  } else {
-    wsp.card-=1;
-    flogf( "\nwspCardSwap() -> %d", wsp.card );
-    return 0;
-  }
-} // wspCardSwap
-
+#define WSP_START_OPEN "<wispr>"
+#define WSP_START_SEC 20
 ///
 // select card, turn on
 // uses: .card
 // sets: wsp.on 
 // rets: 0=success >=nextCard
 int wspStart(void) {
-  int r=0;
   static char *self="wspStart";
+  static char *rets="1=!log 2=!<wispr> 3=!date";
   DBG();
   if (wsp.on) wspStop();
   DBG1("\n%s: activating wispr#%d", self, wsp.card);
   mpcPamPwr(wsp.card, true);
   wsp.on = true;
   if (!wsp.log)
-    utlLogOpen(&wsp.log, "wsp");
-  return r;
+    if (utlLogOpen(&wsp.log, "wsp")) raise(1);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_START_OPEN, WSP_START_SEC))
+    raise(2);
+  if (wspDateTime()) raise(3);
+  return 0;
 } // wspStart
 
+#define WSP_START_CLOSE "</wispr>"
 ///
 // stop wsp.card
 int wspStop(void) {
@@ -77,70 +66,102 @@ int wspStop(void) {
 } // wspStop
 
 ///
-// turn on and open wispr /mnt/start
+// set date time on wispr
+int wspDateTime(void) {
+  static char *self="wspDateTime";
+  static char *rets="1=off 2=!open 3=!close";
+  DBG();
+  if (!wsp.on) raise(1);
+  if (wspOpen()) raise(2);
+  sprintf(all.str, "date -s '%s'; hwclock -w", utlDateTime());
+  utlWrite(wsp.port, all.str, EOL);
+  if (wspClose()) raise(3);
+  return 0;
+}
+
+///
+// wspr is giving us xml style <cmd> </cmd>
+#define WSP_CMD_OPEN "<cmd>"
+#define WSP_CMD_SEC 20
 int wspOpen(void) {
   int r=0;
   static char *self="wspOpen";
+  static char *rets="1=off 2=!<cmd>";
   DBG();
-  if (!wsp.on) wspStart();
-  if (!utlReadExpect(wsp.port, all.buf, WSP_OPEN, 20)) {
-    utlErr(wsp_err, "wsp start fail");
-    r=1;
-  }
-  return r;
+  if (!wsp.on) raise(1);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CMD_OPEN, WSP_CMD_SEC)) 
+    raise(2);
+  return 0;
 } // wspOpen
 
 ///
 // close wispr /mnt/start
+// wspr is giving us xml style <cmd> </cmd>
+#define WSP_CMD_CLOSE "</cmd>"
 int wspClose(void) {
   int r=0;
   static char *self="wspClose";
+  static char *rets="1=off 2=!</wispr>";
   DBG();
-  if (!utlReadExpect(wsp.port, all.buf, WSP_CLOSE, 12)) {
-    flogf("\n%s: did not get %s ", self, WSP_CLOSE);
-    r=1;
-  }
-  wspStop();
-  return r;
+  if (!wsp.on) raise(1);
+  if (!utlReadExpect(wsp.port, all.buf, WSP_CMD_CLOSE, WSP_CMD_SEC)) 
+    raise(2);
+  return 0;
 } // wspClose
 
 ///
-// wsp storm check started. interact.
+// assumes started.
+int wspCmd(char *out, char *cmd) {
+  static char *self="wspCmd";
+  static char *rets="1=!open 2=WSP_CMD_SEC timeout";
+  char *r;
+  DBG();
+  out[0]=0;
+  if (wspOpen()) raise(1);
+  cprintf("sending to wispr: %s \n", cmd);
+  utlWrite( wsp.port, cmd, EOL );
+  r = utlReadExpect( wsp.port, all.buf, WSP_CMD_CLOSE, WSP_CMD_SEC );
+  if (r) 
+    flogf("\n%s\n", all.buf);
+  else
+    raise(2);
+  return 0;
+} // wspCmd
+
+///
+// wsp storm check. interact. assumes already started.
 // rets: 1=open 2=RDY 3=predict 8=close
 int wspStorm(char *buf) {
   static char *self="wspStorm";
-  static char *rets="1=open 2=RDY 3=predict 8=close";
-  char *b;
+  static char *rets="1=open 2=RDY 3=predict 9=close";
   DBG();
   // cmd
   buf[0]=0;
-  b=all.str;
-  sprintf( b, "%s %s", wsp.spectCmd, wsp.spectFlag );
-  if (wsp.spectGain)
-    sprintf( b+strlen(b), " -g%d", wsp.spectGain );
-  if (wsp.spectLog)
-    sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.spectLog, all.cycle );
+  sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
+      wsp.spectCmd, wsp.spectFlag, wsp.spectGain, wsp.spectLog, all.cycle );
   // start 
   if (wspOpen()) raise(1);
-  flogf( "\nexec '%s'", b );
-  utlWrite( wsp.port, b, EOL );
+  flogf( "\nexec '%s'", all.str );
+  utlWrite( wsp.port, all.str, EOL );
   // gather
   if (!utlReadExpect(wsp.port, buf, "RDY", 200)) raise(2);
   utlWrite(wsp.port, "$WS?*", EOL);
   if (utlReadWait(wsp.port, buf, 60)) raise(3);
   flogf("\nwspStorm prediction: %s", buf);
-  // ?? add to daily
-  // stop
-  if (wspClose()) return 9;
+  // ?? add to daily, eng log
+  // ?? parse - we need to decide rise or not
+  if (wspClose()) raise(9);
   return 0;
 } // wspStorm
 
 ///
 // if wsp.log else flog
 int wspLog(char *str) {
+  static char *self="wspLog";
+  static char *rets="1=!open 2=!write";
   int r=0;
   if (wsp.log) {
-    sprintf(all.str, "%s\n", str);
+    sprintf(all.str, "%s\n", str); // ?? risky
     if (write(wsp.log, all.str, strlen(all.str))<1) return 1;
   } else {
     flogf("\nwspLog(%s)", str);
@@ -149,59 +170,39 @@ int wspLog(char *str) {
 } // wspLog
 
 ///
-// set date time on wispr
-int wspDateTime(void) {
-  static char *self="wspDateTime";
-  DBG();
-  if (wspOpen()) return 1;
-  sprintf(all.str, "date; date -s '%s'; hwclock -w", utlDateTime());
-  utlWrite(wsp.port, all.str, EOL);
-  if (wspClose()) return 9;
+// stub
+int wspDetect(WspData *wspd, int minutes) {
+  int x;
+  wspDetectM(&x, minutes);
+  wspd=null;
   return 0;
 }
 
 ///
-// run detection program, called from wspDetectH
-// if this fails, assume card is bad
+// run detection program for minutes, take a nap during
+// if this fails, assume card is bad; does not call wspStop
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
 // sets: *detectM+=
 // rets: 1=start 3=FIN 8=close 9=stop 10=query 20=space
 int wspDetectM(int *detectM, int minutes) {
   static char *self="wspDetectM";
   static char *rets="1=start 3=FIN 8=close 9=stop 10=query 20=space";
-  char *b;
   int r=0, detQ=0;
-  float free;
   DBGN( "(%d)", minutes );
   // cmd
-  b=all.str;
-  sprintf( b, "%s %s", wsp.wisprCmd, wsp.wisprFlag );
-  if (wsp.wisprGain)
-    sprintf( b+strlen(b), " -g%d", wsp.wisprGain );
-  if (wsp.wisprLog)
-    sprintf( b+strlen(b), " -l %.5s%03d.log", wsp.wisprLog, all.cycle );
+  sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
+      wsp.wisprCmd, wsp.wisprFlag, wsp.wisprGain, wsp.wisprLog, all.cycle );
+  if (wsp.wisprTest)
+    sprintf( all.str+strlen(all.str), " -W" );
   // start
   if (wspOpen()) raisex(1);
-  flogf( "\nexec '%s'", b );
-  utlWrite( wsp.port, b, EOL );
-  // run for minutes; every .detInt, query and reset.
-  // query also at end of minutes
-  tmrStart(data_tmr, wsp.detInt*60);
-  tmrStart(minute_tmr, minutes*60);
-  while (!tmrExp(minute_tmr)) {
-    if (tmrExp(data_tmr)) {
-      // query and reset
-      if (wspQuery(&detQ)) raisex(10);
-      *detectM += detQ;
-      if (wspSpace(&free)) raisex(20);
-      flogf("\n%s: disk %3.0f%% free on wispr#%d", self, free, wsp.card);
-      
-      tmrStart(data_tmr, wsp.detInt*60);
-    } // data_tmr
-  } // minute_tmr
+  flogf( "\nexec '%s'", all.str );
+  utlWrite( wsp.port, all.str, EOL );
+  // run for minutes // query at end 
+  pwrSleep(minutes*60);
   if (wspQuery(&detQ)) raisex(10);
   *detectM += detQ;
-  // ?? query diskFree
+  // ?? query disk free
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlReadExpect(wsp.port, all.buf, "FIN", 5)) {
@@ -214,93 +215,13 @@ int wspDetectM(int *detectM, int minutes) {
   return 0;
   //
   except: {
-    wspStop();
+    wspClose();
     return(dbg.except);
   }
 } // wspDetectM
 
 ///
-// run detection for .dutyM minutes at start of hour
-// run spectra if .spectRun > 0
-// idle if remains<.dutyM*60
-// watchdog - hour timer
-// uses: .dutyM
-// sets: *detectH=
-// rets: 1=watchdog 10=!wspDetectM 
-int wspDetectH(int *detectH, char *spectr) {
-  int r=0, remains, detM=0;
-  static char *self="wspDetectH";
-  DBG();
-  tmrStart(hour_tmr, 60*60+60);   // hour and a minute watchdog
-  // enough time?
-  wspRemainS(&remains);
-  if (remains > wsp.dutyM*60) {
-    flogf("\n%s: running WISPR#%d for %d minutes", self, wsp.card, wsp.dutyM);
-    r = wspDetectM(&detM, wsp.dutyM);
-  } else 
-    flogf("\n%s: skipping detection, dutyM%d > remains%d", 
-        self, wsp.dutyM, remains);
-  *detectH=detM;
-  if (r) { // error
-    sprintf( all.str, " !! error %d", r );
-    flogf( all.str );
-    wspLog( all.str );
-    return 10;
-  }
-  if (wsp.spectRun==2) {            // 2==hourly
-    wspStorm(spectr);
-    wspLog(spectr);
-  }
-  // ?? log
-  if (tmrExp(hour_tmr)) return 1;   // watchdog
-  wspRemainS(&remains);
-  flogf("\nwspDetectH() idle for %d minutes", remains/60);
-  utlNap(remains);
-  return 0;
-} // wspDetectH
-
-///
-// set riseT, run detectH until witching hour
-// uses: .spectRun 
-// sets: *detect+=
-// rets: 0=success ?? 1=WatchDog 11=hour.WD 12=hour.startFail 13=hour.minimum
-int wspDetect(WspData *wspd, int minutes) {
-  static char *self="wspDetect";
-  float laterH;
-  int detH=0, r=0;
-  time_t now, riseT;
-  DBG();
-  flogf("\n%s: setting wispr date/time", self);
-  wspDateTime();
-  wspd->detects = 0;
-  time(&now);
-  riseT=now+minutes;
-  laterH = (float)(riseT-now)/60/60;
-  flogf("\n  starting wispr detection; end in %3.1f hours", laterH);
-  while (time(NULL) < riseT) {
-    if (wspDetectH(&detH, wspd->spectr)) r+=10;
-    wspd->detects += detH;
-    flogf("\n%s: %d detections @%s", self, wspd->detects, utlDateTime());
-  } // while < riseT
-  if (wsp.spectRun==1) 
-    wspStorm(all.buf);
-  // ?? log
-  return r;
-} // wspDetect
-
-///
-// seconds remaining in this hour
-void wspRemainS(int *remains) {
-  struct tm *tim;
-  time_t now;
-  time(&now);
-  tim = gmtime(&now);
-  *remains = ((60-tim->tm_min)*60) - tim->tm_sec;
-  DBG1("wspRemainS():%ds", *remains);
-} // wspRemainS
-
-///
-// query detections
+// query detections from running wspr
 // rets: 0=success 1=badData
 int wspQuery(int *det) {
   char *s, query[32];
@@ -323,7 +244,7 @@ int wspQuery(int *det) {
 } // wspQuery
 
 ///
-// wispr detection program, query disk space
+// query disk space from running wspr
 int wspSpace(float *free) {
   char *s;
   *free = 0.0;
@@ -337,6 +258,21 @@ int wspSpace(float *free) {
   *free = atof(s);
   return 0;
 } // wspChkCF
+
+///
+// change cards if we have another one
+// rets: 0=success >=fail
+int wspCardSwap(void) {
+  if (wsp.card<=1) {
+    wsp.card=0;
+    utlErr(wsp_err, "No more wispr cards");
+    return 1;
+  } else {
+    wsp.card-=1;
+    flogf( "\nwspCardSwap() -> %d", wsp.card );
+    return 0;
+  }
+} // wspCardSwap
 
 /*
  * wispr doc <winchProj\LARASystem5.doc>
@@ -364,15 +300,16 @@ One single program can be operated in the following 5 different modes.
   the buffer.  File name has to be bw_test.wav.  
   Detection results are stored in detections.dtx.
 
-   $GPS ,%ld, %8.3f,%7.3f*	Cr  GPS time, long and lat    	CF2->WISPR
-   $DX?,%ld,%ld*                Cr  Inq detections            	CF2->WISPR
-   $DXN ,%d* 			Cr  Num of detections         	WISPR->CF2
-   $ACK* 			Cr  Send ACK for each line      WISPR->CF2
-   $NGN,%d* 			Cr  New gain (0-3)            	CF2->WISPR
-   $EXI* 			Cr  End logging              	CF2->WISPR
-   $DET,%d* 			Cr  Detection parameter	        WISPR->CF2
-   $DFP* 			Cr  Inq disk space   		CF2->WISPR
-   $DFP,%5.2f*                  Cr  Reply disk space avail %    WISPR->CF2
+commands end with \r
+   $GPS ,%ld, %8.3f,%7.3f*	GPS time, long and lat    	CF2->WISPR
+   $DX?,%ld,%ld*            Inq detections            	CF2->WISPR
+   $DXN,%d* 			    Num of detections         	WISPR->CF2
+   $ACK* 			        Send ACK for each line      WISPR->CF2
+   $NGN,%d* 			    New gain (0-3)            	CF2->WISPR
+   $EXI* 			        End logging              	CF2->WISPR
+   $DET,%d* 			    Detection parameter	        WISPR->CF2
+   $DFP* 			        Inq disk space   		    CF2->WISPR
+   $DFP,%5.2f*              Reply disk space avail %    WISPR->CF2
 
 The followings are descriptions of the wispr command line parameters.  
 Options:           	DESCRIPTION                                	DEFAULT

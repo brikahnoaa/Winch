@@ -26,8 +26,7 @@ typedef struct UtlInfo {
   char *ret;                // semi-global, returned by some char *utlFunc()
   char *str;
   int errCnt[sizeof_err];
-  long bone;                // default bone to give dog
-  long watch;               // watchdog countdown timer secs
+  long bone;                // default bone to give dog for utlPet(0)
 } UtlInfo;
 
 typedef struct AllData {
@@ -35,14 +34,13 @@ typedef struct AllData {
   char *str;                // 4K buffer (BUFSZ)
   int cycle;                // RiseCallFallData cycles
   int starts;               // number of starts (VEEPROM)
+  long watch;               // watchdog countdown timer secs
   time_t startCycle;        // cycle start time
   time_t startProg;         // program start time
 } AllData;
 
 // the globals below are used by all modules // malloc'd in utlInit()
 extern AllData all;
-
-static void utlDogPit(void);
 
 char *utlDate(void);
 char *utlDateTime(void);
@@ -52,7 +50,6 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait);
 char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
-int utlDateTimeToSecs(time_t *ret, char *date, time_t *time);
 int utlGetBlock(Serial port, char *buff, int msgSz, int respms);
 int utlGetUntil(Serial port, char *in, char *lookFor);
 int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait);

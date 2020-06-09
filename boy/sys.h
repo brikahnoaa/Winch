@@ -26,6 +26,7 @@ typedef struct SysInfo {
 static int checkVitals(void);
 static int startCheck(void);
 static long sysDiskFree(void);
+static void sysDogPit(void);
 static void dirSetup(char *path);
 static void logInit(char *file);
 static void preRun(int delay);

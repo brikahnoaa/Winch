@@ -1,3 +1,26 @@
+Tue, Jun  9, 2020 11:25:43 AM
+.1 broken reuse of utl.buf due to calls from utl.* to utl.*
+.2 look for similar problems using all.str .buf
+.3 small global changes
+.. macros in dbg.h should be in dbg.c, they are more like code than header
+.. utlTrim unused
+.4 err! mystery call to nonPrint
+formatted string comes into wspCmd, maybe from utlReadWait()
+System Volume Information/\arc/\bw_test.wav/\com.dtx/\console_prompt/\detections.dtx/\flac/\gaintest/\log/\output/\spectrogram8kHz/\start/\wispr_bw/\</cmd>
+
+
+Fri, Jun  5, 2020 11:20:05 AM
+.1 /e/ haru. 9600 baud iridium 
+darius@soundnine.com
+Darius Miller is the company president, engineer, programmer and all the other. He is an interesting guy to talk to.
+
+Wed, May 27, 2020  2:59:02 PM
+. check
+.. time between wspClose ... wspStop
+. smarter
+.. build command strings and update if remote changed
+
+Tue, Apr 28, 2020 12:02:00 PM
 . check
 .. wspr log appends, log is redundant to detections
 ... tst/wspCmd read cmd from term, start wsp, execute, print result

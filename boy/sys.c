@@ -5,8 +5,6 @@
 #define STARTS_MAX "50"
 #define SYS_LOG "SYS.LOG"
 #define C_DRV ('C'-'A')
-#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
-#define SYSCLK 16000 // Clock speed: 2000 works 160-32000 kHz Default: 16000
 
 SysInfo sys;
 ///
@@ -27,7 +25,10 @@ SysInfo sys;
 
 IEV_C_PROTO(ExtFinishPulseRuptHandler);
 
-
+#define DOG_51 20     // 20 * 51ms =~ 1.02sec
+#define DOG_INTR 6    // why 6? default is 3 ??
+#define WTMODE nsStdSmallBusAdj // choose: nsMotoSpecAdj or nsStdSmallBusAdj
+#define SYSCLK 14720  // SYSCLK 160 - 32000: 3680, 7360, 14720 for best RS-232
 ///
 // pre, starts, config, log, pico
 // uses: sys.logfile
@@ -39,15 +40,21 @@ int sysInit(void) {
   short qsize = 64*1024;
   preRun(10);
   all.starts = startCheck();
-  time(&all.startProg);     // program start time, global
-  time(&all.startCycle);    // cycle start time, global
   // clock
   TMGSetSpeed(SYSCLK);
   CSSetSysAccessSpeeds(nsFlashStd, nsRAMStd, nsCFStd, WTMODE);
   CSGetSysAccessSpeeds(&nsFlash, &nsRAM, &nsCF, &nsBusAdj);
   CSGetSysWaits(&waitsFlash, &waitsRAM, &waitsCF); // auto-adjusted
+  // watchdog init using PIT51
+  all.watch = 60;           // big bone for watchdog, one minute to get set up
+  PITInit(DOG_INTR);        // interrupt priority
+  PITSet51msPeriod(DOG_51); // ~ 1sec
+  PITAddChore(sysDogPit, DOG_INTR);
+  //
+  time(&all.startProg);     // program start time, global
+  time(&all.startCycle);    // cycle start time, global
   // need utlInit before logInit
-  utlInit();                // malloc global all.str, start PIT
+  utlInit();                // malloc global and utl buffers
   logInit(sys.logFile);     // stores flogf filename, found in VEE.sys_log
   dbgInit();                // common init: dbg0,1,2
   cfgInit();
@@ -56,12 +63,25 @@ int sysInit(void) {
   params->rxqsz = qsize;
   params->txqsz = qsize;
   TUSetDefaultParams( params );
-  // enable TUAlloc for serial ports
-  TUInit(calloc, free);   
+  TUInit(calloc, free);     // enable TUAlloc for serial ports
+  // log sys info
   flogf(
       "\n%ukHz nsF:%d nsR:%d nsC:%d adj:%d WF:%-2d WR:%-2d WC:%-2d SYPCR:%02d",
       TMGGetSpeed(), nsFlash, nsRAM, nsCF, nsBusAdj, waitsFlash, waitsRAM,
       waitsCF, *(uchar *)0xFFFFFA21);
+  flogf("\n---   ---");
+  flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
+  flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
+        BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
+        BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
+  flogf("\nProgram: %s  Version: %s  Starts: %d",
+    sys.program, sys.version, all.starts);
+  flogf("\nStarted: %s", utlDateTime());
+  flogf("\n---   ---");
+  fflush(NULL);               // ??
+  cdrain();
+  ciflush();
+  coflush();
   return all.starts;
 } // sysInit
 
@@ -114,7 +134,7 @@ void logInit(char *file) {
   char *dt, cmd[64];
   struct stat finfo;
   DBG0("logInit(%s)", file);
-  utlX();
+  // utlX(); not until after cfgInit
   PZCacheSetup(C_DRV, calloc, free);
   strcpy(file, VEEFetchStr( "SYS_LOG", SYS_LOG ));
   // copy to log\MMDDHHMM.sys
@@ -129,19 +149,6 @@ void logInit(char *file) {
   }
   //
   Initflog(file, true);
-  flogf("\n---   ---");
-  flogf("\nProgram: %s,  Build: %s %s", __FILE__, __DATE__, __TIME__);
-  flogf("\nSystem Parameters: CF2 SN %05ld, PicoDOS %d.%02d, BIOS %d.%02d",
-        BIOSGVT.CF1SerNum, BIOSGVT.PICOVersion, BIOSGVT.PICORelease,
-        BIOSGVT.BIOSVersion, BIOSGVT.BIOSRelease);
-  flogf("\nProgram: %s  Version: %s  Starts: %d",
-    sys.program, sys.version, all.starts);
-  flogf("\nStarted: %s", utlDateTime());
-  flogf("\n---   ---");
-  fflush(NULL);               // ??
-  cdrain();
-  ciflush();
-  coflush();
 } // logInit
 
 ///
@@ -154,6 +161,7 @@ void sysStop(char *out) {
   ngkStop();
   pwrStop();
   wspStop();
+  BIOSReset();
 } // sysStop
 
 ///
@@ -187,6 +195,14 @@ long sysDiskFree(void) {
   sys.diskSize = DSDDataSectors(C_DRV);
   return sys.diskFree/2;
 } // sysDiskFree
+
+///
+// watchdog chore run by pit every second
+void sysDogPit(void)
+{ // watch counts down to zero
+  if (! all.watch--)
+    utlErr( dog_err, "Bark! Woof!" );
+} // sysDogPit
 
 ///
 // call flush for each module with logging

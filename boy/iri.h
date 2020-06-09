@@ -50,6 +50,7 @@ static int iriSendSlow(uchar *c, int len);
 static void iriBufMalloc(void);
 
 int iriDateTime(GpsStats *stats);
+int iriDateTimeToSecs(time_t *ret, char *date, time_t *time);
 int iriDial(void);
 int iriLandCmds(uchar *buff);
 int iriLandResp(uchar *buff);

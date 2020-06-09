@@ -30,6 +30,7 @@ void mpcInit(void) {
   if (mpc.pamPort==NULL)
     utlStop("mpcInit() pam open fail");
   mpcPamDev(null_pam);
+  pwrInit();
 } // mpcInit
 
 ///
