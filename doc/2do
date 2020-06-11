@@ -2,7 +2,7 @@ Tue, Jun  9, 2020 11:25:43 AM
 .1 broken reuse of utl.buf due to calls from utl.* to utl.*
 .2 look for similar problems using all.str .buf
 .3 small global changes
-.. macros in dbg.h should be in dbg.c, they are more like code than header
+.. dbg touchup
 .. utlTrim unused
 .4 err! mystery call to nonPrint
 formatted string comes into wspCmd, maybe from utlReadWait()

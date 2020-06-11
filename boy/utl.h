@@ -56,7 +56,6 @@ int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait);
 int utlLogOpen(int *log, char *base);
 int utlLogClose(int *fd);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);
-int utlTrim(char *str);
 int utlRead(Serial port, char *in);
 int utlReadWait(Serial port, char *in, int wait);
 void utlCloseErr(char *str);
