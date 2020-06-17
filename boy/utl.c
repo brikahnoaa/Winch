@@ -33,18 +33,6 @@ void utlInit(void) {
 }
 
 ///
-// sets: (*line)
-int utlTrim(char *line) {
-  char c;
-  int len = strlen(line);
-  DBG2("utlTrim()");
-  // trim off crlf at end 
-  c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
-  c = line[len-1]; if (c=='\r' || c=='\n') line[--len] = 0;
-  return len;
-}
-
-///
 // search str for sub, then return string that matches set
 // out = matched string, or null string if no match
 // sets: *out, rets: out
@@ -91,11 +79,11 @@ void utlWrite(Serial port, char *out, char *eol) {
 // read all the chars on the port, with a normal char delay; discard nulls=0
 // char *in should be BUFSZ
 // sets: *in = string
-// rets: -1=overrun
+// rets: read, -1=overrun
 int utlRead(Serial port, char *in) {
   short ch;
   int len;
-  for (len=0; len<BUFSZ; len++) {
+  for (len=0; len<BUFSZ-1; len++) {
     ch = TURxGetByteWithTimeout(port, (short)CHAR_DELAY);
     if (ch<0) break; // timeout
     if (ch==0) len--; // discard null
@@ -105,25 +93,24 @@ int utlRead(Serial port, char *in) {
   DBG2(" <%d<", len);
   if (len) DBG3(" <<%d'%s'<<", len, utlNonPrintBlock(in, len));
   if (len>=BUFSZ-1) return -1;
-  return 0;
+  return len;
 } // utlRead
 
 ///
 // delay up to wait seconds for first char, null terminate
 // assumes full string arrives promptly after a delay of several seconds
-// rets: *in 1=TO
+// sets: *in 
+// rets: utlRead()
 int utlReadWait(Serial port, char *in, int wait) {
-  tmrStart(second_tmr, wait);
+  in[0] = 0;
+  tmrStart(utl_tmr, wait);
   // wait for a char
   while (!TURxQueuedCount(port)) {
+    utlDelay(100);
+    if (tmrExp(utl_tmr)) return 0;
     utlX(); // twiddle thumbs
-    if (tmrExp(second_tmr)) {
-      in[0] = 0;
-      return 1;
-    }
   }
-  utlRead(port, in);
-  return 0;
+  return( utlRead(port, in) );
 }
 
 ///
@@ -139,21 +126,18 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
   in[0] = 0;
   tmrStart(utl_tmr, wait);
   // loop until expected or timeout
-  while (!r) { // !strstr
-    utlX();
-    if (tmrExp(utl_tmr)) {
-      DBG0("utlReadExpect(%s, %d) timeout", expect, wait);
-      return NULL;
-    }
-    utlRead(port, utl.buf);
-    l = strlen(utl.buf);
+  while (!r) {
+    l = utlRead(port, utl.buf);
     if (l) {
-      if (sz+l>=BUFSZ) return NULL;
-      strcat(in, utl.buf);
       sz += l;
-    }
-    r = strstr(in, expect);
-  } // !strstr
+      if (sz>=BUFSZ) break;
+      strcat(in, utl.buf);
+      r = strstr(in, expect);
+      continue;
+    } // read
+    if (tmrExp(utl_tmr)) break;
+    utlX();
+  } // while tmr
   return r;
 } // utlReadExpect
 
@@ -161,7 +145,8 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
 // read all the chars on the port, with a normal char delay; discard nulls=0
 // like utlRead but stops reading on char match
 // char *in should be BUFSZ, returns null terminated string
-// rets: *in 1=overrun
+// sets: *in 
+// rets: char#, overrun=-1
 int utlGetUntil(Serial port, char *in, char *lookFor) {
   short ch;
   int len;
@@ -175,27 +160,27 @@ int utlGetUntil(Serial port, char *in, char *lookFor) {
   in[len]=0;            // string
   DBG2(" <%d<", len);
   if (len) DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
-  if (len>=BUFSZ) return 1;
-  return 0;
+  if (len>=BUFSZ) return -1;
+  return len;
 } // utlGetUntil
 
 ///
 // wait then read chars until match in char *lookFor
 // delay up to wait seconds for first char, null terminate
 // like utlReadWait but stops reading on char match
-// rets: *in 1=TO
+// sets: *in 
+// rets: utlGetUntil() char#
 int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
   in[0] = 0;
   tmrStart(second_tmr, wait);
   // wait for a char
   while (!TURxQueuedCount(port)) {
-    utlX(); // twiddle thumbs
-    if (tmrExp(second_tmr)) return 1;
-    utlNap(1);
+    utlDelay(100);
     DBG1(".");
+    if (tmrExp(second_tmr)) break;
+    utlX(); // twiddle thumbs
   }
-  utlGetUntil(port, in, lookFor);
-  return 0;
+  return( utlGetUntil(port, in, lookFor));
 } // utlGetUntilWait
 
 ///

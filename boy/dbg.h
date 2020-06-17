@@ -24,12 +24,13 @@ typedef struct DbgInfo {
   void (*funcPtr)(void);  // test program run by utlX 'd' 
 } DbgInfo;
 
-extern DbgInfo dbg;
-
+///
 // faux exception processing: raise(10) ---> except: {return dbg.x;}
 // except: {flogf(" %s", rets); return dbg.x;}
 
-static char *rets="unknown error";  // default, may be locally defined return val
+static char *self="unknown funct";  // default for locally defined return val
+static char *rets="unknown error";  // default for locally defined return val
+
 #define raise(EXC) { flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
   dbg.except=EXC; return EXC; }
 #define raisex(EXC) { flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
@@ -104,12 +105,15 @@ static char *rets="unknown error";  // default, may be locally defined return va
 #define DBGX(...)
 #endif
 
+extern DbgInfo dbg;
+
 void dbgInit(void);
 void dbgx(bool on);
 void dbg0(bool on);
 void dbg1(bool on);
 void dbg2(bool on);
 void dbg3(bool on);
+void dbg4(bool on);
 void dbgLevel(int i);
 
 #endif
