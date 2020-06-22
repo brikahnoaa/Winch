@@ -54,14 +54,16 @@ int wspStart(void) {
 #define WSP_START_CLOSE "</wispr>"
 ///
 // stop wsp.card
+// sets: wsp.on wsp.open
 int wspStop(void) {
   int r=0;
   static char *self="wspStop";
   DBG();
-  wsp.on = false;
   if (wsp.log) 
     utlLogClose(&wsp.log);
   mpcPamPwr(wsp.card, false);
+  wsp.open = false;
+  wsp.on = false;
   return 0;
 } // wspStop
 
@@ -81,6 +83,7 @@ int wspDateTime(void) {
 
 ///
 // wspr is giving us xml style <cmd> </cmd>
+// sets: wsp.open
 #define WSP_CMD_OPEN "<cmd>"
 #define WSP_CMD_SEC 20
 int wspOpen(void) {
@@ -91,37 +94,43 @@ int wspOpen(void) {
   if (!wsp.on) raise(1);
   if (!utlReadExpect(wsp.port, all.buf, WSP_CMD_OPEN, WSP_CMD_SEC)) 
     raise(2);
+  wsp.open = true;
   return 0;
 } // wspOpen
 
 ///
-// close wispr /mnt/start
 // wspr is giving us xml style <cmd> </cmd>
+// sets: wsp.open
 #define WSP_CMD_CLOSE "</cmd>"
 int wspClose(void) {
   int r=0;
   static char *self="wspClose";
-  static char *rets="1=off 2=!</wispr>";
+  static char *rets="1=off 2=!</cmd>";
   DBG();
   if (!wsp.on) raise(1);
   if (!utlReadExpect(wsp.port, all.buf, WSP_CMD_CLOSE, WSP_CMD_SEC)) 
     raise(2);
+  wsp.open = false;
   return 0;
 } // wspClose
 
 ///
-// assumes started.
-int wspCmd(char *out, char *cmd) {
+// assumes started. waits seconds for response before timeout
+// sets: *out
+int wspCmd(char *out, char *cmd, int seconds) {
   static char *self="wspCmd";
-  static char *rets="1=!open 2=WSP_CMD_SEC timeout";
+  static char *rets="1=!open 2=timeout";
   char *r;
   DBG();
   out[0]=0;
   if (wspOpen()) raise(1);
   cprintf("sending to wispr: %s \n", cmd);
   utlWrite( wsp.port, cmd, EOL );
-  r = utlReadExpect( wsp.port, all.buf, WSP_CMD_CLOSE, WSP_CMD_SEC );
+  r = utlReadExpect( wsp.port, all.buf, WSP_CMD_CLOSE, seconds );
   if (r) 
+  {
+    // strip off trailing <cmd>
+    *r = 0;
     flogf("\n%s\n", all.buf);
   else
     raise(2);
