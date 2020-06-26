@@ -8,7 +8,6 @@ Tue, Jun  9, 2020 11:25:43 AM
 formatted string comes into wspCmd, maybe from utlReadWait()
 System Volume Information/\arc/\bw_test.wav/\com.dtx/\console_prompt/\detections.dtx/\flac/\gaintest/\log/\output/\spectrogram8kHz/\start/\wispr_bw/\</cmd>
 
-
 Fri, Jun  5, 2020 11:20:05 AM
 .1 /e/ haru. 9600 baud iridium 
 darius@soundnine.com
@@ -113,6 +112,33 @@ were 3/30/2019. Times were different. Could be GPS time reading errors,
 but why it fixed the time later?
 2. Noise008.log is very large. Seems it concatenated to a one file. This
 is the period when LARA stayed at depth for the storm to pass.
+
+Thu, Feb 21, 2019  9:57:01 AM
+
+. options
+
+Sat, Feb  9, 2019  3:17:10 PM
+. rise fall
+tolerate bad commun
+.. data phase
+... set rise time
+... collect data
+one hour, then check current against rise hour; repeat
+... storm check (get tougher each day)
+. boy.stop = remote stop cmd
+. data collection
+.. engineering data redux
+.. chem data
+
+Tue, Jun 26, 2018  3:45:55 PM
+. run out line through entire call phase
+. gather data for extended line, antMod depth with brake on
+. GPS time -> cf2 -> wispr
+
+1. At the beginning of noise*.log file from 0 to 8, for a few days dates
+. wspr
+.. storm check control from lara, not wspr start file
+.. set clock
 2. It seems missing the acoustic wind data of the time just before LARA
 rises.  For example, there are date between 07:30 and 08:30, and no data
 near 08:00.
