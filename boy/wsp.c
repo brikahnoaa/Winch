@@ -132,6 +132,7 @@ int wspCmd(char *out, char *cmd, int seconds) {
     // strip off trailing <cmd>
     *r = 0;
     flogf("\n%s\n", all.buf);
+  }
   else
     raise(2);
   return 0;
