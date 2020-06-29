@@ -1,13 +1,13 @@
-// wspCmd.c
+// wspTalk.c
 #include <main.h>
 
 extern WspInfo wsp;
 
 int main(void){
-  static char *self="tst/wspCmd";
+  static char *self="tst/wspTalk";
   static char *rets="1=!start 2=!open 3=timeout 4=!close";
   char c;
-  int r, x, run=12, rest=5, cmdTO=30;
+  int r, x, run=12, timeout=30;
   char *dfCmd="df -h /mnt > output";
   Serial port;
 
@@ -16,14 +16,10 @@ int main(void){
   wspInit();
   port = mpcPamPort();
   if (dbg.t1) run = dbg.t1;
-  if (dbg.t2) rest = dbg.t2;
-  if (dbg.t3) cmdTO = dbg.t3;
+  if (dbg.t2) timeout = dbg.t2;
   wspStart();
   flogf("  params are system vars, e.g.:  set dbg.t1=30 \n");
-  flogf("run=%d (t1)  rest=%d (t2) cmdTO=%d (t3)\n", run, rest, cmdTO);
-  flogf("\n%s\n", utlDateTime());
-  flogf(" .. %s .. \n", dfCmd);
-  wspCmd(all.buf, dfCmd, 66);
+  flogf("run=%d (t1)  timeout=%d (t2) \n", run, timeout);
   flogf("\n%s\n", utlDateTime());
   flogf("press : to enter command line, or quick command as below\n");
   flogf("q=quit d=detect%d s=wStorm t=setTime \n", run);
@@ -33,6 +29,7 @@ int main(void){
     { // input: cmd or "command line"
       c = cgetc();
       cputc(c);
+      flogf("\n%s\n", utlDateTime());
       switch (c)
       { // 
       case ':':
@@ -42,7 +39,7 @@ int main(void){
         cprintf("%c\n", c);
         if (c=='y')
         { 
-          r = wspCmd(all.buf, all.str, cmdTO);
+          r = wspCmd(all.buf, all.str, timeout);
           if (r) raise(2);
           if (all.buf) 
             cprintf("\n%s\n", utlNonPrint(all.buf));
