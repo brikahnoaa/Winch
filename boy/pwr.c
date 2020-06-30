@@ -17,9 +17,11 @@ void pwrIrq4RxISR(void) { PinIO(IRQ4RXD); RTE(); }
 ///
 // power down as much as we can: shut off CFcard rs232MAX
 // allow for operator BREAK
-// rets: 0=sleep #=woke with sec remaining
+// rets: 0=normalsleep #=user break sec remaining
 int pwrNap(long secs)
 { // using LPStop with wakeup every second from PIT watchdog
+  static char *self="pwrNap";
+  static char *rets="0=normalsleep #=user break sec remaining";
   time_t now, then;
   long sec;
   float tuning=1.02;
@@ -28,7 +30,7 @@ int pwrNap(long secs)
   sec = secs/tuning + 1.5; // add one and round up
   time(&now);
   then = now;
-  flogf("\nsleep %ld secs (%ld PITs) @ %s", secs, sec, utlDateTimeFmt(now));
+  DBG1("\nsleep %ld secs (%ld PITs) @ %s", secs, sec, utlDateTimeFmt(now));
   cdrain();
   utlDelay(2); // cdrain is not enough !?
   EIAForceOff(true);          // turn off the RS232 driver
@@ -50,9 +52,11 @@ int pwrNap(long secs)
   CFEnable(true);             // turn on the CompactFlash card
   utlDelay(2); // settle
   if (sec>2) // user break
-    flogf("\nuser break. sleepsec remaining=%d", sec);
+    flogf("\nuser break. sleepsec remaining=%ld", sec);
+  else
+    sec = 0;
   time(&now);
-  flogf("\nslept %ld @ %s", now-then, utlDateTimeFmt(now));
+  DBG1("\nslept %ld @ %s", now-then, utlDateTimeFmt(now));
   return(sec);
 } // pwrNap
 

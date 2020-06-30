@@ -65,7 +65,6 @@ void utlLogPathName(char *path, char *base, int day);
 void utlLogTime(void);
 void utlNap(int sec);
 void utlPet(long pet);
-void utlSleep(void);
 void utlStop(char *out);
 void utlTestLoop(void);
 void utlX(void);
