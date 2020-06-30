@@ -22,8 +22,7 @@ static void pwrOpenLog(long);
 bool pwrCheck(void);
 float pwrMonitor(ulong, int, ulong *);
 float pwrVolts(void);
-int pwrSleep(long sec);
-void pwrNap(int sec);
+int pwrNap(long sec);
 void pwrInit(void);
 void pwrStop(void);
 

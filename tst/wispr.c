@@ -2,25 +2,23 @@
 #include <main.h>
 
 void main(void){
-  char c;
+  int dq=0, r=0, run=2;
+  float f=0.0;
   Serial port;
 
   sysInit();
   mpcInit();
   wspInit();
+  if (dbg.t1) run = dbg.t1;
+  cprintf("  params are system vars, e.g.:  set dbg.t1=30 \n");
+  cprintf("run=%d (t1)  \n", run);
+  cprintf("  hint: set wsp.wisprtest=1  for detection simul \n");
   port = mpcPamPort();
-  flogf("\n%s\n", utlDateTime());
-  flogf("talk to the wispr com0, use with com1@115200, [tab]=exit\n");
-  while (true) 
-  {
-    if (cgetq()) 
-    {
-      c=cgetc();
-      if (c=='\t') 
-        exit();
-      utlWriteBlock(port, &c, 1);
-    }
-    if (utlRead(port, all.buf))
-      cprintf("%s", all.buf);
-  }
+  cprintf("\n%s\n", utlDateTime());
+  wspStart();
+  r = wspDetectM(&dq, &f, run);
+  cprintf("\nwspDetect() %4.2f free, %d detected -> returns %d \n", f, dq, r);
+  utlNap(2);
+  wspClose();
+  wspStop();
 }
