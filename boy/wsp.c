@@ -32,8 +32,7 @@ int wspStart(void) {
   static char *self="wspStart";
   static char *rets="1=!wsp.port 2=!<wispr> 3=!date";
   DBG();
-  // flush
-  if (wsp.port) utlRead(wsp.port, all.str);
+  if (wsp.port) TURxFlush(wsp.port); // flush
   else raise(1);
   if (wsp.on || wsp.log) wspStop();
   DBG1("\n%s: activating wispr#%d", self, wsp.card);
@@ -60,6 +59,7 @@ int wspStop(void) {
     utlLogClose(&wsp.log);
   wsp.on = false;
   c = utlReadExpect(wsp.port, all.buf, "</wispr>", 10);
+  utlNap(1);
   mpcPamPwr(wsp.card, false);
   if (c) raise(2);
   return 0;
@@ -183,7 +183,7 @@ int wspDetect(WspData *wspd, int minutes) {
 // if this fails, assume card is bad; does not call wspStop
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
 // sets: *detectQ=detections
-// rets: 1=start 3=FIN 8=close 9=stop 10=query 20=space
+// rets: 1=start 3=FIN 8=close 10=query 20=space
 int wspDetectM(int *detected, float *free, int minutes) {
   static char *self="wspDetectM";
   static char *rets="1=open 3=!FIN 8=close 9=stop 10=query 20=space";
@@ -195,13 +195,13 @@ int wspDetectM(int *detected, float *free, int minutes) {
     sprintf( all.str+strlen(all.str), " -W" );
   // start
   if (wspOpen()) raisex(1);
-  flogf( "\nexec '%s'", all.str );
+  flogf( "\n%s: %s", self, all.str );
   utlWrite( wsp.port, all.str, EOL );
+  TUTxWaitCompletion( wsp.port );
   // run for minutes // power low // detect, free queries at end 
   pwrNap(minutes*60);
   if (wspQuery(detected)) raisex(10);
-  flogf(" detects=%d ", *detected);
-  wspSpace(free);
+  if (wspSpace(free)) raisex(20);
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
   if (!utlReadExpect(wsp.port, all.buf, "FIN", 5)) {
@@ -209,10 +209,11 @@ int wspDetectM(int *detected, float *free, int minutes) {
     raisex(3);
   }
   // stop
-  if (wspClose()) raisex(8);
+  if (wspClose()) raise(8);
   return 0;
   //
   except: {
+    utlWrite(wsp.port, "$EXI*", EOL);
     wspClose();
     return(dbg.except);
   }

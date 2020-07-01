@@ -17,7 +17,7 @@ void main(void){
   cprintf("\n%s\n", utlDateTime());
   wspStart();
   r = wspDetectM(&dq, &f, run);
-  cprintf("\nwspDetect() %4.2f free, %d detected -> returns %d \n", f, dq, r);
+  printf("\nwspDetect() %5.2f free, %d detected -> returns %d \n", f, dq, r);
   utlNap(2);
   wspClose();
   wspStop();
