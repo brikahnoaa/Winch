@@ -383,17 +383,11 @@ void utlErr( ErrType err, char *str) {
 // nap called often
 void utlNap(int sec) {
   DBG2("utlNap(%d)", sec);
-  while(sec-- >= 0) {
+  while(0<sec--) {
     utlX();
-    pwrNap(1);
+    utlDelay(1000);
   }
 } // utlNap
-
-///
-// stop called often
-void utlSleep(void) {
-  mpcSleep();
-} // utlSleep
 
 ///
 // stop called often

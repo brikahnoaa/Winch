@@ -1,0 +1,45 @@
+running wispr_bw -W:
+/bin/wispr_bw -v2 -T8 -b15 -M2 -F2 -g1 -l wispr000.log -W
+Mounted /mnt successful
+Logging all messages to /mnt/wispr000.log
+FAT: Filesystem error (dev sda1)
+    fat_free_clusters: deleting FAT entry beyond EOF
+    File system has been set read-only
+NULL pointer access
+Deferred Exception context
+CURRENT PROCESS:
+COMM=wispr_bw PID=218  CPU=0
+TEXT = 0x00280040-0x002ae1c0        DATA = 0x002ae1e0-0x002b5714
+ BSS = 0x002b5714-0x002c13c0  USER-STACK = 0x002c2f34
+ ...
+
+Tue, Jun 30, 2020  5:28:50 PM
+Wed Jul  1 00:24:20 UTC 2020
+</cmd>
+<cmd>
+/bin/wispr_bw -v2 -T8 -b15 -M2 -F2 -g1 -l wispr000.log -W
+Mounted /mnt successful
+Logging all messages to /mnt/wispr000.log
+FAT: Filesystem error (dev sda1)
+    fat_free_clusters: deleting FAT entry beyond EOF
+    File system has been set read-only
+NULL pointer access
+Deferred Exception context
+CURRENT PROCESS:
+COMM=wispr_bw PID=217  CPU=0
+TEXT = 0x00280040-0x002ae1c0        DATA = 0x002ae1e0-0x002b5714
+ BSS = 0x002b5714-0x002c13c0  USER-STACK = 0x002c2f34
+
+return address: [0x002a5bce]; contents of:
+0x002a5ba0:  3006  304d  e300  0212  3038  3047  e14a  0029
+0x002a5bb0:  6780  6009  e10a  ee6c  0062  3007  e801  0000
+...
+Return addresses in stack:
+   frame  1 : <0x002a8568> [ wispr_bw + 0x28528 ]
+    address : <0x002c2f82> [ wispr_bw + 0x42f82 ]
+    address : <0x002c2fda> [ wispr_bw + 0x42fda ]
+bfin-wdt: Unexpected close, not stopping watchdog!
+SEGV
+</cmd>
+
+

@@ -5,7 +5,7 @@
 typedef struct WspInfo {
   Serial port;                // mpcPamPort()
   bool on;                    // wispr running <wispr>
-  bool open;                  // wispr waiting <cmd>
+  bool logging;                  // wispr waiting <cmd>
   bool wisprTest;             // set -W flaf
   char spectCmd[32];          // spectragram command
   char spectFlag[64];         // -v1 -C12 -n512 -o256 
@@ -31,22 +31,19 @@ typedef struct WspData {      // pass from boy to wsp
   int detects;                // wsp: detections
 } WspData;
 
-int wspClose(void);
-static int wspOpen(void);
-int wspStart(void);
-static void wspRemainS(int *remains);
-
 int wspCardSwap(void);
+int wspClose(void);
 int wspCmd(char *out, char *cmd, int seconds);
 int wspDateTime(void);
 int wspDetect(WspData *wspd, int minutes);
-int wspDetectH(int *detectH, char *spectr);
-int wspDetectM(int *detectM, int minutes);
+int wspDetectM(int *detected, float *free, int minutes);
 int wspLog(char *str);
+int wspOpen(void);
 int wspQuery(int *detect);
 int wspSpace(float *disk);
-int wspStorm(char *buf);
+int wspStart(void);
 int wspStop(void);
+int wspStorm(char *buf);
 void wspInit(void);
 
 #endif

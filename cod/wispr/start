@@ -49,9 +49,11 @@ done
 
 # cannot have too many files in top of msdos filesystem
 if ls /mnt/*.flac 2>/dev/null; then
+  mkdir -p /mnt/flac
   mv /mnt/*.flac /mnt/flac
 fi
 if ls /mnt/*.log 2>/dev/null; then
+  mkdir -p /mnt/log
   mv /mnt/*.log /mnt/log
 fi
 
@@ -61,9 +63,8 @@ if mount | grep -q /mnt; then
   cd /
   sync
   umount /mnt
-  echo "try     mount /dev/sda1 /mnt"
 fi
-sleep 1
+echo "try     mount /dev/sda1 /mnt"
 echo -n "</wispr>" > $com1
 echo "</wispr>"
 
