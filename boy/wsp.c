@@ -40,7 +40,7 @@ int wspStart(void) {
   wsp.on = true;
   if (wsp.logging) 
     utlLogOpen(&wsp.log, "wsp"); 
-  if (!utlReadExpect(wsp.port, all.buf, "<wispr>", 20))
+  if (utlGetTagSecs(wsp.port, all.str, "<wispr>", 20))
     raise(2);
   if (wspDateTime()) 
     raise(3);
@@ -53,15 +53,15 @@ int wspStart(void) {
 int wspStop(void) {
   static char *self="wspStop";
   static char *rets="1=!logclose 2=!<wispr>";
-  char *c;
+  int r;
   DBG();
   if (wsp.log) 
     utlLogClose(&wsp.log);
   wsp.on = false;
-  c = utlReadExpect(wsp.port, all.buf, "</wispr>", 10);
+  r = utlGetTagSecs(wsp.port, all.str, "</wispr>", 10);
   utlNap(1);
   mpcPamPwr(wsp.card, false);
-  if (c) raise(2);
+  if (r) raise(2);
   return 0;
 } // wspStop
 
@@ -86,7 +86,7 @@ int wspOpen(void) {
   static char *rets="1=off 2=!<cmd>";
   DBG();
   if (!wsp.on) raise(1);
-  if (!utlReadExpect(wsp.port, all.buf, "<cmd>", 20)) 
+  if (utlGetTagSecs(wsp.port, all.str, "<cmd>", 20)) 
     raise(2);
   return 0;
 } // wspOpen
@@ -100,7 +100,7 @@ int wspClose(void) {
   if (!wsp.on) raise(1);
   // blank line, in case wispr board is waiting for a command
   utlWrite( wsp.port, "", EOL );
-  if (!utlReadExpect(wsp.port, all.buf, "</cmd>", 10)) 
+  if (utlGetTagSecs(wsp.port, all.str, "</cmd>", 10)) 
     raise(2);
   return 0;
 } // wspClose
@@ -111,19 +111,16 @@ int wspClose(void) {
 int wspCmd(char *out, char *cmd, int seconds) {
   static char *self="wspCmd";
   static char *rets="1=!open 2=timeout";
-  char *r;
+  int r;
   DBG();
   out[0]=0;
   if (wspOpen()) raise(1);
   cprintf("sending to wispr: %s \n", cmd);
   utlWrite( wsp.port, cmd, EOL );
-  r = utlReadExpect( wsp.port, all.buf, "</cmd>", seconds );
+  r = utlGetTagSecs( wsp.port, out, "</cmd>", seconds );
   if (r) 
-  {
-    // strip off trailing <cmd>
-    *r = 0;
-    flogf("\n%s\n", all.buf);
-  }
+    // gettag strips off </cmd>
+    flogf("\n%s\n", out);
   else
     raise(2);
   return 0;
@@ -132,27 +129,34 @@ int wspCmd(char *out, char *cmd, int seconds) {
 ///
 // wsp storm check. interact. assumes already started.
 // rets: 1=open 2=RDY 3=predict 8=close
-int wspStorm(char *buf) {
-  static char *self="wspStorm";
+int wspSpectr(char *buf) {
+  static char *self="wspSpectr";
   static char *rets="1=open 2=RDY 3=predict 9=close";
   DBG();
   // cmd
   buf[0]=0;
-  sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
-      wsp.spectCmd, wsp.spectFlag, wsp.spectGain, wsp.spectLog, all.cycle );
   // start 
-  if (wspOpen()) raise(1);
-  flogf( "\nexec '%s'", all.str );
+  if (wspOpen()) raisex(1);
+  // wispr adds /mnt/ to log path
+  sprintf( all.str, "%s %s %s -l log/%.5s%03d.log", 
+      wsp.spectCmd, wsp.spectFlag, wsp.spectGain, wsp.spectLog, all.cycle );
+  flogf( "\n%s: %s", self, all.str );
   utlWrite( wsp.port, all.str, EOL );
   // gather
-  if (!utlReadExpect(wsp.port, buf, "RDY", 200)) raise(2);
+  if (utlGetTagSecs(wsp.port, buf, "RDY", 200)) raisex(2);
   utlWrite(wsp.port, "$WS?*", EOL);
-  if (utlReadWait(wsp.port, buf, 60)) raise(3);
-  flogf("\nwspStorm prediction: %s", buf);
+  if (!utlReadWait(wsp.port, buf, 60)) raisex(3);
+  flogf("\n%s() prediction: %s", self, buf);
   // ?? add to daily, eng log
   // ?? parse - we need to decide rise or not
   if (wspClose()) raise(9);
   return 0;
+  //
+  except: {
+    utlWrite(wsp.port, "$EXI*", EOL);
+    wspClose();
+    return(dbg.except);
+  }
 } // wspStorm
 
 ///
@@ -183,29 +187,31 @@ int wspDetect(WspData *wspd, int minutes) {
 // if this fails, assume card is bad; does not call wspStop
 // uses: .wisprCmd .wisprFlag .detInt .dutyM all.str 
 // sets: *detectQ=detections
-// rets: 1=start 3=FIN 8=close 10=query 20=space
+// rets: 1=start 2=lowDisk 3=FIN 8=close 10=query 20=space
 int wspDetectM(int *detected, float *free, int minutes) {
   static char *self="wspDetectM";
   static char *rets="1=open 3=!FIN 8=close 9=stop 10=query 20=space";
   DBGN( "(%d)", minutes );
-  // cmd
-  sprintf( all.str, "%s %s %s -l %.5s%03d.log", 
+  if (wsp.diskFree>0 && wsp.diskFree<wsp.diskMin) raise(2);
+  if (wspOpen()) raisex(1);
+  // wispr adds /mnt/ to log path
+  sprintf( all.str, "%s %s %s -l log/%.5s%03d.log", 
       wsp.wisprCmd, wsp.wisprFlag, wsp.wisprGain, wsp.wisprLog, all.cycle );
   if (wsp.wisprTest)
     sprintf( all.str+strlen(all.str), " -W" );
-  // start
-  if (wspOpen()) raisex(1);
   flogf( "\n%s: %s", self, all.str );
   utlWrite( wsp.port, all.str, EOL );
+  // run for minutes // power low 
   TUTxWaitCompletion( wsp.port );
-  // run for minutes // power low // detect, free queries at end 
   pwrNap(minutes*60);
+  // detect, free queries 
   if (wspQuery(detected)) raisex(10);
   if (wspSpace(free)) raisex(20);
+  wsp.diskFree = *free;
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
-  if (!utlReadExpect(wsp.port, all.buf, "FIN", 5)) {
-    flogf("\n%s(): expected FIN, got '%s'", self, all.buf);
+  if (utlGetTagSecs(wsp.port, all.str, "FIN", 5)) {
+    flogf("\n%s(): expected FIN, got '%s'", self, all.str);
     raisex(3);
   }
   // stop
@@ -252,11 +258,11 @@ int wspSpace(float *free) {
   char *s;
   *free = 0.0;
   utlWrite(wsp.port, "$DFP*", EOL);
-  if (!utlReadWait(wsp.port, all.buf, 60)) 
+  if (!utlReadWait(wsp.port, all.str, 60)) 
     raise(1);
-  wspLog(all.buf);
-  DBG2("%s", all.buf);
-  s = strstr(all.buf, "DFP");
+  wspLog(all.str);
+  DBG2("%s", all.str);
+  s = strstr(all.str, "DFP");
   if (!s) raise(2);
   strtok(s, ",");
   s = strtok(NULL, "*");

@@ -106,7 +106,7 @@ int utlReadWait(Serial port, char *in, int wait) {
   tmrStart(utl_tmr, wait);
   // wait for a char
   while (!TURxQueuedCount(port)) {
-    utlDelay(100);
+    utlDelay(CHAR_DELAY);
     if (tmrExp(utl_tmr)) return 0;
     utlX(); // twiddle thumbs
   }
@@ -115,7 +115,7 @@ int utlReadWait(Serial port, char *in, int wait) {
 
 ///
 // utlRead until we get the expected string (or timeout)
-// note: reads past *expect if chars streaming, see utlGetUntil utlGetUntilWait
+// note: reads past *expect if chars streaming, see utlGetTag utlGetTagSecs
 // args: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf // sets: *in (string)
 // rets: char* to expected str, or null
@@ -146,8 +146,8 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
 // like utlRead but stops reading on char match
 // char *in should be BUFSZ, returns null terminated string
 // sets: *in 
-// rets: char#, overrun=-1
-int utlGetUntil(Serial port, char *in, char *lookFor) {
+// rets: length, overrun=-1
+int utlGetTag(Serial port, char *in, char *lookFor) {
   short ch;
   int len;
   for (len=0; len<BUFSZ; len++) {
@@ -162,26 +162,48 @@ int utlGetUntil(Serial port, char *in, char *lookFor) {
   if (len) DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
   if (len>=BUFSZ) return -1;
   return len;
-} // utlGetUntil
+} // utlGetTag
 
 ///
 // wait then read chars until match in char *lookFor
 // delay up to wait seconds for first char, null terminate
 // like utlReadWait but stops reading on char match
 // sets: *in 
-// rets: utlGetUntil() char#
-int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait) {
-  in[0] = 0;
-  tmrStart(second_tmr, wait);
-  // wait for a char
-  while (!TURxQueuedCount(port)) {
-    utlDelay(100);
-    DBG1(".");
-    if (tmrExp(second_tmr)) break;
-    utlX(); // twiddle thumbs
+// rets: 0=match 1=timeout 2=BUFSZ<
+int utlGetTagSecs(Serial port, char *in, char *tag, int secs) {
+  static char *self="utlGetTagSecs";
+  static char *rets="0=match 1=timeout 2=BUFSZ<";
+  char *p;
+  int r=0, len=0;
+  // note: in[len] == 0 all the way thru
+  in[len] = 0;
+  tmrStart(second_tmr, secs);
+  while (true) { 
+    if (len>=BUFSZ-1) { // overrun
+      r=2;
+      break;
+    } // overrun
+    if (tmrExp(second_tmr)) { // timeout
+      r=1; 
+      break; 
+    } // timeout
+    if (TURxQueuedCount(port)) { // get char
+      in[len] = TURxGetByte(port, false);
+      if (in[len] == 0) continue;  // skip null
+      in[++len] = 0;
+      p = strstr(in, tag);
+      if (p) { // match
+        *p=0;  // trim
+        r=0;
+        break;
+      } // match
+    } // get char
   }
-  return( utlGetUntil(port, in, lookFor));
-} // utlGetUntilWait
+  if (r>0) DBG1(" %s()=%d ", self, r);
+  DBG2(" <%d<", len);
+  DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
+  return r;
+} // utlGetTagSecs
 
 ///
 // wrapper for TURxGetBlock
@@ -328,6 +350,8 @@ int utlLogOpen(int *log, char *base) {
     raise(1);
   } 
   DBG1("\n%s(%s):%d", self, base, fd);
+  if (fd>5)
+    flogf("\n %s(): high fd=%d for %s", fd, path);
   sprintf(utl.str, "\n---  %s ---\n", utlDateTime());
   r = write(fd, utl.str, strlen(utl.str)); 
   if (r<1) {

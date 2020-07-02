@@ -439,14 +439,14 @@ int iriProcessCmds(uchar *buff) {
 ///
 // we just sent the last block, should get 'cmds\n' or 'done\n'
 // not safe to use utlRead, inconsistent timing
-// rets: 0=success 1=respTO
+// rets: 0=success 1=timeout 2=overrun
 int iriLandResp(uchar *buff) {
   static char *self="LandResp";
-  static char *rets="1=respTimeout";
+  static char *rets="0=good 1=timeout 2=overrun";
   int r;
-  r = utlGetUntilWait(irid.port, buff, "\n", iri.landResp);
+  r = utlGetTagSecs(irid.port, buff, "\n", iri.landResp);
   flogf("\n%s(%s)", self, utlNonPrint(buff));
-  if (r) raise(1);
+  if (r) raise(r);
   return 0;
 } // iriLandResp
 

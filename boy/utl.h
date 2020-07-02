@@ -51,8 +51,8 @@ char *utlNonPrint (char *in);        // format unprintable string
 char *utlNonPrintBlock (char *in, int len);
 char *utlTime(void);
 int utlGetBlock(Serial port, char *buff, int msgSz, int respms);
-int utlGetUntil(Serial port, char *in, char *lookFor);
-int utlGetUntilWait(Serial port, char *in, char *lookFor, int wait);
+int utlGetTag(Serial port, char *in, char *tag);
+int utlGetTagSecs(Serial port, char *in, char *tag, int secs);
 int utlLogOpen(int *log, char *base);
 int utlLogClose(int *fd);
 int utlMatchAfter(char *out, char *str, char *sub, char *set);
