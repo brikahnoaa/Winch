@@ -111,7 +111,6 @@ int wspClose(void) {
 int wspCmd(char *out, char *cmd, int seconds) {
   static char *self="wspCmd";
   static char *rets="1=!open 2=timeout";
-  char *c;
   int r;
   DBG();
   out[0]=0;
