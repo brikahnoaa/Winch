@@ -5,7 +5,7 @@
 typedef struct WspInfo {
   Serial port;                // mpcPamPort()
   bool on;                    // wispr running <wispr>
-  bool logging;                  // wispr waiting <cmd>
+  bool logging;               // maintain log file
   bool wisprTest;             // set -W flaf
   char spectCmd[32];          // spectragram command
   char spectFlag[64];         // -v1 -C12 -n512 -o256 
@@ -15,6 +15,7 @@ typedef struct WspInfo {
   char wisprFlag[64];         // -v2 -T8 -b15 -M2 -F2
   char wisprGain[8];          // mic sensitivity
   char wisprLog[32];          // -l detect
+  float diskFree;             // free space on card
   int card;                   // wispr card in use; starts high, goes down
   int detMax;                 // max detections to be logged (10)
   int diskMin;                // free disk min GB, else go on to new wispr
@@ -41,9 +42,9 @@ int wspLog(char *str);
 int wspOpen(void);
 int wspQuery(int *detect);
 int wspSpace(float *disk);
+int wspSpectr(char *buf);
 int wspStart(void);
 int wspStop(void);
-int wspStorm(char *buf);
 void wspInit(void);
 
 #endif
