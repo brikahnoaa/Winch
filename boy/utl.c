@@ -199,7 +199,7 @@ int utlGetTagSecs(Serial port, char *in, char *tag, int secs) {
       } // match
     } // get char
   }
-  if (r>0) DBG1(" %s()=%d ", self, r);
+  if (r>0) DBG1(" %s(%s)=%d ", self, tag, r);
   DBG2(" <%d<", len);
   DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
   return r;

@@ -1,4 +1,4 @@
-// wispr.c
+// wspDetect.c
 #include <main.h>
 
 void main(void){
@@ -18,7 +18,5 @@ void main(void){
   wspStart();
   r = wspDetectM(&dq, &f, run);
   printf("\nwspDetect() %5.2f free, %d detected -> returns %d \n", f, dq, r);
-  utlNap(2);
-  wspClose();
   wspStop();
 }
