@@ -57,9 +57,14 @@ int wspStop(void) {
   DBG();
   if (wsp.log) 
     utlLogClose(&wsp.log);
-  wsp.on = false;
+  // should be one last open/close pair
+  if (!wspOpen())
+    // blank line, continues
+    utlWrite( wsp.port, "", EOL );
+  wspClose();
   r = utlGetTagSecs(wsp.port, all.str, "</wispr>", 10);
   utlNap(1);
+  wsp.on = false;
   mpcPamPwr(wsp.card, false);
   if (r) raise(2);
   return 0;
@@ -86,7 +91,7 @@ int wspOpen(void) {
   static char *rets="1=off 2=!<cmd>";
   DBG();
   if (!wsp.on) raise(1);
-  if (utlGetTagSecs(wsp.port, all.str, "<cmd>", 20)) 
+  if (utlGetTagSecs(wsp.port, all.str, "<cmd>", 12)) 
     raise(2);
   return 0;
 } // wspOpen
@@ -98,9 +103,7 @@ int wspClose(void) {
   static char *rets="1=off 2=!</cmd>";
   DBG();
   if (!wsp.on) raise(1);
-  // blank line, in case wispr board is waiting for a command
-  utlWrite( wsp.port, "", EOL );
-  if (utlGetTagSecs(wsp.port, all.str, "</cmd>", 10)) 
+  if (utlGetTagSecs(wsp.port, all.str, "</cmd>", 12)) 
     raise(2);
   return 0;
 } // wspClose
@@ -111,18 +114,14 @@ int wspClose(void) {
 int wspCmd(char *out, char *cmd, int seconds) {
   static char *self="wspCmd";
   static char *rets="1=!open 2=timeout";
-  int r;
   DBG();
   out[0]=0;
   if (wspOpen()) raise(1);
-  cprintf("sending to wispr: %s \n", cmd);
+  flogf("\n%s: sending to wispr: %s \n", self, cmd);
   utlWrite( wsp.port, cmd, EOL );
-  r = utlGetTagSecs( wsp.port, out, "</cmd>", seconds );
-  if (r) 
-    // gettag strips off </cmd>
-    flogf("\n%s\n", out);
-  else
+  if (utlGetTagSecs( wsp.port, out, "</cmd>", seconds ))
     raise(2);
+  flogf("\n%s\n", out);
   return 0;
 } // wspCmd
 
@@ -143,9 +142,11 @@ int wspSpectr(char *buf) {
   flogf( "\n%s: %s", self, all.str );
   utlWrite( wsp.port, all.str, EOL );
   // gather
-  if (utlGetTagSecs(wsp.port, buf, "RDY", 200)) raisex(2);
+  if (utlGetTagSecs(wsp.port, buf, "RDY", 200)) 
+    raisex(2);
   utlWrite(wsp.port, "$WS?*", EOL);
-  if (!utlReadWait(wsp.port, buf, 60)) raisex(3);
+  if (!utlReadWait(wsp.port, buf, 60)) 
+    raisex(3);
   flogf("\n%s() prediction: %s", self, buf);
   // ?? add to daily, eng log
   // ?? parse - we need to decide rise or not

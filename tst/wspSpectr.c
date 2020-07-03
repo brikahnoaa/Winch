@@ -22,6 +22,5 @@ void main(void){
   }
   r = wspSpectr(buf);
   printf("\nwspSpectr() -> %d \n %s \n", r, buf);
-  wspClose();
   wspStop();
 }
