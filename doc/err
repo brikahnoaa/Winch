@@ -1,0 +1,29 @@
+Fri, Jul  3, 2020 11:45:33 AM
+.1 after df
+/bin/spectrogram -v1 -C12 -n512 -o256 -g1 -l log/noise000.log
+20/07/03 18:44:13 Total Kernel RAM 0x2c92000
+20/07/03 18:44:13 BFIN_PMEM_START = 0x3000000
+Mounted /mnt successful
+Logging all messages to /mnt/log/noise000.log
+spectrogram: page allocation failure. order:8, mode:0xd0
+Hardware Trace:
+   0 Target : <0x0014fc88> { _dump_stack + 0x0 }
+     Source : <0x0003411a> { ___alloc_pages_nodemask + 0x386 } CALL pcrel
+   1 Target : <0x0003411a> { ___alloc_pages_nodemask + 0x386 }
+     Source : <0x0014fd84> { _printk + 0x14 } RTS
+   2 Target : <0x0014fd80> { _printk + 0x10 }
+.2 after detect
+/bin/spectrogram -v1 -C12 -n512 -o256 -g1 -l log/noise000.log
+20/07/03 19:20:54 Total Kernel RAM 0x2c92000
+20/07/03 19:20:54 BFIN_PMEM_START = 0x3000000
+Mounted /mnt successful
+Logging all messages to /mnt/log/noise000.log
+spectrogram: page allocation failure. order:8, mode:0xd0
+Hardware Trace:
+   0 Target : <0x0014fc88> { _dump_stack + 0x0 }
+     Source : <0x0003411a> { ___alloc_pages_nodemask + 0x386 } CALL pcrel
+   1 Target : <0x0003411a> { ___alloc_pages_nodemask + 0x386 }
+     Source : <0x0014fd84> { _printk + 0x14 } RTS
+   2 Target : <0x0014fd80> { _printk + 0x10 }
+     Source : <0x0000fd16> { _vprintk + 0x162 } RTS
+   3 Target : <0x0000fd0a> { _vprintk + 0x156 }

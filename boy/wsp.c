@@ -127,6 +127,7 @@ int wspCmd(char *out, char *cmd, int seconds) {
 
 ///
 // wsp storm check. interact. assumes already started.
+// NOTE - crashes if run after other programs (datetime ok)
 // rets: 1=open 2=RDY 3=predict 8=close
 int wspSpectr(char *buf) {
   static char *self="wspSpectr";
