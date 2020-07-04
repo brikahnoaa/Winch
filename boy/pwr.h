@@ -3,6 +3,7 @@
 #define H_PWR
 
 typedef struct PwrInfo {
+  bool logging;
   bool track;           // track and log battery capacity
   float amps;
   float charge;         // minimum system capacity to run

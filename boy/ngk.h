@@ -10,10 +10,13 @@ typedef enum {
 } MsgType;
 
 typedef struct NgkInfo {
+  // char * first for initialization, see ngk.h
   char * msgStr[sizeof_msg];    // msg string as if sent to buoy
   char * msgName[sizeof_msg];   // for logs
   // modem
+  bool logging;
   int delay;
+  int log;
   int recv[sizeof_msg];         // count
   int send[sizeof_msg];         // count
   int timeout[sizeof_msg];      // count

@@ -5,12 +5,13 @@ CfgInfo cfg;
 
 extern AntInfo ant;
 extern BoyInfo boy;
-extern S16Info s16;
-extern S39Info s39;
+// extern EngInfo eng;
 extern IriInfo iri;
 extern MpcInfo mpc;
 extern NgkInfo ngk;
 extern PwrInfo pwr;
+extern S16Info s16;
+extern S39Info s39;
 extern SysInfo sys;
 extern UtlInfo utl;
 extern WspInfo wsp;
@@ -31,6 +32,7 @@ extern WspInfo wsp;
 // in order as found in *.h typedef struct
 static CfgParam cfgP[] = {
 
+  {'b',  "ant.logging",   &ant.logging,     "alg",  "false"},
   {'f',  "ant.subD",      &ant.subD,        "asD",  "3.49"},
   {'f',  "ant.surfD",     &ant.surfD,       "asD",  "1.14"},
 
@@ -69,6 +71,9 @@ static CfgParam cfgP[] = {
   {'i',  "dbg.t5",        &dbg.t5,          "dt5",  "0"},
   {'i',  "dbg.t6",        &dbg.t6,          "dt6",  "0"},
 
+  // {'b',  "eng.logging",   &eng.logging,     "elg",  "false"},
+
+  {'b',  "iri.logging",   &iri.logging,     "ilg",  "false"},
   {'b',  "iri.setTime",   &iri.setTime,     "isT",  "true"},
   {'b',  "iri.logging",   &iri.logging,     "ilo",  "false"},
   {'c',  "iri.phoneNum",  &iri.phoneNum,    "iph",  "0088160000519"},
@@ -85,14 +90,17 @@ static CfgParam cfgP[] = {
   {'i',  "iri.signalMin", &iri.signalMin,   "isM",  "2"},
   {'i',  "iri.timeout",   &iri.timeout,     "ito",  "60"},
 
+  {'b',  "ngk.logging",   &ngk.logging,     "nlg",  "false"},
   {'i',  "ngk.delay",     &ngk.delay,       "nde",  "8"},
   {'i',  "ngk.winchId",   &ngk.winchId,     "nwI",  "1"},
 
+  {'b',  "pwr.logging",   &pwr.logging,     "plg",  "false"},
   {'b',  "pwr.track",     &pwr.track,       "ptk",  "false"},
   {'f',  "pwr.charge",    &pwr.charge,      "pce",  "12000.0"},
   {'f',  "pwr.chargeMin", &pwr.chargeMin,   "pcM",  "200.0"},
   {'f',  "pwr.voltsMin",  &pwr.voltsMin,    "pvM",  "12.5"},
 
+  {'b',  "s16.logging",   &s16.logging,     "6lg",  "false"},
   // {'b',  "s16.auton",     &s16.auton,       "6an",  "false"},
   // {'i',  "s16.autoInter", &s16.autoInter,   "6aI",  "10"},
   {'c',  "s16.initStr",   &s16.initStr,     "6iS",  ""},
@@ -101,12 +109,13 @@ static CfgParam cfgP[] = {
   {'i',  "s16.pumpMode",  &s16.pumpMode,    "6pM",  "1"},
   {'i',  "s16.timer",     &s16.timer,       "6tr",  "6"},
 
+  {'b',  "s39.logging",   &s39.logging,     "3lg",  "false"},
   // {'b',  "s39.auton",     &s39.auton,       "3an",  "false"},
   // {'i',  "s39.autoInter", &s39.autoInter,   "3aI",  "10"},
   {'c',  "s39.initStr",   &s39.initStr,     "3iS",  ""},
   {'c',  "s39.startStr",  &s39.startStr,    "3sS",  ""},
   {'c',  "s39.takeSamp",  &s39.takeSamp,    "3tS",  "TSSON"},
-  //// {'i',  "s39.pumpMode",  &s39.pumpMode,    "3pM",  "1"},
+  // {'i',  "s39.pumpMode",  &s39.pumpMode,    "3pM",  "1"},
   {'i',  "s39.timer",     &s39.timer,       "3tr",  "3"},
 
   {'c',  "sys.program",   &sys.program,     "spm",  "LARA"},
@@ -115,6 +124,7 @@ static CfgParam cfgP[] = {
   {'b',  "utl.console",   &utl.console,     "uce",  "true"},
   {'l',  "utl.bone",      &utl.bone,        "ube",  "30"},
 
+  {'b',  "wsp.logging",   &wsp.logging,     "wlg",  "false"},
   {'b',  "wsp.logging",   &wsp.logging,     "wlg",  "false"},
   {'b',  "wsp.wisprTest", &wsp.wisprTest,   "wwT",  "false"},
   {'c',  "wsp.spectCmd",  &wsp.spectCmd,    "wsC",  "/bin/spectrogram"},

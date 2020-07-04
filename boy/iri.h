@@ -10,8 +10,8 @@ typedef struct GpsStats {
 } GpsStats;
 
 typedef struct IriInfo {
-  bool setTime;             // flag, reset time via gps (true)
   bool logging;             // make a log of comm via rudics (false)
+  bool setTime;             // flag, reset time via gps (true)
   char me[4];               // (iri)
   char phoneNum[16];        // (0088160000519)
   char platform[16];        // (LR01)
@@ -22,8 +22,9 @@ typedef struct IriInfo {
   int fileMaxKB;            // how many kilobytes max in a file (64K)
   int hdrResp;              // wait secs for ACK response to proj hdr (20)
   int hdrTry;               // header transmit retry (3)
-  int landResp;             // wait secs for cmds/data string from land (20)
   int hupMs;                // ms +++ ms for HUP (2000)
+  int landResp;             // wait secs for cmds/data string from land (20)
+  int log;
   int redial;               // how many calls to make (5)
   int signalMin;            // min iri signal level to try transmit (2)
   int timeout;              // seconds for steps like signal, sats (60)

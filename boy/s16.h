@@ -3,7 +3,7 @@
 #define H_S16
 
 typedef struct S16Info {
-  Serial port;                // this is pam4
+  bool logging;
   // bool auton;                 // now doing autonomous sampling
   // int autoInter;              // sample Interval for auton
   bool on;                    // now init'd
@@ -16,6 +16,7 @@ typedef struct S16Info {
   int pumpMode;               // 0=no 1=.5sec 2=during
   int timer;                  // Delay seconds expected between polled samples
   time_t sampT;
+  Serial port;                // this is pam4
 } S16Info;
 
 static void s16Flush(void);

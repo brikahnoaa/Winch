@@ -40,7 +40,7 @@ int s16Start(void) {
       return 1;
     }
   s16.on = true;
-  s16LogOpen();
+  if (s16.logging) s16LogOpen();
   flogf("\n === buoy sbe16 start %s", utlDateTime());
   mpcPamPwr(sbe16_pam, true);
   tmrStop(s16_tmr);
@@ -226,7 +226,7 @@ void s16GetSamples(void) {
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
-  s16LogOpen();
+  if (s16.logging) s16LogOpen();
   flogf("\n+s16GetSamples()");
   s16Prompt();          // wakeup
   utlWrite(s16.port, "GetSamples:", EOL);

@@ -31,7 +31,7 @@ int antStart(void) {
   if (ant.on) return 0;
   ant.on = true;
   flogf("\n === ant module start %s", utlDateTime());
-  antLogOpen();
+  if (ant.logging) antLogOpen();
   antDevice(cf2_dev);
   PIOClear(ANT_PWR);
   utlDelay(200);

@@ -3,7 +3,7 @@
 #define H_S39
 
 typedef struct S39Info {
-  Serial port;                // this is ant module
+  bool logging;
   // bool auton;                 // now doing autonomous sampling
   // int autoInter;              // sample Interval for auton
   bool on;                    // now init'd
@@ -13,9 +13,10 @@ typedef struct S39Info {
   float depth;
   float temp;
   int log;                    // log fileid
-  //// int pumpMode;               // 0=no 1=.5sec 2=during
+  // int pumpMode;               // 0=no 1=.5sec 2=during
   int timer;                  // Delay seconds expected between polled samples
   time_t sampT;
+  Serial port;                // this is ant module
 } S39Info;
 
 static void s39Flush(void);

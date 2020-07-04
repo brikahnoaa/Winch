@@ -26,10 +26,12 @@ typedef struct WspInfo {
 
 // declared in boy.c, passed to wspDetectD
 typedef struct WspData {      // pass from boy to wsp
+  bool logging;
   char spectr[128];           // wsp: output from spectrogram
   float free;                 // wsp: free disk on current card
   int card;                   // wsp: current card
   int detects;                // wsp: detections
+  int log;
 } WspData;
 
 int wspCardSwap(void);

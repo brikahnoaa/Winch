@@ -3,6 +3,7 @@
 #define H_ENG
 
 typedef struct EngInfo {
+  bool logging;
   int log;
 } EngInfo;
 

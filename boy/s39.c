@@ -40,7 +40,7 @@ int s39Start(void) {
       return 1;
     }
   s39.on = true;
-  s39LogOpen();
+  if (s39.logging) s39LogOpen();
   flogf("\n === buoy sbe39 start %s", utlDateTime());
   antDevPwr('S', true);
   tmrStop(s39_tmr);
@@ -226,7 +226,7 @@ void s39GetSamples(void) {
   int len1=sizeof(all.str);
   int len2=len1, len3=len1;
   int total=0;
-  s39LogOpen();
+  if (s39.logging) s39LogOpen();
   flogf("\n+s39GetSamples()");
   s39Prompt();          // wakeup
   utlWrite(s39.port, "GetSamples:", EOL);

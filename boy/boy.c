@@ -20,8 +20,6 @@ void boyMain() {
   else if (all.starts>1) 
     reboot();      // reset to known state
   flogf("\nboyMain(): starting with phase %d", phase);
-  antStart();
-  s16Start();
   //
   while (true) {
     utlX();
@@ -30,27 +28,32 @@ void boyMain() {
     flogf("\ncycle %d @%s ", all.cycle, utlDateTime());
     switch (phase) {
     case deploy_pha:
+      s16Start();
       phaseNext = deployPhase();
+      s16Stop();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
-      antLogOpen();
-      s16LogOpen();
+      // catch errs in device starts
+      antStart();
+      s16Start();
+      s39Start();
+      ngkStart();
       phaseNext = risePhase();
-      antLogClose();
-      s16LogClose();
+      ngkStop();
       break;
     case irid_pha: // Call home via Satellite
       phaseNext = iridPhase();
       all.cycle++;
       break;
     case fall_pha: // Descend buoy, science sampling
-      antLogOpen();
-      s16LogOpen();
+      ngkStart();
       phaseNext = fallPhase();
-      antLogClose();
-      s16LogClose();
+      ngkStop();
       break;
     case data_pha: // data collect by WISPR
+      antStop();
+      s16Stop();
+      s39Stop();
       phaseNext = dataPhase();
       break;
     case error_pha:
