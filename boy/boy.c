@@ -5,7 +5,6 @@
 
 BoyInfo boy;
 BoyData boyd;
-WspData wspd;
 
 ///
 // deploy or reboot, then loop over phases data/rise/irid/fall
@@ -80,12 +79,13 @@ void boyMain() {
 } // boyMain() 
 
 ///
-// open log
+// initialize. malloc. module inits. 
+// ?? device tests?
 void boyInit(void) {
   static char *self="boyInit";
   DBG();
   flogf("\n  System Starts %d", all.starts);
-  ngkStart();
+  boyd.buff = malloc(BUFSZ);
 } // boyInit
 
 ///
@@ -160,11 +160,8 @@ PhaseType dataPhase(void) {
   time_t riseT;
   flogf("\ndataPhase %s", utlDateTime());
   if (dbg.test && dbg.noData) return rise_pha;
-  // save power
-  antStop();
-  // ngkStop();
   riseTime(&riseT);
-  success = wspDetect(&wspd, riseT);
+  success = wspDetect(boyd.buff, riseT);
   switch (success) {
   case 1: flogf("\nDay watchdog"); break;
   case 11: flogf("\nhour.watchdog"); break;
@@ -427,8 +424,12 @@ int riseDo(float targetD) {
 } // riseDo
 
 ///
-// calculate rise time
-// sets: *riseT = next callHour, or callFreq hours interval from midnight
+// ?? only does cycleMint
+//
+
+///
+// calculate rise time (doc/algor)
+// sets: *riseT 
 void riseTime(time_t *riseT) {
   int hour;
   int callFreq=boy.callFreq;

@@ -1,5 +1,16 @@
+Sun, Jul  5, 2020  8:01:56 PM
+.0 riseTime for doc/algor
+.1 winter mode
+.2 storm patience
+.3 self test (per cycle?)
+.. operate with one ctd
+.. reboot if file i/o fails
+.4 power
+.. turn off unused devices in main loop, not deep in code
+.5 drift. check gps during irid calls
+
 Thu, Jul  2, 2020  1:03:57 PM
-.1 boybuf instead of all.buf in boy
+.1 boybuf instead of all.buf in boy to call modules
 .2 skip null on all input
 
 Tue, Jun  9, 2020 11:25:43 AM

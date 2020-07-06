@@ -11,12 +11,9 @@ typedef enum {
 } PhaseType;
 typedef enum { free_ris, run_ris } RiseType;
 
-// boy data - aka engineering data
+// boy data 
 typedef struct BoyData {
-  GpsStats gpsBgn;        // initial stats, just surfaced
-  GpsStats gpsEnd;        // final stats, irid done
-  // HpsStats physical;      // float curr, volt, pres, humi;
-  Serial port;            // sbe16 or ant mod
+  char *buff;             // malloc buffer to pass into modules
   float dockD;            // Depth when docked in winch
   float fallV1st;         // meters/s of the first fall
   float fallVNow;         // meters/s of the most recent fall 
@@ -26,31 +23,35 @@ typedef struct BoyData {
   float riseVNow;         // meters/min of the most recent rise 
   float surfD;            // depth floating at surface
   int log;                // log filehandle
-  time_t fallBgn;
-  time_t fallEnd;
-  time_t riseBgn;
-  time_t riseEnd;
+  time_t cycleThisT;
+  time_t cycleNextT;
+  time_t fallBgnT;
+  time_t fallEndT;
+  time_t riseBgnT;
+  time_t riseEndT;
+  GpsStats gpsBgn;        // initial stats, just surfaced
+  GpsStats gpsEnd;        // final stats, irid done
 } BoyData;
 
 // boy params
 typedef struct BoyInfo {
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
-  bool useBrake;          // false->no brake, true->riseDo(antSurfD())
   float ant2tip;          // meters from antmod s16 to antenna tip
   float boy2ant;          // meters from buoy s16 to ant s16 under still water
-  float currChkD;         // stop at this depth to check ocean current
-  float currMax;          // too much ocean current
-  float iceTemper;        // ice danger at this temp (-1.2)
-  float predFallV;        // predicted fall velo (.2)
-  float predRiseV;        // predicted rise velo (.33)
-  int callFreq;           // number of times per day to call !callHour (0)
-  int callHour;           // 0-23 (midnight-11pm) hour to call home (1)
-  int depSettle;          // time to let deploy settle (60)
-  int depWait;            // wait until deployed after start (240min)
+  float fallVpred;        // predicted fall velo (.2)
+  float iceDanger;        // ice danger at this temp (-1.2)
+  float riseVpred;        // predicted rise velo (.33)
+  int cycleDays;          // number of days in a cycle (1)
+  int cycleHour;          // 0-23 (midnight-11pm) hour to start cycle (1)
+  int cycleMint;          // cycle in Minutes, overrides cD cH
+  int dataRestM;          // Minutes to sleep (20)
+  int dataRunM;           // Minutes to run detection (10)
+  int depSettleM;         // time to let deploy settle (60)
+  int depWaitM;           // wait until deployed after start (240min)
   int fallOpM;            // operation timeout minutes (30)
   int filePause;          // pause between sending files
-  int iridOpM;            // phase minutes
+  int iridOpM;            // phase minutes - on the phone (15)
   int ngkDelay;           // delay sec to wait on acoustic modem, one way (7)
   int riseOpM;            // operation timeout minutes (30)
   int startPh;            // phase to start in (0)

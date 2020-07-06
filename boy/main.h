@@ -37,8 +37,6 @@
 #include <ant.h>
 #include <boy.h>
 #include <cfg.h>
-#include <s16.h>
-#include <s39.h>
 #include <dbg.h>
 #include <dos.h>
 #include <eng.h>
@@ -46,6 +44,8 @@
 #include <mpc.h>
 #include <ngk.h>
 #include <pwr.h>
+#include <s16.h>
+#include <s39.h>
 #include <sys.h>
 #include <tmr.h>
 #include <wsp.h>
