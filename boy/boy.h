@@ -23,8 +23,8 @@ typedef struct BoyData {
   float riseVNow;         // meters/min of the most recent rise 
   float surfD;            // depth floating at surface
   int log;                // log filehandle
-  time_t cycleThisT;
-  time_t cycleNextT;
+  time_t cycleBgnT;
+  time_t cycleEndT;
   time_t fallBgnT;
   time_t fallEndT;
   time_t riseBgnT;
@@ -47,8 +47,8 @@ typedef struct BoyInfo {
   int cycleMint;          // cycle in Minutes, overrides cD cH
   int dataRestM;          // Minutes to sleep (20)
   int dataRunM;           // Minutes to run detection (10)
-  int depSettleM;         // time to let deploy settle (60)
-  int depWaitM;           // wait until deployed after start (240min)
+  int depSetlM;           // time to let deploy settle (60)
+  int depWaitM;           // wait until deployed after start (240)
   int fallOpM;            // operation timeout minutes (30)
   int filePause;          // pause between sending files
   int iridOpM;            // phase minutes - on the phone (15)
@@ -58,23 +58,22 @@ typedef struct BoyInfo {
   int stayDown;           // stay down for days, expecting storm (0)
 } BoyInfo;
 
+static bool docked(float depth);
+static int cycleSetup(void);
+static int fallDo(float targetD);
+static int iridDo(void);
+static int nextCycle(void);
+static int reboot(void);
+static int riseDo(float targetD);
+static void riseTime(time_t *riseT);
 static PhaseType dataPhase(void);
 static PhaseType deployPhase(void);
 static PhaseType errorPhase(void);
 static PhaseType fallPhase(void);
 static PhaseType iridPhase(void);
 static PhaseType risePhase(void);
-static bool docked(float depth);
-static int fallDo(float targetD);
-static int iridDo(void);
-static int nextCycle(void);
-static int reboot(void);
-static int oceanCurr(float *curr);
-static int riseDo(float targetD);
-static void riseTime(time_t *riseT);
 
 int boyEngLog(void);
-int boySafeChk(float *curr, float *temp);
 void boyFlush(void);
 void boyInit(void);
 void boyMain(void);

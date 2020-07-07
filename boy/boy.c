@@ -97,21 +97,17 @@ PhaseType risePhase(void) {
   flogf("\n%s %s", self, utlDateTime());
   if (dbg.test && dbg.noRise) return irid_pha;
   // if current is too strong at bottom
-  if (boySafeChk(&boyd.oceanCurr, &boyd.iceTemp)) {
-    sysAlarm(bottomCurr_alm);
-    //?? return fall_pha;
-  }
   // R,01,00
-  time(&boyd.riseBgn);
+  time(&boyd.riseBgnT);
   // algorithm for rise, default no brake
-  if (boy.useBrake)
-    result = riseDo(antSurfD());
-  else
+  // if (boy.useBrake)
+    // result = riseDo(antSurfD());
+  // else
     result = riseDo(0);
   if (result) 
     utlErr(boy_err, "rise phase failure");
   boyd.surfD = s39Depth(); // ??
-  time(&boyd.riseEnd);
+  time(&boyd.riseEndT);
   return irid_pha;
 } // risePhase
 
@@ -136,13 +132,13 @@ PhaseType fallPhase() {
   if (dbg.test && dbg.noRise) return data_pha;
   antLogOpen();
   s16LogOpen();
-  time(&boyd.fallBgn);
+  time(&boyd.fallBgnT);
   result = fallDo(0);
   if (result) {
     flogf( "\nERR %s: error number %d", self, result);
     utlErr(boy_err, "fall phase failure");
   }
-  time(&boyd.fallEnd);
+  time(&boyd.fallEndT);
   antLogClose();
   s16LogClose();
   return data_pha;
@@ -156,30 +152,50 @@ PhaseType fallPhase() {
 // sleep needs a lot of optimizing to be worth the trouble
 // uses: data_tmr duty_tmr
 PhaseType dataPhase(void) {
-  int success;
-  time_t riseT;
+  static char *self="dataPhase";
+  int err, detected;
+  float free;
+  time_t now, togo;
   flogf("\ndataPhase %s", utlDateTime());
-  if (dbg.test && dbg.noData) return rise_pha;
-  riseTime(&riseT);
-  success = wspDetect(boyd.buff, riseT);
-  switch (success) {
-  case 1: flogf("\nDay watchdog"); break;
-  case 11: flogf("\nhour.watchdog"); break;
-  case 12: flogf("\nhour.startFail"); break;
-  case 13: flogf("\nhour.minimum"); break;
-  }
-  // masters told us to stay down multiple cycles
+  // masters told us to stay down to avoid storm
   if (boy.stayDown>0) {
-    flogf("\n\ndataPhase: stay down +%d cycles", boy.stayDown);
-    boy.stayDown--;
-    return data_pha;
-  } else {
-    antStart();
-    // ngkStart();
-    return rise_pha;
-  }
-  // ngkStart();
+    boyd.cycleEndT += boy.stayDown*24*60*60;
+    flogf("\n%s: stay down +%d days", self, boy.stayDown);
+    flogf("\n%s: extending this cycle to %ld", self, boyd.cycleEndT);
+    boy.stayDown=0;
+  } // staydown
+  while (true) {
+    time(&now); togo = boyd.cycleEndT - now;
+    if (togo < boy.dataRunM*60) break;
+    // run
+    err = wspDetectM( &detected, &free, boy.dataRunM );
+    flogf( "\n%s: wspDetectM( detected %d, free %f, minutes %d ) -> %d",
+        detected, free, boy.dataRunM, err);
+    time(&now); togo = boyd.cycleEndT - now;
+    if (err) break;
+    if (togo < boy.dataRestM*60) break;
+    // rest 
+    pwrNap(boy.dataRestM*60);
+  } // while
+  if (togo>0)
+    pwrNap(togo);
+  cycleSetup();
+  return rise_pha;
 } // dataPhase
+
+///
+// set length of cycle
+int cycleSetup(void) {
+  time_t now;
+  time(&now);
+  if (boy.cycleMint) {
+    boyd.cycleBgnT = now;
+    boyd.cycleEndT = now + boy.cycleMint*60;
+  } else {
+    utlStop( "cycleSetup: need cycleMint" );
+  }
+  return 0;
+} // cycleSetup
 
 ///
 // from ship deck to ocean floor
@@ -206,8 +222,8 @@ PhaseType deployPhase(void) {
   flogf(" sbe39@%3.1f", s39Depth());
   flogf("\ndeployPhase()\t| ant@%3.1fm buoy@%3.1fm %s", 
       s39Depth(), s16Depth(), utlDateTime());
-  flogf("\n\t| wait up to %d minutes to reach bottom", boy.depWait);
-  tmrStart( deploy_tmr, MINUTE*boy.depWait );
+  flogf("\n\t| wait up to %d minutes to reach bottom", boy.depWaitM);
+  tmrStart( deploy_tmr, MINUTE*boy.depWaitM );
   // wait until under 10m
   while (true) {
     s39Sample();
@@ -233,8 +249,8 @@ PhaseType deployPhase(void) {
     if (depth-lastD<1.0) break;
     if (tmrExp(drop_tmr)) break;
   }
-  flogf("\n\t| down, pause for %ds", boy.depSettle);
-  utlNap(boy.depSettle);      // default 60sec
+  flogf("\n\t| down, pause for %ds", boy.depSetlM);
+  utlNap(boy.depSetlM);      // default 60sec
   // we are down
   boyd.dockD = depth;
   flogf("\n\t| boyd.dockD = %4.2f", boyd.dockD);
@@ -432,7 +448,6 @@ int riseDo(float targetD) {
 // sets: *riseT 
 void riseTime(time_t *riseT) {
   int hour;
-  int callFreq=boy.callFreq;
   time_t r, now;
   struct tm *tmPtr, tmLocal;
   static char *self="riseTime";
@@ -442,12 +457,7 @@ void riseTime(time_t *riseT) {
   tmPtr = gmtime(&now);
   memcpy(&tmLocal, tmPtr, sizeof(struct tm));
   // figure target hour
-  if (callFreq) {
-    // instead of a fixed rise hour, figure next interval
-    hour = ((int)(tmLocal.tm_hour/callFreq)+1) * callFreq;
-  } else {
-    hour=boy.callHour;
-  }
+  hour=boy.cycleHour;
   // check the hour, is it past? add one interval
   tmLocal.tm_hour = hour;
   tmLocal.tm_min = 0;
@@ -457,11 +467,7 @@ void riseTime(time_t *riseT) {
     // next day/interval
     DBG1("r<now");
     // be careful with long math and big ints, do not (time_t) (24*60*60)
-    if (callFreq) {
-      r = r + (time_t) callFreq*60*60;
-    } else {
       r = r + (time_t) 24*60*60;
-    }
   }
   flogf("\nriseTime(): rise at %s", utlDateTimeFmt(r));
   *riseT = r;
@@ -560,76 +566,6 @@ int fallDo(float targetD) {
 
 
 ///
-// wait currChkSettle, buoy s16, ant td, compute
-// uses: .boy2ant
-int oceanCurr(float *curr) {
-  static char *self="oceanCurr";
-  float aD, cD, a, b, c;
-  if (!s16Prompt()) utlErr(s16_err, "oceanCurr s16Prompt fail");
-  s16Sample();
-  s16DataWait();
-  if (!s16Read()) {
-    utlErr(s16_err, "sbe16 data failure");
-    return 1;
-  }
-  cD=s16Depth();
-  s39Sample();
-  s39DataWait();
-  if (!s39Read()) {
-    utlErr(ant_err, "sbe39 data failure");
-    return 1;
-  }
-  aD=s39Depth();
-  // pythagoras a^2 + b^2 = c^2
-  // solve for b:=horizontal displacement, caused by current
-  a=cD-aD;
-  c=boy.boy2ant;
-  flogf("\n%s\t: ant=%4.2f boy=%4.2f", self, aD, cD);
-  if (a<0) {
-    flogf("\n%s\t: ERR sbe16-sbe39<0", self);
-    return 2;
-  }
-  if (c<a) {
-    flogf("\n%s\t: boy2ant<cD-aD, updating boy.boy2ant", self);
-    boy.boy2ant = a;
-    c=boy.boy2ant;
-    // ?? update boy2ant?
-  }
-  b=sqrt(pow(c,2)-pow(a,2));
-  flogf(" sideways=%4.2f", b);
-  *curr = b;
-  return 0;
-} // oceanCurr
-
-///
-// rets: 0 safe, +1 current!, +10 ice!, -1 err
-// uses: boy.currMax
-// sets: *curr, *temp
-int boySafeChk(float *curr, float *temp) {
-  static char *self="boySafeChk";
-  float sideways;
-  int r=0;
-  DBG();
-  if (dbg.test) return -10;
-  // delay 10sec before measure to stabilize
-  utlNap(10);
-  if (oceanCurr(&sideways)) {
-    utlErr(boy_err, ": oceanCurr failed");
-    return -1;
-  }
-  flogf("\n%s: lateral @ %.1f = %.1f", self, s39Depth(), sideways);
-  *curr = sideways;
-  if (sideways>boy.currMax) {
-    flogf(" !! too strong, cancel ascent");
-    // not today ??
-    r += 1;
-  }
-  // ice check
-  *temp=s39Temp();
-  return r;
-} // boySafeChk
-
-///
 // drop winch, close log
 void boyStop(void) {
   if (boyd.log) utlLogClose(&boyd.log);
@@ -671,15 +607,15 @@ int boyEngLog(void) {
       // "current=%.2f, voltage=%.2f, pressure=%.2f, humidity=%.2f\n",
       // hps->curr, hps->volt, hps->pres, hps->humi);
   sprintf(b+strlen(b), "=== measures ===\n");
-  sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f at dock=%.1fm\n", 
-      boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
-  sprintf(b+strlen(b), "Wispr: disk %3.0f%% free on wispr#%d, %d detections\n",
-      wspd.free, wspd.card, wspd.detects);
-  sprintf(b+strlen(b), "Spectrogram:\n  %s\n", wspd.spectr);
-  sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgn));
-  sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEnd));
-  sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgn));
-  sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEnd));
+  // sprintf(b+strlen(b), "temp=%.1f, oceanCurr=%.1f at dock=%.1fm\n", 
+      // boyd.iceTemp, boyd.oceanCurr, boyd.dockD);
+  // sprintf(b+strlen(b), "Wispr: disk %3.0f%% free on wispr#%d, %d detections\n",
+      // wspd.free, wspd.card, wspd.detects);
+  // sprintf(b+strlen(b), "Spectrogram:\n  %s\n", wspd.spectr);
+  sprintf(b+strlen(b), "rise begin %s, ", utlDateTimeFmt(boyd.riseBgnT));
+  sprintf(b+strlen(b), "rise end %s\n", utlDateTimeFmt(boyd.riseEndT));
+  sprintf(b+strlen(b), "fall begin %s, ", utlDateTimeFmt(boyd.fallBgnT));
+  sprintf(b+strlen(b), "fall end %s\n", utlDateTimeFmt(boyd.fallEndT));
   sprintf(b+strlen(b), "=== during last irid transmission ===\n");
   gps=&boyd.gpsBgn;
   sprintf(b+strlen(b), "gps start: lat=%s, long=%s, time=%s\n", 
