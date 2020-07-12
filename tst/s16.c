@@ -15,7 +15,7 @@ void main(void){
   flogf("s16Depth %2.1f", s16Depth());
   if (!s16Prompt())
     flogf("s16Prompt fail\n");
-  flogf("\nPress Q to exit\n");
+  flogf("\nPress Q to exit, type to sbe16\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();

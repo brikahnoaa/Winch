@@ -3,7 +3,7 @@ from design import *
 import winch, sbe16, sbe39, ant, floats
 
 # this should be set from env var if present
-Offset = 0
+Offset = 2
 
 def init():
     "init all"

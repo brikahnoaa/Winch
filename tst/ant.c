@@ -1,30 +1,31 @@
 // ant.c
 #include <main.h>
 
-extern IriInfo iri;
-extern IriData irid;
+//extern IriInfo iri;
+//extern IriData irid;
 
 void main(void){
   Serial port;
   char c;
   sysInit();
   mpcInit();
+  flogf("ant.c\n");
   antInit();
-  iriInit();
+  // iriInit();
   //
   antStart();
-  iriStart();
-  port = irid.port;
-  flogf("\nPress Q=exit A=a3la C=cf2 G=gps I=irid \n");
+  // iriStart();
+  port = antPort();
+  flogf("\nPress Q=exit C=cf2(s39) A=a3la G=gps I=irid \n");
   while (true) {
-    if (TURxQueuedCount(port)) {
+    utlPet(10);
+    while (TURxQueuedCount(port)) {
       c=TURxGetByte(port,false);
       cputc(c);
     }
     if (cgetq()) {
       c=cgetc();
-      // breaks from while
-      if (c=='Q') break;
+      if (c=='Q') break; // breaks from while
       switch (c) {
       case 'A': 
         printf("a3la_dev\n");
@@ -50,6 +51,6 @@ void main(void){
     }
   }
 
-  iriStop();
+  // iriStop();
   antStop();
 }

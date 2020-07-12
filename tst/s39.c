@@ -16,7 +16,7 @@ void main(void){
   flogf("s39Depth %2.1f", s39Depth());
   if (!s39Prompt())
     flogf("s39Prompt fail\n");
-  flogf("\nPress Q to exit\n");
+  flogf("\nPress Q to exit, type to sbe39\n");
   while (true) {
     if (cgetq()) {
       c=cgetc();

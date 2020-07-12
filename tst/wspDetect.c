@@ -8,6 +8,7 @@ void main(void){
 
   sysInit();
   mpcInit();
+  flogf("wspDetect.c\n");
   wspInit();
   if (dbg.t1) run = dbg.t1;
   cprintf("  params are system vars, e.g.:  set dbg.t1=30 \n");
