@@ -9,11 +9,12 @@ void main(void){
   mpcInit();
   antInit();
   s39Init();
+  antStart();
   s39Start();
   s39Sample();
   s39DataWait();
-  // s39Read();
-  flogf("s39Depth %2.1f", s39Depth());
+  s39Read();
+  flogf("\ns39Depth %4.2f\n", s39Depth());
   if (!s39Prompt())
     flogf("s39Prompt fail\n");
   flogf("\nPress Q to exit, type to sbe39\n");

@@ -6,8 +6,9 @@
 
 typedef enum {
   deploy_pha=0, 
-  rise_pha, irid_pha, fall_pha, data_pha,
-  reboot_pha, error_pha
+  rise_pha, irid_pha, fall_pha, 
+  data_pha, reboot_pha, error_pha,
+  sizeof_pha
 } PhaseType;
 typedef enum { free_ris, run_ris } RiseType;
 
@@ -35,6 +36,9 @@ typedef struct BoyData {
 
 // boy params
 typedef struct BoyInfo {
+  // char * first for initialization // phase name
+  char * phaName[sizeof_pha];
+  //
   bool reset;             // remote reset (false)
   bool stop;              // remote stop (false)
   float ant2tip;          // meters from antmod s16 to antenna tip
@@ -60,11 +64,11 @@ typedef struct BoyInfo {
 
 static bool docked(float depth);
 static int cycleSetup(void);
-static int fallDo(float targetD);
-static int iridDo(void);
+static int fallDn(float targetD);
+static int iridCall(void);
 static int nextCycle(void);
 static int reboot(void);
-static int riseDo(float targetD);
+static int riseUp(float targetD);
 static void riseTime(time_t *riseT);
 static PhaseType dataPhase(void);
 static PhaseType deployPhase(void);

@@ -3,8 +3,14 @@
 
 #define MINUTE 60
 
-BoyInfo boy;
 BoyData boyd;
+BoyInfo boy = {
+  { "deploy_pha",
+  "rise_pha", "irid_pha", "fall_pha",
+  "data_pha", "reboot_pha", "error_pha"
+  }
+}; // remainder of struct is 0 filled
+
 
 ///
 // deploy or reboot, then loop over phases data/rise/irid/fall
@@ -14,11 +20,13 @@ void boyMain() {
   time_t phaseStart;
   //
   phase = boy.startPh;
-  if (dbg.test) 
+  if (dbg.test) {
+    phase = rise_pha;
     flogf("\ndbg.test mode");
+  }
   else if (all.starts>1) 
     reboot();      // reset to known state
-  flogf("\nboyMain(): starting with phase %d", phase);
+  flogf("\nboyMain(): starting with phase %s", boy.phaName[phase]);
   //
   while (true) {
     utlX();
@@ -32,7 +40,8 @@ void boyMain() {
       s16Stop();
       break;
     case rise_pha: // Ascend buoy, check for current and ice
-      // catch errs in device starts
+      // ?? catch errs in device starts
+      all.cycle++;
       antStart();
       s16Start();
       s39Start();
@@ -42,7 +51,6 @@ void boyMain() {
       break;
     case irid_pha: // Call home via Satellite
       phaseNext = iridPhase();
-      all.cycle++;
       break;
     case fall_pha: // Descend buoy, science sampling
       ngkStart();
@@ -101,9 +109,9 @@ PhaseType risePhase(void) {
   time(&boyd.riseBgnT);
   // algorithm for rise, default no brake
   // if (boy.useBrake)
-    // result = riseDo(antSurfD());
+    // result = riseUp(antSurfD());
   // else
-    result = riseDo(0);
+    result = riseUp(0);
   if (result) 
     utlErr(boy_err, "rise phase failure");
   boyd.surfD = s39Depth(); // ??
@@ -118,7 +126,7 @@ PhaseType iridPhase(void) {
   flogf("\niridPhase %s", utlDateTime());
   if (dbg.test && dbg.noIrid) return fall_pha;
   boyEngLog();
-  if (iridDo()) { // 0==success
+  if (iridCall()) { // 0==success
     // ?? check for fail
   }
   return fall_pha;
@@ -133,7 +141,7 @@ PhaseType fallPhase() {
   antLogOpen();
   s16LogOpen();
   time(&boyd.fallBgnT);
-  result = fallDo(0);
+  result = fallDn(0);
   if (result) {
     flogf( "\nERR %s: error number %d", self, result);
     utlErr(boy_err, "fall phase failure");
@@ -287,8 +295,8 @@ PhaseType errorPhase(void) {
 
 ///
 // main action of iridPhase, allows better error handling
-int iridDo(void) {
-  static char *self="iridDo";
+int iridCall(void) {
+  static char *self="iridCall";
   int try=0, r=0;
   bool dialB=false, engB=false, s16B=false;
   tmrStart(phase_tmr, boy.iridOpM*60);
@@ -344,41 +352,42 @@ int iridDo(void) {
   // turn off a3la
   iriStop();
   return r;
-} // iridDo
+} // iridCall
 
 ///
 // if targetD==0 then no brake, drift on surface
-// uses: .dockD .fallOpM
-int riseDo(float targetD) {
-  static char *self="riseDo";
-  MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
+// uses: .dockD .fallOpM .ngkDelay .riseVpred
+int riseUp(float targetD) {
+  static char *self="riseUp";
   bool targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
   float nowD, startD;
-  // float velo; ??
-  int err=0, ngkTries, phaseEst, ngkDelay;
+  int err=0, ngkTries=0, phaseEst, ngkDelay;
+  MsgType recv, send, sent, want;
+  recv=send=sent=want=null_msg;
   DBG();
-  // 
+  // wait for s16 to be ready
   s16DataWait(); 
-  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), s39Depth());
   nowD = startD = s39Depth();
+  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), nowD);
   // winch
   ngkFlush();
-  ngkTries = 0;
   ngkDelay = boy.ngkDelay*2;      // increments on every retry
   if (targetD)
     send = riseCmd_msg;           // rise then brake
   else
     send = surfCmd_msg;           // rise then drift, no brake
   want = riseRsp_msg;
-  // phaseEst = sec/meter(3) * depth + fudge for possible current drift
-  phaseEst = 3*boyd.dockD+boy.riseOpM*60;
+  // phaseEst = sec/meter * depth * fudge ?? for possible current drift
+  phaseEst = (1.0/boy.riseVpred)*boyd.dockD * 2.0;
   tmrStart(phase_tmr, phaseEst);
   tmrStart(fiveTmr, 5);
-  while (!err) {       // loop exits by break;
+  while (!err) 
+  { // loop exits by break;
     utlX();
-    /// check target first
-    if (targetD && !targetB && nowD<targetD) { // reached target
+    /// check depth vs target first
+    if (targetD && !targetB && nowD<targetD) 
+    { // reached target
       send = stopCmd_msg;
       want = stopRsp_msg;
       ngkTries = 0;
@@ -386,34 +395,40 @@ int riseDo(float targetD) {
       targetB = true;
     } // reached target
     /// winch
-    if (send!=null_msg) { // send msg
-      flogf("\n\t| %s to winch at %s", ngkMsgName(send), utlTime());
+    if (send!=null_msg) 
+    { // send msg
+      flogf("\n\t| %s send to winch at %s", ngkMsgName(send), utlTime());
       ngkSend(send);
       sent = send;
       send = null_msg;
       tmrStart(ngkTmr, ngkDelay);
     } // send msg
-    if (ngkRecv(&recv)!=null_msg) { // msg read
+    if (ngkRecv(&recv)!=null_msg) 
+    { // msg read
       tmrStop(ngkTmr);
       flogf("\n\t| %s from winch", ngkMsgName(recv));
       // reached dock, or jammed // ?? check depth for err?
       if (recv==stopCmd_msg) break;
-      if (want!=null_msg) { // want
-        if (recv==want) { // satisfied
+      if (want!=null_msg) 
+      { // want
+        if (recv==want) 
+        { // satisfied
           if (recv==stopRsp_msg) break; // all done here
           want = null_msg;
         } else { // retry
           flogf(", but we want %s", ngkMsgName(want));
           send = sent;
-        }
+        } // satisfied
       } // want
     } // msg read
-    if (tmrExp(ngkTmr)) { // msg timeout
+    if (tmrExp(ngkTmr)) 
+    { // msg timeout
       ngkDelay += 20*(++ngkTries); // timeout increments by 20, then 40 ...
       send = sent;
       flogf("\n\t| WARN winch timeout, try %d", ngkTries);
     } // msg timeout
-    if (tmrExp(fiveTmr)) { // 5 seconds
+    if (tmrExp(fiveTmr)) 
+    { // 5 seconds
       tmrStart(fiveTmr, 5);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
     }  // 5 seconds
@@ -421,14 +436,16 @@ int riseDo(float targetD) {
       s16Read();
     if (s39Data()) 
       nowD = s39Depth();
-    if (tmrExp(phase_tmr)) {
+    if (tmrExp(phase_tmr)) 
+    { // phase timeout
       flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
           self, phaseEst, nowD);
       err = 2;
       ngkSend(stopCmd_msg);
       break;
-    }
+    } // phase timeout
   } // while !err
+  ///
   // fail if error
   if (err) {
     flogf("\n%s: ERR \t| phase error %d at %3.1fm", self, err, s39Depth());
@@ -437,7 +454,7 @@ int riseDo(float targetD) {
     // normal stop
     return 0;
   }
-} // riseDo
+} // riseUp
 
 ///
 // ?? only does cycleMint
@@ -475,10 +492,10 @@ void riseTime(time_t *riseT) {
 } // riseTime
 
 ///
-// based on riseDo()
+// based on riseUp()
 // uses: .dockD .fallOpM
-int fallDo(float targetD) {
-  static char *self="fallDo";
+int fallDn(float targetD) {
+  static char *self="fallDn";
   MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool targetB=false;
   enum {ngkTmr, fiveTmr};  // local timer names
@@ -562,7 +579,7 @@ int fallDo(float targetD) {
     // normal stop
     return 0;
   }
-} // fallDo
+} // fallDn
 
 
 ///

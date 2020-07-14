@@ -444,7 +444,7 @@ int iriLandResp(uchar *buff) {
   static char *self="LandResp";
   static char *rets="0=good 1=timeout 2=overrun";
   int r;
-  r = utlGetTagSecs(irid.port, buff, "\n", iri.landResp);
+  r = utlLookForSecs(irid.port, buff, "\n", iri.landResp);
   flogf("\n%s(%s)", self, utlNonPrint(buff));
   if (r) raise(r);
   return 0;

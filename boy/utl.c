@@ -115,7 +115,7 @@ int utlReadWait(Serial port, char *in, int wait) {
 
 ///
 // utlRead until we get the expected string (or timeout)
-// note: reads past *expect if chars streaming, see utlGetTag utlGetTagSecs
+// note: reads past *expect if chars streaming, see utlLookFor utlLookForSecs
 // args: port, buf for content, expect to watch for, wait timeout
 // uses: utl.buf // sets: *in (string)
 // rets: char* to expected str, or null
@@ -147,7 +147,7 @@ char *utlReadExpect(Serial port, char *in, char *expect, int wait) {
 // char *in should be BUFSZ, returns null terminated string
 // sets: *in 
 // rets: length, overrun=-1
-int utlGetTag(Serial port, char *in, char *lookFor) {
+int utlLookFor(Serial port, char *in, char *lookFor) {
   short ch;
   int len;
   for (len=0; len<BUFSZ; len++) {
@@ -162,7 +162,7 @@ int utlGetTag(Serial port, char *in, char *lookFor) {
   if (len) DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
   if (len>=BUFSZ) return -1;
   return len;
-} // utlGetTag
+} // utlLookFor
 
 ///
 // wait then read chars until match in char *lookFor
@@ -170,8 +170,8 @@ int utlGetTag(Serial port, char *in, char *lookFor) {
 // like utlReadWait but stops reading on char match
 // sets: *in 
 // rets: 0=match 1=timeout 2=BUFSZ<
-int utlGetTagSecs(Serial port, char *in, char *tag, int secs) {
-  static char *self="utlGetTagSecs";
+int utlLookForSecs(Serial port, char *in, char *lookFor, int secs) {
+  static char *self="utlLookForSecs";
   static char *rets="0=match 1=timeout 2=BUFSZ<";
   char *p;
   int r=0, len=0;
@@ -191,7 +191,7 @@ int utlGetTagSecs(Serial port, char *in, char *tag, int secs) {
       in[len] = TURxGetByte(port, false);
       if (in[len] == 0) continue;  // skip null
       in[++len] = 0;
-      p = strstr(in, tag);
+      p = strstr(in, lookFor);
       if (p) { // match
         *p=0;  // trim
         r=0;
@@ -199,11 +199,11 @@ int utlGetTagSecs(Serial port, char *in, char *tag, int secs) {
       } // match
     } // get char
   }
-  if (r>0) DBG1(" %s(%s)=%d ", self, tag, r);
+  if (r>0) DBG1(" %s(%s)=%d ", self, lookFor, r);
   DBG2(" <%d<", len);
   DBG3(" <|%d'%s'<|", len, utlNonPrintBlock(in, len));
   return r;
-} // utlGetTagSecs
+} // utlLookForSecs
 
 ///
 // wrapper for TURxGetBlock

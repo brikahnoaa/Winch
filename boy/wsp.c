@@ -40,7 +40,7 @@ int wspStart(void) {
   wsp.on = true;
   if (wsp.logging) 
     utlLogOpen(&wsp.log, "wsp"); 
-  if (utlGetTagSecs(wsp.port, all.str, "<wispr>", 20))
+  if (utlLookForSecs(wsp.port, all.str, "<wispr>", 20))
     raise(2);
   if (wspDateTime()) 
     raise(3);
@@ -53,18 +53,20 @@ int wspStart(void) {
 int wspStop(void) {
   static char *self="wspStop";
   static char *rets="1=!logclose 2=!<wispr>";
-  int r;
+  int r=0;
   DBG();
   if (wsp.log) 
     utlLogClose(&wsp.log);
-  // should be one last open/close pair
-  if (!wspOpen())
-    // blank line, continues
-    utlWrite( wsp.port, "", EOL );
-  wspClose();
-  r = utlGetTagSecs(wsp.port, all.str, "</wispr>", 10);
-  utlNap(1);
-  wsp.on = false;
+  if (wsp.on) {
+    // should be one last open/close pair
+    if (!wspOpen())
+      // blank line, continues
+      utlWrite( wsp.port, "", EOL );
+    wspClose();
+    r = utlLookForSecs(wsp.port, all.str, "</wispr>", 10);
+    utlNap(1);
+    wsp.on = false;
+  } // wsp.on
   mpcPamPwr(wsp.card, false);
   if (r) raise(2);
   return 0;
@@ -91,7 +93,7 @@ int wspOpen(void) {
   static char *rets="1=off 2=!<cmd>";
   DBG();
   if (!wsp.on) raise(1);
-  if (utlGetTagSecs(wsp.port, all.str, "<cmd>", 12)) 
+  if (utlLookForSecs(wsp.port, all.str, "<cmd>", 12)) 
     raise(2);
   return 0;
 } // wspOpen
@@ -103,7 +105,7 @@ int wspClose(void) {
   static char *rets="1=off 2=!</cmd>";
   DBG();
   if (!wsp.on) raise(1);
-  if (utlGetTagSecs(wsp.port, all.str, "</cmd>", 12)) 
+  if (utlLookForSecs(wsp.port, all.str, "</cmd>", 12)) 
     raise(2);
   return 0;
 } // wspClose
@@ -119,7 +121,7 @@ int wspCmd(char *out, char *cmd, int seconds) {
   if (wspOpen()) raise(1);
   flogf("\n%s: sending to wispr: %s \n", self, cmd);
   utlWrite( wsp.port, cmd, EOL );
-  if (utlGetTagSecs( wsp.port, out, "</cmd>", seconds ))
+  if (utlLookForSecs( wsp.port, out, "</cmd>", seconds ))
     raise(2);
   flogf("\n%s\n", out);
   return 0;
@@ -143,7 +145,7 @@ int wspSpectr(char *buf) {
   flogf( "\n%s: %s", self, all.str );
   utlWrite( wsp.port, all.str, EOL );
   // gather
-  if (utlGetTagSecs(wsp.port, buf, "RDY", 200)) 
+  if (utlLookForSecs(wsp.port, buf, "RDY", 200)) 
     raisex(2);
   utlWrite(wsp.port, "$WS?*", EOL);
   if (!utlReadWait(wsp.port, buf, 60)) 
@@ -212,7 +214,7 @@ int wspDetectM(int *detected, float *free, int minutes) {
   wsp.diskFree = *free;
   // stop
   utlWrite(wsp.port, "$EXI*", EOL);
-  if (utlGetTagSecs(wsp.port, all.str, "FIN", 5)) {
+  if (utlLookForSecs(wsp.port, all.str, "FIN", 5)) {
     flogf("\n%s(): expected FIN, got '%s'", self, all.str);
     raisex(3);
   }

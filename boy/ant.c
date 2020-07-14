@@ -107,6 +107,9 @@ void antDevice(DevType dev) {
 ///
 // gps.port = antPort()
 Serial antPort(void) {
+  static char *self="antPort";
+  if (!ant.port)
+    flogf("\n %s: port requested before initialized", self);
   return ant.port;
 } // antPort
 
