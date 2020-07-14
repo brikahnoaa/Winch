@@ -1,4 +1,4 @@
-// sbe16.c
+// s16.c
 #include <main.h>
 
 extern S16Info s16;
@@ -12,7 +12,7 @@ void main(void){
   s16Sample();
   s16DataWait();
   // s16Read();
-  flogf("s16Depth %2.1f", s16Depth());
+  flogf("\ns16Depth %4.2f", s16Depth());
   if (!s16Prompt())
     flogf("s16Prompt fail\n");
   flogf("\nPress Q to exit, type to sbe16\n");

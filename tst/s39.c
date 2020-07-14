@@ -1,4 +1,4 @@
-// sbe39.c
+// s39.c
 #include <main.h>
 
 extern S39Info s39;
