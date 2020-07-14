@@ -164,7 +164,8 @@ void s39Sample(void) {
 // sample, read data, log to file
 // sets: .temp .depth 
 bool s39Read(void) {
-  char *p0, *p1, *p2, *p3;
+  // char *p0, *p1, *p2, *p3;
+  char *p0, *p1, *p2;
   static char *self="s39Read";
   DBG();
   if (!s39Data()) return false;
@@ -176,8 +177,9 @@ bool s39Read(void) {
   } // not data
   if (s39.log) 
     write(s39.log, all.str, strlen(all.str)-2); // no S>
-  // Temp, conductivity, depth, fluromtr, PAR, salinity, time
-  // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
+  DBG2("%s", all.str);
+  // Temp, depth, date, time
+  // ' 20.6538,  0.217,   01 Aug 2016, 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
   p0 = all.str;
@@ -187,14 +189,13 @@ bool s39Read(void) {
   p2 = strtok(NULL, ", "); 
   if (!p2) return false;
   // s39.cond = atof( p2 );
-  p3 = strtok(NULL, ", ");
-  if (!p3) return false;
-  s39.depth = atof( p3 );
+  // p3 = strtok(NULL, ", ");
+  // if (!p3) return false;
+  s39.depth = atof( p2 );
   if (s39.temp==0.0 && s39.depth==0.0) {
     utlErr(ant_err, "antRead: null values");
     return false;
   }
-  DBG1("= %4.2", s39.depth);
   s39.sampT = time(0);
   s39Sample();
   return true;

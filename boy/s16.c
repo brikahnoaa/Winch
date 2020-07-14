@@ -176,7 +176,7 @@ bool s16Read(void) {
   } // not data
   if (s16.log) 
     write(s16.log, all.str, strlen(all.str)-2); // no S>
-  // Temp, conductivity, depth, fluromtr, PAR, salinity, time
+  // Temp, conductivity, depth, fluromtr, PAR, salinity, date time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
