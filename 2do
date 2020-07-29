@@ -1,0 +1,44 @@
+Mon, Jul 13, 2020 10:36:01 AM
+
+.. bad depth
+risePhase 2020-07-13 02:56:38
+riseDo: sbe16@30.0 sbe39@13.0
+	| surfCmd to winch at 02:56:40
+		+ngkSend(#R,01,00) at 02:56:40
+	: 02:56:46 depth=13.0
+		+ngkRecv(%R,02,00) riseRsp 02:56:51
+	| riseRsp from winch
+	: 02:56:52 depth=13.0
+	: 02:56:58 depth=13.0
+	: 02:57:04 depth=13.0
+	: 02:57:10 depth=13.0
+
+.. dataPhase EXC
+dataPhase 2020-07-13 02:59:18
+EXC wspOpen->1 (1=off 2=!<cmd>)
+EXC wspDetectM->1 (1=open 3=!FIN 8=close 9=stop 10=query 20=space)
+EXC wspClose->1 (1=off 2=!</cmd>)
+-01 00:00:00, rise end 1970-01-01 00:00:00
+fall begin 1970-01-01 00:00:00, fall end 1970-01-01 00:00:00
+=== during last irid transmission ===
+gps start: lat=44:37.2540 N, long=124:02.6523 W, time=21:37:58.000
+gps drift: lat=44:37.2545 N, long=124:02.6529 W, time=21:43:55.000
+ending surface depth=0.0
+.. junk ^F
+ending surface depth=0.0
+X: wspDetectM( detected 8336, free 0.000000, minutes 0 ) -> -78
+.. hung until break
+X: wspDetectM( detected 8336, free 0.000000, minutes 0 ) -> -78
+cycle 1 @2020-07-13 16:11:20
+
+.. wspr on s16 channel
+winch>> '#S,02,00\r\n'
+winch<< 'OK\r\n'
+winch: 141.123 hearing OK
+ant>> ' 20.1000,   16.000, 13 Jul 2020, 02:59:14\r\n'
+ant>> '<Executed/>\r\n'
+sbe16>> ' 20.1000,  0.10000,   30.000, 0.1000, 0.1000,   0.1000, 13 Jul 2020 02:59:17\r\n'
+sbe16>> 'S>'
+sbe16<< '$EXI*\r'
+sbe16>> 'S>'
+

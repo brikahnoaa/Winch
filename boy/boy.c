@@ -359,35 +359,74 @@ int iridCall(void) {
 // uses: .dockD .fallOpM .ngkDelay .riseVpred
 int riseUp(float targetD) {
   static char *self="riseUp";
-  bool targetB=false;
-  enum {ngkTmr, fiveTmr};  // local timer names
-  float nowD, startD;
-  int err=0, ngkTries=0, phaseEst, ngkDelay;
-  MsgType recv, send, sent, want;
-  recv=send=sent=want=null_msg;
+  static char *rets="1=errLimit 2=phaseTimeEst";
+  enum PhaseState {begin, starting, winching, stopping, end} state;
+  float lastD, nowD, startD;
+  int errCnt=0, errLimit=9, ngkTries=0, ngkLimit=5, shortTimer=10;
+  int phaseTimeEst;
+  MsgType recv, sent;
   DBG();
-  // wait for s16 to be ready
-  s16DataWait(); 
-  nowD = startD = s39Depth();
-  flogf("\n%s: sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), nowD);
-  // winch
-  ngkFlush();
-  ngkDelay = boy.ngkDelay*2;      // increments on every retry
-  if (targetD)
-    send = riseCmd_msg;           // rise then brake
-  else
-    send = surfCmd_msg;           // rise then drift, no brake
-  want = riseRsp_msg;
-  // phaseEst = sec/meter * depth * fudge ?? for possible current drift
-  phaseEst = (1.0/boy.riseVpred)*boyd.dockD * 2.0;
+  recv=sent=null_msg; 
+  nowD=lastD=startD=s39Depth();
+  // phaseTimeEst = sec/meter * depth * fudge ?? for possible current drift
+  phaseTimeEst = (1.0/boy.riseVpred)*boyd.dockD * 2.0;
+  flogf("\n%s: rise phase estimate %d seconds", self, phaseEst);
   tmrStart(phase_tmr, phaseEst);
-  tmrStart(fiveTmr, 5);
-  while (!err) 
-  { // loop exits by break;
+  //
+  state=begin;
+  flogf("\n%s: begin at sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), nowD);
+  if (targetD) 
+    send=riseCmd_msg;
+  else
+    send=surfCmd_msg;
+  ngkFlush();
+  ngkSend(send);
+  tmrStart(ngk_tmr, boy.ngkDelay);
+  tmrStart(second_tmr, shortTimer);
+  state=starting;
+  //
+  while (state!=end)
+  { // loop from begin state to end state, unless errs are bad
     utlX();
-    /// check depth vs target first
-    if (targetD && !targetB && nowD<targetD) 
+    if (errCnt>errLimit) raisex(1);
+    if (tmrExp(phase_tmr)) raisex(2);
+    /// collect then review
+    nowD = s39Depth();
+    ngkRecv(&recv);
+    if (s16Data()) 
+    { // science! get, print data
+      ptr = s16Read();
+      flogf("\n{%s}", ptr);
+    } // science
+    /// whats up
+    if (recv!=null_msg) 
+      tmrStop(ngk_tmr);
+    if (recv==riseRsp_msg) { 
+      switch (state) {
+      case starting:
+        
+
+    if (targetD && nowD<targetD) 
     { // reached target
+      switch (state) {
+      case starting:
+      case winching:
+        // stop
+        send = stopCmd_msg;
+        ngkSend(send);
+        state = stopping;
+        break;
+      case stopping:
+        // we know, waiting for response
+        break;
+      case default:
+        // err
+        // ??
+      } // switch
+    } // target
+
+
+
       send = stopCmd_msg;
       want = stopRsp_msg;
       ngkTries = 0;
@@ -399,6 +438,10 @@ int riseUp(float targetD) {
     { // send msg
       flogf("\n\t| %s send to winch at %s", ngkMsgName(send), utlTime());
       ngkSend(send);
+      if (send==riseCmd_msg || send==surfCmd_msg) 
+        want = riseRsp_msg;
+      if (send==stopCmd_msg)
+        want = stopRsp_msg;
       sent = send;
       send = null_msg;
       tmrStart(ngkTmr, ngkDelay);
@@ -427,15 +470,16 @@ int riseUp(float targetD) {
       send = sent;
       flogf("\n\t| WARN winch timeout, try %d", ngkTries);
     } // msg timeout
-    if (tmrExp(fiveTmr)) 
-    { // 5 seconds
-      tmrStart(fiveTmr, 5);
+    if (tmrExp(tenTmr)) 
+    { // 5 seconds - are we moving ??
+      tmrStart(tenTmr, 10);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
     }  // 5 seconds
     if (s16Data()) 
+    { // science data 
+      flogf("\ns16: %s", all.str);
       s16Read();
-    if (s39Data()) 
-      nowD = s39Depth();
+    } 
     if (tmrExp(phase_tmr)) 
     { // phase timeout
       flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
@@ -450,10 +494,9 @@ int riseUp(float targetD) {
   if (err) {
     flogf("\n%s: ERR \t| phase error %d at %3.1fm", self, err, s39Depth());
     return err;
-  } else { 
-    // normal stop
-    return 0;
-  }
+  } 
+  // normal stop
+  return 0;
 } // riseUp
 
 ///
@@ -461,7 +504,7 @@ int riseUp(float targetD) {
 //
 
 ///
-// calculate rise time (doc/algor)
+// calculate rise time (doc/algor) ??
 // sets: *riseT 
 void riseTime(time_t *riseT) {
   int hour;
@@ -498,7 +541,7 @@ int fallDn(float targetD) {
   static char *self="fallDn";
   MsgType recv=null_msg, send=null_msg, sent=null_msg, want=null_msg;
   bool targetB=false;
-  enum {ngkTmr, fiveTmr};  // local timer names
+  enum {ngkTmr, tenTmr};  // local timer names
   float nowD, startD;
   // float velo; ??
   int err=0, ngkTries, phaseEst, ngkDelay;
@@ -517,7 +560,7 @@ int fallDn(float targetD) {
   // phaseEst = sec/meter(5) * depth + fudge for possible current drift
   phaseEst = 5*boyd.dockD+boy.fallOpM*60;
   tmrStart(phase_tmr, phaseEst);
-  tmrStart(fiveTmr, 5);
+  tmrStart(tenTmr, 10);
   while (!err) {       // loop exits by break;
     utlX();
     /// check target first
@@ -556,8 +599,8 @@ int fallDn(float targetD) {
       send = sent;
       flogf("\n\t| WARN winch timeout, try %d", ngkTries);
     } // msg timeout
-    if (tmrExp(fiveTmr)) { // 5 seconds
-      tmrStart(fiveTmr, 5);
+    if (tmrExp(tenTmr)) { // 10 seconds
+      tmrStart(tenTmr, 10);
       flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
     }  // 5 seconds
     if (s16Data()) 

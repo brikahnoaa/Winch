@@ -161,20 +161,20 @@ void s39Sample(void) {
 } // s39Sample
 
 ///
-// sample, read data, store, log
+// read data, store, log, sample
 // differs slightly from s16Read
 // sets: .temp .depth 
-bool s39Read(void) {
+char *s39Read(void) {
   char *p0, *p1, *p2;
   static char *self="s39Read";
   DBG();
-  if (!s39Data()) return false;
+  if (!s39Data()) return null;
   // utlRead(s39.port, all.str);
   p0 = utlReadExpect(s39.port, all.str, EXEC, 2);
   if (!p0) { // not data
     sprintf(all.buf, "%s: no %s in %s", self, EXEC, all.str);
     utlErr(s39_err, all.buf);
-    return false;
+    return null;
   } 
   p0 = 0; // trim off trailing prompt
   if (s39.log) 
@@ -184,21 +184,22 @@ bool s39Read(void) {
   // ' 20.6538,  0.217,   01 Aug 2016, 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
   // note: picks up trailing S> prompt if not in syncmode
-  p0 = all.str;
+  strcpy(all.buf, all.str);
+  p0 = all.buf;
   p1 = strtok(p0, "\r\n#, ");
-  if (!p1) return false;
+  if (!p1) return null;
   s39.temp = atof( p1 );
   // strtok(NULL, ", "); // skip one
   p2 = strtok(NULL, ", "); 
-  if (!p2) return false;
+  if (!p2) return null;
   s39.depth = atof( p2 );
   if (s39.temp==0.0 && s39.depth==0.0) {
     utlErr(ant_err, "antRead: null values");
-    return false;
+    return null;
   }
   s39.sampT = time(0);
   s39Sample();
-  return true;
+  return all.str;
 } // s39Read
 
 ///

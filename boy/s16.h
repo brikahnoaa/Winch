@@ -25,7 +25,7 @@ static bool s16Pending(void);
 bool s16Data(void);
 bool s16DataWait(void);
 bool s16Prompt(void);
-bool s16Read(void);
+char *s16Read(void);
 float s16Depth(void);
 float s16Temp(void);
 int s16LogClose(void);

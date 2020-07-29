@@ -2,3 +2,14 @@ riseTime
 if cycleMint then riseTime=cycleStart+cycleMint, extend by 1 hour
 else riseTime=riseLast+cycleDays@cycleHour, extend by 1 day
 
+riseUp
+state: begin riseCmd surfCmd stopCmd surfing rising brake surf end
+summ==
+begin: send rise or surf, start ngk timer
+  stopCmd from winch on surf?
+  if send then send(msg) sent=send send=0 timer(ngk)
+  if recv(msg) then was it wanted?
+    if riseResp then rising_mode
+    if stopResp then stopped_mode
+  if msgtimeout then resend or err
+  if targetD then send stop

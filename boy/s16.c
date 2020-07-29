@@ -161,19 +161,19 @@ void s16Sample(void) {
 } // s16Sample
 
 ///
-// sample, read data, store, log
+// read data, store, log, sample
 // sets: .temp .depth 
-bool s16Read(void) {
+char *s16Read(void) {
   char *p0, *p1, *p2;
   static char *self="s16Read";
   DBG();
-  if (!s16Data()) return false;
+  if (!s16Data()) return null;
   // utlRead(s16.port, all.str);
   p0 = utlReadExpect(s16.port, all.str, EXEC, 2);
   if (!p0) { // not data
     sprintf(all.buf, "%s: no %s in %s", self, EXEC, all.str);
     utlErr(s16_err, all.buf);
-    return false;
+    return null;
   }
   p0 = 0; // trim off trailing prompt 
   if (s16.log) 
@@ -182,22 +182,23 @@ bool s16Read(void) {
   // Temp, conductivity, depth, fluromtr, PAR, salinity, date time
   // ' 20.6538,  0.01145,    0.217,   0.0622, 01 Aug 2016 12:16:50\r\n'
   // note: leading # in syncmode '# 20.6...'
-  p0 = all.str;
+  strcpy(all.buf, all.str);
+  p0 = all.buf;
   p1 = strtok(p0, "\r\n#, ");
-  if (!p1) return false;
+  if (!p1) return null;
   s16.temp = atof( p1 );
   strtok(NULL, ", "); // skip one
   p2 = strtok(NULL, ", "); 
-  if (!p2) return false;
+  if (!p2) return null;
   s16.depth = atof( p2 );
   if (s16.temp==0.0 && s16.depth==0.0) {
     utlErr(ant_err, "antRead: null values");
-    return false;
+    return null;
   }
   DBG1("= %4.2", s16.depth);
   s16.sampT = time(0);
   s16Sample();
-  return true;
+  return all.str;
 } // s16Read
 
 ///

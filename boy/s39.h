@@ -25,7 +25,7 @@ static bool s39Pending(void);
 bool s39Data(void);
 bool s39DataWait(void);
 bool s39Prompt(void);
-bool s39Read(void);
+char *s39Read(void);
 float s39Depth(void);
 float s39Temp(void);
 int s39LogClose(void);
