@@ -360,7 +360,8 @@ int iridCall(void) {
 int riseUp(float targetD) {
   static char *self="riseUp";
   static char *rets="1=errLimit 2=phaseTimeEst";
-  enum PhaseState {begin, starting, winching, stopping, end} state;
+  enum PhaseState {starting, rising, surfacing, stopping, success, failure};
+  enum PhaseState state;
   float lastD, nowD, startD;
   int errCnt=0, errLimit=9, ngkTries=0, ngkLimit=5, shortTimer=10;
   int phaseTimeEst;
@@ -368,25 +369,22 @@ int riseUp(float targetD) {
   DBG();
   recv=sent=null_msg; 
   nowD=lastD=startD=s39Depth();
+  flogf("\n%s: begin at sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), nowD);
   // phaseTimeEst = sec/meter * depth * fudge ?? for possible current drift
   phaseTimeEst = (1.0/boy.riseVpred)*boyd.dockD * 2.0;
   flogf("\n%s: rise phase estimate %d seconds", self, phaseEst);
   tmrStart(phase_tmr, phaseEst);
-  //
-  state=begin;
-  flogf("\n%s: begin at sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), nowD);
-  if (targetD) 
-    send=riseCmd_msg;
-  else
-    send=surfCmd_msg;
   ngkFlush();
+  // rise to target depth with brake, or surface with slack
+  if (targetD) send=riseCmd_msg;
+  else send=surfCmd_msg;
   ngkSend(send);
   tmrStart(ngk_tmr, boy.ngkDelay);
-  tmrStart(second_tmr, shortTimer);
   state=starting;
-  //
-  while (state!=end)
-  { // loop from begin state to end state, unless errs are bad
+  // do short time checks to ensure we are moving
+  tmrStart(second_tmr, shortTimer);
+  while (state!=success && state!=failure) 
+  { // loop
     utlX();
     if (errCnt>errLimit) raisex(1);
     if (tmrExp(phase_tmr)) raisex(2);
@@ -398,14 +396,26 @@ int riseUp(float targetD) {
       ptr = s16Read();
       flogf("\n{%s}", ptr);
     } // science
-    /// whats up
+    /// whats happening?
     if (recv!=null_msg) 
+    { // message 
       tmrStop(ngk_tmr);
-    if (recv==riseRsp_msg) { 
-      switch (state) {
-      case starting:
-        
-
+      // expected messages
+      if (state==starting && recv==riseRsp_msg) {
+        if (targetD) state=rising;
+        else state=surfacing;
+      } else if (state==stopping && recv==stopRsp_msg) {
+        state=success;
+      } else if (state==surfacing && recv==stopCmd_msg) {
+        ngkSend(stopRsp_msg);
+        state=success;
+      // unexpected
+      } else {
+        sprintf( all.str, "unexpected message from winch, failure" );
+        state=failure;
+      } 
+      continue; // loop
+    } // message
     if (targetD && nowD<targetD) 
     { // reached target
       switch (state) {
