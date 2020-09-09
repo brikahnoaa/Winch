@@ -31,10 +31,16 @@ typedef struct DbgInfo {
 static char *self="unknown funct";  // default for locally defined return val
 static char *rets="unknown error";  // default for locally defined return val
 
-#define raise(EXC) { flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
-  dbg.except=EXC; return EXC; }
-#define raisex(EXC) { flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
-  dbg.except=EXC; goto except; }
+#define raise(EXC) { \
+  flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
+  dbg.except=EXC; \
+  return EXC; \
+}
+#define raisex(EXC) { \
+  flogf("\nEXC %s->%d (%s)", self, EXC, rets); \
+  dbg.except=EXC; \
+  goto except; \
+}
 
 ///
 // the DBG* global vars are used in macros

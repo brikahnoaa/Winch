@@ -4,7 +4,8 @@
 // timers 0-9 are for local use, ad hoc
 enum {
   null_tmr=10,
-  day_tmr, hour_tmr, minute_tmr, second_tmr, phase_tmr, data_tmr, 
+  day_tmr, hour_tmr, minute_tmr, second_tmr, 
+  phase_tmr, data_tmr, status_tmr,
   iri_tmr, ngk_tmr, utl_tmr, wsp_tmr, s16_tmr, s39_tmr, 
   sizeof_tmr
   };

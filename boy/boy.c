@@ -355,90 +355,132 @@ int iridCall(void) {
 } // iridCall
 
 ///
+// riseUp algor
+// .0 timer = max for this phase
+// .1 rise to a depth, or rise to surface with slack?
+// .2 state: still .. starting .. rising .. stopping .. done
+// .2.1 out of starting if measured movement
+///
 // if targetD==0 then no brake, drift on surface
 // uses: .dockD .fallOpM .ngkDelay .riseVpred
 int riseUp(float targetD) {
   static char *self="riseUp";
-  static char *rets="1=errLimit 2=phaseTimeEst";
-  enum PhaseState {starting, rising, surfacing, stopping, success, failure};
+  static char *rets="1=phaseTimeout 2=errLimit";
+  enum PhaseState {still, starting, rising, stopping, done};
   enum PhaseState state;
-  float lastD, nowD, startD;
-  int errCnt=0, errLimit=9, ngkTries=0, ngkLimit=5, shortTimer=10;
+  float deltaD=0.0, lastD, nowD, startD;
+  int result=0, errCnt=0, errLimit=9, ngkTries=0, ngkLimit=5, statusSec=10;
   int phaseTimeEst;
-  MsgType recv, sent;
+  MsgType received, riseCmd;
   DBG();
-  recv=sent=null_msg; 
+  received=sent=null_msg; 
   nowD=lastD=startD=s39Depth();
-  flogf("\n%s: begin at sbe16@%3.1f sbe39@%3.1f", self, s16Depth(), nowD);
+  flogf("\n%s: target depth %d", self, targetD);
+  flogf("\n\t begin at sbe16@%3.1f sbe39@%3.1f", s16Depth(), nowD);
   // phaseTimeEst = sec/meter * depth * fudge ?? for possible current drift
-  phaseTimeEst = (1.0/boy.riseVpred)*boyd.dockD * 2.0;
-  flogf("\n%s: rise phase estimate %d seconds", self, phaseEst);
-  tmrStart(phase_tmr, phaseEst);
-  ngkFlush();
+  phaseTimeEst = (1.0/boy.riseVpred)*boyd.dockD;
+  flogf("\n\t rise phase estimate %d seconds", phaseTimeEst);
+  tmrStart(phase_tmr, phaseTimeEst*3);
+  tmrStart(status_tmr, statusSec);
   // rise to target depth with brake, or surface with slack
-  if (targetD) send=riseCmd_msg;
-  else send=surfCmd_msg;
-  ngkSend(send);
-  tmrStart(ngk_tmr, boy.ngkDelay);
-  state=starting;
-  // do short time checks to ensure we are moving
-  tmrStart(second_tmr, shortTimer);
-  while (state!=success && state!=failure) 
-  { // loop
-    utlX();
-    if (errCnt>errLimit) raisex(1);
-    if (tmrExp(phase_tmr)) raisex(2);
-    /// collect then review
-    nowD = s39Depth();
-    ngkRecv(&recv);
-    if (s16Data()) 
-    { // science! get, print data
-      ptr = s16Read();
-      flogf("\n{%s}", ptr);
-    } // science
-    /// whats happening?
-    if (recv!=null_msg) 
-    { // message 
-      tmrStop(ngk_tmr);
-      // expected messages
-      if (state==starting && recv==riseRsp_msg) {
-        if (targetD) state=rising;
-        else state=surfacing;
-      } else if (state==stopping && recv==stopRsp_msg) {
-        state=success;
-      } else if (state==surfacing && recv==stopCmd_msg) {
-        ngkSend(stopRsp_msg);
-        state=success;
-      // unexpected
-      } else {
-        sprintf( all.str, "unexpected message from winch, failure" );
-        state=failure;
-      } 
-      continue; // loop
-    } // message
-    if (targetD && nowD<targetD) 
-    { // reached target
-      switch (state) {
-      case starting:
-      case winching:
-        // stop
-        send = stopCmd_msg;
-        ngkSend(send);
-        state = stopping;
+  if (targetD) riseCmd=riseCmd_msg;
+  else riseCmd=surfCmd_msg;
+  while (state!=done)
+  { // main loop
+    utlX(); 
+    if (tmrExp(phase_tmr)) raisex(1); 
+    if (errCnt>errLimit) raisex(2); 
+    // wassup 
+    if (ngkRecv(&received) != null_msg) tmrStop(ngk_tmr); 
+    if (s16Data()) flogf("\n{%s}", s16Read()); 
+    if (s39Data()) nowD = s39Depth(); 
+    if (tmrExp(status_tmr)) 
+    { // status check: moving?
+      deltaD = abs( nowD - lastD );
+      lastD = nowD;
+      tmrStart(status_tmr, statusSec);
+    } // stat
+    ///
+    switch (state) {
+    case still:
+      // ?? should we send stop first to clarify state?
+      flogf("\n\tstate change - starting");
+      ngkFlush();
+      ngkSend(riseCmd);
+      tmrStart(ngk_tmr, boy.ngkDelay);
+      state=starting;
+      break;
+    case starting:
+      // riseRsp, measured rise, or ngkTime
+      if (received==riseRsp_msg) 
+      { // good riseRsp_msg
+        flogf("\n\tstate change - riseRsp");
+        state=rising;
         break;
-      case stopping:
-        // we know, waiting for response
+      } // good
+      if (deltaD > 2.0)
+      { // measured rising, but no message
+        flogf("\n\tstate change - rising");
+        errCnt++;
+        state = rising;
         break;
-      case default:
-        // err
-        // ??
-      } // switch
-    } // target
+      } // measured
+      if (tmrExp(ngk_tmr)) 
+      { // timeout, resend
+        errCnt++;
+        ngkSend(riseCmd);
+        tmrStart(ngk_tmr, boy.ngkDelay);
+        break;
+      } // timeout
+      break; // starting
+    case rising:
+      if (targetD)
+      { // target depth, under water, expecting ice
+        if (nowD<targetD) 
+        { // reached depth
+          flogf("\n\tstate change - stopping");
+          ngkSend(stopCmd_msg);
+          tmrStart(ngk_tmr, boy.ngkDelay);
+          state = stopping;
+          break;
+        } // reached
+        if (received!=null_msg)
+        { // bad, not expecting msg
+          flogf("\n\t %s: unexpected winch message %s", 
+              self, ngkMsgName(received));
+          errCnt++;
+          if (received==stopCmd_msg) 
+          { // winch says stop, restart rise
+            errCnt += 2; // thats +3 errCnt together
+            ngkSend(stopRsp_msg);
+            state=still;
+            break;
+          } // winch
+        } // bad
+      } // target
+      else
+      { // surfacing, targetD=0
+        if (received!=null_msg)
+        { // msg
+          if (received==stopCmd_msg)
+          { // surfaced, winch sends stop when slack
+            flogf("\n\t state change - done");
+            state=done;
+            break;
+          } // surfaced
+          else
+          { // bad, not expecting this msg
+            errCnt++;
+          }
+        } // msg
+      } // surfing
+      break; // rising
+    case stopping:
+        
 
 
 
-      send = stopCmd_msg;
-      want = stopRsp_msg;
+
       ngkTries = 0;
       ngkDelay = boy.ngkDelay*2;
       targetB = true;
@@ -456,17 +498,17 @@ int riseUp(float targetD) {
       send = null_msg;
       tmrStart(ngkTmr, ngkDelay);
     } // send msg
-    if (ngkRecv(&recv)!=null_msg) 
+    if (ngkRecv(&received)!=null_msg) 
     { // msg read
       tmrStop(ngkTmr);
-      flogf("\n\t| %s from winch", ngkMsgName(recv));
+      flogf("\n\t| %s from winch", ngkMsgName(received));
       // reached dock, or jammed // ?? check depth for err?
-      if (recv==stopCmd_msg) break;
+      if (received==stopCmd_msg) break;
       if (want!=null_msg) 
       { // want
-        if (recv==want) 
+        if (received==want) 
         { // satisfied
-          if (recv==stopRsp_msg) break; // all done here
+          if (received==stopRsp_msg) break; // all done here
           want = null_msg;
         } else { // retry
           flogf(", but we want %s", ngkMsgName(want));
