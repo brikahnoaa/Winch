@@ -1,0 +1,21 @@
+  // iopins[] = {7, 15-35, 37, 39-42 }
+  uchar iopinsOut[] = {15, 17, 19, 21, 22, 23, 24, 25, 26, 29, \
+      30, 37, 42, 0};
+
+tpu 22-30 31 33 49
+
+out 15 17 19 21 22 24 46 33
+in 40 41 32 35 50 45 48 
+bus 7
+
+code
+21 22 23  24 25 26  
+27   29 30 
+31  
+35   37 42
+
+#define MDM_RX 33   // acoustic modem
+#define ANT_RX 32   // selected by 23
+#define PAM_RX 28   // selected by 24, 29
+#define MDM_TX_RTS 48
+#define MDM_RX_CTS 50

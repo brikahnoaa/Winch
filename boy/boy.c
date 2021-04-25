@@ -358,33 +358,43 @@ int iridCall(void) {
 // riseUp algor
 // .0 timer = max for this phase
 // .1 rise to a depth, or rise to surface with slack?
-// .2 state: still .. starting .. rising .. stopping .. done
+// .2 state: still .. starting .. moving .. stopping .. done
 // .2.1 out of starting if measured movement
+//
+// q1 what to do with too many errors? go to fallPhase, panic, hibernate
+// q2 what if we detect ice? 
+// q2.1 ice in summer? mistake? floating ice? Check again tomorrowp
+// q2.2 ice in fall? verify then change season.
+// q2.3 ice in spring? wait a while
 ///
 // if targetD==0 then no brake, drift on surface
 // uses: .dockD .fallOpM .ngkDelay .riseVpred
 int riseUp(float targetD) {
   static char *self="riseUp";
   static char *rets="1=phaseTimeout 2=errLimit";
-  enum PhaseState {still, starting, rising, stopping, done};
+  enum PhaseState {still=0, starting, rising, stopping, done};
+  char * psName[done]={"still", "starting", "rising", "stopping", "done"};
   enum PhaseState state;
-  float deltaD=0.0, lastD, nowD, startD;
-  int result=0, errCnt=0, errLimit=9, ngkTries=0, ngkLimit=5, statusSec=10;
+  float deltaD=0.0, deltaDpred, lastD, nowD, startD;
+  int moving=0, errCnt=0, errLimit=9, ngkTries=0, ngkLimit=5, statusSec=10;
   int phaseTimeEst;
-  MsgType received, riseCmd;
+  MsgType received, sent, riseCmd;
   DBG();
-  received=sent=null_msg; 
+  state=still;
   nowD=lastD=startD=s39Depth();
+  received=sent=null_msg; 
+  // rise to target depth with brake, or surface with slack
+  if (targetD) riseCmd=riseCmd_msg;
+  else riseCmd=surfCmd_msg;
   flogf("\n%s: target depth %d", self, targetD);
   flogf("\n\t begin at sbe16@%3.1f sbe39@%3.1f", s16Depth(), nowD);
   // phaseTimeEst = sec/meter * depth * fudge ?? for possible current drift
   phaseTimeEst = (1.0/boy.riseVpred)*boyd.dockD;
+  deltaDpred = boy.riseVpred * (float) statusSec;
   flogf("\n\t rise phase estimate %d seconds", phaseTimeEst);
   tmrStart(phase_tmr, phaseTimeEst*3);
   tmrStart(status_tmr, statusSec);
-  // rise to target depth with brake, or surface with slack
-  if (targetD) riseCmd=riseCmd_msg;
-  else riseCmd=surfCmd_msg;
+  ///
   while (state!=done)
   { // main loop
     utlX(); 
@@ -395,7 +405,7 @@ int riseUp(float targetD) {
     if (s16Data()) flogf("\n{%s}", s16Read()); 
     if (s39Data()) nowD = s39Depth(); 
     if (tmrExp(status_tmr)) 
-    { // status check: moving?
+    { // status check: rising?
       deltaD = abs( nowD - lastD );
       lastD = nowD;
       tmrStart(status_tmr, statusSec);
@@ -404,7 +414,7 @@ int riseUp(float targetD) {
     switch (state) {
     case still:
       // ?? should we send stop first to clarify state?
-      flogf("\n\tstate change - starting");
+      flogf("\n\tstate -> starting");
       ngkFlush();
       ngkSend(riseCmd);
       tmrStart(ngk_tmr, boy.ngkDelay);
@@ -414,15 +424,17 @@ int riseUp(float targetD) {
       // riseRsp, measured rise, or ngkTime
       if (received==riseRsp_msg) 
       { // good riseRsp_msg
-        flogf("\n\tstate change - riseRsp");
-        state=rising;
+        flogf("\n\tstate -> riseRsp");
+        if (targetD) state = rising;
+        else state = surfacing;
         break;
       } // good
-      if (deltaD > 2.0)
-      { // measured rising, but no message
-        flogf("\n\tstate change - rising");
+      if (deltaD > (deltaDpred/2.0))
+      { // measured movement in last status check, but no message from winch
+        flogf("\n\tstate -> movement");
         errCnt++;
-        state = rising;
+        if (targetD) state=rising;
+        else state = surfacing;
         break;
       } // measured
       if (tmrExp(ngk_tmr)) 
@@ -434,112 +446,67 @@ int riseUp(float targetD) {
       } // timeout
       break; // starting
     case rising:
-      if (targetD)
-      { // target depth, under water, expecting ice
-        if (nowD<targetD) 
-        { // reached depth
-          flogf("\n\tstate change - stopping");
-          ngkSend(stopCmd_msg);
-          tmrStart(ngk_tmr, boy.ngkDelay);
-          state = stopping;
+      // target depth, under water, expecting ice
+      if (nowD<targetD) 
+      { // reached depth
+        flogf("\n\tstate -> stopping at %3.1f", nowD);
+        ngkSend(stopCmd_msg);
+        tmrStart(ngk_tmr, boy.ngkDelay);
+        state = stopping;
+        break;
+      } // reached
+      if (s39Temp()<boy.iceDanger)
+      { // ice, ahoy
+        flogf("\n\tstate -> stopping - ice detected - ");
+        ngkSend(stopCmd_msg);
+        tmrStart(ngk_tmr, boy.ngkDelay);
+        state = stopping;
+        break;
+      } // ice
+      if (received!=null_msg)
+      { // bad, not expecting msg
+        flogf("\n\t %s: unexpected winch message %s", 
+            self, ngkMsgName(received));
+        errCnt++;
+        if (received==stopCmd_msg) 
+        { // winch says stop, restart rise
+          errCnt += 2; // thats +3 errCnt together
+          ngkSend(stopRsp_msg);
+          state=still;
           break;
-        } // reached
-        if (received!=null_msg)
-        { // bad, not expecting msg
-          flogf("\n\t %s: unexpected winch message %s", 
-              self, ngkMsgName(received));
-          errCnt++;
-          if (received==stopCmd_msg) 
-          { // winch says stop, restart rise
-            errCnt += 2; // thats +3 errCnt together
-            ngkSend(stopRsp_msg);
-            state=still;
-            break;
-          } // winch
-        } // bad
-      } // target
-      else
-      { // surfacing, targetD=0
-        if (received!=null_msg)
-        { // msg
-          if (received==stopCmd_msg)
-          { // surfaced, winch sends stop when slack
-            flogf("\n\t state change - done");
-            state=done;
-            break;
-          } // surfaced
-          else
-          { // bad, not expecting this msg
-            errCnt++;
-          }
-        } // msg
-      } // surfing
+        } // winch
+      } // bad
       break; // rising
+    case surfacing:
+      if (received!=null_msg)
+      { // msg
+        if (received==stopCmd_msg)
+        { // surfaced, winch sends stop when slack
+          flogf("\n\t state -> done");
+          state=done;
+          break;
+        } // surfaced
+        else
+        { // bad, not expecting this msg
+          errCnt++;
+        }
+      } // msg
+      break; // surfacing
     case stopping:
-        
+      break; // stopping
+    case default:
+      break;
+    } // switch(state)
+  } // while
 
 
 
-
-      ngkTries = 0;
-      ngkDelay = boy.ngkDelay*2;
-      targetB = true;
-    } // reached target
-    /// winch
-    if (send!=null_msg) 
-    { // send msg
-      flogf("\n\t| %s send to winch at %s", ngkMsgName(send), utlTime());
-      ngkSend(send);
-      if (send==riseCmd_msg || send==surfCmd_msg) 
-        want = riseRsp_msg;
-      if (send==stopCmd_msg)
-        want = stopRsp_msg;
-      sent = send;
-      send = null_msg;
-      tmrStart(ngkTmr, ngkDelay);
-    } // send msg
-    if (ngkRecv(&received)!=null_msg) 
-    { // msg read
-      tmrStop(ngkTmr);
-      flogf("\n\t| %s from winch", ngkMsgName(received));
-      // reached dock, or jammed // ?? check depth for err?
-      if (received==stopCmd_msg) break;
-      if (want!=null_msg) 
-      { // want
-        if (received==want) 
-        { // satisfied
-          if (received==stopRsp_msg) break; // all done here
-          want = null_msg;
-        } else { // retry
-          flogf(", but we want %s", ngkMsgName(want));
-          send = sent;
-        } // satisfied
-      } // want
-    } // msg read
     if (tmrExp(ngkTmr)) 
     { // msg timeout
       ngkDelay += 20*(++ngkTries); // timeout increments by 20, then 40 ...
       send = sent;
       flogf("\n\t| WARN winch timeout, try %d", ngkTries);
     } // msg timeout
-    if (tmrExp(tenTmr)) 
-    { // 5 seconds - are we moving ??
-      tmrStart(tenTmr, 10);
-      flogf("\n\t: %s depth=%3.1f", utlTime(), nowD);
-    }  // 5 seconds
-    if (s16Data()) 
-    { // science data 
-      flogf("\ns16: %s", all.str);
-      s16Read();
-    } 
-    if (tmrExp(phase_tmr)) 
-    { // phase timeout
-      flogf("\n%s: ERR \t| phase timeout %ds @ %3.1f, ending phase", 
-          self, phaseEst, nowD);
-      err = 2;
-      ngkSend(stopCmd_msg);
-      break;
-    } // phase timeout
   } // while !err
   ///
   // fail if error
